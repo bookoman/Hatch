@@ -10,6 +10,7 @@ class GameMediator extends BaseMediator{
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,false,false,true);
         super.initView();
+        
     }
     protected addEvents():void
     {
@@ -32,6 +33,7 @@ class GameMediator extends BaseMediator{
 
     private onBtnOpen(e:Laya.Event):void
     {
+        GameDataManager.ins.initData();
         // var testMediator:TestMediator = new TestMediator();
         // var signMediator:SignMediator = new SignMediator();
         MapManager.ins.enterMap("res/map",1,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);

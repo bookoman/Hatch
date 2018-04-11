@@ -16,10 +16,10 @@ var Monster = /** @class */ (function (_super) {
     function Monster() {
         return _super.call(this) || this;
     }
-    Monster.prototype.initRole = function (aniURL, scale, lineupVo) {
-        _super.prototype.initRole.call(this, aniURL, scale, lineupVo);
+    Monster.prototype.initRole = function (aniURL, scale, roleVo) {
+        _super.prototype.initRole.call(this, aniURL, scale, roleVo);
         this.skeletonAni.transform.scaleEx(-1, 1);
-        this.skeletonAni.pos(460 + (this.lineupVo.col - 1) * 120, 480 + (this.lineupVo.row - 1) * 100);
+        this.skeletonAni.pos(roleVo.posPoint.x, roleVo.posPoint.y);
     };
     return Monster;
 }(BaseRole));

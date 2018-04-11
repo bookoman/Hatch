@@ -4,7 +4,7 @@
 var RoleManager = /** @class */ (function () {
     function RoleManager() {
         this.heroRoles = null;
-        this.monsterRoles = null;
+        this.enemyRoles = null;
     }
     Object.defineProperty(RoleManager, "ins", {
         get: function () {
@@ -18,31 +18,31 @@ var RoleManager = /** @class */ (function () {
     });
     RoleManager.prototype.initRoles = function () {
         this.heroRoles = new Array();
-        this.monsterRoles = new Array();
-        var lineupVoAry = LineupManager.ins.getCofingByID("1");
+        var playerData = GameDataManager.ins.selfPlayerData;
+        var roleVo;
         var hero;
-        var lineupVo;
-        for (var i = 0; i < lineupVoAry.length; i++) {
-            lineupVo = lineupVoAry[i];
+        for (var i = 0; i < playerData.roleVoAry.length; i++) {
+            roleVo = playerData.roleVoAry[i];
             hero = new Hero();
-            hero.initRole("res/outside/anim/hero/swordsman/SwordsMan.sk", 0.3, lineupVo);
+            hero.initRole("res/outside/anim/hero/swordsman/SwordsMan.sk", 0.3, roleVo);
             this.heroRoles.push(hero);
         }
-        lineupVoAry = LineupManager.ins.getCofingByID("2");
-        var monster;
-        for (i = 0; i < lineupVoAry.length; i++) {
-            lineupVo = lineupVoAry[i];
-            monster = new Monster();
-            monster.initRole("res/outside/anim/hero/demon/Demon.sk", 0.3, lineupVo);
-            this.monsterRoles.push(monster);
+        this.enemyRoles = new Array();
+        var enemyData = GameDataManager.ins.enemyData;
+        var enemy;
+        for (i = 0; i < enemyData.roleVoAry.length; i++) {
+            roleVo = enemyData.roleVoAry[i];
+            enemy = new Enemy();
+            enemy.initRole("res/outside/anim/hero/demon/Demon.sk", 0.3, roleVo);
+            this.enemyRoles.push(enemy);
         }
     };
     RoleManager.prototype.playAni = function (aniID) {
         this.heroRoles.forEach(function (hero) {
             hero.play(aniID);
         });
-        this.monsterRoles.forEach(function (monster) {
-            monster.play(aniID);
+        this.enemyRoles.forEach(function (enemy) {
+            enemy.play(aniID);
         });
     };
     RoleManager._ins = null;

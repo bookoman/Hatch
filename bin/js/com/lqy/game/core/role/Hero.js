@@ -16,9 +16,9 @@ var Hero = /** @class */ (function (_super) {
     function Hero() {
         return _super.call(this) || this;
     }
-    Hero.prototype.initRole = function (aniURL, scale, lineupVo) {
-        _super.prototype.initRole.call(this, aniURL, scale, lineupVo);
-        this.skeletonAni.pos(60 + (this.lineupVo.col - 1) * 120, 480 + (this.lineupVo.row - 1) * 100);
+    Hero.prototype.initRole = function (aniURL, scale, roleVo) {
+        _super.prototype.initRole.call(this, aniURL, scale, roleVo);
+        // this.skeletonAni.pos(roleVo.posPoint.x,roleVo.posPoint.y);
     };
     return Hero;
 }(BaseRole));

@@ -1,5 +1,5 @@
 /*
-* name;
+* 玩家数据
 */
 var PlayerVo = /** @class */ (function () {
     function PlayerVo() {

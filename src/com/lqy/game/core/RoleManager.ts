@@ -3,7 +3,8 @@
 */
 class RoleManager{
     private heroRoles:Array<BaseRole> = null;
-    private monsterRoles:Array<Monster> = null;
+    private enemyRoles:Array<Enemy> = null;
+
     constructor(){
 
     }
@@ -20,28 +21,28 @@ class RoleManager{
 
     public initRoles():void
     {
-        
         this.heroRoles = new Array();
-        this.monsterRoles = new Array();
-        var lineupVoAry:Array<LineupVo> = LineupManager.ins.getCofingByID("1");
+        var playerData:PlayerData = GameDataManager.ins.selfPlayerData;
+        var roleVo:RoleVo;
         var hero:BaseRole;
-        var lineupVo:LineupVo;
-        for(var i = 0;i < lineupVoAry.length;i++)
+        for(var i = 0;i < playerData.roleVoAry.length;i++)
         {
-            lineupVo = lineupVoAry[i];
+            roleVo = playerData.roleVoAry[i];
             hero = new Hero();
-            hero.initRole("res/outside/anim/hero/swordsman/SwordsMan.sk",0.3,lineupVo);
+            hero.initRole("res/outside/anim/hero/swordsman/SwordsMan.sk",0.3,roleVo);
             this.heroRoles.push(hero);
         }
-        lineupVoAry = LineupManager.ins.getCofingByID("2");
-        var monster:Monster;
-        for(i = 0;i < lineupVoAry.length;i++)
+        this.enemyRoles = new Array();
+        var enemyData:EnemyData = GameDataManager.ins.enemyData;
+        var enemy:Enemy;
+        for(i = 0;i < enemyData.roleVoAry.length;i++)
         {
-            lineupVo = lineupVoAry[i];
-            monster = new Monster();
-            monster.initRole("res/outside/anim/hero/demon/Demon.sk",0.3,lineupVo);
-            this.monsterRoles.push(monster);
+            roleVo = enemyData.roleVoAry[i];
+            enemy = new Enemy();
+            enemy.initRole("res/outside/anim/hero/demon/Demon.sk",0.3,roleVo);
+            this.enemyRoles.push(enemy);
         }
+        
 
     }
     public playAni(aniID:number):void
@@ -50,8 +51,8 @@ class RoleManager{
             hero.play(aniID);
         });
 
-        this.monsterRoles.forEach(monster =>{
-            monster.play(aniID);
+        this.enemyRoles.forEach(enemy =>{
+            enemy.play(aniID);
         });
     }
 }

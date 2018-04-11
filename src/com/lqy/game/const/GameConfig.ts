@@ -14,6 +14,20 @@ class GameConfig{
     
     /**场景缓存 */
     public static SCENE_CACHE:number = 1;
+    /**阵型配置 */
+    /**英雄阵型初始化点 */
+    public static HERO_POINT:Point = new Laya.Point(60,480);
+    /**怪物阵型初始化点 */
+    public static ENEMY_POINT:Point = new Laya.Point(460,480);
+    /**行格子数 */
+    public static LINEUP_ROWGRID_NUM:number = 3;
+    /**列格子数 */
+    public static LINEUP_COLGRID_NUM:number = 3;
+    /**阵型格子宽 */
+    public static LINEUP_GRID_WIDTH:number = 100;
+    /**阵型格子高 */
+    public static LINEUP_GRID_HEIGHT:number = 100;
+
     
 }
 /**地图类型枚举 */

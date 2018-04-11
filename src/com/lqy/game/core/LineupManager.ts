@@ -4,7 +4,8 @@
 class LineupManager{
     private lineupConfig:Object = {
         "1":"0,1,0_1,1,1_0,1,0",
-        "2":"1,0,1_1,0,0_1,0,1"
+        "2":"1,0,1_1,0,0_1,0,1",
+        "3":"1,0,1_0,0,1_1,0,1"
     }
     constructor(){
 
@@ -27,10 +28,10 @@ class LineupManager{
 
         var config:string = this.lineupConfig[id];
 
-        var lineupVoAry:Array<LineupVo> = [];
+        var lineupPosVoAry:Array<LineupPosVo> = [];
         var rowAry:Array<string> = config.split("_");
         var colAry:Array<string>;
-        var lineupVo:LineupVo;
+        var lineupPosVo:LineupPosVo;
         for(var i = 0;i < rowAry.length;i++)
         {
             colAry = rowAry[i].split(",");
@@ -40,14 +41,14 @@ class LineupManager{
                 {
                     continue;
                 }
-                lineupVo = new LineupVo();
-                lineupVo.row = i+1;
-                lineupVo.col = j+1;
-                lineupVo.mark = Number(colAry[j]);
-                lineupVoAry.push(lineupVo);
+                lineupPosVo = new LineupPosVo();
+                lineupPosVo.row = i+1;
+                lineupPosVo.col = j+1;
+                lineupPosVo.mark = Number(colAry[j]);
+                lineupPosVoAry.push(lineupPosVo);
             }
         }
-        return lineupVoAry;
+        return lineupPosVoAry;
     }
 
 }

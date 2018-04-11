@@ -15,6 +15,19 @@ var GameConfig = /** @class */ (function () {
     GameConfig.MAP_NEAR_TYPE = 1;
     /**场景缓存 */
     GameConfig.SCENE_CACHE = 1;
+    /**阵型配置 */
+    /**英雄阵型初始化点 */
+    GameConfig.HERO_POINT = new Laya.Point(60, 480);
+    /**怪物阵型初始化点 */
+    GameConfig.ENEMY_POINT = new Laya.Point(460, 480);
+    /**行格子数 */
+    GameConfig.LINEUP_ROWGRID_NUM = 3;
+    /**列格子数 */
+    GameConfig.LINEUP_COLGRID_NUM = 3;
+    /**阵型格子宽 */
+    GameConfig.LINEUP_GRID_WIDTH = 100;
+    /**阵型格子高 */
+    GameConfig.LINEUP_GRID_HEIGHT = 100;
     return GameConfig;
 }());
 /**地图类型枚举 */

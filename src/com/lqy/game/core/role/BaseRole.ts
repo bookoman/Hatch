@@ -2,32 +2,43 @@ import Skeleton = Laya.Skeleton;
 /*
 * 角色
 */
-class BaseRole{
+class BaseRole extends Laya.Sprite{
     protected skeletonAni:Skeleton = null;
-    protected lineupVo:LineupVo;
+    protected roleVo:RoleVo;
     private aniCount:number = 0;
     constructor(){
-        
+        super();
     }
-    public initRole(aniURL?:string,scale?:number,lineupVo?:LineupVo):void
+    public initRole(aniURL?:string,scale?:number,roleVo?:RoleVo):void
     {
         if(aniURL)
         {
+            this.roleVo = roleVo;
             this.skeletonAni = new Skeleton();
-            // this.skeletonAni.pos(100,100);
-            
             this.skeletonAni.load(aniURL,new Laya.Handler(this,this.loadCompleted));
             if(scale)
             {
                 this.skeletonAni.scale(scale,scale);
             }
-            this.lineupVo = lineupVo;
+            this.addChild(this.skeletonAni);
+            
+
+            
         }
-        LayerManager.ins.addToLayer(this.skeletonAni,LayerManager.ROLE_LAYER,false,true,false);
+        this.x = roleVo.posPoint.x;
+        this.y = roleVo.posPoint.y;
+        LayerManager.ins.addToLayer(this,LayerManager.ROLE_LAYER,false,true,false);
 
     }
     private loadCompleted() {
         this.aniCount = this.skeletonAni.getAnimNum();
+        var text:Laya.Label = new Laya.Label();
+        text.x = -60;
+        text.y = -180;
+        text.fontSize = 24;
+        text.color = "#ff0000";
+        text.text = this.roleVo.name;
+        this.addChild(text);
         // console.log("播放动画名字："+this.aniCount);
     }
     private onError()

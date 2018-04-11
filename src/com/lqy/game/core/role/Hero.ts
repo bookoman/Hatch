@@ -5,10 +5,9 @@ class Hero extends BaseRole{
     constructor(){
         super();
     }   
-    public initRole(aniURL:string,scale?:number,lineupVo?:LineupVo):void
+    public initRole(aniURL:string,scale?:number,roleVo?:RoleVo):void
     {
-        super.initRole(aniURL,scale,lineupVo);
-        
-        this.skeletonAni.pos(60 + (this.lineupVo.col - 1) * 120,480 + (this.lineupVo.row - 1) * 100);
+        super.initRole(aniURL,scale,roleVo);
+        // this.skeletonAni.pos(roleVo.posPoint.x,roleVo.posPoint.y);
     }
 }
