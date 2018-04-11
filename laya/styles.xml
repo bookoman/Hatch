@@ -1,0 +1,9 @@
+<res>
+   <item name="comp/img_tzdb.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="sign/Penguins.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="sign/img_bg.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="sign/img_bg.jpg" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="signview/img_bg.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="test/img_bg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+</res>
