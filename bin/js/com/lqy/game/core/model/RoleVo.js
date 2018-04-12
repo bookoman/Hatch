@@ -20,6 +20,9 @@ var RoleVo = /** @class */ (function () {
         else {
             px = GameConfig.HERO_POINT.x + (this.lineupCol - 1) * GameConfig.LINEUP_GRID_WIDTH;
             py = GameConfig.HERO_POINT.y + (this.lineupRow - 1) * GameConfig.LINEUP_GRID_HEIGHT;
+            // var point:Point = MapManager.ins.squintAngleGrid.gridToViewPoint(this.lineupCol,this.lineupRow);
+            // px = point.x;
+            // py = point.y;
         }
         // console.log(this.id,this.lineupRow,this.lineupCol,px,py);
         this.posPoint = new Point(px, py);

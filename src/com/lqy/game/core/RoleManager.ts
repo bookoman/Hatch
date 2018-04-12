@@ -2,8 +2,10 @@
 * 较色管理器
 */
 class RoleManager{
-    private heroRoles:Array<BaseRole> = null;
-    private enemyRoles:Array<Enemy> = null;
+    /**英雄角色 */
+    public heroRoles:Array<BaseRole> = null;
+    /**敌人角色 */
+    public enemyRoles:Array<Enemy> = null;
 
     constructor(){
 
@@ -32,18 +34,17 @@ class RoleManager{
             hero.initRole("res/outside/anim/hero/swordsman/SwordsMan.sk",0.3,roleVo);
             this.heroRoles.push(hero);
         }
-        this.enemyRoles = new Array();
-        var enemyData:EnemyData = GameDataManager.ins.enemyData;
-        var enemy:Enemy;
-        for(i = 0;i < enemyData.roleVoAry.length;i++)
-        {
-            roleVo = enemyData.roleVoAry[i];
-            enemy = new Enemy();
-            enemy.initRole("res/outside/anim/hero/demon/Demon.sk",0.3,roleVo);
-            this.enemyRoles.push(enemy);
-        }
+        // this.enemyRoles = new Array();
+        // var enemyData:EnemyData = GameDataManager.ins.enemyData;
+        // var enemy:Enemy;
+        // for(i = 0;i < enemyData.roleVoAry.length;i++)
+        // {
+        //     roleVo = enemyData.roleVoAry[i];
+        //     enemy = new Enemy();
+        //     enemy.initRole("res/outside/anim/hero/demon/Demon.sk",0.3,roleVo);
+        //     this.enemyRoles.push(enemy);
+        // }
         
-
     }
     public playAni(aniID:number):void
     {
@@ -53,6 +54,13 @@ class RoleManager{
 
         this.enemyRoles.forEach(enemy =>{
             enemy.play(aniID);
+        });
+    }
+
+    public enemyRun():void
+    {
+        this.enemyRoles.forEach(enemy =>{
+            enemy.run();
         });
     }
 }

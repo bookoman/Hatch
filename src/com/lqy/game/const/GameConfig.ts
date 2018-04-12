@@ -28,6 +28,12 @@ class GameConfig{
     /**阵型格子高 */
     public static LINEUP_GRID_HEIGHT:number = 100;
 
+    /**战斗配置 */
+    /**战斗时间间隔(S) */
+    public static BATTLE_INTERVAL_TIME:number = 10;
+    /**战斗跑到阵型需要时间(s) */
+    public static BATTLE_RUN_TIME:number = 1;
+
     
 }
 /**地图类型枚举 */

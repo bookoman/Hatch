@@ -44,26 +44,22 @@ var GameDataManager = /** @class */ (function () {
             }
         }
         //怪物
-        this.enemyData = new EnemyData();
-        this.enemyData.roleVoAry = [];
-        ids = ["20000", "20001", "20002", "20003", "20004"];
-        for (var i = 0; i < ids.length; i++) {
-            roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
-            if (roleVo) {
-                if (i == 0)
-                    roleVo.lineupGrid = 1;
-                else if (i == 1)
-                    roleVo.lineupGrid = 3;
-                else if (i == 2)
-                    roleVo.lineupGrid = 4;
-                else if (i == 3)
-                    roleVo.lineupGrid = 7;
-                else if (i == 4)
-                    roleVo.lineupGrid = 9;
-                roleVo.initRowColPosPoint();
-                this.enemyData.roleVoAry.push(roleVo);
-            }
-        }
+        // this.enemyData = new EnemyData();
+        // this.enemyData.roleVoAry = [];
+        // ids = ["20000","20001","20002","20003","20004"];
+        // for(var i = 0;i < ids.length;i++)
+        // {
+        //     roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
+        //     if(roleVo)
+        //     {
+        //         if(i == 0) roleVo.lineupGrid = 1;
+        //         else if(i == 1) roleVo.lineupGrid = 3;
+        //         else if(i == 2) roleVo.lineupGrid = 4;
+        //         else if(i == 3) roleVo.lineupGrid = 7;
+        //         else if(i == 4) roleVo.lineupGrid = 9;
+        //         roleVo.initRowColPosPoint();
+        //         this.enemyData.roleVoAry.push(roleVo);
+        //     }
     };
     GameDataManager._ins = null;
     return GameDataManager;

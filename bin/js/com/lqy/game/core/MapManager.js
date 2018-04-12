@@ -11,6 +11,7 @@ var MapManager = /** @class */ (function () {
         this.mapEngine = null;
         this.mapLoopEngine = null;
         this.nearMapLoopEngin = null;
+        this.squintAngleGrid = null;
         this.tx = 0;
     }
     Object.defineProperty(MapManager, "ins", {
@@ -26,6 +27,7 @@ var MapManager = /** @class */ (function () {
     MapManager.prototype.enterMap = function (rootUrl, mapID, loadType, visualWidth, visualHeight, mapWidth, mapHeight, tileWidth, tileHeight) {
         if (tileWidth === void 0) { tileWidth = 0; }
         if (tileHeight === void 0) { tileHeight = 0; }
+        this.calSquintAngleGrid();
         if (this.mapEngine) {
             this.mapEngine.dispose();
             this.mapEngine = null;
@@ -73,6 +75,13 @@ var MapManager = /** @class */ (function () {
         if (this.mapEngine) {
             this.mapEngine.onScroll(fx, fy);
         }
+    };
+    /**计算网格视图 */
+    MapManager.prototype.calSquintAngleGrid = function () {
+        var mapWidth = GameConfig.STAGE_WIDTH;
+        var mapHeight = 300;
+        this.squintAngleGrid = new SquintAngleGrid(mapWidth, mapHeight);
+        this.squintAngleGrid.initGrid();
     };
     MapManager._ins = null;
     return MapManager;

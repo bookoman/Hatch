@@ -3,7 +3,9 @@
 */
 var RoleManager = /** @class */ (function () {
     function RoleManager() {
+        /**英雄角色 */
         this.heroRoles = null;
+        /**敌人角色 */
         this.enemyRoles = null;
     }
     Object.defineProperty(RoleManager, "ins", {
@@ -27,15 +29,16 @@ var RoleManager = /** @class */ (function () {
             hero.initRole("res/outside/anim/hero/swordsman/SwordsMan.sk", 0.3, roleVo);
             this.heroRoles.push(hero);
         }
-        this.enemyRoles = new Array();
-        var enemyData = GameDataManager.ins.enemyData;
-        var enemy;
-        for (i = 0; i < enemyData.roleVoAry.length; i++) {
-            roleVo = enemyData.roleVoAry[i];
-            enemy = new Enemy();
-            enemy.initRole("res/outside/anim/hero/demon/Demon.sk", 0.3, roleVo);
-            this.enemyRoles.push(enemy);
-        }
+        // this.enemyRoles = new Array();
+        // var enemyData:EnemyData = GameDataManager.ins.enemyData;
+        // var enemy:Enemy;
+        // for(i = 0;i < enemyData.roleVoAry.length;i++)
+        // {
+        //     roleVo = enemyData.roleVoAry[i];
+        //     enemy = new Enemy();
+        //     enemy.initRole("res/outside/anim/hero/demon/Demon.sk",0.3,roleVo);
+        //     this.enemyRoles.push(enemy);
+        // }
     };
     RoleManager.prototype.playAni = function (aniID) {
         this.heroRoles.forEach(function (hero) {
@@ -43,6 +46,11 @@ var RoleManager = /** @class */ (function () {
         });
         this.enemyRoles.forEach(function (enemy) {
             enemy.play(aniID);
+        });
+    };
+    RoleManager.prototype.enemyRun = function () {
+        this.enemyRoles.forEach(function (enemy) {
+            enemy.run();
         });
     };
     RoleManager._ins = null;

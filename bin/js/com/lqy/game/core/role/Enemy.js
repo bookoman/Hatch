@@ -20,6 +20,14 @@ var Enemy = /** @class */ (function (_super) {
         _super.prototype.initRole.call(this, aniURL, scale, roleVo);
         this.skeletonAni.transform.scaleEx(-1, 1);
         // this.skeletonAni.pos(roleVo.posPoint.x,roleVo.posPoint.y);
+        this.x = GameConfig.STAGE_WIDTH + (roleVo.lineupCol - 1) * GameConfig.LINEUP_GRID_WIDTH + roleVo.runWidth;
+        // this.x = GameConfig.STAGE_WIDTH + roleVo.runWidth;
+        this.y = this.roleVo.posPoint.y;
+    };
+    Enemy.prototype.run = function () {
+        Laya.Tween.to(this, { x: this.roleVo.posPoint.x, complete: new Handler(this, this.onMoveComplete) }, GameConfig.BATTLE_RUN_TIME * 1000);
+    };
+    Enemy.prototype.onMoveComplete = function () {
     };
     return Enemy;
 }(BaseRole));

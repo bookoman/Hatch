@@ -17,7 +17,7 @@ var Game = /** @class */ (function () {
     return Game;
 }());
 //程序入口
-Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT);
+Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, Laya.WebGL);
 Laya.Stat.show(0, 0);
 Laya.stage.scaleMode = "showall";
 Laya.stage.alignH = "center";

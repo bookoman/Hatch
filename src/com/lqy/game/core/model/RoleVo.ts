@@ -6,6 +6,8 @@ class RoleVo{
     public id:string;
     public name:string;
     public skillId:number;
+    public runWidth:number;
+    public runHeight:number;
     /**攻击范围，矩形范围根据四个定点来确定玩家附近范围 */
     public attackRange:Rectangle;
 
@@ -45,6 +47,9 @@ class RoleVo{
         {
             px = GameConfig.HERO_POINT.x + (this.lineupCol - 1) * GameConfig.LINEUP_GRID_WIDTH;
             py = GameConfig.HERO_POINT.y + (this.lineupRow - 1) * GameConfig.LINEUP_GRID_HEIGHT;
+            // var point:Point = MapManager.ins.squintAngleGrid.gridToViewPoint(this.lineupCol,this.lineupRow);
+            // px = point.x;
+            // py = point.y;
         }
         // console.log(this.id,this.lineupRow,this.lineupCol,px,py);
         this.posPoint = new Point(px,py);

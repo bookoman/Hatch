@@ -21,24 +21,19 @@ class BaseRole extends Laya.Sprite{
                 this.skeletonAni.scale(scale,scale);
             }
             this.addChild(this.skeletonAni);
-            
-
-            
         }
-        this.x = roleVo.posPoint.x;
-        this.y = roleVo.posPoint.y;
         LayerManager.ins.addToLayer(this,LayerManager.ROLE_LAYER,false,true,false);
 
     }
     private loadCompleted() {
         this.aniCount = this.skeletonAni.getAnimNum();
-        var text:Laya.Label = new Laya.Label();
-        text.x = -60;
-        text.y = -180;
-        text.fontSize = 24;
-        text.color = "#ff0000";
-        text.text = this.roleVo.name;
-        this.addChild(text);
+        // var text:Laya.Label = new Laya.Label();
+        // text.x = -60;
+        // text.y = -180;
+        // text.fontSize = 24;
+        // text.color = "#ff0000";
+        // text.text = this.roleVo.name;
+        // this.addChild(text);
         // console.log("播放动画名字："+this.aniCount);
     }
     private onError()
@@ -58,6 +53,12 @@ class BaseRole extends Laya.Sprite{
             this.skeletonAni.play(aniID,true);
             console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID));  
         }
+    }
+
+    public run():void
+    {
+        
+        
     }
 
 }

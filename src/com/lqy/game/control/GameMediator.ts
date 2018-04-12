@@ -33,12 +33,15 @@ class GameMediator extends BaseMediator{
 
     private onBtnOpen(e:Laya.Event):void
     {
+        MapManager.ins.enterMap("res/map",1,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
+        
         GameDataManager.ins.initData();
         // var testMediator:TestMediator = new TestMediator();
         // var signMediator:SignMediator = new SignMediator();
-        MapManager.ins.enterMap("res/map",1,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
 
         RoleManager.ins.initRoles();
+
+        BattleEngine.ins.run();
         
     }
     

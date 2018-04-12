@@ -14,6 +14,8 @@ class MapManager{
     private mapEngine:MapEngine = null;
     private mapLoopEngine:MapLoopEngine = null;
     private nearMapLoopEngin:MapLoopEngine = null;
+
+    public squintAngleGrid:SquintAngleGrid = null;
     public static get ins():MapManager
     {
         if(this._ins == null)
@@ -26,6 +28,7 @@ class MapManager{
     public enterMap(rootUrl,mapID:number,loadType:number,visualWidth:number,visualHeight:number,  
                                 mapWidth:number,mapHeight:number,tileWidth:number = 0 ,tileHeight:number = 0):void
     {
+        this.calSquintAngleGrid();
         if(this.mapEngine)
         {
             this.mapEngine.dispose();
@@ -80,6 +83,16 @@ class MapManager{
         {
             this.mapEngine.onScroll(fx,fy);
         }
+        
+    }
+    /**计算网格视图 */
+    public calSquintAngleGrid():void
+    {
+        var mapWidth:number = GameConfig.STAGE_WIDTH;
+        var mapHeight:number = 300;
+        this.squintAngleGrid = new SquintAngleGrid(mapWidth,mapHeight);
+        this.squintAngleGrid.initGrid();
+        
         
     }
 }

@@ -7,9 +7,52 @@
 * 五，结束战斗，玩家胜利，玩家失败，清理战场，移除角色显示对象
 */
 class BattleEngine{
-    private gridPoint:Array<Point>;
+    private timeCount:number;
+    private battleTimeInterval:number;
+    private HeroAI:HeroAI;
+    private EnemyAI:EnemyAI;
     constructor(){
         
+    }
+    private static _ins:BattleEngine = null;
+    public static get ins():BattleEngine
+    {
+        if(this._ins == null)
+        {
+            this._ins = new BattleEngine();
+        }
+        return this._ins;
+    }
+
+    public run():void
+    {
+        this.timeCount = 0;
+        this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
+        this.HeroAI = new HeroAI();
+        this.EnemyAI = new EnemyAI();
+        Laya.timer.loop(1000,this,this.runUpdate);
+
+        this.EnemyAI.produceEnemy();
+        this.EnemyAI.runToLineup();
+    }
+
+    private runUpdate():void
+    {
+        this.timeCount++;
+        if(this.timeCount >= this.battleTimeInterval)
+        {
+            //开始战斗
+            
+            
+        }
+
+    } 
+
+    /**清除战斗 */
+    private clearBattle():void
+    {
+        this.timeCount = 0;
+
     }
 
 

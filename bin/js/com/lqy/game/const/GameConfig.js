@@ -28,6 +28,11 @@ var GameConfig = /** @class */ (function () {
     GameConfig.LINEUP_GRID_WIDTH = 100;
     /**阵型格子高 */
     GameConfig.LINEUP_GRID_HEIGHT = 100;
+    /**战斗配置 */
+    /**战斗时间间隔(S) */
+    GameConfig.BATTLE_INTERVAL_TIME = 10;
+    /**战斗跑到阵型需要时间(s) */
+    GameConfig.BATTLE_RUN_TIME = 1;
     return GameConfig;
 }());
 /**地图类型枚举 */

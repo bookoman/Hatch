@@ -9,6 +9,36 @@
 var BattleEngine = /** @class */ (function () {
     function BattleEngine() {
     }
+    Object.defineProperty(BattleEngine, "ins", {
+        get: function () {
+            if (this._ins == null) {
+                this._ins = new BattleEngine();
+            }
+            return this._ins;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    BattleEngine.prototype.run = function () {
+        this.timeCount = 0;
+        this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
+        this.HeroAI = new HeroAI();
+        this.EnemyAI = new EnemyAI();
+        Laya.timer.loop(1000, this, this.runUpdate);
+        this.EnemyAI.produceEnemy();
+        this.EnemyAI.runToLineup();
+    };
+    BattleEngine.prototype.runUpdate = function () {
+        this.timeCount++;
+        if (this.timeCount >= this.battleTimeInterval) {
+            //开始战斗
+        }
+    };
+    /**清除战斗 */
+    BattleEngine.prototype.clearBattle = function () {
+        this.timeCount = 0;
+    };
+    BattleEngine._ins = null;
     return BattleEngine;
 }());
 //# sourceMappingURL=BattleEngine.js.map

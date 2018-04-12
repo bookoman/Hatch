@@ -9,5 +9,7 @@ class Hero extends BaseRole{
     {
         super.initRole(aniURL,scale,roleVo);
         // this.skeletonAni.pos(roleVo.posPoint.x,roleVo.posPoint.y);
+        this.x = roleVo.posPoint.x;
+        this.y = roleVo.posPoint.y;
     }
 }

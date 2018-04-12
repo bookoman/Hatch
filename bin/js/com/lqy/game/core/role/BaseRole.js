@@ -30,19 +30,17 @@ var BaseRole = /** @class */ (function (_super) {
             }
             this.addChild(this.skeletonAni);
         }
-        this.x = roleVo.posPoint.x;
-        this.y = roleVo.posPoint.y;
         LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
     };
     BaseRole.prototype.loadCompleted = function () {
         this.aniCount = this.skeletonAni.getAnimNum();
-        var text = new Laya.Label();
-        text.x = -60;
-        text.y = -180;
-        text.fontSize = 24;
-        text.color = "#ff0000";
-        text.text = this.roleVo.name;
-        this.skeletonAni.addChildAt(text, 0);
+        // var text:Laya.Label = new Laya.Label();
+        // text.x = -60;
+        // text.y = -180;
+        // text.fontSize = 24;
+        // text.color = "#ff0000";
+        // text.text = this.roleVo.name;
+        // this.addChild(text);
         // console.log("播放动画名字："+this.aniCount);
     };
     BaseRole.prototype.onError = function () {
@@ -58,6 +56,8 @@ var BaseRole = /** @class */ (function (_super) {
             this.skeletonAni.play(aniID, true);
             console.log("播放动画名字：" + this.skeletonAni.getAniNameByIndex(aniID));
         }
+    };
+    BaseRole.prototype.run = function () {
     };
     return BaseRole;
 }(Laya.Sprite));
