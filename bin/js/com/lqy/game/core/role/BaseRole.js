@@ -42,7 +42,7 @@ var BaseRole = /** @class */ (function (_super) {
         text.fontSize = 24;
         text.color = "#ff0000";
         text.text = this.roleVo.name;
-        this.skeletonAni.addChildAt(text, 0);
+        this.addChild(text);
         // console.log("播放动画名字："+this.aniCount);
     };
     BaseRole.prototype.onError = function () {
