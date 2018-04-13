@@ -25,17 +25,23 @@ var BattleEngine = /** @class */ (function () {
         this.HeroAI = new HeroAI();
         this.EnemyAI = new EnemyAI();
         Laya.timer.loop(1000, this, this.runUpdate);
-        this.EnemyAI.produceEnemy();
-        this.EnemyAI.runToLineup();
     };
     BattleEngine.prototype.runUpdate = function () {
         this.timeCount++;
-        if (this.timeCount >= this.battleTimeInterval) {
-            //开始战斗
+        if (this.timeCount == this.battleTimeInterval) {
+            this.startBallte();
         }
     };
+    /**
+     * 开始战斗
+     */
+    BattleEngine.prototype.startBallte = function () {
+        this.EnemyAI.produceEnemy();
+        this.EnemyAI.runToLineup();
+        MapManager.ins.mapScrollSwitch = false;
+    };
     /**清除战斗 */
-    BattleEngine.prototype.clearBattle = function () {
+    BattleEngine.prototype.endBattle = function () {
         this.timeCount = 0;
     };
     BattleEngine._ins = null;

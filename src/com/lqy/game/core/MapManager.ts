@@ -17,6 +17,8 @@ class MapManager{
     private nearMapLoopEngin:MapLoopEngine = null;
 
     public squintAngleGrid:SquintAngleGrid = null;
+    /**地图开关 */
+    public mapScrollSwitch:boolean = true;
     public static get ins():MapManager
     {
         if(this._ins == null)
@@ -64,13 +66,16 @@ class MapManager{
         //     this.tx = 0;
         // }
         //地图循环滚动
-        if(this.mapLoopEngine)
-        {   
-            this.mapLoopEngine.onScroll(4);
-        }
-        if(this.nearMapLoopEngin)
-        {   
-            this.nearMapLoopEngin.onScroll(3);
+        if(this.mapScrollSwitch)
+        {
+            if(this.mapLoopEngine)
+            {   
+                this.mapLoopEngine.onScroll(4);
+            }
+            if(this.nearMapLoopEngin)
+            {   
+                this.nearMapLoopEngin.onScroll(3);
+            }
         }
         // console.log("地图打印："+this.tx);
     }

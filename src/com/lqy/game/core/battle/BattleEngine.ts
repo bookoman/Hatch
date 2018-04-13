@@ -32,24 +32,29 @@ class BattleEngine{
         this.EnemyAI = new EnemyAI();
         Laya.timer.loop(1000,this,this.runUpdate);
 
-        this.EnemyAI.produceEnemy();
-        this.EnemyAI.runToLineup();
     }
 
     private runUpdate():void
     {
         this.timeCount++;
-        if(this.timeCount >= this.battleTimeInterval)
+        if(this.timeCount == this.battleTimeInterval)
         {
-            //开始战斗
-            
-            
+            this.startBallte();
         }
 
     } 
+    /**
+     * 开始战斗
+     */
+    private startBallte():void
+    {
+        this.EnemyAI.produceEnemy();
+        this.EnemyAI.runToLineup();
+        MapManager.ins.mapScrollSwitch = false;
+    }
 
     /**清除战斗 */
-    private clearBattle():void
+    private endBattle():void
     {
         this.timeCount = 0;
 

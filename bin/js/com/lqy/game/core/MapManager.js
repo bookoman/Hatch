@@ -12,6 +12,8 @@ var MapManager = /** @class */ (function () {
         this.mapLoopEngine = null;
         this.nearMapLoopEngin = null;
         this.squintAngleGrid = null;
+        /**地图开关 */
+        this.mapScrollSwitch = true;
         this.tx = 0;
     }
     Object.defineProperty(MapManager, "ins", {
@@ -59,11 +61,13 @@ var MapManager = /** @class */ (function () {
         //     this.tx = 0;
         // }
         //地图循环滚动
-        if (this.mapLoopEngine) {
-            this.mapLoopEngine.onScroll(4);
-        }
-        if (this.nearMapLoopEngin) {
-            this.nearMapLoopEngin.onScroll(3);
+        if (this.mapScrollSwitch) {
+            if (this.mapLoopEngine) {
+                this.mapLoopEngine.onScroll(4);
+            }
+            if (this.nearMapLoopEngin) {
+                this.nearMapLoopEngin.onScroll(3);
+            }
         }
         // console.log("地图打印："+this.tx);
     };
