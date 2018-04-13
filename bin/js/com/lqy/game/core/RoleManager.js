@@ -26,7 +26,7 @@ var RoleManager = /** @class */ (function () {
         for (var i = 0; i < playerData.roleVoAry.length; i++) {
             roleVo = playerData.roleVoAry[i];
             hero = new Hero();
-            hero.initRole("res/outside/anim/hero/swordsman/SwordsMan.sk", 0.3, roleVo);
+            hero.initRole("res/outside/anim/hero/swordsman/SwordsMan.sk", 0.25, roleVo);
             this.heroRoles.push(hero);
         }
         // this.enemyRoles = new Array();

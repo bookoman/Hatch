@@ -20,7 +20,7 @@ var Enemy = /** @class */ (function (_super) {
         _super.prototype.initRole.call(this, aniURL, scale, roleVo);
         this.skeletonAni.transform.scaleEx(-1, 1);
         // this.skeletonAni.pos(roleVo.posPoint.x,roleVo.posPoint.y);
-        this.x = GameConfig.STAGE_WIDTH + (roleVo.lineupCol - 1) * GameConfig.LINEUP_GRID_WIDTH + roleVo.runWidth;
+        this.x = GameConfig.STAGE_WIDTH + GameConfig.LINEUP_GRID_WIDTH + roleVo.runWidth;
         // this.x = GameConfig.STAGE_WIDTH + roleVo.runWidth;
         this.y = this.roleVo.posPoint.y;
     };

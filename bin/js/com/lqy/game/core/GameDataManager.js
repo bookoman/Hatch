@@ -29,16 +29,21 @@ var GameDataManager = /** @class */ (function () {
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if (roleVo) {
-                if (i == 0)
-                    roleVo.lineupGrid = 2;
-                else if (i == 1)
+                if (i == 0) {
+                    roleVo.lineupGrid = 1;
+                }
+                else if (i == 1) {
                     roleVo.lineupGrid = 4;
-                else if (i == 2)
+                }
+                else if (i == 2) {
                     roleVo.lineupGrid = 5;
-                else if (i == 3)
+                }
+                else if (i == 3) {
                     roleVo.lineupGrid = 6;
-                else if (i == 4)
-                    roleVo.lineupGrid = 8;
+                }
+                else if (i == 4) {
+                    roleVo.lineupGrid = 9;
+                }
                 roleVo.initRowColPosPoint();
                 this.selfPlayerData.roleVoAry.push(roleVo);
             }

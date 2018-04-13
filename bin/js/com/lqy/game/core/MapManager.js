@@ -5,8 +5,8 @@ var MapManager = /** @class */ (function () {
     function MapManager() {
         //地图测试数据 mapId >> mapVO
         this.mapCofing = {
-            "1": { "mapID": 1 },
-            "2": { "mapID": 2 }
+            "1": { "mapID": 1, "battleHeroGrid": [[1, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2, 2], [0, 3], [1, 3], [1, 4]], "battleEnemyGrid": [[5, 0], [4, 1], [5, 1], [4, 2], [5, 2], [6, 2], [4, 3], [5, 3], [5, 4]] },
+            "2": { "mapID": 2, "battleHeroGrid": [[2, 0], [1, 1], [2, 1], [1, 2], [2, 2], [3, 2], [1, 3], [2, 3], [2, 4]], "battleEnemyGrid": [[5, 0], [4, 1], [5, 1], [4, 2], [5, 2], [6, 2], [4, 3], [5, 3], [5, 4]] }
         };
         this.mapEngine = null;
         this.mapLoopEngine = null;
@@ -27,7 +27,7 @@ var MapManager = /** @class */ (function () {
     MapManager.prototype.enterMap = function (rootUrl, mapID, loadType, visualWidth, visualHeight, mapWidth, mapHeight, tileWidth, tileHeight) {
         if (tileWidth === void 0) { tileWidth = 0; }
         if (tileHeight === void 0) { tileHeight = 0; }
-        this.calSquintAngleGrid();
+        this.curMapConfig = this.mapCofing[mapID];
         if (this.mapEngine) {
             this.mapEngine.dispose();
             this.mapEngine = null;
@@ -40,12 +40,13 @@ var MapManager = /** @class */ (function () {
         //地图循环
         this.mapLoopEngine = new MapLoopEngine();
         this.mapLoopEngine.initMap("res/outside/map", 1, MapType.BACKGROUND_MAP, 6, GameConfig.STAGE_WIDTH);
-        this.mapLoopEngine.y = 392;
+        this.mapLoopEngine.y = GameConfig.MAP_INIT_Y;
         LayerManager.ins.addToLayer(this.mapLoopEngine, LayerManager.BG_LAYER, false, true, false);
         this.nearMapLoopEngin = new MapLoopEngine();
         this.nearMapLoopEngin.initMap("res/outside/map", 1, MapType.NEAR_MAP, 3, GameConfig.STAGE_WIDTH);
-        this.nearMapLoopEngin.y = 600;
+        this.nearMapLoopEngin.y = this.mapLoopEngine.y + 210;
         LayerManager.ins.addToLayer(this.nearMapLoopEngin, LayerManager.BG_NEAR_LAYER, false, true, false);
+        this.calSquintAngleGrid();
         //测试移动
         Laya.timer.frameLoop(2, this, this.mapMoveLoop);
     };
@@ -79,9 +80,17 @@ var MapManager = /** @class */ (function () {
     /**计算网格视图 */
     MapManager.prototype.calSquintAngleGrid = function () {
         var mapWidth = GameConfig.STAGE_WIDTH;
-        var mapHeight = 300;
+        var mapHeight = GameConfig.BATTLE_SCENE_HEIGHT;
         this.squintAngleGrid = new SquintAngleGrid(mapWidth, mapHeight);
         this.squintAngleGrid.initGrid();
+    };
+    MapManager.prototype.getHeroMapBalltGridPoint = function (gridNum) {
+        var gridPointAry = this.curMapConfig["battleHeroGrid"];
+        return gridPointAry[gridNum - 1];
+    };
+    MapManager.prototype.getEnemyMapBalltGridPoint = function (gridNum) {
+        var gridPointAry = this.curMapConfig["battleEnemyGrid"];
+        return gridPointAry[gridNum - 1];
     };
     MapManager._ins = null;
     return MapManager;

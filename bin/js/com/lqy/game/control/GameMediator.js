@@ -40,8 +40,6 @@ var GameMediator = /** @class */ (function (_super) {
     GameMediator.prototype.onBtnOpen = function (e) {
         MapManager.ins.enterMap("res/map", 1, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
         GameDataManager.ins.initData();
-        // var testMediator:TestMediator = new TestMediator();
-        // var signMediator:SignMediator = new SignMediator();
         RoleManager.ins.initRoles();
         BattleEngine.ins.run();
     };

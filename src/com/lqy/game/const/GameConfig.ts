@@ -6,33 +6,32 @@ class GameConfig{
     public static STAGE_WIDTH:number = 750;
     public static STAGE_HEIGHT:number = 1334;
     /**地图配置信息 */
-    public static MAP_GRID_WIDTH:number = 25;
-    public static MAP_GRID_HEIGHT:number = 25;
-    public static MAP_BLOCK_WIDTH:number = 200;
-    public static MAP_BLOCK_HEIGHT:number = 200;
-    public static MAP_NEAR_TYPE:number = 1;
+    // public static MAP_GRID_WIDTH:number = 25;
+    // public static MAP_GRID_HEIGHT:number = 25;
+    // public static MAP_BLOCK_WIDTH:number = 200;
+    // public static MAP_BLOCK_HEIGHT:number = 200;
+    // public static MAP_NEAR_TYPE:number = 1;
+    /**场景地图出事化Y坐标 */
+    public static MAP_INIT_Y:number = 400;
+    /**战斗场景与场景地图偏移 */
+    public static BATTLE_SCENE_OFFSET_Y = 40;
+    /**战斗场景高度 */
+    public static BATTLE_SCENE_HEIGHT:number = 300;
     
     /**场景缓存 */
     public static SCENE_CACHE:number = 1;
     /**阵型配置 */
-    /**英雄阵型初始化点 */
-    public static HERO_POINT:Point = new Laya.Point(60,480);
-    /**怪物阵型初始化点 */
-    public static ENEMY_POINT:Point = new Laya.Point(460,480);
-    /**行格子数 */
-    public static LINEUP_ROWGRID_NUM:number = 3;
-    /**列格子数 */
-    public static LINEUP_COLGRID_NUM:number = 3;
     /**阵型格子宽 */
-    public static LINEUP_GRID_WIDTH:number = 100;
+    public static LINEUP_GRID_WIDTH:number = 105;
     /**阵型格子高 */
     public static LINEUP_GRID_HEIGHT:number = 100;
+
 
     /**战斗配置 */
     /**战斗时间间隔(S) */
     public static BATTLE_INTERVAL_TIME:number = 10;
     /**战斗跑到阵型需要时间(s) */
-    public static BATTLE_RUN_TIME:number = 1;
+    public static BATTLE_RUN_TIME:number = 0.5;
 
     
 }

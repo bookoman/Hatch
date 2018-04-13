@@ -17,8 +17,8 @@ class RoleVo{
     /**计算属性 */
     /**阵型格子 */
     public lineupGrid:number;
-    public lineupRow:number;
-    public lineupCol:number;
+    public gridX:number;
+    public gridY:number;
     /**角色坐标，现实对象底下中心点 */
     public posPoint:Point;
 
@@ -30,28 +30,21 @@ class RoleVo{
     public initRowColPosPoint():void
     {
         this.isEnemy = Number(this.id) >= 20000;
-
-        this.lineupRow = Math.ceil(this.lineupGrid / GameConfig.LINEUP_ROWGRID_NUM);
-        this.lineupCol = this.lineupGrid % GameConfig.LINEUP_COLGRID_NUM;
-        if(this.lineupCol == 0)
-        {
-            this.lineupCol = GameConfig.LINEUP_ROWGRID_NUM;
-        }
         var px,py;
         if(this.isEnemy)
         {
-            px = GameConfig.ENEMY_POINT.x + (this.lineupCol - 1) * GameConfig.LINEUP_GRID_WIDTH;
-            py = GameConfig.ENEMY_POINT.y + (this.lineupRow - 1) * GameConfig.LINEUP_GRID_HEIGHT;
+            this.gridX = MapManager.ins.getEnemyMapBalltGridPoint(this.lineupGrid)[0];
+            this.gridY = MapManager.ins.getEnemyMapBalltGridPoint(this.lineupGrid)[1];
         }
         else
         {
-            px = GameConfig.HERO_POINT.x + (this.lineupCol - 1) * GameConfig.LINEUP_GRID_WIDTH;
-            py = GameConfig.HERO_POINT.y + (this.lineupRow - 1) * GameConfig.LINEUP_GRID_HEIGHT;
-            // var point:Point = MapManager.ins.squintAngleGrid.gridToViewPoint(this.lineupCol,this.lineupRow);
-            // px = point.x;
-            // py = point.y;
+            this.gridX = MapManager.ins.getHeroMapBalltGridPoint(this.lineupGrid)[0];
+            this.gridY = MapManager.ins.getHeroMapBalltGridPoint(this.lineupGrid)[1];
         }
-        // console.log(this.id,this.lineupRow,this.lineupCol,px,py);
-        this.posPoint = new Point(px,py);
+        // console.log(this.id,this.gridX,this.gridY,px,py);
+        this.posPoint = MapManager.ins.squintAngleGrid.gridToViewPoint(this.gridX,this.gridY);
+        //偏移格子半个宽高
+        this.posPoint.x += GameConfig.LINEUP_GRID_WIDTH / 2;
+        this.posPoint.y +=  GameConfig.MAP_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y + GameConfig.LINEUP_GRID_HEIGHT / 2;
     }
 }
