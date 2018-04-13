@@ -34,6 +34,7 @@ var BaseRole = /** @class */ (function (_super) {
     };
     BaseRole.prototype.loadCompleted = function () {
         this.aniCount = this.skeletonAni.getAnimNum();
+<<<<<<< HEAD
         // var text:Laya.Label = new Laya.Label();
         // text.x = -60;
         // text.y = -180;
@@ -41,6 +42,15 @@ var BaseRole = /** @class */ (function (_super) {
         // text.color = "#ff0000";
         // text.text = this.roleVo.name;
         // this.addChild(text);
+=======
+        var text = new Laya.Label();
+        text.x = -60;
+        text.y = -180;
+        text.fontSize = 24;
+        text.color = "#ff0000";
+        text.text = this.roleVo.name;
+        this.addChild(text);
+>>>>>>> cc424129110219f822fb3b1296584f626ec9f796
         // console.log("播放动画名字："+this.aniCount);
     };
     BaseRole.prototype.onError = function () {

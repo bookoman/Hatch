@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 2018/04/13-17:52:55.850 16912 Reusing MANIFEST f:\h5gj_client\source_code\qxgj\.laya\chrome\Default\Download Service\EntryDB/MANIFEST-000001
 2018/04/13-17:52:55.855 16912 Recovering log #3
 2018/04/13-17:52:55.855 16912 Reusing old log f:\h5gj_client\source_code\qxgj\.laya\chrome\Default\Download Service\EntryDB/000003.log 
+=======
+2018/04/12-20:14:00.804 10252 Reusing MANIFEST f:\MyProject\LayaBox\Hatch\.laya\chrome\Default\Download Service\EntryDB/MANIFEST-000001
+2018/04/12-20:14:00.805 10252 Recovering log #3
+2018/04/12-20:14:00.805 10252 Reusing old log f:\MyProject\LayaBox\Hatch\.laya\chrome\Default\Download Service\EntryDB/000003.log 
+>>>>>>> cc424129110219f822fb3b1296584f626ec9f796
