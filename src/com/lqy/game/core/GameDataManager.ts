@@ -73,7 +73,7 @@ class GameDataManager{
         //         roleVo.initRowColPosPoint();
         //         this.enemyData.roleVoAry.push(roleVo);
         //     }
-        }
+        // }
 
     }
 }

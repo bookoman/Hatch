@@ -1,7 +1,10 @@
+
 /*
 * 事件管理器
 */
 class EventManager{
+    /**敌人跑动完成 */
+    public static ENEMY_RUNTO_COMPLETE:string = "ENEMY_RUNTO_COMPLETE";
     /**事件管理器 */
     public eventObj:Dictionary = null;
     constructor(){
@@ -11,7 +14,7 @@ class EventManager{
         }
     }
     private static _ins:EventManager = null;
-    private static get ins():EventManager
+    public static get ins():EventManager
     {
         if(this._ins == null)
         {
@@ -46,7 +49,7 @@ class EventManager{
         }
     }
     /**派发事件 */
-    public dispatchEvent(type,data):void
+    public dispatchEvent(type,data?:any):void
     {
         var arr = this.eventObj[type];
         for(var i in arr)

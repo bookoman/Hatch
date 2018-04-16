@@ -10,7 +10,8 @@ class BattleEngine{
     private timeCount:number;
     private battleTimeInterval:number;
     private HeroAI:HeroAI;
-    private EnemyAI:EnemyAI;
+    private enemyAI:EnemyAI;
+    private battleData:BattleData;
     constructor(){
         
     }
@@ -23,13 +24,31 @@ class BattleEngine{
         }
         return this._ins;
     }
+    private addEvents():void
+    {
+        
+    }
+    private removeEvents():void
+    {
+        
+    }
+    private onRunComplete(data?:any):void
+    {
+        this.enemyAI.enemyRunCount++;
+        if(this.enemyAI.enemyRunCount >= GameDataManager.ins.enemyData.enemySum)
+        {
+            this.enemyAI.enemyRunCount = 0;
+            EventManager.ins.removeEvent(EventManager.ENEMY_RUNTO_COMPLETE,this.onRunComplete);
+            this.startBattle();
 
+        }
+    }
     public run():void
     {
         this.timeCount = 0;
         this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
         this.HeroAI = new HeroAI();
-        this.EnemyAI = new EnemyAI();
+        this.enemyAI = new EnemyAI();
         Laya.timer.loop(1000,this,this.runUpdate);
 
     }
@@ -39,25 +58,34 @@ class BattleEngine{
         this.timeCount++;
         if(this.timeCount == this.battleTimeInterval)
         {
-            this.startBallte();
+            this.rutoBallte();
         }
-
+        
     } 
     /**
-     * 开始战斗
+     * 跑去战斗
      */
-    private startBallte():void
+    private rutoBallte():void
     {
-        this.EnemyAI.produceEnemy();
-        this.EnemyAI.runToLineup();
+        this.enemyAI.produceEnemy();
+        this.enemyAI.runToLineup();
+        this.battleData = new BattleData();
+        EventManager.ins.addEvent(EventManager.ENEMY_RUNTO_COMPLETE,this,this.onRunComplete);
+    }
+    /**开始战斗 */
+    private startBattle():void
+    {
         MapManager.ins.mapScrollSwitch = false;
+        RoleManager.ins.heroStand();
+        
     }
 
-    /**清除战斗 */
+    /**结束战斗 */
     private endBattle():void
     {
         this.timeCount = 0;
-
+        MapManager.ins.mapScrollSwitch = true;
+        RoleManager.ins.heroRun();
     }
 
 

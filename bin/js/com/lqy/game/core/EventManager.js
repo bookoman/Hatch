@@ -57,6 +57,8 @@ var EventManager = /** @class */ (function () {
     EventManager.prototype.hasEvent = function (type) {
         return this.eventObj[type];
     };
+    /**敌人跑动完成 */
+    EventManager.ENEMY_RUNTO_COMPLETE = "ENEMY_RUNTO_COMPLETE";
     EventManager._ins = null;
     return EventManager;
 }());

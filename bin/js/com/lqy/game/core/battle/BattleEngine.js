@@ -19,30 +19,50 @@ var BattleEngine = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    BattleEngine.prototype.addEvents = function () {
+    };
+    BattleEngine.prototype.removeEvents = function () {
+    };
+    BattleEngine.prototype.onRunComplete = function (data) {
+        this.enemyAI.enemyRunCount++;
+        if (this.enemyAI.enemyRunCount >= GameDataManager.ins.enemyData.enemySum) {
+            this.enemyAI.enemyRunCount = 0;
+            EventManager.ins.removeEvent(EventManager.ENEMY_RUNTO_COMPLETE, this.onRunComplete);
+            this.startBattle();
+        }
+    };
     BattleEngine.prototype.run = function () {
         this.timeCount = 0;
         this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
         this.HeroAI = new HeroAI();
-        this.EnemyAI = new EnemyAI();
+        this.enemyAI = new EnemyAI();
         Laya.timer.loop(1000, this, this.runUpdate);
     };
     BattleEngine.prototype.runUpdate = function () {
         this.timeCount++;
         if (this.timeCount == this.battleTimeInterval) {
-            this.startBallte();
+            this.rutoBallte();
         }
     };
     /**
-     * 开始战斗
+     * 跑去战斗
      */
-    BattleEngine.prototype.startBallte = function () {
-        this.EnemyAI.produceEnemy();
-        this.EnemyAI.runToLineup();
-        MapManager.ins.mapScrollSwitch = false;
+    BattleEngine.prototype.rutoBallte = function () {
+        this.enemyAI.produceEnemy();
+        this.enemyAI.runToLineup();
+        this.battleData = new BattleData();
+        EventManager.ins.addEvent(EventManager.ENEMY_RUNTO_COMPLETE, this, this.onRunComplete);
     };
-    /**清除战斗 */
+    /**开始战斗 */
+    BattleEngine.prototype.startBattle = function () {
+        MapManager.ins.mapScrollSwitch = false;
+        RoleManager.ins.heroStand();
+    };
+    /**结束战斗 */
     BattleEngine.prototype.endBattle = function () {
         this.timeCount = 0;
+        MapManager.ins.mapScrollSwitch = true;
+        RoleManager.ins.heroRun();
     };
     BattleEngine._ins = null;
     return BattleEngine;

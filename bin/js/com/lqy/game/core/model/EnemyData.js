@@ -3,6 +3,8 @@
 */
 var EnemyData = /** @class */ (function () {
     function EnemyData() {
+        /**敌人总数 */
+        this.enemySum = 0;
     }
     return EnemyData;
 }());

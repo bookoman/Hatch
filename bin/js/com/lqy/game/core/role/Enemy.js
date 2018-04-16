@@ -16,18 +16,20 @@ var Enemy = /** @class */ (function (_super) {
     function Enemy() {
         return _super.call(this) || this;
     }
-    Enemy.prototype.initRole = function (aniURL, scale, roleVo) {
-        _super.prototype.initRole.call(this, aniURL, scale, roleVo);
-        this.skeletonAni.transform.scaleEx(-1, 1);
-        // this.skeletonAni.pos(roleVo.posPoint.x,roleVo.posPoint.y);
+    Enemy.prototype.initRole = function (roleVo, scale) {
+        _super.prototype.initRole.call(this, roleVo, scale);
         this.x = GameConfig.STAGE_WIDTH + GameConfig.LINEUP_GRID_WIDTH + roleVo.runWidth;
-        // this.x = GameConfig.STAGE_WIDTH + roleVo.runWidth;
         this.y = this.roleVo.posPoint.y;
     };
     Enemy.prototype.run = function () {
+        // this.aniPlay(RoleAniIndex.MOVE);
+        _super.prototype.run.call(this);
         Laya.Tween.to(this, { x: this.roleVo.posPoint.x, complete: new Handler(this, this.onMoveComplete) }, GameConfig.BATTLE_RUN_TIME * 1000);
     };
     Enemy.prototype.onMoveComplete = function () {
+        console.log("敌人到达战场...");
+        EventManager.ins.dispatchEvent(EventManager.ENEMY_RUNTO_COMPLETE);
+        this.aniPlay(RoleAniIndex.STAND);
     };
     return Enemy;
 }(BaseRole));

@@ -31,29 +31,35 @@ class RoleManager{
         {
             roleVo = playerData.roleVoAry[i];
             hero = new Hero();
-            hero.initRole("res/outside/anim/hero/swordsman/SwordsMan.sk",0.25,roleVo);
+            hero.initRole(roleVo,1);
+            hero.aniPlay(RoleAniIndex.MOVE);
             this.heroRoles.push(hero);
         }
-        // this.enemyRoles = new Array();
-        // var enemyData:EnemyData = GameDataManager.ins.enemyData;
-        // var enemy:Enemy;
-        // for(i = 0;i < enemyData.roleVoAry.length;i++)
-        // {
-        //     roleVo = enemyData.roleVoAry[i];
-        //     enemy = new Enemy();
-        //     enemy.initRole("res/outside/anim/hero/demon/Demon.sk",0.3,roleVo);
-        //     this.enemyRoles.push(enemy);
-        // }
         
     }
     public playAni(aniID:number):void
     {
-        this.heroRoles.forEach(hero => {
-            hero.play(aniID);
-        });
+        if(this.heroRoles)
+        {
+            this.heroRoles.forEach(hero => {
+                hero.aniPlay(aniID);
+            });
+        }
+        
 
-        this.enemyRoles.forEach(enemy =>{
-            enemy.play(aniID);
+        if(this.enemyRoles)
+        {
+            this.enemyRoles.forEach(enemy =>{
+                enemy.aniPlay(aniID);
+            });
+        }
+        
+    }
+
+    public heroRun():void
+    {
+        this.heroRoles.forEach(hero => {
+            hero.run();
         });
     }
 
@@ -63,4 +69,12 @@ class RoleManager{
             enemy.run();
         });
     }
+    public heroStand():void
+    {
+        this.heroRoles.forEach(hero => {
+            hero.aniPlay(RoleAniIndex.STAND);
+        });
+    }
+
+    
 }

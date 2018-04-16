@@ -26,31 +26,36 @@ var RoleManager = /** @class */ (function () {
         for (var i = 0; i < playerData.roleVoAry.length; i++) {
             roleVo = playerData.roleVoAry[i];
             hero = new Hero();
-            hero.initRole("res/outside/anim/hero/swordsman/SwordsMan.sk", 0.25, roleVo);
+            hero.initRole(roleVo, 1);
+            hero.aniPlay(RoleAniIndex.MOVE);
             this.heroRoles.push(hero);
         }
-        // this.enemyRoles = new Array();
-        // var enemyData:EnemyData = GameDataManager.ins.enemyData;
-        // var enemy:Enemy;
-        // for(i = 0;i < enemyData.roleVoAry.length;i++)
-        // {
-        //     roleVo = enemyData.roleVoAry[i];
-        //     enemy = new Enemy();
-        //     enemy.initRole("res/outside/anim/hero/demon/Demon.sk",0.3,roleVo);
-        //     this.enemyRoles.push(enemy);
-        // }
     };
     RoleManager.prototype.playAni = function (aniID) {
+        if (this.heroRoles) {
+            this.heroRoles.forEach(function (hero) {
+                hero.aniPlay(aniID);
+            });
+        }
+        if (this.enemyRoles) {
+            this.enemyRoles.forEach(function (enemy) {
+                enemy.aniPlay(aniID);
+            });
+        }
+    };
+    RoleManager.prototype.heroRun = function () {
         this.heroRoles.forEach(function (hero) {
-            hero.play(aniID);
-        });
-        this.enemyRoles.forEach(function (enemy) {
-            enemy.play(aniID);
+            hero.run();
         });
     };
     RoleManager.prototype.enemyRun = function () {
         this.enemyRoles.forEach(function (enemy) {
             enemy.run();
+        });
+    };
+    RoleManager.prototype.heroStand = function () {
+        this.heroRoles.forEach(function (hero) {
+            hero.aniPlay(RoleAniIndex.STAND);
         });
     };
     RoleManager._ins = null;

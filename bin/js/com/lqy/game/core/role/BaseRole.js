@@ -18,40 +18,14 @@ var BaseRole = /** @class */ (function (_super) {
         var _this = _super.call(this) || this;
         _this.skeletonAni = null;
         _this.aniCount = 0;
+        _this.aniScale = 1;
         return _this;
     }
-    BaseRole.prototype.initRole = function (aniURL, scale, roleVo) {
-        if (aniURL) {
-            this.roleVo = roleVo;
-            this.skeletonAni = new Skeleton();
-            this.skeletonAni.load(aniURL, new Laya.Handler(this, this.loadCompleted));
-            if (scale) {
-                this.skeletonAni.scale(scale, scale);
-            }
-            this.addChild(this.skeletonAni);
+    BaseRole.prototype.initRole = function (roleVo, scale) {
+        this.roleVo = roleVo;
+        if (scale) {
+            this.aniScale = scale;
         }
-        LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
-    };
-    BaseRole.prototype.loadCompleted = function () {
-        this.aniCount = this.skeletonAni.getAnimNum();
-<<<<<<< HEAD
-        // var text:Laya.Label = new Laya.Label();
-        // text.x = -60;
-        // text.y = -180;
-        // text.fontSize = 24;
-        // text.color = "#ff0000";
-        // text.text = this.roleVo.name;
-        // this.addChild(text);
-=======
-        var text = new Laya.Label();
-        text.x = -60;
-        text.y = -180;
-        text.fontSize = 24;
-        text.color = "#ff0000";
-        text.text = this.roleVo.name;
-        this.addChild(text);
->>>>>>> cc424129110219f822fb3b1296584f626ec9f796
-        // console.log("播放动画名字："+this.aniCount);
     };
     BaseRole.prototype.onError = function () {
     };
@@ -59,15 +33,36 @@ var BaseRole = /** @class */ (function (_super) {
      *
      * @param aniID 动画id
      */
-    BaseRole.prototype.play = function (aniID) {
+    BaseRole.prototype.aniPlay = function (aniID) {
         if (this.skeletonAni) {
             //>= aniCount默认播放第一个动画
             aniID = aniID % this.aniCount;
             this.skeletonAni.play(aniID, true);
-            console.log("播放动画名字：" + this.skeletonAni.getAniNameByIndex(aniID));
+            // console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID));  
+        }
+        else {
+            this.skeletonAni = new Skeleton();
+            this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk", new Laya.Handler(this, this.loadCompleted, [aniID]));
+            this.skeletonAni.scale(this.aniScale, this.aniScale);
+            this.skeletonAni.scaleX = this.roleVo.scaleX;
+            this.addChild(this.skeletonAni);
+            LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
         }
     };
+    BaseRole.prototype.loadCompleted = function (ind) {
+        this.aniCount = this.skeletonAni.getAnimNum();
+        this.aniPlay(ind);
+        // var text:Laya.Label = new Laya.Label();
+        // text.x = -60;
+        // text.y = -180;
+        // text.fontSize = 24;
+        // text.color = "#ff0000";
+        // text.text = this.roleVo.name;
+        // this.addChild(text);
+        // console.log("播放动画名字："+this.aniCount);
+    };
     BaseRole.prototype.run = function () {
+        this.aniPlay(RoleAniIndex.MOVE);
     };
     return BaseRole;
 }(Laya.Sprite));

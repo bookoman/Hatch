@@ -13,6 +13,9 @@ class RoleVo{
 
     public hp:number;
     public att:number;
+    public atts:number;
+
+    public scaleX:number;
     
     /**计算属性 */
     /**阵型格子 */

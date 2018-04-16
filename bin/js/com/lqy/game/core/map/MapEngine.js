@@ -84,7 +84,7 @@ var MapEngine = /** @class */ (function (_super) {
      * **/
     MapEngine.prototype.resetMap = function (visualWidth, visualHeight) {
         if (this.visualWidth != visualWidth ||
-            this.visualHeight != visualHeight) {
+            this.visualHeight != visualHeight) { //宽高与前面不相同才进行重置  
             this._visualWidth = Math.min(visualWidth, this.mapWidth);
             this._visualHeight = Math.min(visualHeight, this.mapHeight);
             //可视部分tile大小*****

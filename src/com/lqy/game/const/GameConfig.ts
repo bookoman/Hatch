@@ -17,6 +17,8 @@ class GameConfig{
     public static BATTLE_SCENE_OFFSET_Y = 40;
     /**战斗场景高度 */
     public static BATTLE_SCENE_HEIGHT:number = 300;
+    /**战斗每轮攻击人数 */
+    public static BATTLE_TURN_ATTACK_SUM:number = 1;
     
     /**场景缓存 */
     public static SCENE_CACHE:number = 1;
@@ -29,9 +31,13 @@ class GameConfig{
 
     /**战斗配置 */
     /**战斗时间间隔(S) */
-    public static BATTLE_INTERVAL_TIME:number = 10;
+    public static BATTLE_INTERVAL_TIME:number = 4;
     /**战斗跑到阵型需要时间(s) */
     public static BATTLE_RUN_TIME:number = 0.5;
+
+    /**********动画 */
+    //索引对应人物动画名字
+
 
     
 }
@@ -39,4 +45,16 @@ class GameConfig{
 enum MapType
 {
     BACKGROUND_MAP = 1,NEAR_MAP
+}
+/**角色动画枚举 */
+enum RoleAniIndex
+{
+    STAND = 0,INJURED,DEATH,ATTACK,MOVE,SKILL1,SKILL2,SKILL3,SKILL4
+}
+/**
+ * 战斗攻击阵营
+ */
+enum BattleAttCampType
+{
+    HERO = 1,ENEMY,OTHER
 }

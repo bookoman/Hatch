@@ -3,13 +3,15 @@
 */
 var EnemyAI = /** @class */ (function () {
     function EnemyAI() {
+        /**敌人 */
+        this.enemyRunCount = 0;
     }
     /**生产敌人 */
     EnemyAI.prototype.produceEnemy = function () {
         //怪物数据
         var enemyData = new EnemyData();
         enemyData.roleVoAry = [];
-        var ids = ["20000", "20001", "20002", "20003", "20004"];
+        var ids = ["20001", "20000", "20002", "20003", "20004"];
         var roleVo;
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
@@ -28,6 +30,7 @@ var EnemyAI = /** @class */ (function () {
                 enemyData.roleVoAry.push(roleVo);
             }
         }
+        enemyData.enemySum = enemyData.roleVoAry.length;
         GameDataManager.ins.enemyData = enemyData;
         //怪物显示对象
         var enemyRoles = new Array();
@@ -35,7 +38,7 @@ var EnemyAI = /** @class */ (function () {
         for (i = 0; i < enemyData.roleVoAry.length; i++) {
             roleVo = enemyData.roleVoAry[i];
             enemy = new Enemy();
-            enemy.initRole("res/outside/anim/hero/demon/Demon.sk", 0.3, roleVo);
+            enemy.initRole(roleVo, 1);
             enemyRoles.push(enemy);
         }
         RoleManager.ins.enemyRoles = enemyRoles;

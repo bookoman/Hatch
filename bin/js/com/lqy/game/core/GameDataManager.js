@@ -65,6 +65,7 @@ var GameDataManager = /** @class */ (function () {
         //         roleVo.initRowColPosPoint();
         //         this.enemyData.roleVoAry.push(roleVo);
         //     }
+        // }
     };
     GameDataManager._ins = null;
     return GameDataManager;

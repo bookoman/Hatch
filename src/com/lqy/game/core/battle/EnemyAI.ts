@@ -2,6 +2,8 @@
 * 怪物AI
 */
 class EnemyAI{
+    /**敌人 */
+    public enemyRunCount:number = 0;
     constructor(){
         
     }
@@ -12,7 +14,7 @@ class EnemyAI{
         //怪物数据
         var enemyData:EnemyData = new EnemyData();
         enemyData.roleVoAry = [];
-        var ids:Array<string> = ["20000","20001","20002","20003","20004"];
+        var ids:Array<string> = ["20001","20000","20002","20003","20004"];
         var roleVo:RoleVo;
         for(var i = 0;i < ids.length;i++)
         {
@@ -28,6 +30,7 @@ class EnemyAI{
                 enemyData.roleVoAry.push(roleVo);
             }
         }
+        enemyData.enemySum = enemyData.roleVoAry.length;
         GameDataManager.ins.enemyData = enemyData;
         //怪物显示对象
         var enemyRoles:Array<Enemy> = new Array();
@@ -36,7 +39,7 @@ class EnemyAI{
         {
             roleVo = enemyData.roleVoAry[i];
             enemy = new Enemy();
-            enemy.initRole("res/outside/anim/hero/demon/Demon.sk",0.3,roleVo);
+            enemy.initRole(roleVo,1);
             enemyRoles.push(enemy);
         }
         RoleManager.ins.enemyRoles = enemyRoles;
