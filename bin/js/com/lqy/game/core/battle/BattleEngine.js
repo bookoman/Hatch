@@ -8,6 +8,8 @@
 */
 var BattleEngine = /** @class */ (function () {
     function BattleEngine() {
+        this.battleDataMgr = BattleDataManager.ins;
+        this.roleMgr = RoleManager.ins;
     }
     Object.defineProperty(BattleEngine, "ins", {
         get: function () {
@@ -19,14 +21,10 @@ var BattleEngine = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    BattleEngine.prototype.addEvents = function () {
-    };
-    BattleEngine.prototype.removeEvents = function () {
-    };
     BattleEngine.prototype.onRunComplete = function (data) {
-        this.enemyAI.enemyRunCount++;
-        if (this.enemyAI.enemyRunCount >= GameDataManager.ins.enemyData.enemySum) {
-            this.enemyAI.enemyRunCount = 0;
+        this.roleMgr.enemyRunCount++;
+        if (this.roleMgr.enemyRunCount >= GameDataManager.ins.enemyData.enemySum) {
+            this.roleMgr.enemyRunCount = 0;
             EventManager.ins.removeEvent(EventManager.ENEMY_RUNTO_COMPLETE, this.onRunComplete);
             this.startBattle();
         }
@@ -34,8 +32,6 @@ var BattleEngine = /** @class */ (function () {
     BattleEngine.prototype.run = function () {
         this.timeCount = 0;
         this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
-        this.HeroAI = new HeroAI();
-        this.enemyAI = new EnemyAI();
         Laya.timer.loop(1000, this, this.runUpdate);
     };
     BattleEngine.prototype.runUpdate = function () {
@@ -48,21 +44,40 @@ var BattleEngine = /** @class */ (function () {
      * 跑去战斗
      */
     BattleEngine.prototype.rutoBallte = function () {
-        this.enemyAI.produceEnemy();
-        this.enemyAI.runToLineup();
-        this.battleData = new BattleData();
+        GameDataManager.ins.produceEnemyData();
+        this.roleMgr.produceEnemy();
+        this.roleMgr.enemyRun();
+        this.battleDataMgr.initData();
         EventManager.ins.addEvent(EventManager.ENEMY_RUNTO_COMPLETE, this, this.onRunComplete);
     };
     /**开始战斗 */
     BattleEngine.prototype.startBattle = function () {
         MapManager.ins.mapScrollSwitch = false;
-        RoleManager.ins.heroStand();
+        this.roleMgr.heroStand();
+        this.attack();
+    };
+    BattleEngine.prototype.attack = function () {
+        this.battleDataMgr.startAtt();
+        this.roleMgr.battleAtt(this.battleDataMgr.curAttRoleVo, this.battleDataMgr.curDefRoleVo);
+        EventManager.ins.addEvent(EventManager.ENEMY_ATT_COMPLETE, this, this.attCompleted);
+        // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
+    };
+    BattleEngine.prototype.attCompleted = function () {
+        EventManager.ins.removeEvent(EventManager.ENEMY_ATT_COMPLETE, this.attCompleted);
+        // this.battleDataMgr.calculationAttribute();
+        if (this.battleDataMgr.isEnd) {
+            this.endBattle();
+        }
+        else {
+            this.attack();
+        }
     };
     /**结束战斗 */
     BattleEngine.prototype.endBattle = function () {
         this.timeCount = 0;
         MapManager.ins.mapScrollSwitch = true;
-        RoleManager.ins.heroRun();
+        this.roleMgr.initHeors();
+        // this.roleMgr.heroRun();
     };
     BattleEngine._ins = null;
     return BattleEngine;

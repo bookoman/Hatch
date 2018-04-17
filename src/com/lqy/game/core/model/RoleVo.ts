@@ -24,8 +24,16 @@ class RoleVo{
     public gridY:number;
     /**角色坐标，现实对象底下中心点 */
     public posPoint:Point;
-
+    /**是否是敌人 */
     public isEnemy:boolean;
+    
+    //战斗数据
+    
+    public battleHP:number;
+    public isDeath:boolean;
+    public isAtted:boolean;
+    public attEnemyVos:Array<RoleVo>;
+
     constructor(){
         
     }

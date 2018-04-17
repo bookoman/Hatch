@@ -5,7 +5,10 @@ class RoleManager{
     /**英雄角色 */
     public heroRoles:Array<BaseRole> = null;
     /**敌人角色 */
-    public enemyRoles:Array<Enemy> = null;
+    public enemyRoles:Array<BaseRole> = null;
+
+    /**敌人 */
+    public enemyRunCount:number = 0;
 
     constructor(){
 
@@ -21,8 +24,10 @@ class RoleManager{
     }
 
 
-    public initRoles():void
+    public initHeors():void
     {
+        this.clearRole();
+        
         this.heroRoles = new Array();
         var playerData:PlayerData = GameDataManager.ins.selfPlayerData;
         var roleVo:RoleVo;
@@ -37,44 +42,129 @@ class RoleManager{
         }
         
     }
-    public playAni(aniID:number):void
+
+    /**生产敌人 */
+    public produceEnemy():void
     {
-        if(this.heroRoles)
-        {
-            this.heroRoles.forEach(hero => {
-                hero.aniPlay(aniID);
-            });
-        }
+        //怪物数据
+        var enemyData:EnemyData = GameDataManager.ins.enemyData;
         
-
-        if(this.enemyRoles)
+        //怪物显示对象
+        var enemyRoles:Array<Enemy> = new Array();
+        var enemy:Enemy;
+        var roleVo:RoleVo;
+        for(var i = 0;i < enemyData.roleVoAry.length;i++)
         {
-            this.enemyRoles.forEach(enemy =>{
-                enemy.aniPlay(aniID);
-            });
+            roleVo = enemyData.roleVoAry[i];
+            enemy = new Enemy();
+            enemy.initRole(roleVo,1);
+            enemyRoles.push(enemy);
         }
-        
+        RoleManager.ins.enemyRoles = enemyRoles;
     }
-
+    
+    /**
+     * 英雄移动
+     */
     public heroRun():void
     {
         this.heroRoles.forEach(hero => {
             hero.run();
         });
     }
-
-    public enemyRun():void
-    {
-        this.enemyRoles.forEach(enemy =>{
-            enemy.run();
-        });
-    }
+    
+    /**
+     * 英雄站立
+     */
     public heroStand():void
     {
         this.heroRoles.forEach(hero => {
             hero.aniPlay(RoleAniIndex.STAND);
         });
     }
+    /**
+     * 敌人移动
+     */
+    public enemyRun():void
+    {
+        this.enemyRoles.forEach(enemy =>{
+            enemy.run();
+        });
+    }
+    private attRole:BaseRole;
+    private defRole:BaseRole;
+    /**
+     * 战斗
+     * @param attRoleVo 
+     * @param defRoleVo 
+     */
+    public battleAtt(attRoleVo:RoleVo,defRoleVo:RoleVo):void
+    {
+        var tempAry:Array<BaseRole> = this.heroRoles.concat(this.enemyRoles);
+        tempAry.forEach(roleView => {
+            if(roleView.roleVo.id == attRoleVo.id)
+            {
+                this.attRole = roleView;
+            }
+            else if(roleView.roleVo.id == defRoleVo.id)
+            {
+                this.defRole = roleView;
+            }
+        });
+        if(this.attRole && this.defRole)
+        {
+            this.attRole.aniPlay(RoleAniIndex.MOVE);
+            Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - 50,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.moveCompleteAtt,[attRoleVo,defRoleVo]));
+        }
+    }
 
-    
+    private moveCompleteAtt(data):void
+    {
+        
+        if(this.attRole && this.defRole)
+        {
+            this.attRole.aniPlay(RoleAniIndex.ATTACK);
+            var attRoleVo:RoleVo = this.attRole.roleVo;
+            var defRoleVo:RoleVo = this.defRole.roleVo;
+            BattleDataManager.ins.calculationAttribute();
+            if(defRoleVo.isDeath)
+            {
+                this.defRole.aniPlay(RoleAniIndex.DEATH);
+                this.defRole.setVisible(false);
+            }
+            else
+            {
+                this.defRole.aniPlay(RoleAniIndex.INJURED);
+            }
+            Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.moveBackComplete));
+        }
+    }
+
+    private moveBackComplete():void
+    {
+        
+        this.attRole.aniPlay(RoleAniIndex.STAND);
+        this.defRole.aniPlay(RoleAniIndex.STAND);
+        EventManager.ins.dispatchEvent(EventManager.ENEMY_ATT_COMPLETE);
+    }
+
+    public clearRole():void
+    {
+        if(this.heroRoles)
+        {
+            this.heroRoles.forEach(role => {
+                role.dispose();
+            });
+            this.heroRoles = null;
+        }
+        
+        if(this.enemyRoles)
+        {
+            this.enemyRoles.forEach(role => {
+                role.dispose();
+            });
+            this.enemyRoles = null;
+        }
+       
+    }
 }

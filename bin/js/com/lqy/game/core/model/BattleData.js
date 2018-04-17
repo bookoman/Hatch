@@ -37,6 +37,16 @@ var BattleData = /** @class */ (function () {
         else if (this.curAttCamp == BattleAttCampType.ENEMY) {
         }
     };
+    /**
+     * 寻找攻击目标
+     * 普通攻击:
+     *  1,找同gy，再又上至下找gy
+     * 技能攻击:
+     *  1,一个目标：找同gy，再又上至下找gy
+     *  2,攻击一行gx,攻击一列gy
+     * @param attAry
+     * @param defAry
+     */
     BattleData.prototype.seekAttTarget = function (attAry, defAry) {
         var attToDefObject = {};
         var attRoleVo;
@@ -46,6 +56,7 @@ var BattleData = /** @class */ (function () {
             for (var j = 0; j < defAry.length; j++) {
                 defRoleVo = defAry[j];
                 if (attRoleVo.gridY == defRoleVo.gridY) {
+                    break;
                 }
             }
         }

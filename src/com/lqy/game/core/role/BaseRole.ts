@@ -4,7 +4,7 @@ import Skeleton = Laya.Skeleton;
 */
 class BaseRole extends Laya.Sprite{
     protected skeletonAni:Skeleton = null;
-    protected roleVo:RoleVo;
+    public roleVo:RoleVo;
     private aniCount:number = 0;
     private aniScale:number = 1;
     constructor(){
@@ -62,6 +62,27 @@ class BaseRole extends Laya.Sprite{
     public run():void
     {
         this.aniPlay(RoleAniIndex.MOVE);
+    }
+    public setVisible(bool:boolean):void
+    {
+        Laya.timer.once(1000,this, this.setVis,[bool]);
+    }
+    private setVis(bool):void
+    {
+        this.visible = bool;
+    }
+    public dispose():void
+    {
+        // if(this.roleVo.isEnemy)
+        // {
+            this.removeSelf();
+            if(this.skeletonAni)
+            {
+                this.skeletonAni.destroy();
+            }
+            this.skeletonAni = null;
+            // this.roleVo = null;
+        // }
     }
 
 }

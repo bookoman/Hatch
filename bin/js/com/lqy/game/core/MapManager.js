@@ -5,8 +5,8 @@ var MapManager = /** @class */ (function () {
     function MapManager() {
         //地图测试数据 mapId >> mapVO
         this.mapCofing = {
-            "1": { "mapID": 1, "battleHeroGrid": [[1, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2, 2], [0, 3], [1, 3], [1, 4]], "battleEnemyGrid": [[5, 0], [4, 1], [5, 1], [4, 2], [5, 2], [6, 2], [4, 3], [5, 3], [5, 4]] },
-            "2": { "mapID": 2, "battleHeroGrid": [[2, 0], [1, 1], [2, 1], [1, 2], [2, 2], [3, 2], [1, 3], [2, 3], [2, 4]], "battleEnemyGrid": [[5, 0], [4, 1], [5, 1], [4, 2], [5, 2], [6, 2], [4, 3], [5, 3], [5, 4]] }
+            "1": { "mapID": 1, "battleHeroGrid": [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], "battleEnemyGrid": [[3, 0], [2, 1], [3, 2], [2, 3], [3, 4]] },
+            "2": { "mapID": 2, "battleHeroGrid": [[1, 0], [0, 1], [1, 2], [0, 3], [1, 4]], "battleEnemyGrid": [[3, 0], [3, 1], [3, 2], [3, 3], [3, 4]] }
         };
         this.mapEngine = null;
         this.mapLoopEngine = null;

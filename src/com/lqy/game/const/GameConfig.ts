@@ -24,16 +24,18 @@ class GameConfig{
     public static SCENE_CACHE:number = 1;
     /**阵型配置 */
     /**阵型格子宽 */
-    public static LINEUP_GRID_WIDTH:number = 105;
+    public static LINEUP_GRID_WIDTH:number = 180;
     /**阵型格子高 */
     public static LINEUP_GRID_HEIGHT:number = 100;
 
 
     /**战斗配置 */
     /**战斗时间间隔(S) */
-    public static BATTLE_INTERVAL_TIME:number = 4;
+    public static BATTLE_INTERVAL_TIME:number = 2;
     /**战斗跑到阵型需要时间(s) */
     public static BATTLE_RUN_TIME:number = 0.5;
+    /**战斗攻击需要时间(s) */
+    public static BATTLE_ATT_TIME:number = 0.3;
 
     /**********动画 */
     //索引对应人物动画名字

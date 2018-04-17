@@ -9,11 +9,11 @@
 class BattleEngine{
     private timeCount:number;
     private battleTimeInterval:number;
-    private HeroAI:HeroAI;
-    private enemyAI:EnemyAI;
-    private battleData:BattleData;
+    private battleDataMgr:BattleDataManager;
+    private roleMgr:RoleManager;
     constructor(){
-        
+        this.battleDataMgr = BattleDataManager.ins;
+        this.roleMgr = RoleManager.ins;
     }
     private static _ins:BattleEngine = null;
     public static get ins():BattleEngine
@@ -24,20 +24,13 @@ class BattleEngine{
         }
         return this._ins;
     }
-    private addEvents():void
-    {
-        
-    }
-    private removeEvents():void
-    {
-        
-    }
+    
     private onRunComplete(data?:any):void
     {
-        this.enemyAI.enemyRunCount++;
-        if(this.enemyAI.enemyRunCount >= GameDataManager.ins.enemyData.enemySum)
+        this.roleMgr.enemyRunCount++;
+        if(this.roleMgr.enemyRunCount >= GameDataManager.ins.enemyData.enemySum)
         {
-            this.enemyAI.enemyRunCount = 0;
+            this.roleMgr.enemyRunCount = 0;
             EventManager.ins.removeEvent(EventManager.ENEMY_RUNTO_COMPLETE,this.onRunComplete);
             this.startBattle();
 
@@ -47,8 +40,6 @@ class BattleEngine{
     {
         this.timeCount = 0;
         this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
-        this.HeroAI = new HeroAI();
-        this.enemyAI = new EnemyAI();
         Laya.timer.loop(1000,this,this.runUpdate);
 
     }
@@ -67,17 +58,38 @@ class BattleEngine{
      */
     private rutoBallte():void
     {
-        this.enemyAI.produceEnemy();
-        this.enemyAI.runToLineup();
-        this.battleData = new BattleData();
+        GameDataManager.ins.produceEnemyData();
+        this.roleMgr.produceEnemy();
+        this.roleMgr.enemyRun();
+        this.battleDataMgr.initData();
         EventManager.ins.addEvent(EventManager.ENEMY_RUNTO_COMPLETE,this,this.onRunComplete);
     }
     /**开始战斗 */
     private startBattle():void
     {
         MapManager.ins.mapScrollSwitch = false;
-        RoleManager.ins.heroStand();
-        
+        this.roleMgr.heroStand();
+        this.attack();
+    }
+    private attack():void
+    {
+        this.battleDataMgr.startAtt();
+        this.roleMgr.battleAtt(this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
+        EventManager.ins.addEvent(EventManager.ENEMY_ATT_COMPLETE,this,this.attCompleted);
+        // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
+    }
+    private attCompleted():void
+    {
+        EventManager.ins.removeEvent(EventManager.ENEMY_ATT_COMPLETE,this.attCompleted);
+        // this.battleDataMgr.calculationAttribute();
+        if(this.battleDataMgr.isEnd)
+        {
+            this.endBattle();
+        }
+        else
+        {
+            this.attack();
+        }
     }
 
     /**结束战斗 */
@@ -85,7 +97,8 @@ class BattleEngine{
     {
         this.timeCount = 0;
         MapManager.ins.mapScrollSwitch = true;
-        RoleManager.ins.heroRun();
+        this.roleMgr.initHeors();
+        // this.roleMgr.heroRun();
     }
 
 

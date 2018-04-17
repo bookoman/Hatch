@@ -5,6 +5,8 @@
 class EventManager{
     /**敌人跑动完成 */
     public static ENEMY_RUNTO_COMPLETE:string = "ENEMY_RUNTO_COMPLETE";
+    /**敌人攻击跑动完成 */
+    public static ENEMY_ATT_COMPLETE:string = "ENEMY_ATT_COMPLETE";
     /**事件管理器 */
     public eventObj:Dictionary = null;
     constructor(){

@@ -49,7 +49,7 @@ class SquintAngleGrid{
                 grid = new MapGrid(x,y);
                 grid.op = this.gridToViewPoint(x,y);
                 //绘制格子
-                grid.drawTitle();
+                // grid.drawTitle();
             }
         }
         

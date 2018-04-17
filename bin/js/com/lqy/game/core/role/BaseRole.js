@@ -64,6 +64,23 @@ var BaseRole = /** @class */ (function (_super) {
     BaseRole.prototype.run = function () {
         this.aniPlay(RoleAniIndex.MOVE);
     };
+    BaseRole.prototype.setVisible = function (bool) {
+        Laya.timer.once(1000, this, this.setVis, [bool]);
+    };
+    BaseRole.prototype.setVis = function (bool) {
+        this.visible = bool;
+    };
+    BaseRole.prototype.dispose = function () {
+        // if(this.roleVo.isEnemy)
+        // {
+        this.removeSelf();
+        if (this.skeletonAni) {
+            this.skeletonAni.destroy();
+        }
+        this.skeletonAni = null;
+        // this.roleVo = null;
+        // }
+    };
     return BaseRole;
 }(Laya.Sprite));
 //# sourceMappingURL=BaseRole.js.map

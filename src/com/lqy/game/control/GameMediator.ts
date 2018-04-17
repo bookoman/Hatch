@@ -37,7 +37,7 @@ class GameMediator extends BaseMediator{
         
         GameDataManager.ins.initData();
 
-        RoleManager.ins.initRoles();
+        RoleManager.ins.initHeors();
 
         BattleEngine.ins.run();
         
