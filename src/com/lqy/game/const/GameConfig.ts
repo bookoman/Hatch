@@ -12,11 +12,11 @@ class GameConfig{
     // public static MAP_BLOCK_HEIGHT:number = 200;
     // public static MAP_NEAR_TYPE:number = 1;
     /**场景地图出事化Y坐标 */
-    public static MAP_INIT_Y:number = 400;
+    public static MAP_INIT_Y:number = 600;
     /**战斗场景与场景地图偏移 */
     public static BATTLE_SCENE_OFFSET_Y = 40;
     /**战斗场景高度 */
-    public static BATTLE_SCENE_HEIGHT:number = 300;
+    public static BATTLE_SCENE_HEIGHT:number = 500;
     /**战斗每轮攻击人数 */
     public static BATTLE_TURN_ATTACK_SUM:number = 1;
     
@@ -39,7 +39,6 @@ class GameConfig{
 
     /**********动画 */
     //索引对应人物动画名字
-
 
     
 }

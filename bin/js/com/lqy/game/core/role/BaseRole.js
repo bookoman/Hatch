@@ -20,6 +20,8 @@ var BaseRole = /** @class */ (function (_super) {
         _this.aniCount = 0;
         _this.aniScale = 1;
         _this.isLoaded = false;
+        _this.LblName = null;
+        _this.roleBloodBar = null;
         return _this;
     }
     BaseRole.prototype.initRole = function (roleVo, scale) {
@@ -34,7 +36,12 @@ var BaseRole = /** @class */ (function (_super) {
         this.addChild(this.skeletonAni);
         LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
     };
-    BaseRole.prototype.onError = function () {
+    BaseRole.prototype.showFloatFont = function (blood) {
+        var floatFontTip = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
+        if (floatFontTip) {
+            floatFontTip.setAttribute(40, "#ff0000");
+            floatFontTip.show("-" + blood, this, -50, -180, 0.5, 50);
+        }
     };
     /**
      *
@@ -61,14 +68,26 @@ var BaseRole = /** @class */ (function (_super) {
         this.isLoaded = true;
         this.aniCount = this.skeletonAni.getAnimNum();
         this.aniPlay(ind);
-        // var text:Laya.Label = new Laya.Label();
-        // text.x = -60;
-        // text.y = -180;
-        // text.fontSize = 24;
-        // text.color = "#ff0000";
-        // text.text = this.roleVo.name;
-        // this.addChild(text);
+        this.initComponets();
         // console.log("播放动画名字："+this.aniCount);
+    };
+    BaseRole.prototype.initComponets = function () {
+        //血条
+        this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
+        this.roleBloodBar.x = -60;
+        this.roleBloodBar.y = -180;
+        this.addChild(this.roleBloodBar);
+        //名字
+        this.LblName = new Laya.Label();
+        this.LblName.x = this.roleBloodBar.x;
+        this.LblName.y = this.roleBloodBar.y - 30;
+        this.LblName.fontSize = 24;
+        this.LblName.color = "#000000";
+        this.LblName.text = this.roleVo.name;
+        this.addChild(this.LblName);
+    };
+    BaseRole.prototype.setBlood = function (value) {
+        this.roleBloodBar.setProgress(value);
     };
     /**设置显示层级 */
     BaseRole.prototype.setShowIndex = function (ind) {
@@ -94,6 +113,13 @@ var BaseRole = /** @class */ (function (_super) {
             this.skeletonAni.destroy();
         }
         this.skeletonAni = null;
+        if (this.LblName) {
+            this.LblName.removeSelf();
+        }
+        if (this.roleBloodBar) {
+            this.roleBloodBar.removeSelf();
+            ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR, this.roleBloodBar);
+        }
         // this.roleVo = null;
         // }
     };

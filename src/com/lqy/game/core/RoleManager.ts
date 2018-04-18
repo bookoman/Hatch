@@ -123,7 +123,10 @@ class RoleManager{
             Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.moveCompleteAtt,[attRoleVo,defRoleVo]));
         }
     }
-
+    /**
+     * 移动到敌方攻击
+     * @param data 
+     */
     private moveCompleteAtt(data):void
     {
         var attRoleVo:RoleVo = this.attRole.roleVo;
@@ -131,33 +134,43 @@ class RoleManager{
         BattleDataManager.ins.calculationAttribute();
         if(defRoleVo.isDeath)
         {
-            this.defRole.aniPlay(RoleAniIndex.DEATH);
+            this.defRole.aniPlay(RoleAniIndex.DEATH,false);
             this.defRole.setVisible(false);
         }
         else
         {
             this.defRole.aniPlay(RoleAniIndex.INJURED);
+            this.defRole.showFloatFont(attRoleVo.att);
+            this.defRole.setBlood(defRoleVo.battleHP / defRoleVo.hp);
         }
         if(this.attRole && this.defRole)
         {
             this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBack);
         }
     }
+    /**
+     * 攻击完移动回阵型
+     */
     private moveBack():void
     {
         var attRoleVo:RoleVo = this.attRole.roleVo;
         var defRoleVo:RoleVo = this.defRole.roleVo;
         Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000/2,null,new Handler(this,this.moveBackComplete));
     }
-
+    /**
+     * 移动回阵型完成
+     */
     private moveBackComplete():void
     {
         
         this.attRole.aniPlay(RoleAniIndex.STAND);
-        this.defRole.aniPlay(RoleAniIndex.STAND);
+        if(!this.defRole.roleVo.isDeath)
+        {
+            this.defRole.aniPlay(RoleAniIndex.STAND);
+        }
         EventManager.ins.dispatchEvent(EventManager.ENEMY_ATT_COMPLETE);
     }
-
+    /**清除舞台显示对象 */
     public clearRole():void
     {
         if(this.heroRoles)

@@ -25,12 +25,16 @@ class GameMediator extends BaseMediator{
     }
     private onPlayAni(e:Laya.Event):void
     {
-        
-        
+        var bloodBar:RoleBloodBar = new RoleBloodBar();
+        bloodBar.x = 100;
+        bloodBar.y = 50;
+        this.view.addChild(bloodBar);
     }
 
     private onBtnOpen(e:Laya.Event):void
     {
+        ObjectPoolUtil.init();
+
         MapManager.ins.enterMap("res/map",1,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
         
         GameDataManager.ins.initData();

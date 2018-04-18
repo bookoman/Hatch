@@ -79,7 +79,7 @@ class BattleDataManager{
         this.checkBattleEnd();
         if(this.curAttCamp == BattleAttCampType.ENEMY)
         {
-            console.log("....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVo.name + "("+ this.curDefRoleVo.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVo.battleHP);
+            // console.log("....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVo.name + "("+ this.curDefRoleVo.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVo.battleHP);
         }
     }
     /**

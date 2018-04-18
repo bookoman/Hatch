@@ -32,8 +32,13 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnAni.off(Laya.Event.CLICK, this, this.onPlayAni);
     };
     GameMediator.prototype.onPlayAni = function (e) {
+        var bloodBar = new RoleBloodBar();
+        bloodBar.x = 100;
+        bloodBar.y = 50;
+        this.view.addChild(bloodBar);
     };
     GameMediator.prototype.onBtnOpen = function (e) {
+        ObjectPoolUtil.init();
         MapManager.ins.enterMap("res/map", 1, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
         GameDataManager.ins.initData();
         RoleManager.ins.initHeors();

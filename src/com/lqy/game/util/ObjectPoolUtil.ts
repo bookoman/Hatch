@@ -2,24 +2,39 @@
 * 对象池工具
 */
 class ObjectPoolUtil{
-    private static TestPageUIAry:Array<ui.test.TestPageUI> = null;
+    /**飘字对象 */
+    public static FLOAT_FONT_TIPS:string = "floatFontTips";
+    /**角色血条 */
+    public static ROLE_BLOOD_BAR:string = "roleBloodBar";
+
+
+    /**飘字对象 */
+    private static floatFontTipsAry:Array<FloatFontTips> = null;
+    /**角色血条 */
+    private static roleBloodBarAry:Array<RoleBloodBar> = null;
     constructor(){
 
     }
 
     public static init():void
     {
-        this.TestPageUIAry = new Array();
+        this.floatFontTipsAry = new Array();
         for(var i = 0;i < 10; i++)
         {
-            this.TestPageUIAry.push(new ui.test.TestPageUI());
+            this.floatFontTipsAry.push(new FloatFontTips());
         }
         
+        this.roleBloodBarAry = new Array();
+        for(i = 0;i < 10;i++)
+        {
+            this.roleBloodBarAry.push(new RoleBloodBar());
+        }
     }
     /**借用一个对象 */
-    public static borrowObjcet(view)
+    public static borrowObjcet(property:string)
     {
-        var ary = this[view.constructor.name+"Ary"];
+        
+        var ary = this[property+"Ary"];
         if(ary && ary.length > 0)
         {
            return ary.pop();
@@ -27,12 +42,12 @@ class ObjectPoolUtil{
         return null;
     }
     /**还一个对象 */
-    public static stillObject(view):void
+    public static stillObject(property:string,obj:any):void
     {
-        var ary = this[view.constructor.name+"Ary"];
+        var ary = this[property+"Ary"];
         if(ary)
         {
-            ary.push(view);
+            ary.push(obj);
         }
     }
 }
