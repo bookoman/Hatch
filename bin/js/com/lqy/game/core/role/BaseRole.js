@@ -19,6 +19,7 @@ var BaseRole = /** @class */ (function (_super) {
         _this.skeletonAni = null;
         _this.aniCount = 0;
         _this.aniScale = 1;
+        _this.isLoaded = false;
         return _this;
     }
     BaseRole.prototype.initRole = function (roleVo, scale) {
@@ -26,6 +27,12 @@ var BaseRole = /** @class */ (function (_super) {
         if (scale) {
             this.aniScale = scale;
         }
+        this.isLoaded = false;
+        this.skeletonAni = new Skeleton();
+        this.skeletonAni.scale(this.aniScale, this.aniScale);
+        this.skeletonAni.scaleX = this.roleVo.scaleX;
+        this.addChild(this.skeletonAni);
+        LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
     };
     BaseRole.prototype.onError = function () {
     };
@@ -33,23 +40,25 @@ var BaseRole = /** @class */ (function (_super) {
      *
      * @param aniID 动画id
      */
-    BaseRole.prototype.aniPlay = function (aniID) {
-        if (this.skeletonAni) {
-            //>= aniCount默认播放第一个动画
+    BaseRole.prototype.aniPlay = function (aniID, loop, laterTime, caller, method) {
+        if (this.isLoaded) {
+            loop = loop ? false : true;
             aniID = aniID % this.aniCount;
-            this.skeletonAni.play(aniID, true);
-            // console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID));  
+            //>= aniCount默认播放第一个动画
+            if (this.skeletonAni) {
+                this.skeletonAni.play(aniID, loop);
+                if (laterTime && caller && method) {
+                    Laya.timer.once(laterTime, caller, method);
+                }
+                // console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID));
+            }
         }
         else {
-            this.skeletonAni = new Skeleton();
             this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk", new Laya.Handler(this, this.loadCompleted, [aniID]));
-            this.skeletonAni.scale(this.aniScale, this.aniScale);
-            this.skeletonAni.scaleX = this.roleVo.scaleX;
-            this.addChild(this.skeletonAni);
-            LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
         }
     };
     BaseRole.prototype.loadCompleted = function (ind) {
+        this.isLoaded = true;
         this.aniCount = this.skeletonAni.getAnimNum();
         this.aniPlay(ind);
         // var text:Laya.Label = new Laya.Label();
@@ -60,6 +69,13 @@ var BaseRole = /** @class */ (function (_super) {
         // text.text = this.roleVo.name;
         // this.addChild(text);
         // console.log("播放动画名字："+this.aniCount);
+    };
+    /**设置显示层级 */
+    BaseRole.prototype.setShowIndex = function (ind) {
+        var layer = LayerManager.ins.getLayer(LayerManager.ROLE_LAYER);
+        if (ind >= 0 && ind < layer.numChildren) {
+            layer.setChildIndex(this, ind);
+        }
     };
     BaseRole.prototype.run = function () {
         this.aniPlay(RoleAniIndex.MOVE);

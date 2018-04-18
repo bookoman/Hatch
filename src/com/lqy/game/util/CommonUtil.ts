@@ -1,0 +1,9 @@
+/*
+* name;
+*/
+class CommonUtil{
+    constructor(){
+
+    }
+    
+}

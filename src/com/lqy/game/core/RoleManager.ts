@@ -40,6 +40,10 @@ class RoleManager{
             hero.aniPlay(RoleAniIndex.MOVE);
             this.heroRoles.push(hero);
         }
+
+        this.heroRoles.forEach(heroView =>{
+            heroView.setShowIndex(heroView.roleVo.lineupGrid-1);
+        });
         
     }
 
@@ -48,9 +52,8 @@ class RoleManager{
     {
         //怪物数据
         var enemyData:EnemyData = GameDataManager.ins.enemyData;
-        
+        this.enemyRoles = new Array();
         //怪物显示对象
-        var enemyRoles:Array<Enemy> = new Array();
         var enemy:Enemy;
         var roleVo:RoleVo;
         for(var i = 0;i < enemyData.roleVoAry.length;i++)
@@ -58,9 +61,11 @@ class RoleManager{
             roleVo = enemyData.roleVoAry[i];
             enemy = new Enemy();
             enemy.initRole(roleVo,1);
-            enemyRoles.push(enemy);
+            this.enemyRoles.push(enemy);
         }
-        RoleManager.ins.enemyRoles = enemyRoles;
+        this.enemyRoles.forEach(enemyView =>{
+            enemyView.setShowIndex(enemyView.roleVo.lineupGrid-1);
+        });
     }
     
     /**
@@ -114,30 +119,35 @@ class RoleManager{
         if(this.attRole && this.defRole)
         {
             this.attRole.aniPlay(RoleAniIndex.MOVE);
-            Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - 50,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.moveCompleteAtt,[attRoleVo,defRoleVo]));
+            var tempX:number = defRoleVo.isEnemy ? 200 : -200;
+            Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.moveCompleteAtt,[attRoleVo,defRoleVo]));
         }
     }
 
     private moveCompleteAtt(data):void
     {
-        
+        var attRoleVo:RoleVo = this.attRole.roleVo;
+        var defRoleVo:RoleVo = this.defRole.roleVo;
+        BattleDataManager.ins.calculationAttribute();
+        if(defRoleVo.isDeath)
+        {
+            this.defRole.aniPlay(RoleAniIndex.DEATH);
+            this.defRole.setVisible(false);
+        }
+        else
+        {
+            this.defRole.aniPlay(RoleAniIndex.INJURED);
+        }
         if(this.attRole && this.defRole)
         {
-            this.attRole.aniPlay(RoleAniIndex.ATTACK);
-            var attRoleVo:RoleVo = this.attRole.roleVo;
-            var defRoleVo:RoleVo = this.defRole.roleVo;
-            BattleDataManager.ins.calculationAttribute();
-            if(defRoleVo.isDeath)
-            {
-                this.defRole.aniPlay(RoleAniIndex.DEATH);
-                this.defRole.setVisible(false);
-            }
-            else
-            {
-                this.defRole.aniPlay(RoleAniIndex.INJURED);
-            }
-            Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.moveBackComplete));
+            this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBack);
         }
+    }
+    private moveBack():void
+    {
+        var attRoleVo:RoleVo = this.attRole.roleVo;
+        var defRoleVo:RoleVo = this.defRole.roleVo;
+        Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000/2,null,new Handler(this,this.moveBackComplete));
     }
 
     private moveBackComplete():void

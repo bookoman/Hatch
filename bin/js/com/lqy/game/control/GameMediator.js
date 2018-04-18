@@ -16,9 +16,7 @@ var GameMediator = /** @class */ (function (_super) {
     function GameMediator(assetsUrl, view) {
         if (assetsUrl === void 0) { assetsUrl = null; }
         if (view === void 0) { view = null; }
-        var _this = _super.call(this, assetsUrl, view) || this;
-        _this.aniID = 0;
-        return _this;
+        return _super.call(this, assetsUrl, view) || this;
     }
     GameMediator.prototype.initView = function () {
         this.view = new ui.GameViewUI();
@@ -34,8 +32,6 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnAni.off(Laya.Event.CLICK, this, this.onPlayAni);
     };
     GameMediator.prototype.onPlayAni = function (e) {
-        RoleManager.ins.playAni(this.aniID);
-        this.aniID++;
     };
     GameMediator.prototype.onBtnOpen = function (e) {
         MapManager.ins.enterMap("res/map", 1, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);

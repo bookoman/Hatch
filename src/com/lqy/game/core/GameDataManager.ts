@@ -69,8 +69,8 @@ class GameDataManager{
         //怪物数据
         this.enemyData = new EnemyData();
         this.enemyData.roleVoAry = [];
-        // var ids:Array<string> = ["20001","20000","20002","20003","20004"];
-        var ids:Array<string> = ["20001"];
+        var ids:Array<string> = ["20001","20000","20002","20003","20004"];
+        // var ids:Array<string> = ["20001"];
         var roleVo:RoleVo;
         for(var i = 0;i < ids.length;i++)
         {

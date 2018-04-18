@@ -23,12 +23,10 @@ class GameMediator extends BaseMediator{
         this.view.btnOpen.off(Laya.Event.CLICK,this,this.onBtnOpen);
         this.view.btnAni.off(Laya.Event.CLICK,this,this.onPlayAni);
     }
-    private aniID:number = 0;
     private onPlayAni(e:Laya.Event):void
     {
         
-        RoleManager.ins.playAni(this.aniID);
-        this.aniID++;
+        
     }
 
     private onBtnOpen(e:Laya.Event):void
