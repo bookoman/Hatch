@@ -24,21 +24,35 @@ class RoleManager{
     }
 
 
-    public initHeors():void
+    public initHeros():void
     {
-        this.clearRole();
-        
-        this.heroRoles = new Array();
+        // this.clearRole();
+        if(this.heroRoles == null)
+        {
+            this.heroRoles = new Array();
+        }
         var playerData:PlayerData = GameDataManager.ins.selfPlayerData;
         var roleVo:RoleVo;
-        var hero:BaseRole;
+        var hero:Hero;
         for(var i = 0;i < playerData.roleVoAry.length;i++)
         {
             roleVo = playerData.roleVoAry[i];
-            hero = new Hero();
-            hero.initRole(roleVo,1);
+            hero = null;
+            this.heroRoles.forEach(heroView =>{
+                if(heroView.roleVo.id == roleVo.id)
+                {
+                    hero = heroView;
+                    hero.setBlood(0);
+                }
+            });
+            if(hero == null)
+            {
+                hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
+                hero.initRole(roleVo,1);
+                this.heroRoles.push(hero);
+            }
             hero.aniPlay(RoleAniIndex.MOVE);
-            this.heroRoles.push(hero);
+           
         }
 
         this.heroRoles.forEach(heroView =>{
@@ -59,7 +73,7 @@ class RoleManager{
         for(var i = 0;i < enemyData.roleVoAry.length;i++)
         {
             roleVo = enemyData.roleVoAry[i];
-            enemy = new Enemy();
+            enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
             enemy.initRole(roleVo,1);
             this.enemyRoles.push(enemy);
         }
@@ -141,8 +155,8 @@ class RoleManager{
         {
             this.defRole.aniPlay(RoleAniIndex.INJURED);
             this.defRole.showFloatFont(attRoleVo.att);
-            this.defRole.setBlood(defRoleVo.battleHP / defRoleVo.hp);
         }
+        this.defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
         if(this.attRole && this.defRole)
         {
             this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBack);
@@ -175,15 +189,27 @@ class RoleManager{
     {
         if(this.heroRoles)
         {
+            var lastHeros:Array<Hero> = [];
             this.heroRoles.forEach(role => {
-                role.dispose();
+                //只移除死掉英雄
+                if(role.roleVo.isDeath)
+                {
+                    ObjectPoolUtil.stillObject(ObjectPoolUtil.HERO_ROLE,role);
+                    role.dispose();
+                }
+                else
+                {
+                    lastHeros.push(role);
+                }
+                role.roleVo.isDeath = false;
             });
-            this.heroRoles = null;
+            this.heroRoles = lastHeros;
         }
         
         if(this.enemyRoles)
         {
             this.enemyRoles.forEach(role => {
+                ObjectPoolUtil.stillObject(ObjectPoolUtil.ENEMY_ROLE,role);
                 role.dispose();
             });
             this.enemyRoles = null;

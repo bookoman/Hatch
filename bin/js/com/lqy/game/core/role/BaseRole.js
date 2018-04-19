@@ -35,6 +35,7 @@ var BaseRole = /** @class */ (function (_super) {
         this.skeletonAni.scaleX = this.roleVo.scaleX;
         this.addChild(this.skeletonAni);
         LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
+        this.visible = true;
     };
     BaseRole.prototype.showFloatFont = function (blood) {
         var floatFontTip = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
@@ -57,37 +58,47 @@ var BaseRole = /** @class */ (function (_super) {
                 if (laterTime && caller && method) {
                     Laya.timer.once(laterTime, caller, method);
                 }
-                // console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID));
+                // if(this.roleVo.name == "蓝狼"){
+                //     console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID),this.visible);
+                // }
             }
         }
         else {
-            this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk", new Laya.Handler(this, this.loadCompleted, [aniID]));
+            this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk", new Laya.Handler(this, this.loadCompleted, [aniID, loop]));
         }
     };
-    BaseRole.prototype.loadCompleted = function (ind) {
-        this.isLoaded = true;
-        this.aniCount = this.skeletonAni.getAnimNum();
-        this.aniPlay(ind);
-        this.initComponets();
-        // console.log("播放动画名字："+this.aniCount);
+    BaseRole.prototype.loadCompleted = function (ind, loop) {
+        if (!this.isLoaded) {
+            this.isLoaded = true;
+            this.aniCount = this.skeletonAni.getAnimNum();
+            this.aniPlay(ind, loop);
+            this.initComponets();
+            // console.log("播放动画名字："+this.aniCount);
+        }
     };
     BaseRole.prototype.initComponets = function () {
         //血条
         this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
+        this.roleBloodBar.scaleX = 0.5;
         this.roleBloodBar.x = -60;
         this.roleBloodBar.y = -180;
+        this.roleBloodBar.init();
         this.addChild(this.roleBloodBar);
         //名字
         this.LblName = new Laya.Label();
+        this.LblName.width = 114;
         this.LblName.x = this.roleBloodBar.x;
         this.LblName.y = this.roleBloodBar.y - 30;
         this.LblName.fontSize = 24;
-        this.LblName.color = "#000000";
+        this.LblName.color = "#00FF99";
+        this.LblName.align = "center";
         this.LblName.text = this.roleVo.name;
         this.addChild(this.LblName);
     };
     BaseRole.prototype.setBlood = function (value) {
-        this.roleBloodBar.setProgress(value);
+        if (this.roleBloodBar) {
+            this.roleBloodBar.setProgress(value);
+        }
     };
     /**设置显示层级 */
     BaseRole.prototype.setShowIndex = function (ind) {
@@ -103,7 +114,10 @@ var BaseRole = /** @class */ (function (_super) {
         Laya.timer.once(1000, this, this.setVis, [bool]);
     };
     BaseRole.prototype.setVis = function (bool) {
-        this.visible = bool;
+        //延迟回调判断，复活就设置隐藏
+        if (this.roleVo.isDeath) {
+            this.visible = bool;
+        }
     };
     BaseRole.prototype.dispose = function () {
         // if(this.roleVo.isEnemy)

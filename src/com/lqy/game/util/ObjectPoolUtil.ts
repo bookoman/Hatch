@@ -6,12 +6,19 @@ class ObjectPoolUtil{
     public static FLOAT_FONT_TIPS:string = "floatFontTips";
     /**角色血条 */
     public static ROLE_BLOOD_BAR:string = "roleBloodBar";
-
+    /**角色显示对象 */
+    public static HERO_ROLE:string = "hero";
+    /**敌人显示对象 */
+    public static ENEMY_ROLE:string = "enemy";
 
     /**飘字对象 */
     private static floatFontTipsAry:Array<FloatFontTips> = null;
     /**角色血条 */
     private static roleBloodBarAry:Array<RoleBloodBar> = null;
+    /**英雄显示对象 */
+    private static heroAry:Array<Hero> = null;
+    /**敌人显示对象 */
+    private static enemyAry:Array<Hero> = null;
     constructor(){
 
     }
@@ -28,6 +35,14 @@ class ObjectPoolUtil{
         for(i = 0;i < 10;i++)
         {
             this.roleBloodBarAry.push(new RoleBloodBar());
+        }
+
+        this.heroAry = new Array();
+        this.enemyAry = new Array();
+        for(i = 0;i < 5;i++)
+        {
+            this.heroAry.push(new Hero());
+            this.enemyAry.push(new Enemy());
         }
     }
     /**借用一个对象 */

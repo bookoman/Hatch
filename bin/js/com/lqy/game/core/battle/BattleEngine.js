@@ -76,8 +76,8 @@ var BattleEngine = /** @class */ (function () {
     BattleEngine.prototype.endBattle = function () {
         this.timeCount = 0;
         MapManager.ins.mapScrollSwitch = true;
-        this.roleMgr.initHeors();
-        // this.roleMgr.heroRun();
+        this.roleMgr.clearRole();
+        this.roleMgr.initHeros();
     };
     BattleEngine._ins = null;
     return BattleEngine;

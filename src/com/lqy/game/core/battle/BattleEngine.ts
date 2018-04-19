@@ -97,8 +97,8 @@ class BattleEngine{
     {
         this.timeCount = 0;
         MapManager.ins.mapScrollSwitch = true;
-        this.roleMgr.initHeors();
-        // this.roleMgr.heroRun();
+        this.roleMgr.clearRole();
+        this.roleMgr.initHeros();
     }
 
 

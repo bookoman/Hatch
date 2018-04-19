@@ -7,10 +7,17 @@ var Game = /** @class */ (function () {
     function Game() {
     }
     Game.prototype.init = function () {
-        Laya.loader.load("res/atlas/comp.atlas", Handler.create(this, this.onLoaded));
-        console.log("...............");
+        var resAry = [
+            { url: "res/atlas/comp.atlas", type: Loader.ATLAS, size: 50, priority: 1 },
+            { url: "res/atlas/main.atlas", type: Loader.ATLAS, size: 50, priority: 1 }
+        ];
+        Laya.loader.load(resAry, Handler.create(this, this.onLoaded), Handler.create(this, this.loadProgress));
+    };
+    Game.prototype.loadProgress = function (value) {
+        setLoadingView(Math.floor(value * 100));
     };
     Game.prototype.onLoaded = function () {
+        setLoadingView(100);
         LayerManager.ins.init();
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
     };

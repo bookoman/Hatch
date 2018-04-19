@@ -12,6 +12,21 @@ var View = laya.ui.View;
 var Dialog = laya.ui.Dialog;
 var ui;
 (function (ui) {
+    var BattleReportViewUI = /** @class */ (function (_super) {
+        __extends(BattleReportViewUI, _super);
+        function BattleReportViewUI() {
+            return _super.call(this) || this;
+        }
+        BattleReportViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.BattleReportViewUI.uiView);
+        };
+        BattleReportViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "main/img_reportbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "TextArea", "props": { "y": 57, "x": 10, "width": 731, "var": "texaArea", "height": 300 } }, { "type": "Label", "props": { "y": 15, "x": 322, "width": 85, "text": "战    报", "height": 25, "fontSize": 24, "color": "#000000", "bold": true, "align": "center" } }] };
+        return BattleReportViewUI;
+    }(View));
+    ui.BattleReportViewUI = BattleReportViewUI;
+})(ui || (ui = {}));
+(function (ui) {
     var GameViewUI = /** @class */ (function (_super) {
         __extends(GameViewUI, _super);
         function GameViewUI() {
@@ -21,7 +36,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.GameViewUI.uiView);
         };
-        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "main/img_tzdb.png", "height": 1334 } }, { "type": "Button", "props": { "y": 607, "x": 267, "width": 216, "var": "btnOpen", "skin": "comp/button.png", "labelSize": 24, "label": "打开", "height": 83 } }, { "type": "Image", "props": { "y": 821, "x": 294, "skin": "main/logo.png" } }, { "type": "Button", "props": { "y": 76, "x": 59, "width": 120, "var": "btnAni", "skin": "comp/button.png", "labelSize": 24, "label": "playAni", "height": 60 } }] };
+        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "main/img_tzdb.png", "height": 1334 } }, { "type": "Button", "props": { "y": 102, "x": 268, "width": 216, "var": "btnOpen", "skin": "comp/button.png", "labelSize": 24, "label": "打开", "height": 83 } }, { "type": "Image", "props": { "y": 75, "x": 569, "skin": "main/logo.png" } }, { "type": "Button", "props": { "y": 76, "x": 59, "width": 120, "var": "btnAni", "skin": "comp/button.png", "labelSize": 24, "label": "playAni", "height": 60 } }] };
         return GameViewUI;
     }(View));
     ui.GameViewUI = GameViewUI;

@@ -30,7 +30,8 @@ class RoleVo{
     //战斗数据
     
     public battleHP:number;
-    public isDeath:boolean;
+    /**是否死亡 */
+    public isDeath:boolean = true;
     public isAtted:boolean;
     public attEnemyVos:Array<RoleVo>;
 

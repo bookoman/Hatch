@@ -25,8 +25,10 @@ var RoleBloodBar = /** @class */ (function (_super) {
         this.progress = new Laya.Image();
         this.progress.x = 1;
         this.progress.texture = Laya.loader.getRes("main/img_blood.png");
-        this.setProgress(0);
         this.addChild(this.progress);
+    };
+    RoleBloodBar.prototype.init = function () {
+        this.setProgress(0);
     };
     /**
      *

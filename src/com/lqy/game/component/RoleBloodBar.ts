@@ -10,7 +10,7 @@ class RoleBloodBar extends Laya.Sprite{
         super();
         this.initSkin();
     }
-    public initSkin():void
+    private initSkin():void
     {
         this.bg = new Laya.Image();
         this.bg.texture = Laya.loader.getRes("main/img_bloodbg.png");
@@ -18,8 +18,11 @@ class RoleBloodBar extends Laya.Sprite{
         this.progress = new Laya.Image();
         this.progress.x = 1;
         this.progress.texture = Laya.loader.getRes("main/img_blood.png");
-        this.setProgress(0);
         this.addChild(this.progress);
+    }
+    public init():void
+    {
+        this.setProgress(0);
     }
     /**
      * 

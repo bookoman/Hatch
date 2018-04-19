@@ -3,6 +3,8 @@
 */
 var RoleVo = /** @class */ (function () {
     function RoleVo() {
+        /**是否死亡 */
+        this.isDeath = true;
     }
     /**初始化阵型数据 */
     RoleVo.prototype.initRowColPosPoint = function () {

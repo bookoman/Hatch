@@ -16,12 +16,21 @@ var GameMediator = /** @class */ (function (_super) {
     function GameMediator(assetsUrl, view) {
         if (assetsUrl === void 0) { assetsUrl = null; }
         if (view === void 0) { view = null; }
-        return _super.call(this, assetsUrl, view) || this;
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.battleReportMediator = null;
+        return _this;
     }
     GameMediator.prototype.initView = function () {
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, false, false, true);
         _super.prototype.initView.call(this);
+        this.battleReportMediator = new BattleReportMediator();
+        //初始化游戏场景
+        ObjectPoolUtil.init();
+        MapManager.ins.enterMap("res/map", 1, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
+        GameDataManager.ins.initData();
+        RoleManager.ins.initHeros();
+        BattleEngine.ins.run();
     };
     GameMediator.prototype.addEvents = function () {
         this.view.btnOpen.on(Laya.Event.CLICK, this, this.onBtnOpen);
@@ -32,17 +41,8 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnAni.off(Laya.Event.CLICK, this, this.onPlayAni);
     };
     GameMediator.prototype.onPlayAni = function (e) {
-        var bloodBar = new RoleBloodBar();
-        bloodBar.x = 100;
-        bloodBar.y = 50;
-        this.view.addChild(bloodBar);
     };
     GameMediator.prototype.onBtnOpen = function (e) {
-        ObjectPoolUtil.init();
-        MapManager.ins.enterMap("res/map", 1, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
-        GameDataManager.ins.initData();
-        RoleManager.ins.initHeors();
-        BattleEngine.ins.run();
     };
     GameMediator.prototype.dispose = function () {
     };

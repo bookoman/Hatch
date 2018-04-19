@@ -13,6 +13,12 @@ var ObjectPoolUtil = /** @class */ (function () {
         for (i = 0; i < 10; i++) {
             this.roleBloodBarAry.push(new RoleBloodBar());
         }
+        this.heroAry = new Array();
+        this.enemyAry = new Array();
+        for (i = 0; i < 5; i++) {
+            this.heroAry.push(new Hero());
+            this.enemyAry.push(new Enemy());
+        }
     };
     /**借用一个对象 */
     ObjectPoolUtil.borrowObjcet = function (property) {
@@ -33,10 +39,18 @@ var ObjectPoolUtil = /** @class */ (function () {
     ObjectPoolUtil.FLOAT_FONT_TIPS = "floatFontTips";
     /**角色血条 */
     ObjectPoolUtil.ROLE_BLOOD_BAR = "roleBloodBar";
+    /**角色显示对象 */
+    ObjectPoolUtil.HERO_ROLE = "hero";
+    /**敌人显示对象 */
+    ObjectPoolUtil.ENEMY_ROLE = "enemy";
     /**飘字对象 */
     ObjectPoolUtil.floatFontTipsAry = null;
     /**角色血条 */
     ObjectPoolUtil.roleBloodBarAry = null;
+    /**英雄显示对象 */
+    ObjectPoolUtil.heroAry = null;
+    /**敌人显示对象 */
+    ObjectPoolUtil.enemyAry = null;
     return ObjectPoolUtil;
 }());
 //# sourceMappingURL=ObjectPoolUtil.js.map

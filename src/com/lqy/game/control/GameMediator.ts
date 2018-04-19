@@ -2,6 +2,7 @@
 * name;
 */
 class GameMediator extends BaseMediator{
+    private battleReportMediator:BattleReportMediator = null;
     constructor(assetsUrl = null,view = null){
         super(assetsUrl,view);
     }
@@ -10,7 +11,13 @@ class GameMediator extends BaseMediator{
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,false,false,true);
         super.initView();
-        
+        this.battleReportMediator = new BattleReportMediator();
+        //初始化游戏场景
+        ObjectPoolUtil.init();
+        MapManager.ins.enterMap("res/map",1,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
+        GameDataManager.ins.initData();
+        RoleManager.ins.initHeros();
+        BattleEngine.ins.run();
     }
     protected addEvents():void
     {
@@ -25,23 +32,11 @@ class GameMediator extends BaseMediator{
     }
     private onPlayAni(e:Laya.Event):void
     {
-        var bloodBar:RoleBloodBar = new RoleBloodBar();
-        bloodBar.x = 100;
-        bloodBar.y = 50;
-        this.view.addChild(bloodBar);
+        
     }
 
     private onBtnOpen(e:Laya.Event):void
     {
-        ObjectPoolUtil.init();
-
-        MapManager.ins.enterMap("res/map",1,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
-        
-        GameDataManager.ins.initData();
-
-        RoleManager.ins.initHeors();
-
-        BattleEngine.ins.run();
         
     }
     

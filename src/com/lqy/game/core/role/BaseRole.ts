@@ -26,6 +26,7 @@ class BaseRole extends Laya.Sprite{
         this.skeletonAni.scaleX = this.roleVo.scaleX;
         this.addChild(this.skeletonAni);
         LayerManager.ins.addToLayer(this,LayerManager.ROLE_LAYER,false,true,false);
+        this.visible = true;
     }
     
     public showFloatFont(blood:number):void
@@ -57,41 +58,53 @@ class BaseRole extends Laya.Sprite{
                 {
                     Laya.timer.once(laterTime,caller,method);
                 }
-                // console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID));
+                // if(this.roleVo.name == "蓝狼"){
+                //     console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID),this.visible);
+                // }
             }
         }
         else
         {
-            this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/"+ this.roleVo.id +".sk",new Laya.Handler(this,this.loadCompleted,[aniID]));
+            this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/"+ this.roleVo.id +".sk",new Laya.Handler(this,this.loadCompleted,[aniID,loop]));
         }
     }
     
-    private loadCompleted(ind) {
-        this.isLoaded = true;
-        this.aniCount = this.skeletonAni.getAnimNum();
-        this.aniPlay(ind);
-        this.initComponets();
-        // console.log("播放动画名字："+this.aniCount);
+    private loadCompleted(ind,loop) {
+        if(!this.isLoaded)
+        {
+            this.isLoaded = true;
+            this.aniCount = this.skeletonAni.getAnimNum();
+            this.aniPlay(ind,loop);
+            this.initComponets();
+            // console.log("播放动画名字："+this.aniCount);
+        }
     }
     private initComponets():void
     {
         //血条
         this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
+        this.roleBloodBar.scaleX = 0.5;
         this.roleBloodBar.x = -60;
         this.roleBloodBar.y = -180;
+        this.roleBloodBar.init();
         this.addChild(this.roleBloodBar);
         //名字
         this.LblName = new Laya.Label();
+        this.LblName.width = 114;
         this.LblName.x = this.roleBloodBar.x;
         this.LblName.y = this.roleBloodBar.y - 30;
         this.LblName.fontSize = 24;
-        this.LblName.color = "#000000";
+        this.LblName.color = "#00FF99";
+        this.LblName.align = "center";
         this.LblName.text = this.roleVo.name;
         this.addChild(this.LblName);
     }
     public setBlood(value:number):void
     {
-        this.roleBloodBar.setProgress(value);
+        if(this.roleBloodBar)
+        {
+            this.roleBloodBar.setProgress(value);
+        }
     }
     /**设置显示层级 */
     public setShowIndex(ind:number):void
@@ -113,7 +126,11 @@ class BaseRole extends Laya.Sprite{
     }
     private setVis(bool):void
     {
-        this.visible = bool;
+        //延迟回调判断，复活就设置隐藏
+        if(this.roleVo.isDeath)
+        {
+            this.visible = bool;
+        }
     }
     public dispose():void
     {

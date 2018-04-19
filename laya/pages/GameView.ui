@@ -2,6 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
+    "selecteID":7,
     "props":{"width":750,"sceneColor":"#000000","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -28,7 +29,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":607,"x":267,"width":216,"var":"btnOpen","skin":"comp/button.png","labelSize":24,"label":"打开","height":83},
+            "props":{"y":102,"x":268,"width":216,"var":"btnOpen","skin":"comp/button.png","labelSize":24,"label":"打开","height":83},
             "nodeParent":1,
             "label":"Button(btnOpen)",
             "isDirectory":false,
@@ -41,7 +42,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":821,"x":294,"skin":"main/logo.png"},
+            "props":{"y":75,"x":569,"skin":"main/logo.png"},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,

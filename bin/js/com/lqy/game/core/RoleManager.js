@@ -20,18 +20,29 @@ var RoleManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    RoleManager.prototype.initHeors = function () {
-        this.clearRole();
-        this.heroRoles = new Array();
+    RoleManager.prototype.initHeros = function () {
+        // this.clearRole();
+        if (this.heroRoles == null) {
+            this.heroRoles = new Array();
+        }
         var playerData = GameDataManager.ins.selfPlayerData;
         var roleVo;
         var hero;
         for (var i = 0; i < playerData.roleVoAry.length; i++) {
             roleVo = playerData.roleVoAry[i];
-            hero = new Hero();
-            hero.initRole(roleVo, 1);
+            hero = null;
+            this.heroRoles.forEach(function (heroView) {
+                if (heroView.roleVo.id == roleVo.id) {
+                    hero = heroView;
+                    hero.setBlood(0);
+                }
+            });
+            if (hero == null) {
+                hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
+                hero.initRole(roleVo, 1);
+                this.heroRoles.push(hero);
+            }
             hero.aniPlay(RoleAniIndex.MOVE);
-            this.heroRoles.push(hero);
         }
         this.heroRoles.forEach(function (heroView) {
             heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
@@ -47,7 +58,7 @@ var RoleManager = /** @class */ (function () {
         var roleVo;
         for (var i = 0; i < enemyData.roleVoAry.length; i++) {
             roleVo = enemyData.roleVoAry[i];
-            enemy = new Enemy();
+            enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
             enemy.initRole(roleVo, 1);
             this.enemyRoles.push(enemy);
         }
@@ -116,8 +127,8 @@ var RoleManager = /** @class */ (function () {
         else {
             this.defRole.aniPlay(RoleAniIndex.INJURED);
             this.defRole.showFloatFont(attRoleVo.att);
-            this.defRole.setBlood(defRoleVo.battleHP / defRoleVo.hp);
         }
+        this.defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
         if (this.attRole && this.defRole) {
             this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 500, this, this.moveBack);
         }
@@ -143,13 +154,23 @@ var RoleManager = /** @class */ (function () {
     /**清除舞台显示对象 */
     RoleManager.prototype.clearRole = function () {
         if (this.heroRoles) {
+            var lastHeros = [];
             this.heroRoles.forEach(function (role) {
-                role.dispose();
+                //只移除死掉英雄
+                if (role.roleVo.isDeath) {
+                    ObjectPoolUtil.stillObject(ObjectPoolUtil.HERO_ROLE, role);
+                    role.dispose();
+                }
+                else {
+                    lastHeros.push(role);
+                }
+                role.roleVo.isDeath = false;
             });
-            this.heroRoles = null;
+            this.heroRoles = lastHeros;
         }
         if (this.enemyRoles) {
             this.enemyRoles.forEach(function (role) {
+                ObjectPoolUtil.stillObject(ObjectPoolUtil.ENEMY_ROLE, role);
                 role.dispose();
             });
             this.enemyRoles = null;
