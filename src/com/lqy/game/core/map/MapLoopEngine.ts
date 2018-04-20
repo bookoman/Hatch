@@ -29,7 +29,15 @@ class MapLoopEngine extends Laya.Sprite{
     constructor(){
         super();
     }
-
+    /**
+     * 
+     * @param rootPath 
+     * @param mapID 
+     * @param mapType 
+     * @param scrollXSpeed 
+     * @param visualWidth 
+     * @param visualHeight 
+     */
     public initMap(rootPath:string,mapID:number,mapType:number,scrollXSpeed:number,visualWidth?:number,visualHeight?:number):void
     {
         if(this.mapID == mapID)

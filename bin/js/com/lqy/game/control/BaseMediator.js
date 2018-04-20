@@ -3,8 +3,6 @@
 */
 var BaseMediator = /** @class */ (function () {
     function BaseMediator(assetsUrl, view) {
-        if (assetsUrl === void 0) { assetsUrl = null; }
-        if (view === void 0) { view = null; }
         this.view = null;
         this.assetsUrl = assetsUrl;
         this.view = view;

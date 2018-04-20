@@ -28,6 +28,15 @@ var MapLoopEngine = /** @class */ (function (_super) {
         _this.scrollYSpeed = 2;
         return _this;
     }
+    /**
+     *
+     * @param rootPath
+     * @param mapID
+     * @param mapType
+     * @param scrollXSpeed
+     * @param visualWidth
+     * @param visualHeight
+     */
     MapLoopEngine.prototype.initMap = function (rootPath, mapID, mapType, scrollXSpeed, visualWidth, visualHeight) {
         if (this.mapID == mapID) {
             return;

@@ -5,9 +5,9 @@ class RoleVo{
     /**配置属性 */
     public id:string;
     public name:string;
-    public skillId:number;
     public runWidth:number;
     public runHeight:number;
+    public skillVos:Array<SkillVo>;
     /**攻击范围，矩形范围根据四个定点来确定玩家附近范围 */
     public attackRange:Rectangle;
 
@@ -34,6 +34,7 @@ class RoleVo{
     public isDeath:boolean = true;
     public isAtted:boolean;
     public attEnemyVos:Array<RoleVo>;
+    
 
     constructor(){
         
@@ -59,4 +60,33 @@ class RoleVo{
         this.posPoint.x += GameConfig.LINEUP_GRID_WIDTH / 2;
         this.posPoint.y +=  GameConfig.MAP_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y + GameConfig.LINEUP_GRID_HEIGHT / 2;
     }
+    /**重置技能CD */
+    public resetSkillCD():void
+    {
+        this.skillVos.forEach(skillVo => {
+            skillVo.calCD = skillVo.cd;
+        });
+    }
+    /**cd计时跑起来 */
+    public runCD():void
+    {
+        this.skillVos.forEach(skillVo => {
+            skillVo.runCD();
+        });
+    }
+    /**得到可用技能 ，自动释放技能*/
+    public getCanUserSkill():number
+    {   
+        var ind:number = 0;
+        this.skillVos.forEach(skillVo => {
+            ind++;
+            if(skillVo.isCanUse)
+            {
+                console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表");
+                skillVo.isCanUse = false;
+                return ind;
+            }
+        });
+        return ind;
+    }   
 }

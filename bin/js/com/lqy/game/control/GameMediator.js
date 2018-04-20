@@ -14,8 +14,6 @@ var __extends = (this && this.__extends) || (function () {
 var GameMediator = /** @class */ (function (_super) {
     __extends(GameMediator, _super);
     function GameMediator(assetsUrl, view) {
-        if (assetsUrl === void 0) { assetsUrl = null; }
-        if (view === void 0) { view = null; }
         var _this = _super.call(this, assetsUrl, view) || this;
         _this.battleReportMediator = null;
         return _this;

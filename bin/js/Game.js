@@ -14,11 +14,11 @@ var Game = /** @class */ (function () {
         Laya.loader.load(resAry, Handler.create(this, this.onLoaded), Handler.create(this, this.loadProgress));
     };
     Game.prototype.loadProgress = function (value) {
-        setLoadingView(Math.floor(value * 100));
+        // setLoadingView(Math.floor(value * 100));
     };
     Game.prototype.onLoaded = function () {
-        setLoadingView(100);
         LayerManager.ins.init();
+        DebugViewUtil.init();
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
     };
     return Game;

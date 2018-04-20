@@ -10,6 +10,11 @@ var BattleEngine = /** @class */ (function () {
     function BattleEngine() {
         this.battleDataMgr = BattleDataManager.ins;
         this.roleMgr = RoleManager.ins;
+        //技能视图
+        this.skillView = new SkillView();
+        this.skillView.x = 10;
+        this.skillView.y = 900;
+        LayerManager.ins.addToLayer(this.skillView, LayerManager.UI_LAYER, false, false, false);
     }
     Object.defineProperty(BattleEngine, "ins", {
         get: function () {
@@ -34,11 +39,13 @@ var BattleEngine = /** @class */ (function () {
         this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
         Laya.timer.loop(1000, this, this.runUpdate);
     };
+    /**更新 */
     BattleEngine.prototype.runUpdate = function () {
         this.timeCount++;
         if (this.timeCount == this.battleTimeInterval) {
             this.rutoBallte();
         }
+        this.battleDataMgr.runRoleSkillCD();
     };
     /**
      * 跑去战斗
@@ -58,6 +65,7 @@ var BattleEngine = /** @class */ (function () {
     };
     BattleEngine.prototype.attack = function () {
         this.battleDataMgr.startAtt();
+        this.skillView.init(this.battleDataMgr.curAttRoleVo.skillVos);
         this.roleMgr.battleAtt(this.battleDataMgr.curAttRoleVo, this.battleDataMgr.curDefRoleVo);
         EventManager.ins.addEvent(EventManager.ENEMY_ATT_COMPLETE, this, this.attCompleted);
         // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);

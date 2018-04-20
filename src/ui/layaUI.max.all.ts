@@ -18,6 +18,24 @@ module ui {
 }
 
 module ui {
+    export class DebugViewUI extends View {
+		public imgBg:Laya.Image;
+		public lblDec:Laya.Label;
+		public btnClear:Laya.Button;
+
+        public static  uiView:any ={"type":"View","props":{},"child":[{"type":"Image","props":{"y":0,"x":0,"width":500,"var":"imgBg","skin":"comp/blank.png","height":60}},{"type":"Label","props":{"y":28,"x":0,"wordWrap":true,"width":500,"var":"lblDec","text":"label","leading":2,"height":24,"fontSize":16,"color":"#f4f1f1"}},{"type":"Button","props":{"y":3,"x":416,"width":75,"var":"btnClear","skin":"comp/button.png","label":"clear","height":23}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.DebugViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
     export class GameViewUI extends View {
 		public btnOpen:Laya.Button;
 		public btnAni:Laya.Button;
@@ -46,6 +64,21 @@ module ui {
         
             super.createChildren();
             this.createView(ui.LoginViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.main {
+    export class SkillViewUI extends View {
+
+        public static  uiView:any ={"type":"View","props":{"width":400,"height":40}};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.main.SkillViewUI.uiView);
 
         }
 

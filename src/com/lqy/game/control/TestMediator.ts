@@ -2,7 +2,7 @@
 * name;
 */
 class TestMediator extends BaseMediator{
-    constructor(assetsUrl = null,view = null){
+    constructor(assetsUrl?:any,view?:any){
         super(assetsUrl,view);
     }
     protected initView():void

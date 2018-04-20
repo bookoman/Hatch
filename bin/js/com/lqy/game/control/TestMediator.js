@@ -14,8 +14,6 @@ var __extends = (this && this.__extends) || (function () {
 var TestMediator = /** @class */ (function (_super) {
     __extends(TestMediator, _super);
     function TestMediator(assetsUrl, view) {
-        if (assetsUrl === void 0) { assetsUrl = null; }
-        if (view === void 0) { view = null; }
         return _super.call(this, assetsUrl, view) || this;
     }
     TestMediator.prototype.initView = function () {

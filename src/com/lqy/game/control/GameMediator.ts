@@ -3,7 +3,8 @@
 */
 class GameMediator extends BaseMediator{
     private battleReportMediator:BattleReportMediator = null;
-    constructor(assetsUrl = null,view = null){
+    
+    constructor(assetsUrl?:any,view?:any){
         super(assetsUrl,view);
     }
     protected initView():void
@@ -12,6 +13,7 @@ class GameMediator extends BaseMediator{
         LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,false,false,true);
         super.initView();
         this.battleReportMediator = new BattleReportMediator();
+        
         //初始化游戏场景
         ObjectPoolUtil.init();
         MapManager.ins.enterMap("res/map",1,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);

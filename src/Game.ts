@@ -18,12 +18,12 @@ class Game{
     }
     private loadProgress(value):void
     {
-        setLoadingView(Math.floor(value * 100));
+        // setLoadingView(Math.floor(value * 100));
     }
     public onLoaded(): void
     {
-        setLoadingView(100);
         LayerManager.ins.init();
+        DebugViewUtil.init();
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
     }
 

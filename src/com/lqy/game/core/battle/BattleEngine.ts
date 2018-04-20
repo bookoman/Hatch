@@ -11,9 +11,15 @@ class BattleEngine{
     private battleTimeInterval:number;
     private battleDataMgr:BattleDataManager;
     private roleMgr:RoleManager;
+    private skillView:SkillView;
     constructor(){
         this.battleDataMgr = BattleDataManager.ins;
         this.roleMgr = RoleManager.ins;
+        //技能视图
+        this.skillView = new SkillView();
+        this.skillView.x = 10;
+        this.skillView.y = 900;
+        LayerManager.ins.addToLayer(this.skillView,LayerManager.UI_LAYER,false,false,false);
     }
     private static _ins:BattleEngine = null;
     public static get ins():BattleEngine
@@ -43,7 +49,7 @@ class BattleEngine{
         Laya.timer.loop(1000,this,this.runUpdate);
 
     }
-
+    /**更新 */
     private runUpdate():void
     {
         this.timeCount++;
@@ -51,6 +57,7 @@ class BattleEngine{
         {
             this.rutoBallte();
         }
+        this.battleDataMgr.runRoleSkillCD();
         
     } 
     /**
@@ -74,6 +81,7 @@ class BattleEngine{
     private attack():void
     {
         this.battleDataMgr.startAtt();
+        this.skillView.init(this.battleDataMgr.curAttRoleVo.skillVos);
         this.roleMgr.battleAtt(this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
         EventManager.ins.addEvent(EventManager.ENEMY_ATT_COMPLETE,this,this.attCompleted);
         // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);

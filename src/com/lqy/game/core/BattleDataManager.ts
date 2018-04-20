@@ -28,17 +28,19 @@ class BattleDataManager{
         this.attEnemyVos = GameDataManager.ins.enemyData.roleVoAry;
         this.attHeroVos.forEach(roleVo => {
             roleVo.battleHP = roleVo.hp;
+            roleVo.resetSkillCD();
             roleVo.isDeath = false;
             roleVo.attEnemyVos = [];
         });
         this.attEnemyVos.forEach(roleVo => {
             roleVo.battleHP = roleVo.hp;
+            roleVo.resetSkillCD();
             roleVo.isDeath = false;
             roleVo.attEnemyVos = [];
         });
 
-        this.seekAttTarget(this.attHeroVos,this.attEnemyVos);
-        this.seekAttTarget(this.attEnemyVos,this.attHeroVos);
+        this.seekAttTarget2(this.attHeroVos,this.attEnemyVos);
+        this.seekAttTarget2(this.attEnemyVos,this.attHeroVos);
         this.curAttCamp = BattleAttCampType.HERO;
     }
     /**
@@ -79,6 +81,7 @@ class BattleDataManager{
         this.checkBattleEnd();
         if(this.curAttCamp == BattleAttCampType.ENEMY)
         {
+            //DebugViewUtil.log("战斗日记：","....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVo.name + "("+ this.curDefRoleVo.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVo.battleHP);
             // console.log("....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVo.name + "("+ this.curDefRoleVo.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVo.battleHP);
         }
     }
@@ -197,6 +200,55 @@ class BattleDataManager{
                     attRoleVo.attEnemyVos.push(defRoleVo);
                 }
             }
+        }
+    }
+    /**
+     * 寻找攻击目标2
+     * 先攻击前排，前排击败后再攻击后排
+     * @param attAry 
+     * @param defAry 
+     */
+    private seekAttTarget2(attAry:Array<RoleVo>,defAry:Array<RoleVo>):void
+    {
+        var attRoleVo:RoleVo;
+        for(var i = 0;i < attAry.length;i++)
+        {
+            attRoleVo = attAry[i];
+            for(var j = 0;j < defAry.length;j++)
+            {
+                attRoleVo.attEnemyVos.push(defAry[j]);
+            }
+            if(attRoleVo.isEnemy)
+            {
+                attRoleVo.attEnemyVos.sort(function(a:RoleVo,b:RoleVo):number{
+                    return a.gridY % 2 == 0 ? 1 : -1;
+                });
+            }
+            else
+            {
+                attRoleVo.attEnemyVos.sort(function(a:RoleVo,b:RoleVo):number{
+                    return a.gridX > b.gridX ? 1 : -1;
+                });
+            }
+            
+        }
+    }
+    /**
+     * 跑角色技能cd
+     */
+    public runRoleSkillCD():void
+    {
+        if(this.attHeroVos)
+        {
+            this.attHeroVos.forEach(roleVo => {
+                roleVo.runCD();
+            });
+        }
+        if(this.attEnemyVos)
+        {
+            this.attEnemyVos.forEach(roleVo => {
+                roleVo.runCD();
+            });
         }
     }
     

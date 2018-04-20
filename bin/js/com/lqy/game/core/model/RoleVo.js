@@ -24,6 +24,32 @@ var RoleVo = /** @class */ (function () {
         this.posPoint.x += GameConfig.LINEUP_GRID_WIDTH / 2;
         this.posPoint.y += GameConfig.MAP_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y + GameConfig.LINEUP_GRID_HEIGHT / 2;
     };
+    /**重置技能CD */
+    RoleVo.prototype.resetSkillCD = function () {
+        this.skillVos.forEach(function (skillVo) {
+            skillVo.calCD = skillVo.cd;
+        });
+    };
+    /**cd计时跑起来 */
+    RoleVo.prototype.runCD = function () {
+        this.skillVos.forEach(function (skillVo) {
+            skillVo.runCD();
+        });
+    };
+    /**得到可用技能 ，自动释放技能*/
+    RoleVo.prototype.getCanUserSkill = function () {
+        var _this = this;
+        var ind = 0;
+        this.skillVos.forEach(function (skillVo) {
+            ind++;
+            if (skillVo.isCanUse) {
+                console.log(_this.name + "】使用了" + skillVo.name + "技能，伤害爆表");
+                skillVo.isCanUse = false;
+                return ind;
+            }
+        });
+        return ind;
+    };
     return RoleVo;
 }());
 //# sourceMappingURL=RoleVo.js.map

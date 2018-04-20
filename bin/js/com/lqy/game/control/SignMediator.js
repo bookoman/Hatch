@@ -14,8 +14,6 @@ var __extends = (this && this.__extends) || (function () {
 var SignMediator = /** @class */ (function (_super) {
     __extends(SignMediator, _super);
     function SignMediator(assetsUrl, view) {
-        if (assetsUrl === void 0) { assetsUrl = null; }
-        if (view === void 0) { view = null; }
         return _super.call(this, assetsUrl, view) || this;
     }
     SignMediator.prototype.initView = function () {

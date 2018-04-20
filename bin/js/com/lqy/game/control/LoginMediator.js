@@ -14,8 +14,6 @@ var __extends = (this && this.__extends) || (function () {
 var LoginMediator = /** @class */ (function (_super) {
     __extends(LoginMediator, _super);
     function LoginMediator(assetsUrl, view) {
-        if (assetsUrl === void 0) { assetsUrl = null; }
-        if (view === void 0) { view = null; }
         return _super.call(this, assetsUrl, view) || this;
     }
     LoginMediator.prototype.initView = function () {

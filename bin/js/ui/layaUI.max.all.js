@@ -27,6 +27,21 @@ var ui;
     ui.BattleReportViewUI = BattleReportViewUI;
 })(ui || (ui = {}));
 (function (ui) {
+    var DebugViewUI = /** @class */ (function (_super) {
+        __extends(DebugViewUI, _super);
+        function DebugViewUI() {
+            return _super.call(this) || this;
+        }
+        DebugViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.DebugViewUI.uiView);
+        };
+        DebugViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 500, "var": "imgBg", "skin": "comp/blank.png", "height": 60 } }, { "type": "Label", "props": { "y": 28, "x": 0, "wordWrap": true, "width": 500, "var": "lblDec", "text": "label", "leading": 2, "height": 24, "fontSize": 16, "color": "#f4f1f1" } }, { "type": "Button", "props": { "y": 3, "x": 416, "width": 75, "var": "btnClear", "skin": "comp/button.png", "label": "clear", "height": 23 } }] };
+        return DebugViewUI;
+    }(View));
+    ui.DebugViewUI = DebugViewUI;
+})(ui || (ui = {}));
+(function (ui) {
     var GameViewUI = /** @class */ (function (_super) {
         __extends(GameViewUI, _super);
         function GameViewUI() {
@@ -55,6 +70,24 @@ var ui;
         return LoginViewUI;
     }(View));
     ui.LoginViewUI = LoginViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var main;
+    (function (main) {
+        var SkillViewUI = /** @class */ (function (_super) {
+            __extends(SkillViewUI, _super);
+            function SkillViewUI() {
+                return _super.call(this) || this;
+            }
+            SkillViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.main.SkillViewUI.uiView);
+            };
+            SkillViewUI.uiView = { "type": "View", "props": { "width": 400, "height": 40 } };
+            return SkillViewUI;
+        }(View));
+        main.SkillViewUI = SkillViewUI;
+    })(main = ui.main || (ui.main = {}));
 })(ui || (ui = {}));
 (function (ui) {
     var PreLoadViewUI = /** @class */ (function (_super) {

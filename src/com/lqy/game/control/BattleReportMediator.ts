@@ -2,7 +2,7 @@
 * 战报视图
 */
 class BattleReportMediator extends BaseMediator{
-    constructor(assetsUrl = null,view = null){
+    constructor(assetsUrl?:any,view?:any){
         super(assetsUrl,view);
     }
 

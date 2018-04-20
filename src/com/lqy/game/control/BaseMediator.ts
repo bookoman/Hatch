@@ -4,7 +4,7 @@
 class BaseMediator{
     protected view = null;
     protected assetsUrl;
-    constructor(assetsUrl = null,view = null){
+    constructor(assetsUrl?:any,view?:any){
         this.assetsUrl = assetsUrl;
         this.view = view;
         if(this.assetsUrl)

@@ -37,8 +37,10 @@ class GameConfig{
     /**战斗攻击需要时间(s) */
     public static BATTLE_ATT_TIME:number = 0.3;
 
-    /**********动画 */
-    //索引对应人物动画名字
+    /**调试视图开关 */
+    public static DEBUG_VIEW_SWITCH:boolean = false;
+
+
 
     
 }

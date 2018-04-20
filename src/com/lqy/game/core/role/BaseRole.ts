@@ -65,8 +65,13 @@ class BaseRole extends Laya.Sprite{
         }
         else
         {
-            this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/"+ this.roleVo.id +".sk",new Laya.Handler(this,this.loadCompleted,[aniID,loop]));
+            //分帧加载
+            Laya.timer.frameOnce(2,this,this.skeletonAniLoad,[aniID,loop]);
         }
+    }
+    private skeletonAniLoad(aniID,loop):void
+    {
+        this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/"+ this.roleVo.id +".sk",new Laya.Handler(this,this.loadCompleted,[aniID,loop]));
     }
     
     private loadCompleted(ind,loop) {
