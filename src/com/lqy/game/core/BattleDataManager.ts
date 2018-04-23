@@ -251,5 +251,10 @@ class BattleDataManager{
             });
         }
     }
+
+    public skillAttEnemys(skillId:string):void
+    {
+        
+    }
     
 }

@@ -5,7 +5,7 @@ module ui {
     export class BattleReportViewUI extends View {
 		public texaArea:Laya.TextArea;
 
-        public static  uiView:any ={"type":"View","props":{},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"main/img_reportbg.png","sizeGrid":"30,4,4,4","height":374}},{"type":"TextArea","props":{"y":57,"x":10,"width":731,"var":"texaArea","height":300}},{"type":"Label","props":{"y":15,"x":322,"width":85,"text":"战    报","height":25,"fontSize":24,"color":"#000000","bold":true,"align":"center"}}]};
+        public static  uiView:any ={"type":"View","props":{},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"main/img_reportsbg.png","sizeGrid":"30,4,4,4","height":374}},{"type":"TextArea","props":{"y":57,"x":10,"width":731,"var":"texaArea","height":300}},{"type":"Label","props":{"y":15,"x":322,"width":85,"text":"战    报","height":25,"fontSize":24,"color":"#000000","bold":true,"align":"center"}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -40,7 +40,7 @@ module ui {
 		public btnOpen:Laya.Button;
 		public btnAni:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"main/img_tzdb.png","height":1334}},{"type":"Button","props":{"y":102,"x":268,"width":216,"var":"btnOpen","skin":"comp/button.png","labelSize":24,"label":"打开","height":83}},{"type":"Image","props":{"y":75,"x":569,"skin":"main/logo.png"}},{"type":"Button","props":{"y":76,"x":59,"width":120,"var":"btnAni","skin":"comp/button.png","labelSize":24,"label":"playAni","height":60}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Button","props":{"y":102,"x":268,"width":216,"var":"btnOpen","skin":"comp/button.png","labelSize":24,"label":"打开","height":83}},{"type":"Image","props":{"y":75,"x":569,"skin":"main/logo.png"}},{"type":"Button","props":{"y":76,"x":59,"width":120,"var":"btnAni","skin":"comp/button.png","labelSize":24,"label":"playAni","height":60}},{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"main/img_tzdb.png","height":1334}}]};
         constructor(){ super()}
         createChildren():void {
         

@@ -107,18 +107,38 @@ var RoleManager = /** @class */ (function () {
             }
         });
         if (this.attRole && this.defRole) {
-            this.attRole.aniPlay(RoleAniIndex.MOVE);
-            var tempX = defRoleVo.isEnemy ? 200 : -200;
-            Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000, null, new Handler(this, this.moveCompleteAtt, [attRoleVo, defRoleVo]));
+            //远攻
+            if (this.attRole.roleVo.attFar == 1) {
+                this.playAttackAni();
+            }
+            else { //近攻
+                this.attRole.aniPlay(RoleAniIndex.MOVE);
+                var tempX = defRoleVo.isEnemy ? 200 : -200;
+                Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000, null, new Handler(this, this.playAttackAni, [attRoleVo, defRoleVo]));
+            }
         }
     };
     /**
      * 移动到敌方攻击
      * @param data
      */
-    RoleManager.prototype.moveCompleteAtt = function (data) {
+    RoleManager.prototype.playAttackAni = function () {
         var attRoleVo = this.attRole.roleVo;
         var defRoleVo = this.defRole.roleVo;
+        var skillInd = attRoleVo.getCanUserSkill();
+        if (skillInd > 0) {
+            //技能释放
+            this.attRole.aniPlay(RoleAniIndex.SKILL1 + skillInd, false, 500, this, this.moveBackLineup);
+        }
+        else {
+            //远攻，近攻击
+            if (attRoleVo.attFar == 1) {
+                this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 500, this, this.moveBackLineupComplete);
+            }
+            else {
+                this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 500, this, this.moveBackLineup);
+            }
+        }
         BattleDataManager.ins.calculationAttribute();
         if (defRoleVo.isDeath) {
             this.defRole.aniPlay(RoleAniIndex.DEATH, false);
@@ -129,28 +149,18 @@ var RoleManager = /** @class */ (function () {
             this.defRole.showFloatFont(attRoleVo.att);
         }
         this.defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
-        if (this.attRole && this.defRole) {
-            var skillInd = attRoleVo.getCanUserSkill();
-            if (skillInd > 0) {
-                //技能释放
-                this.attRole.aniPlay(RoleAniIndex.SKILL1 + skillInd, false, 500, this, this.moveBack);
-            }
-            else {
-                this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 500, this, this.moveBack);
-            }
-        }
     };
     /**
      * 攻击完移动回阵型
      */
-    RoleManager.prototype.moveBack = function () {
+    RoleManager.prototype.moveBackLineup = function () {
         var attRoleVo = this.attRole.roleVo;
-        Laya.Tween.to(this.attRole, { x: attRoleVo.posPoint.x, y: attRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / 2, null, new Handler(this, this.moveBackComplete));
+        Laya.Tween.to(this.attRole, { x: attRoleVo.posPoint.x, y: attRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / 2, null, new Handler(this, this.moveBackLineupComplete));
     };
     /**
      * 移动回阵型完成
      */
-    RoleManager.prototype.moveBackComplete = function () {
+    RoleManager.prototype.moveBackLineupComplete = function () {
         DebugViewUtil.log("攻击返回", this.attRole.roleVo.name);
         this.attRole.aniPlay(RoleAniIndex.STAND);
         if (!this.defRole.roleVo.isDeath) {

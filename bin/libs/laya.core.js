@@ -101,7 +101,8 @@ var Laya=window.Laya=(function(window,document){
 					if(fullName.indexOf('laya.')==0){
 						var paths=fullName.split('.');
 						miniName=miniName || paths[paths.length-1];
-						if(Laya[miniName]) console.log("Warning!,this class["+miniName+"] already exist:",Laya[miniName]);
+						if(Laya[miniName]) 
+							console.log("Warning!,this class["+miniName+"] already exist:",Laya[miniName]);
 						Laya[miniName]=o;
 					}
 				}

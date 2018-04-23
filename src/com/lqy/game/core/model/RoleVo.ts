@@ -14,6 +14,8 @@ class RoleVo{
     public hp:number;
     public att:number;
     public atts:number;
+    /**1 远攻，0 近攻 */
+    public attFar:number;
 
     public scaleX:number;
     
@@ -33,7 +35,10 @@ class RoleVo{
     /**是否死亡 */
     public isDeath:boolean = true;
     public isAtted:boolean;
+    /**玩家可以攻击的敌人 */
     public attEnemyVos:Array<RoleVo>;
+    /**技能攻击多个敌人 */
+    public skillAttEnemyVos:Array<RoleVo>;
     
 
     constructor(){

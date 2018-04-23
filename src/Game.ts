@@ -11,8 +11,8 @@ class Game{
     public init():void
     {
         var resAry:Array<Object> = [
-            {url:"res/atlas/comp.atlas",type:Loader.ATLAS,size:50,priority:1},
-            {url:"res/atlas/main.atlas",type:Loader.ATLAS,size:50,priority:1}
+            {url:"res/atlas/comp.atlas",type:Loader.ATLAS,size:50,priority:1}
+            // {url:"res/atlas/main.atlas",type:Loader.ATLAS,size:50,priority:1}
         ];
         Laya.loader.load(resAry, Handler.create(this,this.onLoaded),Handler.create(this,this.loadProgress));
     }
@@ -25,6 +25,8 @@ class Game{
         LayerManager.ins.init();
         DebugViewUtil.init();
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
+
+        DebugViewUtil.log("浏览器宽高",Laya.Browser.width+","+Laya.Browser.height);
     }
 
 }
@@ -32,7 +34,7 @@ class Game{
 //程序入口
 Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT,Laya.WebGL);
 Laya.Stat.show(0,0);
-Laya.stage.scaleMode = "showall";
+Laya.stage.scaleMode = "showAll";//showall跟showAll不一样。。。。
 Laya.stage.alignH = "center";
 Laya.stage.alignV = "top";
 

@@ -36,7 +36,7 @@ class SkillView extends Laya.Sprite{
             }
             else
             {
-                skillVo.isUsed = false;
+                skillVo.isCanUse = false;
                 skillVo.calCD = skillVo.cd;
             }
         }

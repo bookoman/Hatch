@@ -204,6 +204,8 @@ var BattleDataManager = /** @class */ (function () {
             });
         }
     };
+    BattleDataManager.prototype.skillAttEnemys = function (skillId) {
+    };
     BattleDataManager._ins = null;
     return BattleDataManager;
 }());

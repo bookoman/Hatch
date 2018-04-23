@@ -14,20 +14,6 @@
     "child":[
         {
             "x":15,
-            "type":"Image",
-            "props":{"y":0,"x":0,"width":750,"skin":"main/img_tzdb.png","height":1334},
-            "nodeParent":1,
-            "label":"Image",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":3,
-            "child":[
-                ],
-            "$LOCKED":true
-        },
-        {
-            "x":15,
             "type":"Button",
             "props":{"y":102,"x":268,"width":216,"var":"btnOpen","skin":"comp/button.png","labelSize":24,"label":"打开","height":83},
             "nodeParent":1,
@@ -64,6 +50,20 @@
             "compId":6,
             "child":[
                 ]
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":0,"x":0,"width":750,"skin":"main/img_tzdb.png","height":1334},
+            "nodeParent":1,
+            "label":"Image",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":3,
+            "child":[
+                ],
+            "$LOCKED":true
         }],
     "animations":[
         {

@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":3,
+    "selecteID":4,
     "props":{"sceneColor":"#000000"},
     "nodeParent":-1,
     "label":"View",
@@ -15,7 +15,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":750,"skin":"main/img_reportbg.png","sizeGrid":"30,4,4,4","height":374},
+            "props":{"y":0,"x":0,"width":750,"skin":"main/img_reportsbg.png","sizeGrid":"30,4,4,4","height":374},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,

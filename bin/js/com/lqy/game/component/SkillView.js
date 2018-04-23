@@ -43,7 +43,7 @@ var SkillView = /** @class */ (function (_super) {
                 console.log("还有" + skillVo.calCD + "秒才可以使用技能");
             }
             else {
-                skillVo.isUsed = false;
+                skillVo.isCanUse = false;
                 skillVo.calCD = skillVo.cd;
             }
         }

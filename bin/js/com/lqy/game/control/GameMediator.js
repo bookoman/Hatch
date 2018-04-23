@@ -22,7 +22,7 @@ var GameMediator = /** @class */ (function (_super) {
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, false, false, true);
         _super.prototype.initView.call(this);
-        this.battleReportMediator = new BattleReportMediator();
+        this.battleReportMediator = new BattleReportMediator("main/img_reportsbg.png");
         //初始化游戏场景
         ObjectPoolUtil.init();
         MapManager.ins.enterMap("res/map", 1, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
