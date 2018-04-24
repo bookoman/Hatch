@@ -42,7 +42,7 @@ var FloatFontTips = /** @class */ (function (_super) {
         this.y = sy;
         parent.addChild(this);
         this.alpha = 1;
-        Laya.Tween.to(this, { y: this.y - floatHei, alpha: 0.3 }, showTime * 1000, Laya.Ease.backInOut, new Laya.Handler(this, this.floatCompleted));
+        Laya.Tween.to(this, { y: this.y - floatHei, alpha: 0.6 }, showTime * 1000, Laya.Ease.backInOut, new Laya.Handler(this, this.floatCompleted));
     };
     /**
      * 移动完成

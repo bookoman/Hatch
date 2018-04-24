@@ -5,7 +5,7 @@ class SceneMananger{
     public static PRE_LOAD_SCENE:number = 1;
     public static LOGIN_SCENE:number = 2;
     public static GAME_SCENE:number = 3;
-    
+
     private curScene:BaseScene = null;
     constructor(){
         

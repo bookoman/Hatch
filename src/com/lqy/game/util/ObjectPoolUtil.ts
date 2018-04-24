@@ -10,6 +10,8 @@ class ObjectPoolUtil{
     public static HERO_ROLE:string = "hero";
     /**敌人显示对象 */
     public static ENEMY_ROLE:string = "enemy";
+    /**技能显示对象 */
+    public static SKILL:string = "skill";
 
     /**飘字对象 */
     private static floatFontTipsAry:Array<FloatFontTips> = null;
@@ -19,6 +21,8 @@ class ObjectPoolUtil{
     private static heroAry:Array<Hero> = null;
     /**敌人显示对象 */
     private static enemyAry:Array<Hero> = null;
+    /**技能对象 */
+    private static skillAry:Array<Skill> = null;
     constructor(){
 
     }
@@ -43,6 +47,12 @@ class ObjectPoolUtil{
         {
             this.heroAry.push(new Hero());
             this.enemyAry.push(new Enemy());
+        }
+
+        this.skillAry = new Array();
+        for(i = 0;i < 20; i++)
+        {
+            this.skillAry.push(new Skill());
         }
     }
     /**借用一个对象 */

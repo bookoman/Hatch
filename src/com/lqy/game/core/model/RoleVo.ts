@@ -82,16 +82,15 @@ class RoleVo{
     /**得到可用技能 ，自动释放技能*/
     public getCanUserSkill():number
     {   
-        var ind:number = 0;
+        var skillID:number = 0;
         this.skillVos.forEach(skillVo => {
-            ind++;
             if(skillVo.isCanUse)
             {
-                console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表");
+                console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表"+skillVo.id);
                 skillVo.isCanUse = false;
-                return ind;
+                skillID =  Number(skillVo.id);
             }
         });
-        return ind;
+        return skillID;
     }   
 }

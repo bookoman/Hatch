@@ -9,8 +9,9 @@
 	},
 	"compileType": "game",
 	"libVersion": "game",
-	"appid": "wx9170ca1ff6f31088",
-	"projectname": "%E5%B0%8F%E6%B8%B8%E6%88%8F%E6%B5%8B%E8%AF%95",
+	"appid": "touristappid",
+	"projectname": "DragonAtt",
+	"isGameTourist": true,
 	"condition": {
 		"search": {
 			"current": -1,

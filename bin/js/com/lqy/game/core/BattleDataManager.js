@@ -204,7 +204,12 @@ var BattleDataManager = /** @class */ (function () {
             });
         }
     };
+    /**
+     * 技能寻找敌人
+     * @param skillId
+     */
     BattleDataManager.prototype.skillAttEnemys = function (skillId) {
+        var skillVo = ConfigManager.ins.getSkillVoByID(skillId);
     };
     BattleDataManager._ins = null;
     return BattleDataManager;

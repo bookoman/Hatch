@@ -153,11 +153,13 @@ class RoleManager{
     {
         var attRoleVo:RoleVo = this.attRole.roleVo;
         var defRoleVo:RoleVo = this.defRole.roleVo;
-        var skillInd:number = attRoleVo.getCanUserSkill();
-        if(skillInd > 0)
+        var skillID:number = attRoleVo.getCanUserSkill();
+        if(skillID > 0)
         {
             //技能释放
-            this.attRole.aniPlay(RoleAniIndex.SKILL1+skillInd,false,500,this,this.moveBackLineup);
+            this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
+            var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+            skill.playSkill(skillID,defRoleVo.posPoint);
         }
         else
         {

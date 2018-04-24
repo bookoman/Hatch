@@ -18,6 +18,24 @@ module ui {
 }
 
 module ui {
+    export class ChoiceQuFuUI extends View {
+		public m_list:Laya.List;
+		public m_label:Laya.Label;
+		public btnChoiceOK:Laya.Button;
+
+        public static  uiView:any ={"type":"View","props":{"width":600,"renderType":"render","name":"reader","height":400},"child":[{"type":"Image","props":{"y":0,"x":0,"width":600,"skin":"template/List/SimpleListBoxItemBackground.png","height":400}},{"type":"List","props":{"y":5,"x":13,"width":573,"var":"m_list","vScrollBarSkin":"template/List/vscroll.png","repeatY":20,"repeatX":1,"renderType":"render","height":287},"child":[{"type":"Box","props":{"name":"render"},"child":[{"type":"Label","props":{"y":20,"x":32,"width":445,"var":"m_label","text":"label","skin":"template/List/label.png","renderType":"render","height":50,"fontSize":36,"color":"#0d0d0d"}}]}]},{"type":"Button","props":{"y":346,"x":262,"width":75,"var":"btnChoiceOK","skin":"comp/button.png","labelSize":16,"labelColors":"red","label":"确定","height":33}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.ChoiceQuFuUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
     export class DebugViewUI extends View {
 		public imgBg:Laya.Image;
 		public lblDec:Laya.Label;
@@ -40,7 +58,7 @@ module ui {
 		public btnOpen:Laya.Button;
 		public btnAni:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Button","props":{"y":102,"x":268,"width":216,"var":"btnOpen","skin":"comp/button.png","labelSize":24,"label":"打开","height":83}},{"type":"Image","props":{"y":75,"x":569,"skin":"main/logo.png"}},{"type":"Button","props":{"y":76,"x":59,"width":120,"var":"btnAni","skin":"comp/button.png","labelSize":24,"label":"playAni","height":60}},{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"main/img_tzdb.png","height":1334}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":12,"x":0,"width":750,"skin":"bg/main.jpg","height":1334}},{"type":"Button","props":{"y":625,"x":267,"width":216,"var":"btnOpen","skin":"comp/button.png","labelStrokeColor":"#f88508","labelSize":32,"label":"打开","height":83}},{"type":"Image","props":{"y":821,"x":335,"skin":"main/logo.png"}},{"type":"Button","props":{"y":76,"x":59,"width":120,"var":"btnAni","skin":"comp/button.png","labelSize":24,"label":"playAni","height":60}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -54,14 +72,16 @@ module ui {
 
 module ui {
     export class LoginViewUI extends View {
-		public lblAccount:Laya.TextInput;
-		public lblPwd:Laya.TextInput;
 		public btnLogin:Laya.Button;
+		public btnRegster:Laya.Button;
+		public textUser:laya.display.Text;
+		public btnChoice:Laya.Tab;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":496,"x":174,"width":413,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":353}},{"type":"TextInput","props":{"y":617,"x":337,"width":176,"var":"lblAccount","skin":"comp/textinput.png","height":29,"fontSize":24}},{"type":"Label","props":{"y":619,"x":242,"text":"账号：","fontSize":24}},{"type":"TextInput","props":{"y":668,"x":337,"width":176,"var":"lblPwd","skin":"comp/textinput.png","height":29,"fontSize":24}},{"type":"Label","props":{"y":670,"x":242,"text":"密码：","fontSize":24}},{"type":"Button","props":{"y":758,"x":325,"width":125,"var":"btnLogin","skin":"comp/button.png","labelSize":24,"label":"登录","height":51}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Label","props":{"y":28,"x":31,"text":"当前账号：","fontSize":30,"color":"#ffffff"}},{"type":"Button","props":{"y":1082,"x":269,"width":211,"var":"btnLogin","skin":"comp/button.png","labelSize":38,"label":"进入游戏","height":72}},{"type":"Image","props":{"y":106,"x":38,"width":674,"skin":"bg/logo.png","height":422}},{"type":"Button","props":{"y":21,"x":593,"width":140,"var":"btnRegster","skin":"comp/button.png","labelStrokeColor":"#ff0905","labelSize":30,"label":"切换账户","height":45,"alpha":0.9}},{"type":"Text","props":{"y":28,"x":181,"width":401,"var":"textUser","text":"325266_asda_10023","height":40,"fontSize":30,"color":"#e3e2e2","alpha":0.8,"align":"center"}},{"type":"Tab","props":{"y":903.5,"x":225.5,"var":"btnChoice"},"child":[{"type":"Line","props":{"y":4.5,"x":-0.5,"toY":0,"toX":300,"lineWidth":1,"lineColor":"#ff0000"}},{"type":"Line","props":{"y":74.5,"x":-0.5,"toY":0,"toX":300,"lineWidth":1,"lineColor":"#ff0000"}},{"type":"Circle","props":{"y":42.5,"x":29.5,"radius":10,"lineWidth":1,"fillColor":"#f82c2c"}},{"type":"Text","props":{"y":25.5,"x":59.5,"width":241,"text":"一区丶齐天大圣","height":41,"fontSize":30,"color":"#e3e2e2"}}]}]};
         constructor(){ super()}
         createChildren():void {
-        
+        			View.regComponent("Text",laya.display.Text);
+
             super.createChildren();
             this.createView(ui.LoginViewUI.uiView);
 
@@ -106,7 +126,7 @@ module ui {
 		public btnClose:Laya.Button;
 		public inputName:Laya.TextInput;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"test/img_bg.png"}},{"type":"Image","props":{"y":504,"x":160,"width":441,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":415}},{"type":"Button","props":{"y":508,"x":566,"var":"btnClose","skin":"comp/btn_close.png"}},{"type":"TextInput","props":{"y":706,"x":304,"var":"inputName","skin":"comp/textinput.png"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":6,"skin":"test/img_bg.png"}},{"type":"Image","props":{"y":504,"x":154,"width":441,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":415}},{"type":"Button","props":{"y":508,"x":566,"var":"btnClose","skin":"comp/btn_close.png"}},{"type":"TextInput","props":{"y":706,"x":304,"var":"inputName","skin":"comp/textinput.png"}}]};
         constructor(){ super()}
         createChildren():void {
         

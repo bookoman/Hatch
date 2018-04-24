@@ -23,14 +23,19 @@ var LoginMediator = /** @class */ (function (_super) {
     };
     LoginMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
+        this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
     };
     LoginMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
+        this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
     };
     LoginMediator.prototype.dispose = function () {
     };
     LoginMediator.prototype.onBtnLogin = function (e) {
         SceneMananger.ins.enter(SceneMananger.GAME_SCENE);
+    };
+    LoginMediator.prototype.onBtnChoice = function () {
+        new ChoiceMediator();
     };
     return LoginMediator;
 }(BaseMediator));

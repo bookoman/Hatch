@@ -20,6 +20,7 @@ class GameMediator extends BaseMediator{
         GameDataManager.ins.initData();
         RoleManager.ins.initHeros();
         BattleEngine.ins.run();
+
     }
     protected addEvents():void
     {

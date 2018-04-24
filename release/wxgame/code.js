@@ -52053,7 +52053,7 @@ var TsJsContactUtile = /** @class */ (function () {
     }
     return TsJsContactUtile;
 }());
-//# sourceMappingURL=TsJsContactUtile.js.map
+
 /*
 * name;
 */
@@ -52091,7 +52091,7 @@ var StringUtil = /** @class */ (function () {
     };
     return StringUtil;
 }());
-//# sourceMappingURL=StringUtil.js.map
+
 /*
 * 对象池工具
 */
@@ -52147,7 +52147,7 @@ var ObjectPoolUtil = /** @class */ (function () {
     ObjectPoolUtil.enemyAry = null;
     return ObjectPoolUtil;
 }());
-//# sourceMappingURL=ObjectPoolUtil.js.map
+
 /*
 * name;
 */
@@ -52158,7 +52158,7 @@ var MapUtil = /** @class */ (function () {
     MapUtil.TYPE_LOAD_CUT = 2;
     return MapUtil;
 }());
-//# sourceMappingURL=MapUtil.js.map
+
 /*
 * 语言包
 */
@@ -52215,7 +52215,7 @@ var LG = /** @class */ (function () {
     LG.dic = null;
     return LG;
 }());
-//# sourceMappingURL=LG.js.map
+
 /*
 * name;
 */
@@ -52261,7 +52261,7 @@ var DebugViewUtil = /** @class */ (function () {
     DebugViewUtil.msgArray = null;
     return DebugViewUtil;
 }());
-//# sourceMappingURL=DebugViewUtil.js.map
+
 /*
 * name;
 */
@@ -52270,7 +52270,7 @@ var CommonUtil = /** @class */ (function () {
     }
     return CommonUtil;
 }());
-//# sourceMappingURL=CommonUtil.js.map
+
 /*
 * 声音管理器
 */
@@ -52294,7 +52294,7 @@ var SoundManager = /** @class */ (function () {
     SoundManager._ins = null;
     return SoundManager;
 }());
-//# sourceMappingURL=SoundManager.js.map
+
 /*
 * name;
 */
@@ -52303,7 +52303,7 @@ var SocketManager = /** @class */ (function () {
     }
     return SocketManager;
 }());
-//# sourceMappingURL=SocketManager.js.map
+
 /*
 * 场景管理器
 */
@@ -52353,7 +52353,7 @@ var SceneMananger = /** @class */ (function () {
     SceneMananger._ins = null;
     return SceneMananger;
 }());
-//# sourceMappingURL=SceneMananger.js.map
+
 /*
 * name;
 */
@@ -52366,7 +52366,7 @@ var BaseScene = /** @class */ (function () {
     };
     return BaseScene;
 }());
-//# sourceMappingURL=BaseScene.js.map
+
 /*
 * 较色管理器
 */
@@ -52565,7 +52565,7 @@ var RoleManager = /** @class */ (function () {
     RoleManager._ins = null;
     return RoleManager;
 }());
-//# sourceMappingURL=RoleManager.js.map
+
 /*
 * 技能Vo
 */
@@ -52592,7 +52592,7 @@ var SkillVo = /** @class */ (function () {
     };
     return SkillVo;
 }());
-//# sourceMappingURL=SkillVo.js.map
+
 /*
 * 角色Vo [10000,20000)英雄，[20000,30000)怪物
 */
@@ -52647,7 +52647,7 @@ var RoleVo = /** @class */ (function () {
     };
     return RoleVo;
 }());
-//# sourceMappingURL=RoleVo.js.map
+
 /*
 * 玩家数据
 */
@@ -52656,7 +52656,7 @@ var PlayerData = /** @class */ (function () {
     }
     return PlayerData;
 }());
-//# sourceMappingURL=PlayerData.js.map
+
 /*
 * 阵型配置
 */
@@ -52665,7 +52665,7 @@ var LineupPosVo = /** @class */ (function () {
     }
     return LineupPosVo;
 }());
-//# sourceMappingURL=LineupPosVo.js.map
+
 /*
 * 怪物数据
 */
@@ -52676,7 +52676,7 @@ var EnemyData = /** @class */ (function () {
     }
     return EnemyData;
 }());
-//# sourceMappingURL=EnemyData.js.map
+
 /*
 * 战斗数据管理
 */
@@ -52685,7 +52685,7 @@ var BattleReportVo = /** @class */ (function () {
     }
     return BattleReportVo;
 }());
-//# sourceMappingURL=BattleReportVo.js.map
+
 /*
 * name;
 */
@@ -52694,7 +52694,7 @@ var BattleReportData = /** @class */ (function () {
     }
     return BattleReportData;
 }());
-//# sourceMappingURL=BattleReportData.js.map
+
 /*
 * 地图管理
 */
@@ -52796,7 +52796,7 @@ var MapManager = /** @class */ (function () {
     MapManager._ins = null;
     return MapManager;
 }());
-//# sourceMappingURL=MapManager.js.map
+
 /*
 * 地图斜视网格化
 * 公式一：logic.x  = ( stage.x / TileWidth ) - ( logic.y & 1 ) * ( TileWidth / 2 );
@@ -52871,7 +52871,7 @@ var SquintAngleGrid = /** @class */ (function () {
     };
     return SquintAngleGrid;
 }());
-//# sourceMappingURL=SquintAngleGrid.js.map
+
 /*
 * 地图资源缓存
 */
@@ -52925,7 +52925,7 @@ var SourceCache = /** @class */ (function () {
     SourceCache._ins = null;
     return SourceCache;
 }());
-//# sourceMappingURL=SourceCache.js.map
+
 /*
 *阵容管理器
 */
@@ -52975,7 +52975,7 @@ var LineupManager = /** @class */ (function () {
     LineupManager._ins = null;
     return LineupManager;
 }());
-//# sourceMappingURL=LineupManager.js.map
+
 /*
 * 游戏数据管理器
 */
@@ -53063,7 +53063,7 @@ var GameDataManager = /** @class */ (function () {
     GameDataManager._ins = null;
     return GameDataManager;
 }());
-//# sourceMappingURL=GameDataManager.js.map
+
 /*
 * 事件管理器
 */
@@ -53130,7 +53130,7 @@ var EventManager = /** @class */ (function () {
     EventManager._ins = null;
     return EventManager;
 }());
-//# sourceMappingURL=EventManager.js.map
+
 /*
 * 配置表管理器
 */
@@ -53236,7 +53236,7 @@ var ConfigManager = /** @class */ (function () {
     ConfigManager._ins = null;
     return ConfigManager;
 }());
-//# sourceMappingURL=ConfigManager.js.map
+
 /*
 * 战斗数据管理器
 */
@@ -53448,7 +53448,7 @@ var BattleDataManager = /** @class */ (function () {
     BattleDataManager._ins = null;
     return BattleDataManager;
 }());
-//# sourceMappingURL=BattleDataManager.js.map
+
 /*
 * 战斗引擎
 * 一，阵型，站定九宫格，分三排、三列，每排3个位置，格子定位坐标
@@ -53541,7 +53541,7 @@ var BattleEngine = /** @class */ (function () {
     BattleEngine._ins = null;
     return BattleEngine;
 }());
-//# sourceMappingURL=BattleEngine.js.map
+
 /*
 * name;
 */
@@ -53573,7 +53573,7 @@ var BaseMediator = /** @class */ (function () {
     };
     return BaseMediator;
 }());
-//# sourceMappingURL=BaseMediator.js.map
+
 /*
 * 游戏配置
 */
@@ -53643,7 +53643,7 @@ var BattleAttCampType;
     BattleAttCampType[BattleAttCampType["ENEMY"] = 2] = "ENEMY";
     BattleAttCampType[BattleAttCampType["OTHER"] = 3] = "OTHER";
 })(BattleAttCampType || (BattleAttCampType = {}));
-//# sourceMappingURL=GameConfig.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53688,7 +53688,7 @@ var FloatFontTips = /** @class */ (function (_super) {
         this.y = sy;
         parent.addChild(this);
         this.alpha = 1;
-        Laya.Tween.to(this, { y: this.y - floatHei, alpha: 0.3 }, showTime * 1000, Laya.Ease.backInOut, new Laya.Handler(this, this.floatCompleted));
+        Laya.Tween.to(this, { y: this.y - floatHei, alpha: 0.6 }, showTime * 1000, Laya.Ease.backInOut, new Laya.Handler(this, this.floatCompleted));
     };
     /**
      * 移动完成
@@ -53699,7 +53699,7 @@ var FloatFontTips = /** @class */ (function (_super) {
     };
     return FloatFontTips;
 }(Laya.Label));
-//# sourceMappingURL=FloatFontTips.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53743,7 +53743,7 @@ var RoleBloodBar = /** @class */ (function (_super) {
     };
     return RoleBloodBar;
 }(Laya.Sprite));
-//# sourceMappingURL=RoleBloodBar.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53817,7 +53817,7 @@ var SkillView = /** @class */ (function (_super) {
     };
     return SkillView;
 }(Laya.Sprite));
-//# sourceMappingURL=SkillView.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53849,7 +53849,46 @@ var BattleReportMediator = /** @class */ (function (_super) {
     };
     return BattleReportMediator;
 }(BaseMediator));
-//# sourceMappingURL=BattleReportMediator.js.map
+
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/**
+ * name
+ */
+var ChoiceMediator = /** @class */ (function (_super) {
+    __extends(ChoiceMediator, _super);
+    function ChoiceMediator(assetsUrl, view) {
+        if (assetsUrl === void 0) { assetsUrl = null; }
+        if (view === void 0) { view = null; }
+        return _super.call(this, assetsUrl, view) || this;
+    }
+    ChoiceMediator.prototype.initView = function () {
+        this.view = new ui.ChoiceQuFuUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, true, false, true);
+        _super.prototype.initView.call(this);
+    };
+    ChoiceMediator.prototype.addEvents = function () {
+        this.view.btnChoiceOK.on(Laya.Event.CLICK, this, this.onBtnChoiceOK);
+    };
+    ChoiceMediator.prototype.removeEvents = function () {
+        this.view.btnChoiceOK.off(Laya.Event.CLICK, this, this.onBtnChoiceOK);
+    };
+    ChoiceMediator.prototype.dispose = function () {
+    };
+    ChoiceMediator.prototype.onBtnChoiceOK = function () {
+        LayerManager.ins.removeToLyaer(this.view, LayerManager.UI_LAYER, true, false);
+    };
+    return ChoiceMediator;
+}(BaseMediator));
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53898,7 +53937,7 @@ var GameMediator = /** @class */ (function (_super) {
     };
     return GameMediator;
 }(BaseMediator));
-//# sourceMappingURL=GameMediator.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53924,18 +53963,23 @@ var LoginMediator = /** @class */ (function (_super) {
     };
     LoginMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
+        this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
     };
     LoginMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
+        this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
     };
     LoginMediator.prototype.dispose = function () {
     };
     LoginMediator.prototype.onBtnLogin = function (e) {
         SceneMananger.ins.enter(SceneMananger.GAME_SCENE);
     };
+    LoginMediator.prototype.onBtnChoice = function () {
+        new ChoiceMediator();
+    };
     return LoginMediator;
 }(BaseMediator));
-//# sourceMappingURL=LoginMediator.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53970,7 +54014,7 @@ var SignMediator = /** @class */ (function (_super) {
     };
     return SignMediator;
 }(BaseMediator));
-//# sourceMappingURL=SignMediator.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54004,7 +54048,7 @@ var TestMediator = /** @class */ (function (_super) {
     };
     return TestMediator;
 }(BaseMediator));
-//# sourceMappingURL=TestMediator.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54135,7 +54179,11 @@ var MyLayer = /** @class */ (function (_super) {
         if (isMask) {
             if (this.maskSprite == null) {
                 this.maskSprite = new Laya.Sprite();
+                this.maskSprite.width = GameConfig.STAGE_WIDTH;
+                this.maskSprite.height = GameConfig.STAGE_HEIGHT;
+                this.maskSprite.mouseEnabled = true;
                 this.maskSprite.graphics.drawRect(0, 0, GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, "#000000");
+                console.log(this.maskSprite.width, this.maskSprite.height);
                 this.maskSprite.alpha = 0.5;
             }
             if (!this.maskSprite.parent) {
@@ -54166,10 +54214,14 @@ var MyLayer = /** @class */ (function (_super) {
             this.maskCount--;
             if (this.maskCount <= 0 && this.maskSprite) {
                 this.maskSprite.graphics.clear();
-                if (this.maskSprite.parent) {
-                    this.maskSprite.removeChild(this.maskSprite);
-                    this.maskSprite = null;
-                }
+                this.maskSprite.removeSelf();
+                this.maskSprite = null;
+                // if(this.maskSprite.parent)
+                // {
+                //     this.maskSprite.removeChild(this.maskSprite);
+                //     this.maskSprite.mouseEnabled = false;
+                //     this.maskSprite = null;
+                // }
             }
         }
         if (isMany) {
@@ -54189,7 +54241,7 @@ var MyLayer = /** @class */ (function (_super) {
     };
     return MyLayer;
 }(Laya.Sprite));
-//# sourceMappingURL=LayerManager.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54221,7 +54273,7 @@ var ImageLoader = /** @class */ (function (_super) {
     };
     return ImageLoader;
 }(Laya.EventDispatcher));
-//# sourceMappingURL=ImageLoader.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54588,7 +54640,7 @@ var MapEngine = /** @class */ (function (_super) {
     };
     return MapEngine;
 }(Laya.Sprite));
-//# sourceMappingURL=MapEngine.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54630,7 +54682,7 @@ var MapGrid = /** @class */ (function (_super) {
     };
     return MapGrid;
 }(Laya.Sprite));
-//# sourceMappingURL=MapGrid.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54760,7 +54812,7 @@ var MapLoopEngine = /** @class */ (function (_super) {
     };
     return MapLoopEngine;
 }(Laya.Sprite));
-//# sourceMappingURL=MapLoopEngine.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54803,8 +54855,8 @@ var BaseRole = /** @class */ (function (_super) {
     BaseRole.prototype.showFloatFont = function (blood) {
         var floatFontTip = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
         if (floatFontTip) {
-            floatFontTip.setAttribute(40, "#ff0000");
-            floatFontTip.show("-" + blood, this, -50, -180, 0.5, 50);
+            floatFontTip.setAttribute(40, "#fff000");
+            floatFontTip.show("-" + blood, this, -50, -180, 1.0, 80);
         }
     };
     /**
@@ -54906,7 +54958,7 @@ var BaseRole = /** @class */ (function (_super) {
     };
     return BaseRole;
 }(Laya.Sprite));
-//# sourceMappingURL=BaseRole.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54942,7 +54994,7 @@ var Enemy = /** @class */ (function (_super) {
     };
     return Enemy;
 }(BaseRole));
-//# sourceMappingURL=Enemy.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54969,7 +55021,7 @@ var Hero = /** @class */ (function (_super) {
     };
     return Hero;
 }(BaseRole));
-//# sourceMappingURL=Hero.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54990,7 +55042,7 @@ var NPC = /** @class */ (function (_super) {
     }
     return NPC;
 }(BaseRole));
-//# sourceMappingURL=NPC.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -55020,7 +55072,7 @@ var GameScene = /** @class */ (function (_super) {
     };
     return GameScene;
 }(BaseScene));
-//# sourceMappingURL=GameScene.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -55046,7 +55098,7 @@ var LoginScene = /** @class */ (function (_super) {
     };
     return LoginScene;
 }(BaseScene));
-//# sourceMappingURL=LoginScene.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -55071,7 +55123,7 @@ var PreLoadScene = /** @class */ (function (_super) {
     };
     return PreLoadScene;
 }(BaseScene));
-//# sourceMappingURL=PreLoadScene.js.map
+
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -55101,6 +55153,21 @@ var ui;
     ui.BattleReportViewUI = BattleReportViewUI;
 })(ui || (ui = {}));
 (function (ui) {
+    var ChoiceQuFuUI = /** @class */ (function (_super) {
+        __extends(ChoiceQuFuUI, _super);
+        function ChoiceQuFuUI() {
+            return _super.call(this) || this;
+        }
+        ChoiceQuFuUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.ChoiceQuFuUI.uiView);
+        };
+        ChoiceQuFuUI.uiView = { "type": "View", "props": { "width": 600, "renderType": "render", "name": "reader", "height": 400 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 600, "skin": "template/List/SimpleListBoxItemBackground.png", "height": 400 } }, { "type": "List", "props": { "y": 5, "x": 13, "width": 573, "var": "m_list", "vScrollBarSkin": "template/List/vscroll.png", "repeatY": 20, "repeatX": 1, "renderType": "render", "height": 287 }, "child": [{ "type": "Box", "props": { "name": "render" }, "child": [{ "type": "Label", "props": { "y": 20, "x": 32, "width": 445, "var": "m_label", "text": "label", "skin": "template/List/label.png", "renderType": "render", "height": 50, "fontSize": 36, "color": "#0d0d0d" } }] }] }, { "type": "Button", "props": { "y": 346, "x": 262, "width": 75, "var": "btnChoiceOK", "skin": "comp/button.png", "labelSize": 16, "labelColors": "red", "label": "确定", "height": 33 } }] };
+        return ChoiceQuFuUI;
+    }(View));
+    ui.ChoiceQuFuUI = ChoiceQuFuUI;
+})(ui || (ui = {}));
+(function (ui) {
     var DebugViewUI = /** @class */ (function (_super) {
         __extends(DebugViewUI, _super);
         function DebugViewUI() {
@@ -55125,7 +55192,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.GameViewUI.uiView);
         };
-        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 102, "x": 268, "width": 216, "var": "btnOpen", "skin": "comp/button.png", "labelSize": 24, "label": "打开", "height": 83 } }, { "type": "Image", "props": { "y": 75, "x": 569, "skin": "main/logo.png" } }, { "type": "Button", "props": { "y": 76, "x": 59, "width": 120, "var": "btnAni", "skin": "comp/button.png", "labelSize": 24, "label": "playAni", "height": 60 } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "main/img_tzdb.png", "height": 1334 } }] };
+        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 12, "x": 0, "width": 750, "skin": "bg/main.jpg", "height": 1334 } }, { "type": "Button", "props": { "y": 625, "x": 267, "width": 216, "var": "btnOpen", "skin": "comp/button.png", "labelStrokeColor": "#f88508", "labelSize": 32, "label": "打开", "height": 83 } }, { "type": "Image", "props": { "y": 821, "x": 335, "skin": "main/logo.png" } }, { "type": "Button", "props": { "y": 76, "x": 59, "width": 120, "var": "btnAni", "skin": "comp/button.png", "labelSize": 24, "label": "playAni", "height": 60 } }] };
         return GameViewUI;
     }(View));
     ui.GameViewUI = GameViewUI;
@@ -55137,10 +55204,11 @@ var ui;
             return _super.call(this) || this;
         }
         LoginViewUI.prototype.createChildren = function () {
+            View.regComponent("Text", laya.display.Text);
             _super.prototype.createChildren.call(this);
             this.createView(ui.LoginViewUI.uiView);
         };
-        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 496, "x": 174, "width": 413, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 353 } }, { "type": "TextInput", "props": { "y": 617, "x": 337, "width": 176, "var": "lblAccount", "skin": "comp/textinput.png", "height": 29, "fontSize": 24 } }, { "type": "Label", "props": { "y": 619, "x": 242, "text": "账号：", "fontSize": 24 } }, { "type": "TextInput", "props": { "y": 668, "x": 337, "width": 176, "var": "lblPwd", "skin": "comp/textinput.png", "height": 29, "fontSize": 24 } }, { "type": "Label", "props": { "y": 670, "x": 242, "text": "密码：", "fontSize": 24 } }, { "type": "Button", "props": { "y": 758, "x": 325, "width": 125, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 24, "label": "登录", "height": 51 } }] };
+        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Label", "props": { "y": 28, "x": 31, "text": "当前账号：", "fontSize": 30, "color": "#ffffff" } }, { "type": "Button", "props": { "y": 1082, "x": 269, "width": 211, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 38, "label": "进入游戏", "height": 72 } }, { "type": "Image", "props": { "y": 106, "x": 38, "width": 674, "skin": "bg/logo.png", "height": 422 } }, { "type": "Button", "props": { "y": 21, "x": 593, "width": 140, "var": "btnRegster", "skin": "comp/button.png", "labelStrokeColor": "#ff0905", "labelSize": 30, "label": "切换账户", "height": 45, "alpha": 0.9 } }, { "type": "Text", "props": { "y": 28, "x": 181, "width": 401, "var": "textUser", "text": "325266_asda_10023", "height": 40, "fontSize": 30, "color": "#e3e2e2", "alpha": 0.8, "align": "center" } }, { "type": "Tab", "props": { "y": 903.5, "x": 225.5, "var": "btnChoice" }, "child": [{ "type": "Line", "props": { "y": 4.5, "x": -0.5, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Line", "props": { "y": 74.5, "x": -0.5, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Circle", "props": { "y": 42.5, "x": 29.5, "radius": 10, "lineWidth": 1, "fillColor": "#f82c2c" } }, { "type": "Text", "props": { "y": 25.5, "x": 59.5, "width": 241, "text": "一区丶齐天大圣", "height": 41, "fontSize": 30, "color": "#e3e2e2" } }] }] };
         return LoginViewUI;
     }(View));
     ui.LoginViewUI = LoginViewUI;
@@ -55188,7 +55256,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.SignViewUI.uiView);
         };
-        SignViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "test/img_bg.png" } }, { "type": "Image", "props": { "y": 504, "x": 160, "width": 441, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 415 } }, { "type": "Button", "props": { "y": 508, "x": 566, "var": "btnClose", "skin": "comp/btn_close.png" } }, { "type": "TextInput", "props": { "y": 706, "x": 304, "var": "inputName", "skin": "comp/textinput.png" } }] };
+        SignViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 6, "skin": "test/img_bg.png" } }, { "type": "Image", "props": { "y": 504, "x": 154, "width": 441, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 415 } }, { "type": "Button", "props": { "y": 508, "x": 566, "var": "btnClose", "skin": "comp/btn_close.png" } }, { "type": "TextInput", "props": { "y": 706, "x": 304, "var": "inputName", "skin": "comp/textinput.png" } }] };
         return SignViewUI;
     }(View));
     ui.SignViewUI = SignViewUI;
@@ -55211,7 +55279,7 @@ var ui;
         test.TestPageUI = TestPageUI;
     })(test = ui.test || (ui.test = {}));
 })(ui || (ui = {}));
-//# sourceMappingURL=layaUI.max.all.js.map
+
 var Handler = Laya.Handler;
 /*
 * 游戏入口
@@ -55239,6 +55307,7 @@ var Game = /** @class */ (function () {
     return Game;
 }());
 //程序入口
+Laya.MiniAdpter.init();
 Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, Laya.WebGL);
 Laya.Stat.show(0, 0);
 Laya.stage.scaleMode = "showAll"; //showall跟showAll不一样。。。。
@@ -55251,4 +55320,3 @@ function beginLoad() {
     var game = new Game();
     game.init();
 }
-//# sourceMappingURL=Game.js.map

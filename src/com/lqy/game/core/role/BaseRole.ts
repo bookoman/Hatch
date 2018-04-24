@@ -35,7 +35,7 @@ class BaseRole extends Laya.Sprite{
         if(floatFontTip)
         {
             floatFontTip.setAttribute(40,"#ff0000");
-            floatFontTip.show("-"+blood,this,-50,-180,0.5,50);
+            floatFontTip.show("-"+blood,this,-50,-180,1.0,80);
         }
     }
     

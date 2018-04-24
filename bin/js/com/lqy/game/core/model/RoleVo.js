@@ -39,16 +39,15 @@ var RoleVo = /** @class */ (function () {
     /**得到可用技能 ，自动释放技能*/
     RoleVo.prototype.getCanUserSkill = function () {
         var _this = this;
-        var ind = 0;
+        var skillID = 0;
         this.skillVos.forEach(function (skillVo) {
-            ind++;
             if (skillVo.isCanUse) {
-                console.log(_this.name + "】使用了" + skillVo.name + "技能，伤害爆表");
+                console.log(_this.name + "】使用了" + skillVo.name + "技能，伤害爆表" + skillVo.id);
                 skillVo.isCanUse = false;
-                return ind;
+                skillID = Number(skillVo.id);
             }
         });
-        return ind;
+        return skillID;
     };
     return RoleVo;
 }());

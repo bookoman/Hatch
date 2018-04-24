@@ -251,9 +251,13 @@ class BattleDataManager{
             });
         }
     }
-
+    /**
+     * 技能寻找敌人
+     * @param skillId 
+     */
     public skillAttEnemys(skillId:string):void
     {
+        var skillVo:SkillVo = ConfigManager.ins.getSkillVoByID(skillId);
         
     }
     

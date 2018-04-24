@@ -128,7 +128,11 @@ var MyLayer = /** @class */ (function (_super) {
         if (isMask) {
             if (this.maskSprite == null) {
                 this.maskSprite = new Laya.Sprite();
+                this.maskSprite.width = GameConfig.STAGE_WIDTH;
+                this.maskSprite.height = GameConfig.STAGE_HEIGHT;
+                this.maskSprite.mouseEnabled = true;
                 this.maskSprite.graphics.drawRect(0, 0, GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, "#000000");
+                console.log(this.maskSprite.width, this.maskSprite.height);
                 this.maskSprite.alpha = 0.5;
             }
             if (!this.maskSprite.parent) {
@@ -159,10 +163,14 @@ var MyLayer = /** @class */ (function (_super) {
             this.maskCount--;
             if (this.maskCount <= 0 && this.maskSprite) {
                 this.maskSprite.graphics.clear();
-                if (this.maskSprite.parent) {
-                    this.maskSprite.removeChild(this.maskSprite);
-                    this.maskSprite = null;
-                }
+                this.maskSprite.removeSelf();
+                this.maskSprite = null;
+                // if(this.maskSprite.parent)
+                // {
+                //     this.maskSprite.removeChild(this.maskSprite);
+                //     this.maskSprite.mouseEnabled = false;
+                //     this.maskSprite = null;
+                // }
             }
         }
         if (isMany) {

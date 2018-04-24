@@ -125,10 +125,12 @@ var RoleManager = /** @class */ (function () {
     RoleManager.prototype.playAttackAni = function () {
         var attRoleVo = this.attRole.roleVo;
         var defRoleVo = this.defRole.roleVo;
-        var skillInd = attRoleVo.getCanUserSkill();
-        if (skillInd > 0) {
+        var skillID = attRoleVo.getCanUserSkill();
+        if (skillID > 0) {
             //技能释放
-            this.attRole.aniPlay(RoleAniIndex.SKILL1 + skillInd, false, 500, this, this.moveBackLineup);
+            this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 500, this, this.moveBackLineup);
+            var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+            skill.playSkill(skillID, defRoleVo.posPoint);
         }
         else {
             //远攻，近攻击
