@@ -52053,7 +52053,7 @@ var TsJsContactUtile = /** @class */ (function () {
     }
     return TsJsContactUtile;
 }());
-
+//# sourceMappingURL=TsJsContactUtile.js.map
 /*
 * name;
 */
@@ -52091,7 +52091,7 @@ var StringUtil = /** @class */ (function () {
     };
     return StringUtil;
 }());
-
+//# sourceMappingURL=StringUtil.js.map
 /*
 * 对象池工具
 */
@@ -52112,6 +52112,10 @@ var ObjectPoolUtil = /** @class */ (function () {
         for (i = 0; i < 5; i++) {
             this.heroAry.push(new Hero());
             this.enemyAry.push(new Enemy());
+        }
+        this.skillAry = new Array();
+        for (i = 0; i < 20; i++) {
+            this.skillAry.push(new Skill());
         }
     };
     /**借用一个对象 */
@@ -52137,6 +52141,8 @@ var ObjectPoolUtil = /** @class */ (function () {
     ObjectPoolUtil.HERO_ROLE = "hero";
     /**敌人显示对象 */
     ObjectPoolUtil.ENEMY_ROLE = "enemy";
+    /**技能显示对象 */
+    ObjectPoolUtil.SKILL = "skill";
     /**飘字对象 */
     ObjectPoolUtil.floatFontTipsAry = null;
     /**角色血条 */
@@ -52145,9 +52151,11 @@ var ObjectPoolUtil = /** @class */ (function () {
     ObjectPoolUtil.heroAry = null;
     /**敌人显示对象 */
     ObjectPoolUtil.enemyAry = null;
+    /**技能对象 */
+    ObjectPoolUtil.skillAry = null;
     return ObjectPoolUtil;
 }());
-
+//# sourceMappingURL=ObjectPoolUtil.js.map
 /*
 * name;
 */
@@ -52158,7 +52166,7 @@ var MapUtil = /** @class */ (function () {
     MapUtil.TYPE_LOAD_CUT = 2;
     return MapUtil;
 }());
-
+//# sourceMappingURL=MapUtil.js.map
 /*
 * 语言包
 */
@@ -52215,7 +52223,7 @@ var LG = /** @class */ (function () {
     LG.dic = null;
     return LG;
 }());
-
+//# sourceMappingURL=LG.js.map
 /*
 * name;
 */
@@ -52261,7 +52269,7 @@ var DebugViewUtil = /** @class */ (function () {
     DebugViewUtil.msgArray = null;
     return DebugViewUtil;
 }());
-
+//# sourceMappingURL=DebugViewUtil.js.map
 /*
 * name;
 */
@@ -52270,7 +52278,7 @@ var CommonUtil = /** @class */ (function () {
     }
     return CommonUtil;
 }());
-
+//# sourceMappingURL=CommonUtil.js.map
 /*
 * 声音管理器
 */
@@ -52294,7 +52302,7 @@ var SoundManager = /** @class */ (function () {
     SoundManager._ins = null;
     return SoundManager;
 }());
-
+//# sourceMappingURL=SoundManager.js.map
 /*
 * name;
 */
@@ -52303,7 +52311,7 @@ var SocketManager = /** @class */ (function () {
     }
     return SocketManager;
 }());
-
+//# sourceMappingURL=SocketManager.js.map
 /*
 * 场景管理器
 */
@@ -52353,7 +52361,7 @@ var SceneMananger = /** @class */ (function () {
     SceneMananger._ins = null;
     return SceneMananger;
 }());
-
+//# sourceMappingURL=SceneMananger.js.map
 /*
 * name;
 */
@@ -52366,7 +52374,7 @@ var BaseScene = /** @class */ (function () {
     };
     return BaseScene;
 }());
-
+//# sourceMappingURL=BaseScene.js.map
 /*
 * 较色管理器
 */
@@ -52494,10 +52502,12 @@ var RoleManager = /** @class */ (function () {
     RoleManager.prototype.playAttackAni = function () {
         var attRoleVo = this.attRole.roleVo;
         var defRoleVo = this.defRole.roleVo;
-        var skillInd = attRoleVo.getCanUserSkill();
-        if (skillInd > 0) {
+        var skillID = attRoleVo.getCanUserSkill();
+        if (skillID > 0) {
             //技能释放
-            this.attRole.aniPlay(RoleAniIndex.SKILL1 + skillInd, false, 500, this, this.moveBackLineup);
+            this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 500, this, this.moveBackLineup);
+            var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+            skill.playSkill(skillID, defRoleVo.posPoint);
         }
         else {
             //远攻，近攻击
@@ -52565,7 +52575,44 @@ var RoleManager = /** @class */ (function () {
     RoleManager._ins = null;
     return RoleManager;
 }());
-
+//# sourceMappingURL=RoleManager.js.map
+/*
+* 技能
+*/
+var Skill = /** @class */ (function () {
+    function Skill() {
+        this.skeletonAni = null;
+    }
+    /**
+     *
+     * @param skillId
+     * @param pos
+     * @param scale
+     */
+    Skill.prototype.playSkill = function (skillId, pos, scale) {
+        if (scale === undefined || scale === null) {
+            scale = 1;
+        }
+        if (this.skeletonAni == null) {
+            this.skeletonAni = new Skeleton();
+            this.skeletonAni.pos(pos.x, pos.y);
+            this.skeletonAni.scale(scale, scale);
+            this.skeletonAni.load("res/outside/anim/skill/" + skillId + "/" + skillId + ".sk");
+            LayerManager.ins.addToLayer(this.skeletonAni, LayerManager.EFFECT_LAYER, false, true, false);
+        }
+        // this.skeletonAni.play(0,false);
+        Laya.timer.once(1000, this, this.playSkillComplete);
+    };
+    Skill.prototype.playSkillComplete = function () {
+        if (this.skeletonAni) {
+            this.skeletonAni.removeSelf();
+            this.skeletonAni = null;
+            ObjectPoolUtil.stillObject(ObjectPoolUtil.SKILL, this);
+        }
+    };
+    return Skill;
+}());
+//# sourceMappingURL=Skill.js.map
 /*
 * 技能Vo
 */
@@ -52592,7 +52639,7 @@ var SkillVo = /** @class */ (function () {
     };
     return SkillVo;
 }());
-
+//# sourceMappingURL=SkillVo.js.map
 /*
 * 角色Vo [10000,20000)英雄，[20000,30000)怪物
 */
@@ -52634,20 +52681,19 @@ var RoleVo = /** @class */ (function () {
     /**得到可用技能 ，自动释放技能*/
     RoleVo.prototype.getCanUserSkill = function () {
         var _this = this;
-        var ind = 0;
+        var skillID = 0;
         this.skillVos.forEach(function (skillVo) {
-            ind++;
             if (skillVo.isCanUse) {
-                console.log(_this.name + "】使用了" + skillVo.name + "技能，伤害爆表");
+                console.log(_this.name + "】使用了" + skillVo.name + "技能，伤害爆表" + skillVo.id);
                 skillVo.isCanUse = false;
-                return ind;
+                skillID = Number(skillVo.id);
             }
         });
-        return ind;
+        return skillID;
     };
     return RoleVo;
 }());
-
+//# sourceMappingURL=RoleVo.js.map
 /*
 * 玩家数据
 */
@@ -52656,7 +52702,7 @@ var PlayerData = /** @class */ (function () {
     }
     return PlayerData;
 }());
-
+//# sourceMappingURL=PlayerData.js.map
 /*
 * 阵型配置
 */
@@ -52665,7 +52711,7 @@ var LineupPosVo = /** @class */ (function () {
     }
     return LineupPosVo;
 }());
-
+//# sourceMappingURL=LineupPosVo.js.map
 /*
 * 怪物数据
 */
@@ -52676,7 +52722,7 @@ var EnemyData = /** @class */ (function () {
     }
     return EnemyData;
 }());
-
+//# sourceMappingURL=EnemyData.js.map
 /*
 * 战斗数据管理
 */
@@ -52685,7 +52731,7 @@ var BattleReportVo = /** @class */ (function () {
     }
     return BattleReportVo;
 }());
-
+//# sourceMappingURL=BattleReportVo.js.map
 /*
 * name;
 */
@@ -52694,7 +52740,7 @@ var BattleReportData = /** @class */ (function () {
     }
     return BattleReportData;
 }());
-
+//# sourceMappingURL=BattleReportData.js.map
 /*
 * 地图管理
 */
@@ -52796,7 +52842,7 @@ var MapManager = /** @class */ (function () {
     MapManager._ins = null;
     return MapManager;
 }());
-
+//# sourceMappingURL=MapManager.js.map
 /*
 * 地图斜视网格化
 * 公式一：logic.x  = ( stage.x / TileWidth ) - ( logic.y & 1 ) * ( TileWidth / 2 );
@@ -52871,7 +52917,7 @@ var SquintAngleGrid = /** @class */ (function () {
     };
     return SquintAngleGrid;
 }());
-
+//# sourceMappingURL=SquintAngleGrid.js.map
 /*
 * 地图资源缓存
 */
@@ -52925,7 +52971,7 @@ var SourceCache = /** @class */ (function () {
     SourceCache._ins = null;
     return SourceCache;
 }());
-
+//# sourceMappingURL=SourceCache.js.map
 /*
 *阵容管理器
 */
@@ -52975,7 +53021,7 @@ var LineupManager = /** @class */ (function () {
     LineupManager._ins = null;
     return LineupManager;
 }());
-
+//# sourceMappingURL=LineupManager.js.map
 /*
 * 游戏数据管理器
 */
@@ -53063,7 +53109,7 @@ var GameDataManager = /** @class */ (function () {
     GameDataManager._ins = null;
     return GameDataManager;
 }());
-
+//# sourceMappingURL=GameDataManager.js.map
 /*
 * 事件管理器
 */
@@ -53130,7 +53176,7 @@ var EventManager = /** @class */ (function () {
     EventManager._ins = null;
     return EventManager;
 }());
-
+//# sourceMappingURL=EventManager.js.map
 /*
 * 配置表管理器
 */
@@ -53139,15 +53185,15 @@ var ConfigManager = /** @class */ (function () {
         /*********测试配置数据 */
         this.roleConfigAry = [
             { "id": "10000", "name": "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10000", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 10, "attFar": 1 },
-            { "id": "10001", "name": "黄狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 3, "attFar": 0 },
-            { "id": "10002", "name": "巨石人", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 6, "attFar": 0 },
-            { "id": "10003", "name": "蓝狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 8, "attFar": 0 },
-            { "id": "10004", "name": "骷髅头", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 3, "attFar": 1 },
-            { "id": "20000", "name": "幽灵", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "", "attackRect": "0,50,50,0", "hp": 30, "att": 3, "atts": 1, "attFar": 0 },
-            { "id": "20001", "name": "鳄鱼龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "", "attackRect": "0,50,50,0", "hp": 30, "att": 3, "atts": 6, "attFar": 0 },
-            { "id": "20002", "name": "骨龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "", "attackRect": "0,50,50,0", "hp": 30, "att": 4, "atts": 4, "attFar": 1 },
-            { "id": "20003", "name": "骷髅射手", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "", "attackRect": "0,50,50,0", "hp": 30, "att": 4, "atts": 5, "attFar": 1 },
-            { "id": "20004", "name": "斧头怪", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "", "attackRect": "0,50,50,0", "hp": 30, "att": 5, "atts": 10, "attFar": 0 }
+            { "id": "10001", "name": "黄狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10001", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 3, "attFar": 0 },
+            { "id": "10002", "name": "巨石人", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 6, "attFar": 0 },
+            { "id": "10003", "name": "蓝狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 8, "attFar": 0 },
+            { "id": "10004", "name": "骷髅头", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 3, "attFar": 1 },
+            { "id": "20000", "name": "幽灵", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10005", "attackRect": "0,50,50,0", "hp": 30, "att": 3, "atts": 1, "attFar": 0 },
+            { "id": "20001", "name": "鳄鱼龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10000", "attackRect": "0,50,50,0", "hp": 30, "att": 3, "atts": 6, "attFar": 0 },
+            { "id": "20002", "name": "骨龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 30, "att": 4, "atts": 4, "attFar": 1 },
+            { "id": "20003", "name": "骷髅射手", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 30, "att": 4, "atts": 5, "attFar": 1 },
+            { "id": "20004", "name": "斧头怪", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "att": 5, "atts": 10, "attFar": 0 }
         ];
         this.skillConfigAry = [
             { "id": "10000", "name": "蛇皮技能", "cd": 10, "attFar": 1 },
@@ -53236,7 +53282,7 @@ var ConfigManager = /** @class */ (function () {
     ConfigManager._ins = null;
     return ConfigManager;
 }());
-
+//# sourceMappingURL=ConfigManager.js.map
 /*
 * 战斗数据管理器
 */
@@ -53443,12 +53489,17 @@ var BattleDataManager = /** @class */ (function () {
             });
         }
     };
+    /**
+     * 技能寻找敌人
+     * @param skillId
+     */
     BattleDataManager.prototype.skillAttEnemys = function (skillId) {
+        var skillVo = ConfigManager.ins.getSkillVoByID(skillId);
     };
     BattleDataManager._ins = null;
     return BattleDataManager;
 }());
-
+//# sourceMappingURL=BattleDataManager.js.map
 /*
 * 战斗引擎
 * 一，阵型，站定九宫格，分三排、三列，每排3个位置，格子定位坐标
@@ -53541,7 +53592,7 @@ var BattleEngine = /** @class */ (function () {
     BattleEngine._ins = null;
     return BattleEngine;
 }());
-
+//# sourceMappingURL=BattleEngine.js.map
 /*
 * name;
 */
@@ -53573,7 +53624,7 @@ var BaseMediator = /** @class */ (function () {
     };
     return BaseMediator;
 }());
-
+//# sourceMappingURL=BaseMediator.js.map
 /*
 * 游戏配置
 */
@@ -53643,7 +53694,7 @@ var BattleAttCampType;
     BattleAttCampType[BattleAttCampType["ENEMY"] = 2] = "ENEMY";
     BattleAttCampType[BattleAttCampType["OTHER"] = 3] = "OTHER";
 })(BattleAttCampType || (BattleAttCampType = {}));
-
+//# sourceMappingURL=GameConfig.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53699,7 +53750,7 @@ var FloatFontTips = /** @class */ (function (_super) {
     };
     return FloatFontTips;
 }(Laya.Label));
-
+//# sourceMappingURL=FloatFontTips.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53743,7 +53794,7 @@ var RoleBloodBar = /** @class */ (function (_super) {
     };
     return RoleBloodBar;
 }(Laya.Sprite));
-
+//# sourceMappingURL=RoleBloodBar.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53817,7 +53868,7 @@ var SkillView = /** @class */ (function (_super) {
     };
     return SkillView;
 }(Laya.Sprite));
-
+//# sourceMappingURL=SkillView.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53849,7 +53900,7 @@ var BattleReportMediator = /** @class */ (function (_super) {
     };
     return BattleReportMediator;
 }(BaseMediator));
-
+//# sourceMappingURL=BattleReportMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53888,7 +53939,7 @@ var ChoiceMediator = /** @class */ (function (_super) {
     };
     return ChoiceMediator;
 }(BaseMediator));
-
+//# sourceMappingURL=ChoiceMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53937,7 +53988,7 @@ var GameMediator = /** @class */ (function (_super) {
     };
     return GameMediator;
 }(BaseMediator));
-
+//# sourceMappingURL=GameMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53979,7 +54030,7 @@ var LoginMediator = /** @class */ (function (_super) {
     };
     return LoginMediator;
 }(BaseMediator));
-
+//# sourceMappingURL=LoginMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54014,7 +54065,7 @@ var SignMediator = /** @class */ (function (_super) {
     };
     return SignMediator;
 }(BaseMediator));
-
+//# sourceMappingURL=SignMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54048,7 +54099,7 @@ var TestMediator = /** @class */ (function (_super) {
     };
     return TestMediator;
 }(BaseMediator));
-
+//# sourceMappingURL=TestMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54241,7 +54292,7 @@ var MyLayer = /** @class */ (function (_super) {
     };
     return MyLayer;
 }(Laya.Sprite));
-
+//# sourceMappingURL=LayerManager.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54273,7 +54324,7 @@ var ImageLoader = /** @class */ (function (_super) {
     };
     return ImageLoader;
 }(Laya.EventDispatcher));
-
+//# sourceMappingURL=ImageLoader.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54640,7 +54691,7 @@ var MapEngine = /** @class */ (function (_super) {
     };
     return MapEngine;
 }(Laya.Sprite));
-
+//# sourceMappingURL=MapEngine.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54682,7 +54733,7 @@ var MapGrid = /** @class */ (function (_super) {
     };
     return MapGrid;
 }(Laya.Sprite));
-
+//# sourceMappingURL=MapGrid.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54812,7 +54863,7 @@ var MapLoopEngine = /** @class */ (function (_super) {
     };
     return MapLoopEngine;
 }(Laya.Sprite));
-
+//# sourceMappingURL=MapLoopEngine.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54855,7 +54906,7 @@ var BaseRole = /** @class */ (function (_super) {
     BaseRole.prototype.showFloatFont = function (blood) {
         var floatFontTip = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
         if (floatFontTip) {
-            floatFontTip.setAttribute(40, "#fff000");
+            floatFontTip.setAttribute(40, "#ff0000");
             floatFontTip.show("-" + blood, this, -50, -180, 1.0, 80);
         }
     };
@@ -54958,7 +55009,7 @@ var BaseRole = /** @class */ (function (_super) {
     };
     return BaseRole;
 }(Laya.Sprite));
-
+//# sourceMappingURL=BaseRole.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54994,7 +55045,7 @@ var Enemy = /** @class */ (function (_super) {
     };
     return Enemy;
 }(BaseRole));
-
+//# sourceMappingURL=Enemy.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -55021,7 +55072,7 @@ var Hero = /** @class */ (function (_super) {
     };
     return Hero;
 }(BaseRole));
-
+//# sourceMappingURL=Hero.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -55042,7 +55093,7 @@ var NPC = /** @class */ (function (_super) {
     }
     return NPC;
 }(BaseRole));
-
+//# sourceMappingURL=NPC.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -55072,7 +55123,7 @@ var GameScene = /** @class */ (function (_super) {
     };
     return GameScene;
 }(BaseScene));
-
+//# sourceMappingURL=GameScene.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -55098,7 +55149,7 @@ var LoginScene = /** @class */ (function (_super) {
     };
     return LoginScene;
 }(BaseScene));
-
+//# sourceMappingURL=LoginScene.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -55123,7 +55174,7 @@ var PreLoadScene = /** @class */ (function (_super) {
     };
     return PreLoadScene;
 }(BaseScene));
-
+//# sourceMappingURL=PreLoadScene.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -55279,7 +55330,7 @@ var ui;
         test.TestPageUI = TestPageUI;
     })(test = ui.test || (ui.test = {}));
 })(ui || (ui = {}));
-
+//# sourceMappingURL=layaUI.max.all.js.map
 var Handler = Laya.Handler;
 /*
 * 游戏入口
@@ -55320,3 +55371,4 @@ function beginLoad() {
     var game = new Game();
     game.init();
 }
+//# sourceMappingURL=Game.js.map

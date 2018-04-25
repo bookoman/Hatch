@@ -132,7 +132,6 @@ var MyLayer = /** @class */ (function (_super) {
                 this.maskSprite.height = GameConfig.STAGE_HEIGHT;
                 this.maskSprite.mouseEnabled = true;
                 this.maskSprite.graphics.drawRect(0, 0, GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, "#000000");
-                console.log(this.maskSprite.width, this.maskSprite.height);
                 this.maskSprite.alpha = 0.5;
             }
             if (!this.maskSprite.parent) {
@@ -165,12 +164,6 @@ var MyLayer = /** @class */ (function (_super) {
                 this.maskSprite.graphics.clear();
                 this.maskSprite.removeSelf();
                 this.maskSprite = null;
-                // if(this.maskSprite.parent)
-                // {
-                //     this.maskSprite.removeChild(this.maskSprite);
-                //     this.maskSprite.mouseEnabled = false;
-                //     this.maskSprite = null;
-                // }
             }
         }
         if (isMany) {
