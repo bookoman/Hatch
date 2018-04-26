@@ -8,7 +8,7 @@ class PreLoadScene extends BaseScene{
     
     public enter():void
     {
-
+        
     }
 
     public leave():void

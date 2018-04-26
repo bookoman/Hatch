@@ -51,6 +51,8 @@ var MapManager = /** @class */ (function () {
         this.calSquintAngleGrid();
         //测试移动
         Laya.timer.frameLoop(2, this, this.mapMoveLoop);
+        //声音
+        SoundsManager.ins.playMusic("res/outside/sound/bg/zhou.mp3", 1000);
     };
     MapManager.prototype.mapMoveLoop = function () {
         //卡马克滚动

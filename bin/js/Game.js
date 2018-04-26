@@ -31,6 +31,7 @@ Laya.Stat.show(0, 0);
 Laya.stage.scaleMode = "showAll"; //showall跟showAll不一样。。。。
 Laya.stage.alignH = "center";
 Laya.stage.alignV = "top";
+// SoundManager.useAudioMusic = false;
 //激活资源版本控制
 Laya.ResourceVersion.enable("version.json", Handler.create(null, beginLoad));
 function beginLoad() {

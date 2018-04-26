@@ -54,6 +54,8 @@ class MapManager{
         this.calSquintAngleGrid();
         //测试移动
         Laya.timer.frameLoop(2,this,this.mapMoveLoop);
+        //声音
+        SoundsManager.ins.playMusic("res/outside/sound/bg/zhou.mp3",1000);
     }
     private tx:number = 0;
     private mapMoveLoop():void

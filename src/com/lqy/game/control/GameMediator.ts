@@ -40,7 +40,7 @@ class GameMediator extends BaseMediator{
 
     private onBtnOpen(e:Laya.Event):void
     {
-        
+        SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
     }
     
     public dispose():void

@@ -41,6 +41,7 @@ var GameMediator = /** @class */ (function (_super) {
     GameMediator.prototype.onPlayAni = function (e) {
     };
     GameMediator.prototype.onBtnOpen = function (e) {
+        SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
     };
     GameMediator.prototype.dispose = function () {
     };
