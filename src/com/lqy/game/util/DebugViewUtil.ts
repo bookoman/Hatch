@@ -20,7 +20,7 @@ class DebugViewUtil{
         this.view.x = GameConfig.STAGE_WIDTH - this.view.width;
         this.view.y = 0;
         this.view.lblDec.text = "";
-        LayerManager.ins.addToLayer(this.view,LayerManager.TIP_LAYER,false,false,false);
+        LayerManager.ins.addToLayer(this.view,LayerManager.TIP_LAYER,false,true,false);
         this.view.btnClear.on(Laya.Event.CLICK,this,this.onBtnClear);
     }
     private static onBtnClear(e):void

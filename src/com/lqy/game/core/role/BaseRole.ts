@@ -10,12 +10,14 @@ class BaseRole extends Laya.Sprite{
     private isLoaded:boolean = false;
     private LblName:Laya.Label = null;
     private roleBloodBar:RoleBloodBar = null;
+    private showPriority:number = 0;
     constructor(){
         super();
     }
-    public initRole(roleVo:RoleVo,scale?:number):void
+    public initRole(roleVo:RoleVo,showPriority:number,scale?:number):void
     {
         this.roleVo = roleVo;
+        this.showPriority = showPriority;
         if(scale)
         {
             this.aniScale = scale; 
@@ -48,7 +50,7 @@ class BaseRole extends Laya.Sprite{
 
         if(this.isLoaded)
         {   
-            loop = loop ? false : true; 
+            loop = loop === undefined ? true : false; 
             aniID = aniID % this.aniCount;
              //>= aniCount默认播放第一个动画
             if(this.skeletonAni)
@@ -66,7 +68,7 @@ class BaseRole extends Laya.Sprite{
         else
         {
             //分帧加载
-            Laya.timer.frameOnce(2,this,this.skeletonAniLoad,[aniID,loop]);
+            Laya.timer.frameOnce(this.showPriority * 6,this,this.skeletonAniLoad,[aniID,loop]);
         }
     }
     private skeletonAniLoad(aniID,loop):void

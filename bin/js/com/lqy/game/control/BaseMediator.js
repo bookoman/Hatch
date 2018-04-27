@@ -7,6 +7,7 @@ var BaseMediator = /** @class */ (function () {
         this.assetsUrl = assetsUrl;
         this.view = view;
         if (this.assetsUrl) {
+            ModuleLoadingView.ins.show();
             Laya.loader.load(this.assetsUrl, new Laya.Handler(this, this.onLoaded), new Laya.Handler(this, this.onLoadProgress));
         }
         else {
@@ -16,9 +17,11 @@ var BaseMediator = /** @class */ (function () {
     /**资源加载完成 */
     BaseMediator.prototype.onLoaded = function (data) {
         this.initView();
+        ModuleLoadingView.ins.setProgress(1);
     };
     /**资源加载进度 */
     BaseMediator.prototype.onLoadProgress = function (data) {
+        ModuleLoadingView.ins.setProgress(data);
     };
     BaseMediator.prototype.initView = function () {
         this.addEvents();

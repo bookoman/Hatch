@@ -9,6 +9,7 @@ class BaseMediator{
         this.view = view;
         if(this.assetsUrl)
         {
+            ModuleLoadingView.ins.show();
             Laya.loader.load(this.assetsUrl,new Laya.Handler(this,this.onLoaded),new Laya.Handler(this,this.onLoadProgress));
         }
         else
@@ -20,11 +21,12 @@ class BaseMediator{
     protected onLoaded(data):void
     {
         this.initView();
+        ModuleLoadingView.ins.setProgress(1);
     }
     /**资源加载进度 */
     protected onLoadProgress(data):void
     {
-
+        ModuleLoadingView.ins.setProgress(data);
     }
 
     protected initView():void

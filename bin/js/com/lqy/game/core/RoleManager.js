@@ -39,7 +39,7 @@ var RoleManager = /** @class */ (function () {
             });
             if (hero == null) {
                 hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-                hero.initRole(roleVo, 1);
+                hero.initRole(roleVo, i, 1);
                 this.heroRoles.push(hero);
             }
             hero.aniPlay(RoleAniIndex.MOVE);
@@ -59,7 +59,7 @@ var RoleManager = /** @class */ (function () {
         for (var i = 0; i < enemyData.roleVoAry.length; i++) {
             roleVo = enemyData.roleVoAry[i];
             enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
-            enemy.initRole(roleVo, 1);
+            enemy.initRole(roleVo, i, 1);
             this.enemyRoles.push(enemy);
         }
         this.enemyRoles.forEach(function (enemyView) {

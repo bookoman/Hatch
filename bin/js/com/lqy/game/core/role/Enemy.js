@@ -16,8 +16,8 @@ var Enemy = /** @class */ (function (_super) {
     function Enemy() {
         return _super.call(this) || this;
     }
-    Enemy.prototype.initRole = function (roleVo, scale) {
-        _super.prototype.initRole.call(this, roleVo, scale);
+    Enemy.prototype.initRole = function (roleVo, showPriority, scale) {
+        _super.prototype.initRole.call(this, roleVo, showPriority, scale);
         this.x = GameConfig.STAGE_WIDTH + GameConfig.LINEUP_GRID_WIDTH + roleVo.runWidth;
         this.y = this.roleVo.posPoint.y;
     };

@@ -5,9 +5,9 @@ class Enemy extends BaseRole{
     constructor(){
         super();
     }
-    public initRole(roleVo:RoleVo,scale?:number):void
+    public initRole(roleVo:RoleVo,showPriority:number,scale?:number):void
     {
-        super.initRole(roleVo,scale);
+        super.initRole(roleVo,showPriority,scale);
         
         this.x = GameConfig.STAGE_WIDTH + GameConfig.LINEUP_GRID_WIDTH + roleVo.runWidth;
         this.y = this.roleVo.posPoint.y;

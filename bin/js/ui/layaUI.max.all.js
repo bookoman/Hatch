@@ -66,7 +66,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.GameViewUI.uiView);
         };
-        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 12, "x": 0, "width": 750, "skin": "bg/main.jpg", "height": 1334 } }, { "type": "Button", "props": { "y": 625, "x": 267, "width": 216, "var": "btnOpen", "skin": "comp/button.png", "labelStrokeColor": "#f88508", "labelSize": 32, "label": "打开", "height": 83 } }, { "type": "Image", "props": { "y": 821, "x": 335, "skin": "main/logo.png" } }, { "type": "Button", "props": { "y": 76, "x": 59, "width": 120, "var": "btnAni", "skin": "comp/button.png", "labelSize": 24, "label": "playAni", "height": 60 } }] };
+        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 12, "x": 0, "width": 750, "skin": "bg/main.jpg", "height": 1334 } }, { "type": "Button", "props": { "y": 76, "x": 256, "width": 216, "var": "btnOpen", "skin": "comp/button.png", "labelStrokeColor": "#f88508", "labelSize": 32, "label": "打开拳击声效", "height": 83 } }, { "type": "Image", "props": { "y": 821, "x": 335, "skin": "main/logo.png" } }, { "type": "Button", "props": { "y": 76, "x": 59, "width": 120, "var": "btnAni", "skin": "comp/button.png", "labelSize": 24, "label": "playAni", "height": 60 } }] };
         return GameViewUI;
     }(View));
     ui.GameViewUI = GameViewUI;

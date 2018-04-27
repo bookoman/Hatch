@@ -7,4 +7,14 @@
    <item name="signview/img_bg.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
    <item name="test/img_bg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="main/img_reportbg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb1.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb2.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb3.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb4 - 副本 (3).png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb4.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb5.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb6.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb7.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb8.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="main/img_tzdb9.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
 </res>

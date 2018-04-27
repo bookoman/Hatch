@@ -29,7 +29,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":625,"x":267,"width":216,"var":"btnOpen","skin":"comp/button.png","labelStrokeColor":"#f88508","labelSize":32,"label":"打开","height":83},
+            "props":{"y":76,"x":256,"width":216,"var":"btnOpen","skin":"comp/button.png","labelStrokeColor":"#f88508","labelSize":32,"label":"打开拳击声效","height":83},
             "nodeParent":1,
             "label":"Button(btnOpen)",
             "isDirectory":false,

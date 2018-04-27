@@ -22,10 +22,12 @@ var BaseRole = /** @class */ (function (_super) {
         _this.isLoaded = false;
         _this.LblName = null;
         _this.roleBloodBar = null;
+        _this.showPriority = 0;
         return _this;
     }
-    BaseRole.prototype.initRole = function (roleVo, scale) {
+    BaseRole.prototype.initRole = function (roleVo, showPriority, scale) {
         this.roleVo = roleVo;
+        this.showPriority = showPriority;
         if (scale) {
             this.aniScale = scale;
         }
@@ -50,7 +52,7 @@ var BaseRole = /** @class */ (function (_super) {
      */
     BaseRole.prototype.aniPlay = function (aniID, loop, laterTime, caller, method) {
         if (this.isLoaded) {
-            loop = loop ? false : true;
+            loop = loop === undefined ? true : false;
             aniID = aniID % this.aniCount;
             //>= aniCount默认播放第一个动画
             if (this.skeletonAni) {
@@ -65,7 +67,7 @@ var BaseRole = /** @class */ (function (_super) {
         }
         else {
             //分帧加载
-            Laya.timer.frameOnce(2, this, this.skeletonAniLoad, [aniID, loop]);
+            Laya.timer.frameOnce(this.showPriority * 6, this, this.skeletonAniLoad, [aniID, loop]);
         }
     };
     BaseRole.prototype.skeletonAniLoad = function (aniID, loop) {
