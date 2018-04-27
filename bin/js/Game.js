@@ -7,20 +7,10 @@ var Game = /** @class */ (function () {
     function Game() {
     }
     Game.prototype.init = function () {
-        var resAry = [
-            { url: "res/atlas/comp.atlas", type: Loader.ATLAS, size: 50, priority: 1 }
-            // {url:"res/atlas/main.atlas",type:Loader.ATLAS,size:50,priority:1}
-        ];
-        Laya.loader.load(resAry, Handler.create(this, this.onLoaded), Handler.create(this, this.loadProgress));
-    };
-    Game.prototype.loadProgress = function (value) {
-        // setLoadingView(Math.floor(value * 100));
-    };
-    Game.prototype.onLoaded = function () {
         LayerManager.ins.init();
         DebugViewUtil.init();
-        SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
-        DebugViewUtil.log("浏览器宽高", Laya.Browser.width + "," + Laya.Browser.height);
+        PreLoadingView.ins.show();
+        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
     };
     return Game;
 }());

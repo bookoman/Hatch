@@ -10,27 +10,13 @@ class Game{
     }
     public init():void
     {
-        var resAry:Array<Object> = [
-            {url:"res/atlas/comp.atlas",type:Loader.ATLAS,size:50,priority:1}
-            // {url:"res/atlas/main.atlas",type:Loader.ATLAS,size:50,priority:1}
-        ];
-        Laya.loader.load(resAry, Handler.create(this,this.onLoaded),Handler.create(this,this.loadProgress));
-    }
-    private loadProgress(value):void
-    {
-        // setLoadingView(Math.floor(value * 100));
-    }
-    public onLoaded(): void
-    {
         LayerManager.ins.init();
         DebugViewUtil.init();
-        SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
-
-        DebugViewUtil.log("浏览器宽高",Laya.Browser.width+","+Laya.Browser.height);
+        PreLoadingView.ins.show();
+        
+        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
     }
-
 }
-
 //程序入口
 Laya.MiniAdpter.init();
 Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT,Laya.WebGL);
