@@ -52,7 +52,7 @@ class ModuleLoadingView extends Laya.Sprite{
         }
         if(value == 1)
         {
-            Laya.timer.once(200,this,this.hide);
+            Laya.timer.once(200,this,this.hide,null,false);
         }
     }
 

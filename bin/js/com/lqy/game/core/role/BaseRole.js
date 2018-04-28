@@ -58,7 +58,7 @@ var BaseRole = /** @class */ (function (_super) {
             if (this.skeletonAni) {
                 this.skeletonAni.play(aniID, loop);
                 if (laterTime && caller && method) {
-                    Laya.timer.once(laterTime, caller, method);
+                    Laya.timer.once(laterTime, caller, method, null, false);
                 }
                 // if(this.roleVo.name == "蓝狼"){
                 //     console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID),this.visible);
@@ -71,7 +71,13 @@ var BaseRole = /** @class */ (function (_super) {
         }
     };
     BaseRole.prototype.skeletonAniLoad = function (aniID, loop) {
-        this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk", new Laya.Handler(this, this.loadCompleted, [aniID, loop]));
+        if (this.roleVo.id == "20005") { //测试怪物
+            this.skeletonAni.scale(0.3, 0.3);
+            this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/nat_cos1_f.sk", new Laya.Handler(this, this.loadCompleted, [aniID, loop]));
+        }
+        else {
+            this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk", new Laya.Handler(this, this.loadCompleted, [aniID, loop]));
+        }
     };
     BaseRole.prototype.loadCompleted = function (ind, loop) {
         if (!this.isLoaded) {

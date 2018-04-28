@@ -9,6 +9,7 @@ class LoginMediator extends BaseMediator{
     protected initView():void
     {
         this.view = new ui.LoginViewUI();
+        AnimationManager.ins.popCenterLittleToBig(this.view,300);
         LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,true,false,true);
         super.initView();
     }

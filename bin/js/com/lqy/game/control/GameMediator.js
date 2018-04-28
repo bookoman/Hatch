@@ -39,6 +39,7 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnAni.off(Laya.Event.CLICK, this, this.onPlayAni);
     };
     GameMediator.prototype.onPlayAni = function (e) {
+        var testMediator = new TestMediator();
     };
     GameMediator.prototype.onBtnOpen = function (e) {
         SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");

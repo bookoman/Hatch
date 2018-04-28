@@ -47,7 +47,6 @@ class BaseRole extends Laya.Sprite{
      */
     public aniPlay(aniID:number,loop?:boolean,laterTime?:number,caller?:any,method?:Function)
     {
-
         if(this.isLoaded)
         {   
             loop = loop === undefined ? true : false; 
@@ -58,7 +57,7 @@ class BaseRole extends Laya.Sprite{
                 this.skeletonAni.play(aniID,loop);
                 if(laterTime && caller && method)
                 {
-                    Laya.timer.once(laterTime,caller,method);
+                    Laya.timer.once(laterTime,caller,method,null,false);
                 }
                 // if(this.roleVo.name == "蓝狼"){
                 //     console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID),this.visible);
@@ -73,7 +72,15 @@ class BaseRole extends Laya.Sprite{
     }
     private skeletonAniLoad(aniID,loop):void
     {
-        this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/"+ this.roleVo.id +".sk",new Laya.Handler(this,this.loadCompleted,[aniID,loop]));
+        if(this.roleVo.id == "20005")
+        {  //测试怪物
+            this.skeletonAni.scale(0.3,0.3);
+            this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/nat_cos1_f.sk",new Laya.Handler(this,this.loadCompleted,[aniID,loop]));
+        }
+        else
+        {
+            this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/"+ this.roleVo.id +".sk",new Laya.Handler(this,this.loadCompleted,[aniID,loop]));
+        }
     }
     
     private loadCompleted(ind,loop) {

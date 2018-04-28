@@ -19,6 +19,7 @@ class Game{
 }
 //程序入口
 Laya.MiniAdpter.init();
+Config.isAntialias = true;//绘图抗锯齿
 Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT,Laya.WebGL);
 Laya.Stat.show(0,0);
 Laya.stage.scaleMode = "showAll";//showall跟showAll不一样。。。。
@@ -33,3 +34,4 @@ function beginLoad(){
     var game:Game = new Game();
     game.init();
 }
+    

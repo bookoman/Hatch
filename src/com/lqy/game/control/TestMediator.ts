@@ -8,6 +8,7 @@ class TestMediator extends BaseMediator{
     protected initView():void
     {
         this.view = new ui.test.TestPageUI();
+        AnimationManager.ins.popCenterLittleToBig(this.view);
         LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,true,true);
         super.initView();
     }

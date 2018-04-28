@@ -18,6 +18,7 @@ var LoginMediator = /** @class */ (function (_super) {
     }
     LoginMediator.prototype.initView = function () {
         this.view = new ui.LoginViewUI();
+        AnimationManager.ins.popCenterLittleToBig(this.view, 300);
         LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, true, false, true);
         _super.prototype.initView.call(this);
     };

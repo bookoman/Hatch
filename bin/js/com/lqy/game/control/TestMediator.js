@@ -18,6 +18,7 @@ var TestMediator = /** @class */ (function (_super) {
     }
     TestMediator.prototype.initView = function () {
         this.view = new ui.test.TestPageUI();
+        AnimationManager.ins.popCenterLittleToBig(this.view);
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, true, true);
         _super.prototype.initView.call(this);
     };

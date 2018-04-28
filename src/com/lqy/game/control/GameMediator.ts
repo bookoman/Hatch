@@ -1,5 +1,5 @@
 /*
-* name;
+* 游戏主界面代理器
 */
 class GameMediator extends BaseMediator{
     private battleReportMediator:BattleReportMediator = null;
@@ -35,6 +35,7 @@ class GameMediator extends BaseMediator{
     }
     private onPlayAni(e:Laya.Event):void
     {
+        var testMediator:TestMediator = new TestMediator();
         
     }
 
