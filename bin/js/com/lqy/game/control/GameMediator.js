@@ -9,7 +9,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 /*
-* name;
+* 游戏主界面代理器
 */
 var GameMediator = /** @class */ (function (_super) {
     __extends(GameMediator, _super);
@@ -33,13 +33,27 @@ var GameMediator = /** @class */ (function (_super) {
     GameMediator.prototype.addEvents = function () {
         this.view.btnOpen.on(Laya.Event.CLICK, this, this.onBtnOpen);
         this.view.btnAni.on(Laya.Event.CLICK, this, this.onPlayAni);
+        EventManager.ins.addEvent(EventManager.CHALLENGE_BOSS, this, this.challegenBossHandler);
     };
     GameMediator.prototype.removeEvents = function () {
         this.view.btnOpen.off(Laya.Event.CLICK, this, this.onBtnOpen);
         this.view.btnAni.off(Laya.Event.CLICK, this, this.onPlayAni);
+        EventManager.ins.removeEvent(EventManager.CHALLENGE_BOSS, this.challegenBossHandler);
+    };
+    GameMediator.prototype.challegenBossHandler = function (data) {
+        var isEnd = data[0];
+        if (isEnd == false) {
+            BattleEngine.ins.challegenBoss();
+        }
+        this.battleReportMediator.setVisible(isEnd);
+        GameDataManager.ins.resetRolePoint();
+        RoleManager.ins.resetRolePoint();
     };
     GameMediator.prototype.onPlayAni = function (e) {
-        var testMediator = new TestMediator();
+        // var testMediator:TestMediator = new TestMediator();
+        var challegenBossMediator = new ChallegenBossMediator();
+        //挑战boss
+        MapManager.ins.enterMap("res/map", 10000, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
     };
     GameMediator.prototype.onBtnOpen = function (e) {
         SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");

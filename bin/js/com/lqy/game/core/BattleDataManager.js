@@ -22,12 +22,14 @@ var BattleDataManager = /** @class */ (function () {
             roleVo.battleHP = roleVo.hp;
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
+            roleVo.isAtted = false;
             roleVo.attEnemyVos = [];
         });
         this.attEnemyVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
+            roleVo.isAtted = false;
             roleVo.attEnemyVos = [];
         });
         this.seekAttTarget2(this.attHeroVos, this.attEnemyVos);

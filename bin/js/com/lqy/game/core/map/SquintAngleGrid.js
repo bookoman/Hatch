@@ -13,7 +13,7 @@ var SquintAngleGrid = /** @class */ (function () {
      * @param mapHei 地图高
      * @param mapRange 地图显示范围
      */
-    function SquintAngleGrid(mapWid, mapHei, mapRange) {
+    function SquintAngleGrid(mapWid, mapHei, isDrawGrid, mapRange) {
         //地图宽
         this.mapWid = 0;
         //地图高
@@ -21,6 +21,7 @@ var SquintAngleGrid = /** @class */ (function () {
         this.mapGridAry = null;
         this.mapWid = mapWid; //地图的宽
         this.mapHei = mapHei; //地图的高
+        this.isDrawGrid = isDrawGrid && isDrawGrid == true ? true : false;
         this.diamondW = GameConfig.LINEUP_GRID_WIDTH;
         this.diamondH = GameConfig.LINEUP_GRID_HEIGHT;
         // this.initGrid();
@@ -38,7 +39,10 @@ var SquintAngleGrid = /** @class */ (function () {
                 grid = new MapGrid(x, y);
                 grid.op = this.gridToViewPoint(x, y);
                 //绘制格子
-                // grid.drawTitle();
+                if (this.isDrawGrid) {
+                    grid.drawTitle();
+                }
+                this.mapGridAry.push(grid);
             }
         }
         this.mapGridAry.length;
@@ -69,6 +73,12 @@ var SquintAngleGrid = /** @class */ (function () {
         var px = gx * GameConfig.LINEUP_GRID_WIDTH + (gy & 1) * (GameConfig.LINEUP_GRID_WIDTH / 2);
         var py = gy * GameConfig.LINEUP_GRID_HEIGHT / 2;
         return new Point(px, py);
+    };
+    SquintAngleGrid.prototype.dispose = function () {
+        this.mapGridAry.forEach(function (grid) {
+            grid.clearDraw();
+        });
+        this.mapGridAry.splice(0, this.mapGridAry.length);
     };
     return SquintAngleGrid;
 }());

@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":20,
+    "selecteID":8,
     "props":{"width":750,"sceneColor":"#100606","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -41,7 +41,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":106,"x":38,"width":674,"skin":"bg/logo.png","height":422},
+            "props":{"y":106,"x":38,"width":674,"skin":"unpack/login/logo.png","height":422},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,

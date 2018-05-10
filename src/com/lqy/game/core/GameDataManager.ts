@@ -4,6 +4,8 @@
 class GameDataManager{
     public selfPlayerData:PlayerData = null;
     public enemyData:EnemyData = null;
+    /**是否再挑战boss */
+    public isChallengeBoss:boolean = false;
     constructor(){
         
     }
@@ -93,5 +95,24 @@ class GameDataManager{
         );
         this.enemyData.enemySum = this.enemyData.roleVoAry.length;
         
+    }
+    /**
+     * 矫正角色坐标
+     */
+    public resetRolePoint():void
+    {
+        if(this.selfPlayerData)
+        {
+            this.selfPlayerData.roleVoAry.forEach(roleVo => {
+                roleVo.initRowColPosPoint();
+            });
+        }
+        if(this.enemyData)
+        {
+            this.enemyData.roleVoAry.forEach(roleVo => {
+                roleVo.initRowColPosPoint();
+            });
+
+        }
     }
 }

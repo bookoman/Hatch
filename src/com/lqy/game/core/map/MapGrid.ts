@@ -28,8 +28,13 @@ class MapGrid extends Laya.Sprite{
         this.x = this.op.x + diamondWF;
         this.y = this.op.y + diamondHF + GameConfig.MAP_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y;
         // console.log(this.x,this.y);
-        LayerManager.ins.addToLayer(this,LayerManager.BG_EFFECT_LAYER,false,true,false);
+        LayerManager.ins.addToLayer(this,LayerManager.BG_LAYER,false,true,false);
 
+    }
+
+    public clearDraw():void
+    {
+        this.removeSelf();
     }
     
     

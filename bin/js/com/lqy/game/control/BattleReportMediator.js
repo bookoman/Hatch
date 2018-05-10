@@ -20,12 +20,15 @@ var BattleReportMediator = /** @class */ (function (_super) {
         this.view = new ui.BattleReportViewUI();
         this.view.x = 0;
         this.view.y = 960;
-        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, false);
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, false);
         _super.prototype.initView.call(this);
     };
     BattleReportMediator.prototype.addEvents = function () {
     };
     BattleReportMediator.prototype.removeEvents = function () {
+    };
+    BattleReportMediator.prototype.setVisible = function (bool) {
+        this.view.visible = bool;
     };
     return BattleReportMediator;
 }(BaseMediator));

@@ -15,7 +15,7 @@ class GameConfig{
     public static MAP_INIT_Y:number = 600;
     /**战斗场景与场景地图偏移 */
     public static BATTLE_SCENE_OFFSET_Y = 40;
-    /**战斗场景高度 */
+    /**主场景战斗场景高度 */
     public static BATTLE_SCENE_HEIGHT:number = 500;
     /**战斗每轮攻击人数 */
     public static BATTLE_TURN_ATTACK_SUM:number = 1;
@@ -39,6 +39,8 @@ class GameConfig{
 
     /**调试视图开关 */
     public static DEBUG_VIEW_SWITCH:boolean = false;
+    /**场景战斗开关 */
+    public static SCENE_BATTLE_SWITCH:Boolean = true;
 
 
 

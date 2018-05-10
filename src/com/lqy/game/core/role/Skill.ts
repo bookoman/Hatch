@@ -27,7 +27,7 @@ class Skill{
             LayerManager.ins.addToLayer(this.skeletonAni,LayerManager.EFFECT_LAYER,false,true,false);
         }
         // this.skeletonAni.play(0,false);
-        Laya.timer.once(1000,this,this.playSkillComplete);
+        Laya.timer.once(1000,this,this.playSkillComplete,null,false);
     }
 
     private playSkillComplete():void

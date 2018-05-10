@@ -1,8 +1,5 @@
 D .
-D bg
-R AEF7B252 logo.png
-R ABF2AEF3 main.jpg
-R 43507D1A role.jpg
+D challengeboss
 D comp
 P D12221A9 bg.png
 P 9401CC40 blank.png
@@ -41,12 +38,10 @@ P 2BFF7046 vslider.png
 D main
 P 1C298A94 img_blood.png
 P C6B7D49F img_bloodbg.png
-R 93F650EB img_reportsbg.png
 P 3C936667 img_tzdb.png
 P 00C58ACB logo.png
 D template
-D test
-R C581DEB3 img_bg.png
+D unpack
 D template/List
 P 140B5401 arrow.png
 P 5EDC128C label.png
@@ -55,3 +50,11 @@ P 52107B89 vscroll$bar.png
 P E26B933E vscroll$down.png
 P B9680947 vscroll$up.png
 P 7E990267 vscroll.png
+D unpack/challengeboss
+R 7ED07C71 bg.png
+D unpack/login
+R AEF7B252 logo.png
+D unpack/main
+R 93F650EB img_reportsbg.png
+R ABF2AEF3 main.jpg
+R 43507D1A role.jpg

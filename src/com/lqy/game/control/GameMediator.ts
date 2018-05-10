@@ -26,16 +26,32 @@ class GameMediator extends BaseMediator{
     {
         this.view.btnOpen.on(Laya.Event.CLICK,this,this.onBtnOpen);
         this.view.btnAni.on(Laya.Event.CLICK,this,this.onPlayAni);
+        EventManager.ins.addEvent(EventManager.CHALLENGE_BOSS,this,this.challegenBossHandler);
     }
-
     protected removeEvents():void
     {
         this.view.btnOpen.off(Laya.Event.CLICK,this,this.onBtnOpen);
         this.view.btnAni.off(Laya.Event.CLICK,this,this.onPlayAni);
+        EventManager.ins.removeEvent(EventManager.CHALLENGE_BOSS,this.challegenBossHandler);
+    }
+    private challegenBossHandler(data:any):void
+    {
+        var isEnd:boolean = data[0];
+        if(isEnd == false)
+        {
+            BattleEngine.ins.challegenBoss();
+        }
+        this.battleReportMediator.setVisible(isEnd);
+        GameDataManager.ins.resetRolePoint();
+        RoleManager.ins.resetRolePoint();
     }
     private onPlayAni(e:Laya.Event):void
     {
-        var testMediator:TestMediator = new TestMediator();
+        // var testMediator:TestMediator = new TestMediator();
+        var challegenBossMediator:ChallegenBossMediator = new ChallegenBossMediator();
+        //挑战boss
+        MapManager.ins.enterMap("res/map",10000,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
+        
         
     }
 

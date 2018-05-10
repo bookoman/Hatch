@@ -17,7 +17,7 @@ var GameConfig = /** @class */ (function () {
     GameConfig.MAP_INIT_Y = 600;
     /**战斗场景与场景地图偏移 */
     GameConfig.BATTLE_SCENE_OFFSET_Y = 40;
-    /**战斗场景高度 */
+    /**主场景战斗场景高度 */
     GameConfig.BATTLE_SCENE_HEIGHT = 500;
     /**战斗每轮攻击人数 */
     GameConfig.BATTLE_TURN_ATTACK_SUM = 1;
@@ -37,6 +37,8 @@ var GameConfig = /** @class */ (function () {
     GameConfig.BATTLE_ATT_TIME = 0.3;
     /**调试视图开关 */
     GameConfig.DEBUG_VIEW_SWITCH = false;
+    /**场景战斗开关 */
+    GameConfig.SCENE_BATTLE_SWITCH = true;
     return GameConfig;
 }());
 /**地图类型枚举 */

@@ -14,6 +14,8 @@ class SquintAngleGrid{
     private diamondW:number;
     //菱形高度
     private diamondH:number;
+    //是否绘制格子
+    private isDrawGrid:boolean;
 
     private mapGridAry:Array<MapGrid> = null;
     
@@ -24,10 +26,11 @@ class SquintAngleGrid{
      * @param mapHei 地图高
      * @param mapRange 地图显示范围
      */
-    constructor(mapWid:number, mapHei:number, mapRange?:Rectangle){
+    constructor(mapWid:number, mapHei:number,isDrawGrid?:boolean, mapRange?:Rectangle){
         
         this.mapWid = mapWid; //地图的宽
         this.mapHei = mapHei;//地图的高
+        this.isDrawGrid = isDrawGrid && isDrawGrid == true ? true : false;
         this.diamondW = GameConfig.LINEUP_GRID_WIDTH;
         this.diamondH = GameConfig.LINEUP_GRID_HEIGHT;
         // this.initGrid();
@@ -49,7 +52,11 @@ class SquintAngleGrid{
                 grid = new MapGrid(x,y);
                 grid.op = this.gridToViewPoint(x,y);
                 //绘制格子
-                // grid.drawTitle();
+                if(this.isDrawGrid)
+                {
+                    grid.drawTitle();
+                }
+                this.mapGridAry.push(grid);
             }
         }
         
@@ -89,5 +96,12 @@ class SquintAngleGrid{
         return new Point(px,py);
     }
 
+    public dispose():void
+    {
+        this.mapGridAry.forEach(grid => {
+            grid.clearDraw();
+        });
+        this.mapGridAry.splice(0,this.mapGridAry.length);
+    }
 
 }

@@ -5,6 +5,8 @@ var GameDataManager = /** @class */ (function () {
     function GameDataManager() {
         this.selfPlayerData = null;
         this.enemyData = null;
+        /**是否再挑战boss */
+        this.isChallengeBoss = false;
     }
     Object.defineProperty(GameDataManager, "ins", {
         get: function () {
@@ -81,6 +83,21 @@ var GameDataManager = /** @class */ (function () {
             return a.atts > b.atts ? -1 : 1;
         });
         this.enemyData.enemySum = this.enemyData.roleVoAry.length;
+    };
+    /**
+     * 矫正角色坐标
+     */
+    GameDataManager.prototype.resetRolePoint = function () {
+        if (this.selfPlayerData) {
+            this.selfPlayerData.roleVoAry.forEach(function (roleVo) {
+                roleVo.initRowColPosPoint();
+            });
+        }
+        if (this.enemyData) {
+            this.enemyData.roleVoAry.forEach(function (roleVo) {
+                roleVo.initRowColPosPoint();
+            });
+        }
     };
     GameDataManager._ins = null;
     return GameDataManager;

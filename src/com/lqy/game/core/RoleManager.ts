@@ -60,12 +60,21 @@ class RoleManager{
         });
         
     }
+    /**
+     * 重置角色坐标
+     */
+    public resetRolePoint():void
+    {
+        this.heroRoles.forEach(heroView =>{
+            Laya.Tween.to(heroView,{x:heroView.roleVo.posPoint.x,y:heroView.roleVo.posPoint.y},200);
+        });
+    }
 
     /**生产敌人 */
     public produceEnemy():void
     {
         //怪物数据
-        var enemyData:EnemyData = GameDataManager.ins.enemyData;
+        var enemyData:EnemyData = GameDataManager.ins.enemyData;    
         this.enemyRoles = new Array();
         //怪物显示对象
         var enemy:Enemy;
@@ -121,13 +130,16 @@ class RoleManager{
     {
         var tempAry:Array<BaseRole> = this.heroRoles.concat(this.enemyRoles);
         tempAry.forEach(roleView => {
-            if(roleView.roleVo.id == attRoleVo.id)
+            if(roleView)
             {
-                this.attRole = roleView;
-            }
-            else if(roleView.roleVo.id == defRoleVo.id)
-            {
-                this.defRole = roleView;
+                if(roleView.roleVo.id == attRoleVo.id)
+                {
+                    this.attRole = roleView;
+                }
+                else if(roleView.roleVo.id == defRoleVo.id)
+                {
+                    this.defRole = roleView;
+                }
             }
         });
         if(this.attRole && this.defRole)
@@ -141,7 +153,8 @@ class RoleManager{
             {//近攻
                 this.attRole.aniPlay(RoleAniIndex.MOVE);
                 var tempX:number = defRoleVo.isEnemy ? 200 : -200;
-                Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.playAttackAni,[attRoleVo,defRoleVo]));
+                console.log(",,,,,,,,,,,,,,,,,,,,,,,,,,"+attRoleVo.name,GameConfig.BATTLE_ATT_TIME*1000);
+                Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.playAttackAni,[attRoleVo,defRoleVo],true),0,true);
             }
         }
     }
@@ -192,7 +205,7 @@ class RoleManager{
     private moveBackLineup():void
     {
         var attRoleVo:RoleVo = this.attRole.roleVo;
-        Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000/2,null,new Handler(this,this.moveBackLineupComplete));
+        Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000/2,null,new Handler(this,this.moveBackLineupComplete,null,true),0,true);
     }
     /**
      * 移动回阵型完成
@@ -214,6 +227,7 @@ class RoleManager{
         {
             var lastHeros:Array<Hero> = [];
             this.heroRoles.forEach(role => {
+                Laya.Tween.clearAll(role);
                 //只移除死掉英雄
                 if(role.roleVo.isDeath)
                 {
@@ -232,11 +246,13 @@ class RoleManager{
         if(this.enemyRoles)
         {
             this.enemyRoles.forEach(role => {
+                Laya.Tween.clearAll(role);
                 ObjectPoolUtil.stillObject(ObjectPoolUtil.ENEMY_ROLE,role);
                 role.dispose();
             });
             this.enemyRoles = null;
         }
-       
+
     }
+    
 }

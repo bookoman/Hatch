@@ -61,6 +61,8 @@ var EventManager = /** @class */ (function () {
     EventManager.ENEMY_RUNTO_COMPLETE = "ENEMY_RUNTO_COMPLETE";
     /**敌人攻击跑动完成 */
     EventManager.ENEMY_ATT_COMPLETE = "ENEMY_ATT_COMPLETE";
+    /**敌人攻击跑动完成 */
+    EventManager.CHALLENGE_BOSS = "CHALLENGE_BOSS";
     EventManager._ins = null;
     return EventManager;
 }());

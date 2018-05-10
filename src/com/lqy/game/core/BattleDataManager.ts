@@ -30,12 +30,14 @@ class BattleDataManager{
             roleVo.battleHP = roleVo.hp;
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
+            roleVo.isAtted = false;
             roleVo.attEnemyVos = [];
         });
         this.attEnemyVos.forEach(roleVo => {
             roleVo.battleHP = roleVo.hp;
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
+            roleVo.isAtted = false;
             roleVo.attEnemyVos = [];
         });
 

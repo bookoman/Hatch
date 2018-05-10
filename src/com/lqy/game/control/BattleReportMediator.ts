@@ -11,7 +11,7 @@ class BattleReportMediator extends BaseMediator{
         this.view = new ui.BattleReportViewUI();
         this.view.x = 0;
         this.view.y = 960;
-        LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,false,false);
+        LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,true,false);
         super.initView();
         
     }
@@ -23,6 +23,11 @@ class BattleReportMediator extends BaseMediator{
     protected removeEvents():void
     {
         
+    }
+
+    public setVisible(bool:boolean):void
+    {
+        this.view.visible = bool;
     }
     
 }

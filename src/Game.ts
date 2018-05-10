@@ -29,7 +29,7 @@ Laya.stage.alignV = "top";
 
 //激活资源版本控制
 Laya.ResourceVersion.enable("version.json", Handler.create(null, beginLoad));
-function beginLoad(){
+function beginLoad(){    
     //实例UI界面
     var game:Game = new Game();
     game.init();

@@ -41,16 +41,20 @@ var BattleEngine = /** @class */ (function () {
     };
     /**更新 */
     BattleEngine.prototype.runUpdate = function () {
-        this.timeCount++;
-        if (this.timeCount == this.battleTimeInterval) {
-            this.rutoBallte();
+        if (GameConfig.SCENE_BATTLE_SWITCH) {
+            // console.log("................"+this.timeCount);
+            //场景战斗开关
+            this.timeCount++;
+            if (this.timeCount == this.battleTimeInterval) {
+                this.runtoBallte();
+                this.battleDataMgr.runRoleSkillCD();
+            }
         }
-        this.battleDataMgr.runRoleSkillCD();
     };
     /**
      * 跑去战斗
      */
-    BattleEngine.prototype.rutoBallte = function () {
+    BattleEngine.prototype.runtoBallte = function () {
         GameDataManager.ins.produceEnemyData();
         this.roleMgr.produceEnemy();
         this.roleMgr.enemyRun();
@@ -61,6 +65,9 @@ var BattleEngine = /** @class */ (function () {
     BattleEngine.prototype.startBattle = function () {
         MapManager.ins.mapScrollSwitch = false;
         this.roleMgr.heroStand();
+        if (GameDataManager.ins.isChallengeBoss) {
+            console.log(",,,,,,,,,,,,,,,,,,,,,,,,,,");
+        }
         this.attack();
     };
     BattleEngine.prototype.attack = function () {
@@ -84,8 +91,22 @@ var BattleEngine = /** @class */ (function () {
     BattleEngine.prototype.endBattle = function () {
         this.timeCount = 0;
         MapManager.ins.mapScrollSwitch = true;
+        this.battleDataMgr.isEnd = false;
         this.roleMgr.clearRole();
         this.roleMgr.initHeros();
+        if (GameDataManager.ins.isChallengeBoss) {
+            GameDataManager.ins.isChallengeBoss = false;
+            GameConfig.SCENE_BATTLE_SWITCH = true;
+            MapManager.ins.backLoopMap();
+            EventManager.ins.dispatchEvent(EventManager.CHALLENGE_BOSS, [true]);
+        }
+    };
+    /**挑战boss */
+    BattleEngine.prototype.challegenBoss = function () {
+        this.endBattle();
+        this.runtoBallte();
+        GameDataManager.ins.isChallengeBoss = true;
+        GameConfig.SCENE_BATTLE_SWITCH = false;
     };
     BattleEngine._ins = null;
     return BattleEngine;

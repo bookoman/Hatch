@@ -39,7 +39,6 @@ class BattleEngine{
             this.roleMgr.enemyRunCount = 0;
             EventManager.ins.removeEvent(EventManager.ENEMY_RUNTO_COMPLETE,this.onRunComplete);
             this.startBattle();
-
         }
     }
     public run():void
@@ -52,18 +51,23 @@ class BattleEngine{
     /**更新 */
     private runUpdate():void
     {
-        this.timeCount++;
-        if(this.timeCount == this.battleTimeInterval)
+        if(GameConfig.SCENE_BATTLE_SWITCH)
         {
-            this.rutoBallte();
+            // console.log("................"+this.timeCount);
+            //场景战斗开关
+            this.timeCount++;
+            if(this.timeCount == this.battleTimeInterval)
+            {
+                this.runtoBallte();
+                this.battleDataMgr.runRoleSkillCD();
+            }
         }
-        this.battleDataMgr.runRoleSkillCD();
         
     } 
     /**
      * 跑去战斗
      */
-    private rutoBallte():void
+    private runtoBallte():void
     {
         GameDataManager.ins.produceEnemyData();
         this.roleMgr.produceEnemy();
@@ -76,6 +80,10 @@ class BattleEngine{
     {
         MapManager.ins.mapScrollSwitch = false;
         this.roleMgr.heroStand();
+        if(GameDataManager.ins.isChallengeBoss)
+        {
+            console.log(",,,,,,,,,,,,,,,,,,,,,,,,,,");
+        }
         this.attack();
     }
     private attack():void
@@ -101,12 +109,29 @@ class BattleEngine{
     }
 
     /**结束战斗 */
-    private endBattle():void
+    public endBattle():void
     {
         this.timeCount = 0;
         MapManager.ins.mapScrollSwitch = true;
+        this.battleDataMgr.isEnd = false;
         this.roleMgr.clearRole();
         this.roleMgr.initHeros();
+        if(GameDataManager.ins.isChallengeBoss)
+        {
+            GameDataManager.ins.isChallengeBoss = false;
+            GameConfig.SCENE_BATTLE_SWITCH = true;
+            MapManager.ins.backLoopMap();
+            EventManager.ins.dispatchEvent(EventManager.CHALLENGE_BOSS,[true]);
+        }
+    }
+
+    /**挑战boss */
+    public challegenBoss():void
+    {
+        this.endBattle();
+        this.runtoBallte();
+        GameDataManager.ins.isChallengeBoss = true;
+        GameConfig.SCENE_BATTLE_SWITCH = false;
     }
 
 
