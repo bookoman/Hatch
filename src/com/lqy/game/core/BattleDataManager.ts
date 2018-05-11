@@ -51,7 +51,6 @@ class BattleDataManager{
     public startAtt():void
     {
         var turnAttckSum:number = GameConfig.BATTLE_TURN_ATTACK_SUM;
-        var attRoleVo:RoleVo;
         if(this.curAttCamp == 0)
         {
             

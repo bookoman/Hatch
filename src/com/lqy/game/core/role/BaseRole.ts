@@ -54,7 +54,7 @@ class BaseRole extends Laya.Sprite{
              //>= aniCount默认播放第一个动画
             if(this.skeletonAni)
             {
-                this.skeletonAni.play(aniID,loop);
+                this.skeletonAni.play(aniID,loop,true);
                 if(laterTime && caller && method)
                 {
                     Laya.timer.once(laterTime,caller,method,null,false);

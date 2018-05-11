@@ -41,7 +41,6 @@ var BattleDataManager = /** @class */ (function () {
      */
     BattleDataManager.prototype.startAtt = function () {
         var turnAttckSum = GameConfig.BATTLE_TURN_ATTACK_SUM;
-        var attRoleVo;
         if (this.curAttCamp == 0) {
         }
         else if (this.curAttCamp == BattleAttCampType.HERO) {

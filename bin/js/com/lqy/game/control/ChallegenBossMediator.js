@@ -28,6 +28,9 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         this.view.btnFast.off(Laya.Event.CLICK, this, this.onBtnFast);
     };
     ChallegenBossMediator.prototype.onBtnFast = function (e) {
+        this.dispose();
+    };
+    ChallegenBossMediator.prototype.dispose = function () {
         BattleEngine.ins.endBattle();
         BattleDataManager.ins.initData();
         LayerManager.ins.removeToLyaer(this.view, LayerManager.UI_LAYER, true, false);

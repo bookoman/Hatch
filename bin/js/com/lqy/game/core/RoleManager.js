@@ -124,7 +124,6 @@ var RoleManager = /** @class */ (function () {
             else { //近攻
                 this.attRole.aniPlay(RoleAniIndex.MOVE);
                 var tempX = defRoleVo.isEnemy ? 200 : -200;
-                console.log(",,,,,,,,,,,,,,,,,,,,,,,,,," + attRoleVo.name, GameConfig.BATTLE_ATT_TIME * 1000);
                 Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000, null, new Handler(this, this.playAttackAni, [attRoleVo, defRoleVo], true), 0, true);
             }
         }

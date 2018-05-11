@@ -25,6 +25,10 @@ class ChallegenBossMediator extends BaseMediator{
 
     private onBtnFast(e):void
     {
+       this.dispose();
+    }
+    public dispose():void
+    {
         BattleEngine.ins.endBattle();
         BattleDataManager.ins.initData();
         LayerManager.ins.removeToLyaer(this.view,LayerManager.UI_LAYER,true,false);

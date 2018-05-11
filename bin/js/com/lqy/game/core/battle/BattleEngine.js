@@ -47,9 +47,9 @@ var BattleEngine = /** @class */ (function () {
             this.timeCount++;
             if (this.timeCount == this.battleTimeInterval) {
                 this.runtoBallte();
-                this.battleDataMgr.runRoleSkillCD();
             }
         }
+        this.battleDataMgr.runRoleSkillCD();
     };
     /**
      * 跑去战斗
@@ -65,20 +65,16 @@ var BattleEngine = /** @class */ (function () {
     BattleEngine.prototype.startBattle = function () {
         MapManager.ins.mapScrollSwitch = false;
         this.roleMgr.heroStand();
-        if (GameDataManager.ins.isChallengeBoss) {
-            console.log(",,,,,,,,,,,,,,,,,,,,,,,,,,");
-        }
         this.attack();
+        EventManager.ins.addEvent(EventManager.ENEMY_ATT_COMPLETE, this, this.attCompleted);
     };
     BattleEngine.prototype.attack = function () {
         this.battleDataMgr.startAtt();
         this.skillView.init(this.battleDataMgr.curAttRoleVo.skillVos);
         this.roleMgr.battleAtt(this.battleDataMgr.curAttRoleVo, this.battleDataMgr.curDefRoleVo);
-        EventManager.ins.addEvent(EventManager.ENEMY_ATT_COMPLETE, this, this.attCompleted);
         // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
     };
     BattleEngine.prototype.attCompleted = function () {
-        EventManager.ins.removeEvent(EventManager.ENEMY_ATT_COMPLETE, this.attCompleted);
         // this.battleDataMgr.calculationAttribute();
         if (this.battleDataMgr.isEnd) {
             this.endBattle();
@@ -89,6 +85,7 @@ var BattleEngine = /** @class */ (function () {
     };
     /**结束战斗 */
     BattleEngine.prototype.endBattle = function () {
+        EventManager.ins.removeEvent(EventManager.ENEMY_ATT_COMPLETE, this.attCompleted);
         this.timeCount = 0;
         MapManager.ins.mapScrollSwitch = true;
         this.battleDataMgr.isEnd = false;

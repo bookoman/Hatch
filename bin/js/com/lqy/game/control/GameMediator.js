@@ -45,13 +45,16 @@ var GameMediator = /** @class */ (function (_super) {
         if (isEnd == false) {
             BattleEngine.ins.challegenBoss();
         }
+        else {
+            this.challegenBossMediator.dispose();
+        }
         this.battleReportMediator.setVisible(isEnd);
         GameDataManager.ins.resetRolePoint();
         RoleManager.ins.resetRolePoint();
     };
     GameMediator.prototype.onPlayAni = function (e) {
         // var testMediator:TestMediator = new TestMediator();
-        var challegenBossMediator = new ChallegenBossMediator();
+        this.challegenBossMediator = new ChallegenBossMediator();
         //挑战boss
         MapManager.ins.enterMap("res/map", 10000, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
     };

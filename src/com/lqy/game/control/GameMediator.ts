@@ -3,7 +3,7 @@
 */
 class GameMediator extends BaseMediator{
     private battleReportMediator:BattleReportMediator = null;
-    
+    private challegenBossMediator:ChallegenBossMediator;
     constructor(assetsUrl?:any,view?:any){
         super(assetsUrl,view);
     }
@@ -41,6 +41,10 @@ class GameMediator extends BaseMediator{
         {
             BattleEngine.ins.challegenBoss();
         }
+        else
+        {
+            this.challegenBossMediator.dispose();
+        }
         this.battleReportMediator.setVisible(isEnd);
         GameDataManager.ins.resetRolePoint();
         RoleManager.ins.resetRolePoint();
@@ -48,7 +52,7 @@ class GameMediator extends BaseMediator{
     private onPlayAni(e:Laya.Event):void
     {
         // var testMediator:TestMediator = new TestMediator();
-        var challegenBossMediator:ChallegenBossMediator = new ChallegenBossMediator();
+        this.challegenBossMediator = new ChallegenBossMediator();
         //挑战boss
         MapManager.ins.enterMap("res/map",10000,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
         
