@@ -72,7 +72,7 @@ class LayerManager{
         layer.add(view,isMask,isMany);
     }
     /**从对应层移出显示对象 */
-    public removeToLyaer(view,layerId:number,isMask:boolean = false,isMany:boolean = false):void
+    public removeToLayer(view,layerId:number,isMask:boolean = false,isMany:boolean = false):void
     {
         var layer:MyLayer = this.getLayer(layerId);
         layer.remove(view,isMask,isMany);

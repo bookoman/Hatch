@@ -31,7 +31,7 @@ class ChallegenBossMediator extends BaseMediator{
     {
         BattleEngine.ins.endBattle();
         BattleDataManager.ins.initData();
-        LayerManager.ins.removeToLyaer(this.view,LayerManager.UI_LAYER,true,false);
+        LayerManager.ins.removeToLayer(this.view,LayerManager.UI_LAYER,true,false);
     }
 
     

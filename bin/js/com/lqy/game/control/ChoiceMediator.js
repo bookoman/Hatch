@@ -32,7 +32,7 @@ var ChoiceMediator = /** @class */ (function (_super) {
     ChoiceMediator.prototype.dispose = function () {
     };
     ChoiceMediator.prototype.onBtnChoiceOK = function () {
-        LayerManager.ins.removeToLyaer(this.view, LayerManager.UI_LAYER, true, false);
+        LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, false);
     };
     return ChoiceMediator;
 }(BaseMediator));

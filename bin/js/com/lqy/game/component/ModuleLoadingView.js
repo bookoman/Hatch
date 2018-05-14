@@ -63,7 +63,7 @@ var ModuleLoadingView = /** @class */ (function (_super) {
         LayerManager.ins.addToLayer(this, LayerManager.TIP_LAYER, true, false, true);
     };
     ModuleLoadingView.prototype.hide = function () {
-        LayerManager.ins.removeToLyaer(this, LayerManager.TIP_LAYER, true, false);
+        LayerManager.ins.removeToLayer(this, LayerManager.TIP_LAYER, true, false);
     };
     ModuleLoadingView._ins = null;
     return ModuleLoadingView;

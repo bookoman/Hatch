@@ -64,7 +64,7 @@ var LayerManager = /** @class */ (function () {
         layer.add(view, isMask, isMany);
     };
     /**从对应层移出显示对象 */
-    LayerManager.prototype.removeToLyaer = function (view, layerId, isMask, isMany) {
+    LayerManager.prototype.removeToLayer = function (view, layerId, isMask, isMany) {
         if (isMask === void 0) { isMask = false; }
         if (isMany === void 0) { isMany = false; }
         var layer = this.getLayer(layerId);

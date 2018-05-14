@@ -63,6 +63,6 @@ class ModuleLoadingView extends Laya.Sprite{
 
     public hide():void
     {
-        LayerManager.ins.removeToLyaer(this,LayerManager.TIP_LAYER,true,false);
+        LayerManager.ins.removeToLayer(this,LayerManager.TIP_LAYER,true,false);
     }
 }

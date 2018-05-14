@@ -33,7 +33,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
     ChallegenBossMediator.prototype.dispose = function () {
         BattleEngine.ins.endBattle();
         BattleDataManager.ins.initData();
-        LayerManager.ins.removeToLyaer(this.view, LayerManager.UI_LAYER, true, false);
+        LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, false);
     };
     return ChallegenBossMediator;
 }(BaseMediator));

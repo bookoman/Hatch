@@ -26,6 +26,6 @@ class ChoiceMediator extends BaseMediator{
     }
 
     private onBtnChoiceOK():void{
-        LayerManager.ins.removeToLyaer(this.view,LayerManager.UI_LAYER,true,false);
+        LayerManager.ins.removeToLayer(this.view,LayerManager.UI_LAYER,true,false);
     }
 }

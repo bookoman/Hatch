@@ -34,7 +34,7 @@ var BaseRole = /** @class */ (function (_super) {
         this.isLoaded = false;
         this.skeletonAni = new Skeleton();
         this.skeletonAni.scale(this.aniScale, this.aniScale);
-        this.skeletonAni.scaleX = this.roleVo.scaleX;
+        this.skeletonAni.scaleX = this.roleVo.scaleX * this.aniScale;
         this.addChild(this.skeletonAni);
         LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
         this.visible = true;

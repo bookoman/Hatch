@@ -28,7 +28,7 @@ var TestMediator = /** @class */ (function (_super) {
     TestMediator.prototype.removeEvents = function () {
     };
     TestMediator.prototype.onClose = function (e) {
-        LayerManager.ins.removeToLyaer(this.view, LayerManager.UI_LAYER, true, true);
+        LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, true);
     };
     return TestMediator;
 }(BaseMediator));

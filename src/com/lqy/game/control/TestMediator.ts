@@ -26,6 +26,6 @@ class TestMediator extends BaseMediator{
 
     private onClose(e:Laya.Event):void
     {
-        LayerManager.ins.removeToLyaer(this.view,LayerManager.UI_LAYER,true,true);
+        LayerManager.ins.removeToLayer(this.view,LayerManager.UI_LAYER,true,true);
     }
 }
