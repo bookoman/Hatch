@@ -12,8 +12,6 @@ class LoginMediator extends BaseMediator{
         AnimationManager.ins.popCenterLittleToBig(this.view,300);
         LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,true,false,true);
         super.initView();
-
-        
     }
     protected addEvents():void
     {

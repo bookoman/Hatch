@@ -38,7 +38,7 @@ class GameConfig{
     public static BATTLE_ATT_TIME:number = 0.3;
 
     /**调试视图开关 */
-    public static DEBUG_VIEW_SWITCH:boolean = true;
+    public static DEBUG_VIEW_SWITCH:boolean = false;
     /**场景战斗开关 */
     public static SCENE_BATTLE_SWITCH:Boolean = true;
     

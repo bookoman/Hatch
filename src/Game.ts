@@ -6,13 +6,27 @@ var Handler = Laya.Handler;
 */
 class Game{
     constructor(){
-
+        
     }
     public init():void
+    {
+        var resAry:Array<Object> = [
+            {url:"res/atlas/comp.atlas",type:Loader.ATLAS},
+            {url:"unpack/login/logo.png",type:Loader.IMAGE}
+            ];
+        Laya.loader.load(resAry,new Laya.Handler(this,this.onLoaded),new Laya.Handler(this,this.onLoadProgress));
+        
+    }
+    private onLoaded():void
     {
         LayerManager.ins.init();
         DebugViewUtil.init();
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
+    }
+    /**资源加载进度 */
+    protected onLoadProgress(data):void
+    {
+
     }
     
 }

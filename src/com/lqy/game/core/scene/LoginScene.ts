@@ -7,7 +7,7 @@ class LoginScene extends BaseScene{
     }
     public enter():void
     {
-        new LoginMediator([{url:"res/atlas/comp.atlas",type:Loader.ATLAS},{url:"unpack/login/logo.png",type:Loader.IMAGE}]);
+        new LoginMediator();
     }
 
     public leave():void

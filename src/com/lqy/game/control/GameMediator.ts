@@ -12,7 +12,7 @@ class GameMediator extends BaseMediator{
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,false,false,true);
         super.initView();
-        this.battleReportMediator = new BattleReportMediator("main/img_reportsbg.png");
+        this.battleReportMediator = new BattleReportMediator();
         
         //初始化游戏场景
         ObjectPoolUtil.init();
