@@ -1,0 +1,22 @@
+option java_package = "com.lqy.gameserver.protocs";
+option java_outer_classname = "LoginProtoc";
+
+
+enum LoginModuleProtocl {
+	ModuleID = 1000;       // 登录模块号	
+}
+
+enum LoginCommandProtocl {
+	C_Login = 1;           //   登录指令号
+}
+
+//请求登录 [C_Login]
+message LoginRequest {
+	required string name = 1;     				// 帐号
+	optional string nickname = 2; 				// 昵称
+}
+
+//返回登录结果 [C_Login]
+message LoginResponse {
+	required int32 statusCode = 1; 				// 状态码：0：成功
+}

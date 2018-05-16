@@ -36,10 +36,25 @@ var GameConfig = /** @class */ (function () {
     /**战斗攻击需要时间(s) */
     GameConfig.BATTLE_ATT_TIME = 0.3;
     /**调试视图开关 */
-    GameConfig.DEBUG_VIEW_SWITCH = false;
+    GameConfig.DEBUG_VIEW_SWITCH = true;
     /**场景战斗开关 */
     GameConfig.SCENE_BATTLE_SWITCH = true;
     return GameConfig;
+}());
+var HTTPReqType = /** @class */ (function () {
+    function HTTPReqType() {
+    }
+    HTTPReqType.POST = "post";
+    HTTPReqType.GET = "get";
+    return HTTPReqType;
+}());
+/**协议 */
+var Protocol = /** @class */ (function () {
+    function Protocol() {
+    }
+    Protocol.USER_LOGIN = 1000;
+    Protocol.USER_LOGIN_CMD = 1;
+    return Protocol;
 }());
 /**地图类型枚举 */
 var MapType;

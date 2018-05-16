@@ -1,0 +1,90 @@
+/*
+* websocket管理器
+*/
+var WebSocketManager = /** @class */ (function () {
+    function WebSocketManager() {
+        this.ProtoBuf = Laya.Browser.window.protobuf;
+        this.socketHanlderDic = new Laya.Dictionary();
+    }
+    Object.defineProperty(WebSocketManager, "ins", {
+        get: function () {
+            if (this._ins == null) {
+                this._ins = new WebSocketManager();
+            }
+            return this._ins;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    WebSocketManager.prototype.connect = function (ip, port) {
+        this.ip = ip;
+        this.port = port;
+        this.webSocket = new Laya.Socket();
+        this.webSocket.on(Laya.Event.OPEN, this, this.webSocketOpen);
+        this.webSocket.on(Laya.Event.MESSAGE, this, this.webSocketMessage);
+        this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
+        this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
+        ClientSender.httpGetUserInfo(1000);
+        // this.ProtoBuf.load("res/outside/proto/login.proto",this.protoLoadComplete);
+    };
+    WebSocketManager.prototype.protoLoadComplete = function (error, root) {
+        WebSocketManager.ins.protoRoot = root;
+        WebSocketManager.ins.webSocket.connectByUrl("ws://" + WebSocketManager.ins.ip + ":" + WebSocketManager.ins.port);
+    };
+    WebSocketManager.prototype.webSocketOpen = function () {
+        console.log("websockt open...");
+        DebugViewUtil.log("websockt open...");
+        ClientSender.userInfoReq();
+    };
+    WebSocketManager.prototype.webSocketMessage = function (data) {
+        console.log("websockt msg...");
+        var packageIn = new PackageIn();
+        packageIn.read(data);
+        var socketHanlder = this.socketHanlderDic.get(packageIn.protocol);
+        if (socketHanlder) {
+            socketHanlder.explain(packageIn.errorCode, packageIn.body);
+        }
+    };
+    WebSocketManager.prototype.webSocketClose = function () {
+        console.log("websockt close...");
+    };
+    WebSocketManager.prototype.webSocketError = function () {
+        console.log("websockt error...");
+    };
+    /**
+     * 发送消息
+     * @param cmd
+     * @param data
+     */
+    WebSocketManager.prototype.sendMsg = function (module, cmd, data) {
+        var packageOut = new PackageOut();
+        packageOut.pack(module, cmd, data);
+        this.webSocket.send(packageOut);
+    };
+    /**定义protobuf类 */
+    WebSocketManager.prototype.defineProtoClass = function (classStr) {
+        return this.protoRoot.lookup(classStr);
+    };
+    /**注册 */
+    WebSocketManager.prototype.registerHandler = function (protocol, handler) {
+        var handlers = this.socketHanlderDic.get(protocol);
+        if (!handlers) {
+            handlers = new Array();
+            this.socketHanlderDic.set(protocol, handler);
+        }
+        handlers.push(handler);
+    };
+    /**删除 */
+    WebSocketManager.prototype.unregisterHandler = function (protocol, handler) {
+        var handlers = this.socketHanlderDic.get(protocol);
+        if (handlers) {
+            handlers.splice(handlers.indexOf(handler), 1);
+            if (handlers.length == 0) {
+                this.socketHanlderDic.remove(protocol);
+            }
+        }
+    };
+    WebSocketManager._ins = null;
+    return WebSocketManager;
+}());
+//# sourceMappingURL=WebSocketManager.js.map

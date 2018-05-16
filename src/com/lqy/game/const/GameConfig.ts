@@ -38,14 +38,23 @@ class GameConfig{
     public static BATTLE_ATT_TIME:number = 0.3;
 
     /**调试视图开关 */
-    public static DEBUG_VIEW_SWITCH:boolean = false;
+    public static DEBUG_VIEW_SWITCH:boolean = true;
     /**场景战斗开关 */
     public static SCENE_BATTLE_SWITCH:Boolean = true;
-
-
-
     
 }
+
+class HTTPReqType{
+    public static POST:string = "post";
+    public static GET:string = "get";
+}
+
+/**协议 */
+class Protocol{
+    public static USER_LOGIN:number = 1000;
+    public static USER_LOGIN_CMD:number = 1;
+}
+
 /**地图类型枚举 */
 enum MapType
 {

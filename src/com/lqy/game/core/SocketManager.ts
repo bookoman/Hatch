@@ -1,8 +1,0 @@
-/*
-* name;
-*/
-class SocketManager{
-    constructor(){
-
-    }
-}
