@@ -12,12 +12,9 @@ class Game{
     {
         LayerManager.ins.init();
         DebugViewUtil.init();
-        PreLoadingView.ins.show();
-        
-        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
-
-        WebSocketManager.ins.connect("192.168.2.120",9600);
+        SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
     }
+    
 }
 //程序入口
 Laya.MiniAdpter.init();

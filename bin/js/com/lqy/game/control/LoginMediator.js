@@ -25,15 +25,30 @@ var LoginMediator = /** @class */ (function (_super) {
     LoginMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
+        WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN, new UserLoginHandler(Protocol.USER_LOGIN, this, this.onLogined));
     };
     LoginMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
     };
+    LoginMediator.prototype.onLogined = function (data) {
+        if (data.statusCode == 0) {
+            console.log("登录成功。。。" + data);
+            PreLoadingView.ins.show();
+            SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        }
+    };
     LoginMediator.prototype.dispose = function () {
     };
     LoginMediator.prototype.onBtnLogin = function (e) {
-        SceneMananger.ins.enter(SceneMananger.GAME_SCENE);
+        EventManager.ins.addEvent(EventManager.SERVER_CONNECTED, this, this.onServerConnected);
+        var serverID = this.view.inputSIP.text;
+        var port = Number(this.view.inputPort.text);
+        WebSocketManager.ins.connect(serverID, port);
+    };
+    LoginMediator.prototype.onServerConnected = function () {
+        EventManager.ins.removeEvent(EventManager.SERVER_CONNECTED, this.onServerConnected);
+        ClientSender.loginReq(this.view.inputAccount.text);
     };
     LoginMediator.prototype.onBtnChoice = function () {
         new ChoiceMediator();

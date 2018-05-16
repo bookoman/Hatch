@@ -63,6 +63,8 @@ var EventManager = /** @class */ (function () {
     EventManager.ENEMY_ATT_COMPLETE = "ENEMY_ATT_COMPLETE";
     /**敌人攻击跑动完成 */
     EventManager.CHALLENGE_BOSS = "CHALLENGE_BOSS";
+    /**服务器连接成功 */
+    EventManager.SERVER_CONNECTED = "SERVER_CONNECTED";
     EventManager._ins = null;
     return EventManager;
 }());

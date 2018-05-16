@@ -17,7 +17,7 @@ var LoginScene = /** @class */ (function (_super) {
         return _super.call(this) || this;
     }
     LoginScene.prototype.enter = function () {
-        new LoginMediator();
+        new LoginMediator([{ url: "res/atlas/comp.atlas", type: Loader.ATLAS }, { url: "unpack/login/logo.png", type: Loader.IMAGE }]);
     };
     LoginScene.prototype.leave = function () {
     };

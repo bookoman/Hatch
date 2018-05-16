@@ -2,11 +2,11 @@
 * 数据处理Hanlder
 */
 class SocketHanlder{
-    public cmd:number;
+    public module:number;
     private caller:any;
     private callBack:Function;
-    constructor(cmd:number,caller:any,callback:Function = null){
-        this.cmd = cmd;
+    constructor(module:number,caller:any,callback:Function = null){
+        this.module = module;
         this.caller = caller;
         this.callBack = callback;
     }
@@ -15,22 +15,23 @@ class SocketHanlder{
     {
         if(errorCode == 0)
         {
-            console.log(errorCode);
+            this.success(data);
         }
         else
         {
-            this.success(data);
+            console.log(errorCode);
         }
     }
-    protected success(data):void
+    protected success(data?:any):void
     {
         if(data)
         {
-            this.callBack.apply(this,data);
+            this.callBack.call(this.caller,data);
+            
         }
         else
         {
-            this.callBack();
+            this.callBack.call(this.caller);
         }
     }
 }

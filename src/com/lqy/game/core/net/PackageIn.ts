@@ -3,7 +3,7 @@
 */
 class PackageIn extends Laya.Byte{
     
-    public protocol:number;
+    public module:number;
     public errorCode:number = 0;
     public body;
     constructor(){
@@ -11,20 +11,21 @@ class PackageIn extends Laya.Byte{
     }
     public read(msg:Object = null):void
     {
+        this.endian = Laya.Byte.BIG_ENDIAN;//设置endian；
         this.clear();
         this.writeArrayBuffer(msg);
         this.pos = 0;
-
-        var mark = this.getUint8();
-        var len = this.getInt16() + this.getUint8();
+        //标记和长度
+        var mark = this.getInt16();
+        var len = this.getInt32();
         //包头
-        var module = this.getInt16();
-        this.protocol = this.getInt16();
+        this.module = this.getInt32();
+        var cmd = this.getInt32();
         var type = this.getByte();
         var format = this.getByte();
         //数据
-        this.body = this.buffer.slice(this.pos);
-
+        var tempByte = this.buffer.slice(this.pos);
+        this.body = new Uint8Array(tempByte);
     }
     
 }

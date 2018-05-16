@@ -24,32 +24,30 @@ var WebSocketManager = /** @class */ (function () {
         this.webSocket.on(Laya.Event.MESSAGE, this, this.webSocketMessage);
         this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
-        ClientSender.httpGetUserInfo(1000);
-        // this.ProtoBuf.load("res/outside/proto/login.proto",this.protoLoadComplete);
+        this.ProtoBuf.load("res/outside/proto/login.proto", this.protoLoadComplete);
     };
     WebSocketManager.prototype.protoLoadComplete = function (error, root) {
         WebSocketManager.ins.protoRoot = root;
         WebSocketManager.ins.webSocket.connectByUrl("ws://" + WebSocketManager.ins.ip + ":" + WebSocketManager.ins.port);
     };
     WebSocketManager.prototype.webSocketOpen = function () {
-        console.log("websockt open...");
-        DebugViewUtil.log("websockt open...");
-        ClientSender.userInfoReq();
+        console.log("websocket open...");
+        EventManager.ins.dispatchEvent(EventManager.SERVER_CONNECTED);
     };
     WebSocketManager.prototype.webSocketMessage = function (data) {
-        console.log("websockt msg...");
+        console.log("websocket msg...");
         var packageIn = new PackageIn();
         packageIn.read(data);
-        var socketHanlder = this.socketHanlderDic.get(packageIn.protocol);
+        var socketHanlder = this.socketHanlderDic.get(packageIn.module);
         if (socketHanlder) {
             socketHanlder.explain(packageIn.errorCode, packageIn.body);
         }
     };
     WebSocketManager.prototype.webSocketClose = function () {
-        console.log("websockt close...");
+        console.log("websocket close...");
     };
     WebSocketManager.prototype.webSocketError = function () {
-        console.log("websockt error...");
+        console.log("websocket error...");
     };
     /**
      * 发送消息
@@ -59,7 +57,7 @@ var WebSocketManager = /** @class */ (function () {
     WebSocketManager.prototype.sendMsg = function (module, cmd, data) {
         var packageOut = new PackageOut();
         packageOut.pack(module, cmd, data);
-        this.webSocket.send(packageOut);
+        this.webSocket.send(packageOut.buffer);
     };
     /**定义protobuf类 */
     WebSocketManager.prototype.defineProtoClass = function (classStr) {

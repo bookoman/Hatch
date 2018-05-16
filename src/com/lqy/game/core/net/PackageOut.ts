@@ -1,5 +1,5 @@
 /*
-* name;
+* 打包
 */
 class PackageOut extends Laya.Byte{
     private PACKET_MARK = 0x0;
@@ -12,24 +12,20 @@ class PackageOut extends Laya.Byte{
     }
     public pack(module,cmd,data?:any):void
     {
+        this.endian = Laya.Byte.BIG_ENDIAN;//设置endian；
         this.module = module;
         this.cmd = cmd;
-        this.writeUint8(this.PACKET_MARK);
-        var tempByte:Laya.Byte = new Laya.Byte();
-        if(data)
-        {
-            tempByte.writeArrayBuffer(data);
-        }
-        this.writeUint8(this.PACKET_MARK + tempByte.bytesAvailable);
+        this.writeInt16(this.PACKET_MARK);
+        this.writeInt32(data.byteLength + 10);
         //包头
-        this.writeInt16(this.module);
-        this.writeInt16(this.cmd);
-        this.writeInt16(this.type);
-        this.writeInt16(this.formart);
+        this.writeInt32(this.module);
+        this.writeInt32(this.cmd);
+        this.writeByte(this.type);
+        this.writeByte(this.formart);
         //消息体
         if(data)
         {
-            this.writeArrayBuffer(tempByte);
+            this.writeArrayBuffer(data);
         }
     }
 }

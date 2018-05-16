@@ -40,29 +40,28 @@ class WebSocketManager{
     }
     private webSocketOpen():void
     {
-        console.log("websockt open...");
-        DebugViewUtil.log("websockt open...");
-        ClientSender.userInfoReq();
+        console.log("websocket open...");
+        EventManager.ins.dispatchEvent(EventManager.SERVER_CONNECTED);
     }
+    
     private webSocketMessage(data):void
     {
-        console.log("websockt msg...");
+        console.log("websocket msg...");
         var packageIn:PackageIn = new PackageIn();
         packageIn.read(data);
-        var socketHanlder:SocketHanlder = this.socketHanlderDic.get(packageIn.protocol);
+        var socketHanlder:SocketHanlder = this.socketHanlderDic.get(packageIn.module);
         if(socketHanlder)
         {
             socketHanlder.explain(packageIn.errorCode,packageIn.body);
         }
-
     }
     private webSocketClose():void
     {
-         console.log("websockt close...");
+         console.log("websocket close...");
     }
     private webSocketError():void
     {
-         console.log("websockt error...");
+         console.log("websocket error...");
     }
     /**
      * 发送消息
@@ -73,8 +72,7 @@ class WebSocketManager{
     {
         var packageOut:PackageOut = new PackageOut();
         packageOut.pack(module,cmd,data);
-
-        this.webSocket.send(packageOut);
+        this.webSocket.send(packageOut.buffer);
     }
     /**定义protobuf类 */
     public defineProtoClass(classStr:string):any

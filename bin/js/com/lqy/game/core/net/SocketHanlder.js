@@ -2,26 +2,26 @@
 * 数据处理Hanlder
 */
 var SocketHanlder = /** @class */ (function () {
-    function SocketHanlder(cmd, caller, callback) {
+    function SocketHanlder(module, caller, callback) {
         if (callback === void 0) { callback = null; }
-        this.cmd = cmd;
+        this.module = module;
         this.caller = caller;
         this.callBack = callback;
     }
     SocketHanlder.prototype.explain = function (errorCode, data) {
         if (errorCode == 0) {
-            console.log(errorCode);
+            this.success(data);
         }
         else {
-            this.success(data);
+            console.log(errorCode);
         }
     };
     SocketHanlder.prototype.success = function (data) {
         if (data) {
-            this.callBack.apply(this, data);
+            this.callBack.call(this.caller, data);
         }
         else {
-            this.callBack();
+            this.callBack.call(this.caller);
         }
     };
     return SocketHanlder;

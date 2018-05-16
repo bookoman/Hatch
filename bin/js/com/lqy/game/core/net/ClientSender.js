@@ -5,12 +5,12 @@ var ClientSender = /** @class */ (function () {
     function ClientSender() {
     }
     /**********************************webSocket */
-    ClientSender.userInfoReq = function () {
+    ClientSender.loginReq = function (account) {
         var LoginRequest = WebSocketManager.ins.defineProtoClass("LoginRequest");
-        var buffer = LoginRequest.encode({
-            name: "bookoman",
-            nickname: "xielong"
-        }).finish();
+        var message = {};
+        message.name = account;
+        message.nickname = "xielong";
+        var buffer = LoginRequest.encode(message).finish();
         WebSocketManager.ins.sendMsg(Protocol.USER_LOGIN, Protocol.USER_LOGIN_CMD, buffer);
     };
     /**********************************Http */

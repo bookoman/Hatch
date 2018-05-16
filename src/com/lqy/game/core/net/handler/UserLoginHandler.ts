@@ -2,8 +2,8 @@
 * 用户登录
 */
 class UserLoginHandler extends SocketHanlder{
-    constructor(cmd:number,caller:any,callback:Function = null){
-        super(cmd,caller,callback);
+    constructor(module:number,caller:any,callback:Function = null){
+        super(module,caller,callback);
     }
     public explain(errorCode:number,data):void
     {
@@ -12,9 +12,13 @@ class UserLoginHandler extends SocketHanlder{
     /**处理数据 */
     protected success(data):void
     {
-        var LoginRequest:any = WebSocketManager.ins.defineProtoClass("LoginResponse");
-        var message:any = LoginRequest.decode(data);
+        var LoginResponse:any = WebSocketManager.ins.defineProtoClass("LoginResponse");
+        var message:any = LoginResponse.decode(data);
+        console.log("服务器返回："+message.statusCode);
+        super.success(message);
         
     }
+
+    
 
 }

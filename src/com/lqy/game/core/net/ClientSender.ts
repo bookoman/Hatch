@@ -7,14 +7,13 @@ class ClientSender{
     }
 
     /**********************************webSocket */
-    public static userInfoReq():void
+    public static loginReq(account:string):void
     {
         var LoginRequest:any = WebSocketManager.ins.defineProtoClass("LoginRequest");
-        var buffer:any = LoginRequest.encode( 
-        {
-            name:"bookoman",
-            nickname:"xielong"
-        }).finish();
+        var message:any = {};
+        message.name = account;
+        message.nickname = "xielong";
+        var buffer = LoginRequest.encode(message).finish();
         WebSocketManager.ins.sendMsg(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,buffer);
     }
 
