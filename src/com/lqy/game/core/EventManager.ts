@@ -5,6 +5,8 @@
 class EventManager{
     /**敌人跑动完成 */
     public static ENEMY_RUNTO_COMPLETE:string = "ENEMY_RUNTO_COMPLETE";
+    /**英雄跑动完成 */
+    public static HERO_RUNTO_COMPLETE:string = "HERO_RUNTO_COMPLETE";
     /**敌人攻击跑动完成 */
     public static ENEMY_ATT_COMPLETE:string = "ENEMY_ATT_COMPLETE";
      /**敌人攻击跑动完成 */

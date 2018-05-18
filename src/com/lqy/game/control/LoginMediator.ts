@@ -44,19 +44,19 @@ class LoginMediator extends BaseMediator{
     }
     private onBtnLogin(e:Laya.Event):void
     {
-        EventManager.ins.addEvent(EventManager.SERVER_CONNECTED,this,this.onServerConnected);
-        var serverID:string = this.view.inputSIP.text;
-        var port:number = Number(this.view.inputPort.text);
-        WebSocketManager.ins.connect(serverID,port);
-        
+        //测试
+        PreLoadingView.ins.show();
+        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        //连接服务器
+        // EventManager.ins.addEvent(EventManager.SERVER_CONNECTED,this,this.onServerConnected);
+        // var serverID:string = this.view.inputSIP.text;
+        // var port:number = Number(this.view.inputPort.text);
+        // WebSocketManager.ins.connect(serverID,port);
     }
     private onServerConnected():void
     {
         EventManager.ins.removeEvent(EventManager.SERVER_CONNECTED,this.onServerConnected);
         ClientSender.loginReq(this.view.inputAccount.text);
-
-
-        
     }
 
     private onBtnChoice():void{

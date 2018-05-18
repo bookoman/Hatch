@@ -25,13 +25,13 @@ class GameMediator extends BaseMediator{
     protected addEvents():void
     {
         this.view.btnOpen.on(Laya.Event.CLICK,this,this.onBtnOpen);
-        this.view.btnAni.on(Laya.Event.CLICK,this,this.onPlayAni);
+        this.view.btnChalleangeBoss.on(Laya.Event.CLICK,this,this.onChalleangeBoss);
         EventManager.ins.addEvent(EventManager.CHALLENGE_BOSS,this,this.challegenBossHandler);
     }
     protected removeEvents():void
     {
         this.view.btnOpen.off(Laya.Event.CLICK,this,this.onBtnOpen);
-        this.view.btnAni.off(Laya.Event.CLICK,this,this.onPlayAni);
+        this.view.btnChalleangeBoss.off(Laya.Event.CLICK,this,this.onChalleangeBoss);
         EventManager.ins.removeEvent(EventManager.CHALLENGE_BOSS,this.challegenBossHandler);
     }
     private challegenBossHandler(data:any):void
@@ -39,24 +39,26 @@ class GameMediator extends BaseMediator{
         var isEnd:boolean = data[0];
         if(isEnd == false)
         {
-            BattleEngine.ins.challegenBoss();
+            
         }
         else
         {
             this.challegenBossMediator.dispose();
         }
-        this.battleReportMediator.setVisible(isEnd);
-        GameDataManager.ins.resetRolePoint();
-        RoleManager.ins.resetRolePoint();
+        // RoleManager.ins.resetRolePoint();
     }
-    private onPlayAni(e:Laya.Event):void
+    private onChalleangeBoss(e:Laya.Event):void
     {
-        // var testMediator:TestMediator = new TestMediator();
-        this.challegenBossMediator = new ChallegenBossMediator();
-        //挑战boss
         MapManager.ins.enterMap("res/map",10000,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
-        
-        
+        GameDataManager.ins.productBossData();
+        var resAry:Array<Object> = [{url:"unpack/challengeboss/bg.png",type:Loader.IMAGE}];
+        var bossData:EnemyData;
+        var roleVos:Array<RoleVo> = GameDataManager.ins.bossData.roleVoAry.concat(GameDataManager.ins.selfPlayerData.roleVoAry);
+        roleVos.forEach(roleVo => {
+            //角色资源
+            resAry.push({url:"res/outside/anim/role/role"+roleVo.id+"/"+ roleVo.id +".sk",type:/*laya.net.Loader.BUFFER*/"arraybuffer"});
+        });
+        this.challegenBossMediator = new ChallegenBossMediator(resAry);
     }
 
     private onBtnOpen(e:Laya.Event):void

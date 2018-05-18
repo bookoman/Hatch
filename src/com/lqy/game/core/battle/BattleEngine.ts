@@ -7,14 +7,12 @@
 * 五，结束战斗，玩家胜利，玩家失败，清理战场，移除角色显示对象
 */
 class BattleEngine{
-    private timeCount:number;
-    private battleTimeInterval:number;
-    private battleDataMgr:BattleDataManager;
-    private roleMgr:RoleManager;
     private skillView:SkillView;
+    private loopBattleEngine:LoopBattleEngine;
+    private bossBattleEngine:BossBattleEngine;
     constructor(){
-        this.battleDataMgr = BattleDataManager.ins;
-        this.roleMgr = RoleManager.ins;
+        this.loopBattleEngine = new LoopBattleEngine();
+        this.bossBattleEngine = new BossBattleEngine();
         //技能视图
         this.skillView = new SkillView();
         this.skillView.x = 10;
@@ -30,106 +28,41 @@ class BattleEngine{
         }
         return this._ins;
     }
-    
-    private onRunComplete(data?:any):void
-    {
-        this.roleMgr.enemyRunCount++;
-        if(this.roleMgr.enemyRunCount >= GameDataManager.ins.enemyData.enemySum)
-        {
-            this.roleMgr.enemyRunCount = 0;
-            EventManager.ins.removeEvent(EventManager.ENEMY_RUNTO_COMPLETE,this.onRunComplete);
-            this.startBattle();
-        }
-    }
     public run():void
     {
-        this.timeCount = 0;
-        this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
         Laya.timer.loop(1000,this,this.runUpdate);
-
     }
     /**更新 */
     private runUpdate():void
     {
-        if(GameConfig.SCENE_BATTLE_SWITCH)
+        if(!GameDataManager.ins.isChallengeBoss)
         {
-            // console.log("................"+this.timeCount);
-            //场景战斗开关
-            this.timeCount++;
-            if(this.timeCount == this.battleTimeInterval)
-            {
-                this.runtoBallte();
-            }
+            this.loopBattleEngine.runUpdate();
         }
-        this.battleDataMgr.runRoleSkillCD();
-        
     } 
-    /**
-     * 跑去战斗
-     */
-    private runtoBallte():void
+    /**循环假战斗 */
+    public loopBattleRun():void
     {
-        GameDataManager.ins.produceEnemyData();
-        this.roleMgr.produceEnemy();
-        this.roleMgr.enemyRun();
-        this.battleDataMgr.initData();
-        EventManager.ins.addEvent(EventManager.ENEMY_RUNTO_COMPLETE,this,this.onRunComplete);
+        GameDataManager.ins.resetRolePoint();
+        this.loopBattleEngine.endBattle();
+        this.loopBattleEngine.init();
     }
-    /**开始战斗 */
-    private startBattle():void
-    {
-        MapManager.ins.mapScrollSwitch = false;
-        this.roleMgr.heroStand();
-        this.attack();
-        EventManager.ins.addEvent(EventManager.ENEMY_ATT_COMPLETE,this,this.attCompleted);
-    }
-    private attack():void
-    {
-        this.battleDataMgr.startAtt();
-        this.skillView.init(this.battleDataMgr.curAttRoleVo.skillVos);
-        this.roleMgr.battleAtt(this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
-       
-        // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
-    }
-    private attCompleted():void
-    {
-        
-        // this.battleDataMgr.calculationAttribute();
-        if(this.battleDataMgr.isEnd)
-        {
-            this.endBattle();
-        }
-        else
-        {
-            this.attack();
-        }
-    }
-
-    /**结束战斗 */
-    public endBattle():void
-    {
-        EventManager.ins.removeEvent(EventManager.ENEMY_ATT_COMPLETE,this.attCompleted);
-        this.timeCount = 0;
-        MapManager.ins.mapScrollSwitch = true;
-        this.battleDataMgr.isEnd = false;
-        this.roleMgr.clearRole();
-        this.roleMgr.initHeros();
-        if(GameDataManager.ins.isChallengeBoss)
-        {
-            GameDataManager.ins.isChallengeBoss = false;
-            GameConfig.SCENE_BATTLE_SWITCH = true;
-            MapManager.ins.backLoopMap();
-            EventManager.ins.dispatchEvent(EventManager.CHALLENGE_BOSS,[true]);
-        }
-    }
-
     /**挑战boss */
-    public challegenBoss():void
+    public challegenBoss(herosAry:Array<BaseRole>,enemyAry:Array<BaseRole>):void
     {
-        this.endBattle();
-        this.runtoBallte();
+        // this.runtoBallte();
+        //挑战boss
         GameDataManager.ins.isChallengeBoss = true;
-        GameConfig.SCENE_BATTLE_SWITCH = false;
+        MapManager.ins.mapScrollSwitch = false;
+        this.bossBattleEngine.startBattle(herosAry,enemyAry);
+    }
+    /**快速结束战斗 */
+    public challegenBossFastEnd():void
+    {
+        if(this.bossBattleEngine)
+        {
+            this.bossBattleEngine.endBattle();
+        }
     }
 
 

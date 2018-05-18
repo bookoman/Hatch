@@ -5,9 +5,9 @@ var MapManager = /** @class */ (function () {
     function MapManager() {
         //地图测试数据 mapId >> mapVO
         this.mapCofing = {
-            "1": { "mapID": 1, "name": "1", "battleHeroGrid": [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], "battleEnemyGrid": [[3, 0], [2, 1], [3, 2], [2, 3], [3, 4]], "mapInitY": 600, "battleSceneH": 500 },
-            "2": { "mapID": 2, "name": "2", "battleHeroGrid": [[1, 0], [0, 1], [1, 2], [0, 3], [1, 4]], "battleEnemyGrid": [[3, 0], [3, 1], [3, 2], [3, 3], [3, 4]], "mapInitY": 600, "battleSceneH": 500 },
-            "10000": { "mapID": 10000, "name": "Boss挑战", "battleHeroGrid": [[0, 2], [0, 5], [0, 8], [0, 11], [0, 14]], "battleEnemyGrid": [[3, 2], [2, 5], [3, 8], [2, 11], [3, 14]], "mapInitY": 300, "battleSceneH": 1000 }
+            "1": { "mapID": 1, "name": "1", "battleHeroGrid": [[1, 0], [0, 1], [0, 2], [1, 2], [0, 3], [1, 4]], "battleEnemyGrid": [[2, 0], [2, 2], [2, 4]], "mapInitY": 600, "battleSceneH": 500, "gw": 240, "gh": 100 },
+            "2": { "mapID": 2, "name": "2", "battleHeroGrid": [[1, 0], [0, 1], [0, 2], [1, 2], [0, 3], [1, 4]], "battleEnemyGrid": [[2, 0], [2, 2], [2, 4]], "mapInitY": 600, "battleSceneH": 500, "gw": 240, "gh": 100 },
+            "10000": { "mapID": 10000, "name": "Boss挑战", "battleHeroGrid": [[1, 2], [1, 6], [0, 10], [1, 10], [1, 14], [1, 18]], "battleEnemyGrid": [[4, 2], [4, 6], [4, 10], [4, 14], [4, 18]], "mapInitY": 100, "battleSceneH": 1000, "gw": 140, "gh": 100 }
         };
         this.mapEngine = null;
         this.mapLoopEngine = null;
@@ -16,6 +16,7 @@ var MapManager = /** @class */ (function () {
         /**地图开关 */
         this.mapScrollSwitch = true;
         this.challegenBossBg = null;
+        this.enemyMoveSwitch = false;
         //循环地图Id
         this.curLoopMapId = 0;
     }
@@ -39,6 +40,8 @@ var MapManager = /** @class */ (function () {
         this.curMapConfig = this.mapCofing[mapID];
         GameConfig.MAP_INIT_Y = this.curMapConfig["mapInitY"];
         GameConfig.BATTLE_SCENE_HEIGHT = this.curMapConfig["battleSceneH"];
+        GameConfig.LINEUP_GRID_WIDTH = this.curMapConfig["gw"];
+        GameConfig.LINEUP_GRID_HEIGHT = this.curMapConfig["gh"];
         //卡马克
         // if(this.mapEngine)
         // {
@@ -51,10 +54,10 @@ var MapManager = /** @class */ (function () {
         // LayerManager.ins.addToLayer(this.mapEngine,LayerManager.TIP_LAYER,false,false,false);
         //boss地图
         if (mapID >= 10000) {
-            this.challegenBossBg = new Laya.Image("unpack/challengeboss/bg.png");
-            LayerManager.ins.addToLayer(this.challegenBossBg, LayerManager.BG_LAYER, false, true, false);
-            this.nearMapLoopEngin.visible = false;
-            EventManager.ins.dispatchEvent(EventManager.CHALLENGE_BOSS, [false]);
+            // this.challegenBossBg = new Laya.Image("unpack/challengeboss/bg.png");
+            // LayerManager.ins.addToLayer(this.challegenBossBg,LayerManager.BG_LAYER,false,true,false);
+            // this.nearMapLoopEngin.visible = false;
+            // EventManager.ins.dispatchEvent(EventManager.CHALLENGE_BOSS,[false]);
         }
         else {
             if (this.curLoopMapId != mapID) {
@@ -77,9 +80,6 @@ var MapManager = /** @class */ (function () {
         SoundsManager.ins.playMusic("res/outside/sound/bg/zhou.mp3", 1000);
     };
     MapManager.prototype.backLoopMap = function () {
-        this.challegenBossBg.removeSelf();
-        this.challegenBossBg = null;
-        this.nearMapLoopEngin.visible = true;
         this.enterMap("res/map", this.curLoopMapId, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
     };
     // private tx:number = 0;
@@ -98,6 +98,9 @@ var MapManager = /** @class */ (function () {
             }
             if (this.nearMapLoopEngin) {
                 this.nearMapLoopEngin.onScroll(3);
+            }
+            if (this.enemyMoveSwitch) {
+                RoleManager.ins.enemyMoveByMap(4);
             }
         }
         // console.log("地图打印："+this.tx);

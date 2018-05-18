@@ -19,19 +19,21 @@ class GameConfig{
     public static BATTLE_SCENE_HEIGHT:number = 500;
     /**战斗每轮攻击人数 */
     public static BATTLE_TURN_ATTACK_SUM:number = 1;
+    /**循环假战斗我方英雄参与人数 */
+    public static BATTLE_LOOP_HERO_SUM:number = 3;
     
     /**场景缓存 */
     public static SCENE_CACHE:number = 1;
     /**阵型配置 */
     /**阵型格子宽 */
-    public static LINEUP_GRID_WIDTH:number = 180;
+    public static LINEUP_GRID_WIDTH:number = 240;
     /**阵型格子高 */
     public static LINEUP_GRID_HEIGHT:number = 100;
 
 
     /**战斗配置 */
     /**战斗时间间隔(S) */
-    public static BATTLE_INTERVAL_TIME:number = 2;
+    public static BATTLE_INTERVAL_TIME:number = 1;
     /**战斗跑到阵型需要时间(s) */
     public static BATTLE_RUN_TIME:number = 0.5;
     /**战斗攻击需要时间(s) */
@@ -53,6 +55,16 @@ class HTTPReqType{
 class Protocol{
     public static USER_LOGIN:number = 1000;
     public static USER_LOGIN_CMD:number = 1;
+}
+/**http请求地址 */
+class HTTPRequestUrl{
+    /**测试登录 get*/
+    public static testLoginURL:string = "http://192.168.2.120:8080/api/testLogin.do";
+    /**获取区服列表 get*/
+    public static gameServerURL:string = "http://192.168.2.120:8080/api/gameserver.do";
+    /**进入游戏 get*/
+    public static enterGameURL:string = "http://192.168.2.120:8080/api/entergame.do";
+
 }
 
 /**地图类型枚举 */

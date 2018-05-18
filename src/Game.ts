@@ -15,20 +15,26 @@ class Game{
             {url:"unpack/login/logo.png",type:Loader.IMAGE}
             ];
         Laya.loader.load(resAry,new Laya.Handler(this,this.onLoaded),new Laya.Handler(this,this.onLoadProgress));
+
+        ClientSender.httpTestLoginReq("it3389","111111",this,this.testLoginHanlder);
         
+    }
+    private testLoginHanlder(data:any):void
+    {
+        console.log(data);
     }
     private onLoaded():void
     {
         LayerManager.ins.init();
         DebugViewUtil.init();
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
+        
     }
     /**资源加载进度 */
     protected onLoadProgress(data):void
     {
 
     }
-    
 }
 //程序入口
 Laya.MiniAdpter.init();

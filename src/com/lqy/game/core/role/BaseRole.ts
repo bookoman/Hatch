@@ -14,7 +14,7 @@ class BaseRole extends Laya.Sprite{
     constructor(){
         super();
     }
-    public initRole(roleVo:RoleVo,showPriority:number,scale?:number):void
+    public initRole(roleVo:RoleVo,showPriority:number,scale?:number,parentDis?:Laya.Sprite):void
     {
         this.roleVo = roleVo;
         this.showPriority = showPriority;
@@ -27,7 +27,14 @@ class BaseRole extends Laya.Sprite{
         this.skeletonAni.scale(this.aniScale,this.aniScale);
         this.skeletonAni.scaleX = this.roleVo.scaleX * this.aniScale;
         this.addChild(this.skeletonAni);
-        LayerManager.ins.addToLayer(this,LayerManager.ROLE_LAYER,false,true,false);
+        if(parentDis)
+        {
+            parentDis.addChild(this);
+        }
+        else
+        {
+            LayerManager.ins.addToLayer(this,LayerManager.ROLE_LAYER,false,true,false);
+        }
         this.visible = true;
     }
     
@@ -54,7 +61,7 @@ class BaseRole extends Laya.Sprite{
              //>= aniCount默认播放第一个动画
             if(this.skeletonAni)
             {
-                this.skeletonAni.play(aniID,loop,true);
+                this.skeletonAni.play(aniID,loop,false);
                 if(laterTime && caller && method)
                 {
                     Laya.timer.once(laterTime,caller,method,null,false);
@@ -72,15 +79,7 @@ class BaseRole extends Laya.Sprite{
     }
     private skeletonAniLoad(aniID,loop):void
     {
-        if(this.roleVo.id == "20005")
-        {  //测试怪物
-            this.skeletonAni.scale(0.3,0.3);
-            this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/nat_cos1_f.sk",new Laya.Handler(this,this.loadCompleted,[aniID,loop]));
-        }
-        else
-        {
-            this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/"+ this.roleVo.id +".sk",new Laya.Handler(this,this.loadCompleted,[aniID,loop]));
-        }
+        this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/"+ this.roleVo.id +".sk",new Laya.Handler(this,this.loadCompleted,[aniID,loop]));
     }
     
     private loadCompleted(ind,loop) {
@@ -123,10 +122,8 @@ class BaseRole extends Laya.Sprite{
     /**设置显示层级 */
     public setShowIndex(ind:number):void
     {
-        var layer:MyLayer = LayerManager.ins.getLayer(LayerManager.ROLE_LAYER);
-        if(ind >= 0 && ind < layer.numChildren)
-        {
-             layer.setChildIndex(this,ind);
+        if(this.parent && ind >= 0){
+            this.parent.setChildIndex(this,ind);
         }
     }
 
@@ -141,32 +138,34 @@ class BaseRole extends Laya.Sprite{
     private setVis(bool):void
     {
         //延迟回调判断，复活就设置隐藏
-        if(this.roleVo.isDeath)
+        if(this.roleVo && this.roleVo.isDeath)
         {
             this.visible = bool;
         }
     }
     public dispose():void
     {
-        // if(this.roleVo.isEnemy)
-        // {
-            this.removeSelf();
-            if(this.skeletonAni)
-            {
-                this.skeletonAni.destroy();
-            }
-            this.skeletonAni = null;
-            if(this.LblName)
-            {
-                this.LblName.removeSelf();
-            }
-            if(this.roleBloodBar)
-            {
-                this.roleBloodBar.removeSelf();
-                ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR,this.roleBloodBar);
-            }
-            // this.roleVo = null;
-        // }
+        this.parent.setChildIndex(this,0);
+        this.removeSelf();
+        if(this.skeletonAni)
+        {
+            this.skeletonAni.destroy();
+        }
+        this.skeletonAni = null;
+        if(this.LblName)
+        {
+            this.LblName.removeSelf();
+        }
+        if(this.roleBloodBar)
+        {
+            this.roleBloodBar.removeSelf();
+            ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR,this.roleBloodBar);
+        }
+        this.roleVo = null;
+    }
+    public moveByMap(speed:number):void
+    {
+
     }
 
 }

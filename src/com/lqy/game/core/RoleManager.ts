@@ -6,10 +6,10 @@ class RoleManager{
     public heroRoles:Array<BaseRole> = null;
     /**敌人角色 */
     public enemyRoles:Array<BaseRole> = null;
-
     /**敌人 */
     public enemyRunCount:number = 0;
-
+     /**英雄 */
+    public heroRunCount:number = 0;
     constructor(){
 
     }
@@ -85,9 +85,10 @@ class RoleManager{
             enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
             enemy.initRole(roleVo,i,1);
             this.enemyRoles.push(enemy);
+            enemy.aniPlay(RoleAniIndex.STAND);
         }
         this.enemyRoles.forEach(enemyView =>{
-            enemyView.setShowIndex(enemyView.roleVo.lineupGrid-1);
+            enemyView.setShowIndex(this.heroRoles.length + enemyView.roleVo.lineupGrid-1);
         });
     }
     
@@ -119,106 +120,20 @@ class RoleManager{
             enemy.run();
         });
     }
-    private attRole:BaseRole;
-    private defRole:BaseRole;
     /**
-     * 战斗
-     * @param attRoleVo 
-     * @param defRoleVo 
+     * 敌人跟随地图移动
+     * @param speed 
      */
-    public battleAtt(attRoleVo:RoleVo,defRoleVo:RoleVo):void
+    public enemyMoveByMap(speed:number):void
     {
-        var tempAry:Array<BaseRole> = this.heroRoles.concat(this.enemyRoles);
-        tempAry.forEach(roleView => {
-            if(roleView)
-            {
-                if(roleView.roleVo.id == attRoleVo.id)
-                {
-                    this.attRole = roleView;
-                }
-                else if(roleView.roleVo.id == defRoleVo.id)
-                {
-                    this.defRole = roleView;
-                }
-            }
-        });
-        if(this.attRole && this.defRole)
+        if(this.enemyRoles)
         {
-            //远攻
-            if(this.attRole.roleVo.attFar == 1)
-            {
-                this.playAttackAni();
-            }
-            else
-            {//近攻
-                this.attRole.aniPlay(RoleAniIndex.MOVE);
-                var tempX:number = defRoleVo.isEnemy ? 200 : -200;
-                Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.playAttackAni,[attRoleVo,defRoleVo],true),0,true);
-            }
+            this.enemyRoles.forEach(enemy =>{
+                enemy.moveByMap(speed);
+            });
         }
     }
-    /**
-     * 移动到敌方攻击
-     * @param data 
-     */
-    private playAttackAni():void
-    {
-        var attRoleVo:RoleVo = this.attRole.roleVo;
-        var defRoleVo:RoleVo = this.defRole.roleVo;
-        var skillID:number = attRoleVo.getCanUserSkill();
-        if(skillID > 0)
-        {
-            //技能释放
-            this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
-            var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillID,defRoleVo.posPoint);
-        }
-        else
-        {
-            //远攻，近攻击
-            if(attRoleVo.attFar == 1)
-            {
-                this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineupComplete);
-            }
-            else
-            {
-                this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
-            }
-        }
-        BattleDataManager.ins.calculationAttribute();
-        if(defRoleVo.isDeath)
-        {
-            this.defRole.aniPlay(RoleAniIndex.DEATH,false);
-            this.defRole.setVisible(false);
-        }
-        else
-        {
-            this.defRole.aniPlay(RoleAniIndex.INJURED);
-            this.defRole.showFloatFont(attRoleVo.att);
-        }
-        this.defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
-    }
-    /**
-     * 攻击完移动回阵型
-     */
-    private moveBackLineup():void
-    {
-        var attRoleVo:RoleVo = this.attRole.roleVo;
-        Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000/2,null,new Handler(this,this.moveBackLineupComplete,null,true),0,true);
-    }
-    /**
-     * 移动回阵型完成
-     */
-    private moveBackLineupComplete():void
-    {
-        DebugViewUtil.log("攻击返回",this.attRole.roleVo.name);
-        this.attRole.aniPlay(RoleAniIndex.STAND);
-        if(!this.defRole.roleVo.isDeath)
-        {
-            this.defRole.aniPlay(RoleAniIndex.STAND);
-        }
-        EventManager.ins.dispatchEvent(EventManager.ENEMY_ATT_COMPLETE);
-    }
+    
     /**清除舞台显示对象 */
     public clearRole():void
     {
@@ -226,6 +141,7 @@ class RoleManager{
         {
             var lastHeros:Array<Hero> = [];
             this.heroRoles.forEach(role => {
+                role.roleVo.isDeath = false;
                 Laya.Tween.clearAll(role);
                 //只移除死掉英雄
                 if(role.roleVo.isDeath)
@@ -237,7 +153,6 @@ class RoleManager{
                 {
                     lastHeros.push(role);
                 }
-                role.roleVo.isDeath = false;
             });
             this.heroRoles = lastHeros;
         }

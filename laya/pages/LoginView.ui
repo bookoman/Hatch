@@ -1,8 +1,8 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":1,
-    "selecteID":34,
+    "selectedBox":33,
+    "selecteID":26,
     "props":{"width":750,"sceneColor":"#100606","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -153,7 +153,7 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"width":496,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":269},
+                    "props":{"y":-50,"x":0,"width":496,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":361},
                     "nodeParent":33,
                     "label":"Image",
                     "isDirectory":false,
@@ -166,7 +166,7 @@
                 {
                     "x":30,
                     "type":"TextInput",
-                    "props":{"y":87,"x":208,"width":180,"var":"inputSIP","text":"192.168.2.120","skin":"comp/textinput.png","height":22,"fontSize":20},
+                    "props":{"y":41,"x":208,"width":216,"var":"inputSIP","text":"192.168.2.120","skin":"comp/textinput.png","height":36,"fontSize":30},
                     "nodeParent":33,
                     "label":"TextInput(inputSIP)",
                     "isDirectory":false,
@@ -179,7 +179,7 @@
                 {
                     "x":30,
                     "type":"Label",
-                    "props":{"y":89,"x":107,"width":96,"text":"serverIP：","styleSkin":"comp/label.png","height":23,"fontSize":20},
+                    "props":{"y":40,"x":56,"width":153,"text":"serverIP：","styleSkin":"comp/label.png","height":38,"fontSize":30},
                     "nodeParent":33,
                     "label":"Label",
                     "isDirectory":false,
@@ -192,7 +192,7 @@
                 {
                     "x":30,
                     "type":"TextInput",
-                    "props":{"y":137,"x":208,"width":180,"var":"inputPort","text":"9600","skin":"comp/textinput.png","height":22,"fontSize":20},
+                    "props":{"y":109,"x":208,"width":216,"var":"inputPort","text":"9600","skin":"comp/textinput.png","height":36,"fontSize":30},
                     "nodeParent":33,
                     "label":"TextInput(inputPort)",
                     "isDirectory":false,
@@ -205,7 +205,7 @@
                 {
                     "x":30,
                     "type":"Label",
-                    "props":{"y":138,"x":140,"text":"Port：","styleSkin":"comp/label.png","fontSize":20},
+                    "props":{"y":108,"x":56,"width":153,"text":"Port：","styleSkin":"comp/label.png","height":38,"fontSize":30},
                     "nodeParent":33,
                     "label":"Label",
                     "isDirectory":false,
@@ -218,7 +218,7 @@
                 {
                     "x":30,
                     "type":"TextInput",
-                    "props":{"y":178,"x":208,"width":180,"var":"inputAccount","text":"bookoman","skin":"comp/textinput.png","height":22,"fontSize":20},
+                    "props":{"y":176,"x":208,"width":216,"var":"inputAccount","text":"bookoman","skin":"comp/textinput.png","height":36,"fontSize":30},
                     "nodeParent":33,
                     "label":"TextInput(inputAccount)",
                     "isDirectory":false,
@@ -231,7 +231,7 @@
                 {
                     "x":30,
                     "type":"Label",
-                    "props":{"y":180,"x":111,"text":"account：","styleSkin":"comp/label.png","fontSize":20},
+                    "props":{"y":176,"x":56,"width":153,"text":"account：","styleSkin":"comp/label.png","height":38,"fontSize":30},
                     "nodeParent":33,
                     "label":"Label",
                     "isDirectory":false,

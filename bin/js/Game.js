@@ -12,6 +12,10 @@ var Game = /** @class */ (function () {
             { url: "unpack/login/logo.png", type: Loader.IMAGE }
         ];
         Laya.loader.load(resAry, new Laya.Handler(this, this.onLoaded), new Laya.Handler(this, this.onLoadProgress));
+        ClientSender.httpTestLoginReq("it3389", "111111", this, this.testLoginHanlder);
+    };
+    Game.prototype.testLoginHanlder = function (data) {
+        console.log(data);
     };
     Game.prototype.onLoaded = function () {
         LayerManager.ins.init();

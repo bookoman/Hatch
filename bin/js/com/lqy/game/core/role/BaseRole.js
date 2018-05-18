@@ -25,7 +25,7 @@ var BaseRole = /** @class */ (function (_super) {
         _this.showPriority = 0;
         return _this;
     }
-    BaseRole.prototype.initRole = function (roleVo, showPriority, scale) {
+    BaseRole.prototype.initRole = function (roleVo, showPriority, scale, parentDis) {
         this.roleVo = roleVo;
         this.showPriority = showPriority;
         if (scale) {
@@ -36,7 +36,12 @@ var BaseRole = /** @class */ (function (_super) {
         this.skeletonAni.scale(this.aniScale, this.aniScale);
         this.skeletonAni.scaleX = this.roleVo.scaleX * this.aniScale;
         this.addChild(this.skeletonAni);
-        LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
+        if (parentDis) {
+            parentDis.addChild(this);
+        }
+        else {
+            LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
+        }
         this.visible = true;
     };
     BaseRole.prototype.showFloatFont = function (blood) {
@@ -56,7 +61,7 @@ var BaseRole = /** @class */ (function (_super) {
             aniID = aniID % this.aniCount;
             //>= aniCount默认播放第一个动画
             if (this.skeletonAni) {
-                this.skeletonAni.play(aniID, loop, true);
+                this.skeletonAni.play(aniID, loop, false);
                 if (laterTime && caller && method) {
                     Laya.timer.once(laterTime, caller, method, null, false);
                 }
@@ -71,13 +76,7 @@ var BaseRole = /** @class */ (function (_super) {
         }
     };
     BaseRole.prototype.skeletonAniLoad = function (aniID, loop) {
-        if (this.roleVo.id == "20005") { //测试怪物
-            this.skeletonAni.scale(0.3, 0.3);
-            this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/nat_cos1_f.sk", new Laya.Handler(this, this.loadCompleted, [aniID, loop]));
-        }
-        else {
-            this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk", new Laya.Handler(this, this.loadCompleted, [aniID, loop]));
-        }
+        this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk", new Laya.Handler(this, this.loadCompleted, [aniID, loop]));
     };
     BaseRole.prototype.loadCompleted = function (ind, loop) {
         if (!this.isLoaded) {
@@ -114,9 +113,8 @@ var BaseRole = /** @class */ (function (_super) {
     };
     /**设置显示层级 */
     BaseRole.prototype.setShowIndex = function (ind) {
-        var layer = LayerManager.ins.getLayer(LayerManager.ROLE_LAYER);
-        if (ind >= 0 && ind < layer.numChildren) {
-            layer.setChildIndex(this, ind);
+        if (this.parent && ind >= 0) {
+            this.parent.setChildIndex(this, ind);
         }
     };
     BaseRole.prototype.run = function () {
@@ -127,13 +125,12 @@ var BaseRole = /** @class */ (function (_super) {
     };
     BaseRole.prototype.setVis = function (bool) {
         //延迟回调判断，复活就设置隐藏
-        if (this.roleVo.isDeath) {
+        if (this.roleVo && this.roleVo.isDeath) {
             this.visible = bool;
         }
     };
     BaseRole.prototype.dispose = function () {
-        // if(this.roleVo.isEnemy)
-        // {
+        this.parent.setChildIndex(this, 0);
         this.removeSelf();
         if (this.skeletonAni) {
             this.skeletonAni.destroy();
@@ -146,8 +143,9 @@ var BaseRole = /** @class */ (function (_super) {
             this.roleBloodBar.removeSelf();
             ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR, this.roleBloodBar);
         }
-        // this.roleVo = null;
-        // }
+        this.roleVo = null;
+    };
+    BaseRole.prototype.moveByMap = function (speed) {
     };
     return BaseRole;
 }(Laya.Sprite));

@@ -41,10 +41,14 @@ var LoginMediator = /** @class */ (function (_super) {
     LoginMediator.prototype.dispose = function () {
     };
     LoginMediator.prototype.onBtnLogin = function (e) {
-        EventManager.ins.addEvent(EventManager.SERVER_CONNECTED, this, this.onServerConnected);
-        var serverID = this.view.inputSIP.text;
-        var port = Number(this.view.inputPort.text);
-        WebSocketManager.ins.connect(serverID, port);
+        //测试
+        PreLoadingView.ins.show();
+        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        //连接服务器
+        // EventManager.ins.addEvent(EventManager.SERVER_CONNECTED,this,this.onServerConnected);
+        // var serverID:string = this.view.inputSIP.text;
+        // var port:number = Number(this.view.inputPort.text);
+        // WebSocketManager.ins.connect(serverID,port);
     };
     LoginMediator.prototype.onServerConnected = function () {
         EventManager.ins.removeEvent(EventManager.SERVER_CONNECTED, this.onServerConnected);

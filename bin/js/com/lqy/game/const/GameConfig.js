@@ -21,16 +21,18 @@ var GameConfig = /** @class */ (function () {
     GameConfig.BATTLE_SCENE_HEIGHT = 500;
     /**战斗每轮攻击人数 */
     GameConfig.BATTLE_TURN_ATTACK_SUM = 1;
+    /**循环假战斗我方英雄参与人数 */
+    GameConfig.BATTLE_LOOP_HERO_SUM = 3;
     /**场景缓存 */
     GameConfig.SCENE_CACHE = 1;
     /**阵型配置 */
     /**阵型格子宽 */
-    GameConfig.LINEUP_GRID_WIDTH = 180;
+    GameConfig.LINEUP_GRID_WIDTH = 240;
     /**阵型格子高 */
     GameConfig.LINEUP_GRID_HEIGHT = 100;
     /**战斗配置 */
     /**战斗时间间隔(S) */
-    GameConfig.BATTLE_INTERVAL_TIME = 2;
+    GameConfig.BATTLE_INTERVAL_TIME = 1;
     /**战斗跑到阵型需要时间(s) */
     GameConfig.BATTLE_RUN_TIME = 0.5;
     /**战斗攻击需要时间(s) */
@@ -55,6 +57,18 @@ var Protocol = /** @class */ (function () {
     Protocol.USER_LOGIN = 1000;
     Protocol.USER_LOGIN_CMD = 1;
     return Protocol;
+}());
+/**http请求地址 */
+var HTTPRequestUrl = /** @class */ (function () {
+    function HTTPRequestUrl() {
+    }
+    /**测试登录 get*/
+    HTTPRequestUrl.testLoginURL = "http://192.168.2.120:8080/api/testLogin.do";
+    /**获取区服列表 get*/
+    HTTPRequestUrl.gameServerURL = "http://192.168.2.120:8080/api/gameserver.do";
+    /**进入游戏 get*/
+    HTTPRequestUrl.enterGameURL = "http://192.168.2.120:8080/api/entergame.do";
+    return HTTPRequestUrl;
 }());
 /**地图类型枚举 */
 var MapType;

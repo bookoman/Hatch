@@ -39,7 +39,7 @@ class HttpManager{
             {
                 url = url + "?" + paramsStr;
             }
-            xhr.send(url,"",reqType,"text");
+            xhr.send(url,"",reqType,"text",["Cookie"]);
         }
         else if(reqType == HTTPReqType.POST)
         {
@@ -67,6 +67,6 @@ class HttpManager{
 
     }
     private completeHandler(e:any): void {
-
+         console.log(e);
     }
 }

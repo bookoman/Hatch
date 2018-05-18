@@ -12,7 +12,9 @@ class RoleVo{
     public attackRange:Rectangle;
 
     public hp:number;
+    public dieAttTimes:number;
     public att:number;
+    /**攻击速度 */
     public atts:number;
     /**1 远攻，0 近攻 */
     public attFar:number;
@@ -32,6 +34,7 @@ class RoleVo{
     //战斗数据
     
     public battleHP:number;
+    public battleDieAttTimes;
     /**是否死亡 */
     public isDeath:boolean = true;
     public isAtted:boolean;
@@ -49,15 +52,18 @@ class RoleVo{
     {
         this.isEnemy = Number(this.id) >= 20000;
         var px,py;
+        var gridPointAry;
         if(this.isEnemy)
         {
-            this.gridX = MapManager.ins.getEnemyMapBalltGridPoint(this.lineupGrid)[0];
-            this.gridY = MapManager.ins.getEnemyMapBalltGridPoint(this.lineupGrid)[1];
+            gridPointAry = MapManager.ins.getEnemyMapBalltGridPoint(this.lineupGrid);
+            this.gridX = gridPointAry[0];
+            this.gridY = gridPointAry[1];
         }
         else
         {
-            this.gridX = MapManager.ins.getHeroMapBalltGridPoint(this.lineupGrid)[0];
-            this.gridY = MapManager.ins.getHeroMapBalltGridPoint(this.lineupGrid)[1];
+            gridPointAry = MapManager.ins.getHeroMapBalltGridPoint(this.lineupGrid);
+            this.gridX = gridPointAry[0];
+            this.gridY = gridPointAry[1];
         }
         // console.log(this.id,this.gridX,this.gridY,px,py);
         this.posPoint = MapManager.ins.squintAngleGrid.gridToViewPoint(this.gridX,this.gridY);

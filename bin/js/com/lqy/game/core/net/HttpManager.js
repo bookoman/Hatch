@@ -35,7 +35,7 @@ var HttpManager = /** @class */ (function () {
             if (paramsStr != "") {
                 url = url + "?" + paramsStr;
             }
-            xhr.send(url, "", reqType, "text");
+            xhr.send(url, "", reqType, "text", ["Cookie"]);
         }
         else if (reqType == HTTPReqType.POST) {
             xhr.send(url, "", paramsStr, "text");
@@ -59,6 +59,7 @@ var HttpManager = /** @class */ (function () {
     HttpManager.prototype.errorHandler = function (data) {
     };
     HttpManager.prototype.completeHandler = function (e) {
+        console.log(e);
     };
     HttpManager._ins = null;
     return HttpManager;

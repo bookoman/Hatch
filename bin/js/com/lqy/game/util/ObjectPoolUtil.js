@@ -6,16 +6,16 @@ var ObjectPoolUtil = /** @class */ (function () {
     }
     ObjectPoolUtil.init = function () {
         this.floatFontTipsAry = new Array();
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < 30; i++) {
             this.floatFontTipsAry.push(new FloatFontTips());
         }
         this.roleBloodBarAry = new Array();
-        for (i = 0; i < 10; i++) {
+        for (i = 0; i < 30; i++) {
             this.roleBloodBarAry.push(new RoleBloodBar());
         }
         this.heroAry = new Array();
         this.enemyAry = new Array();
-        for (i = 0; i < 5; i++) {
+        for (i = 0; i < 20; i++) {
             this.heroAry.push(new Hero());
             this.enemyAry.push(new Enemy());
         }
