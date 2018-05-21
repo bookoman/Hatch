@@ -50,10 +50,6 @@ class EnterGameMediator extends BaseMediator{
         this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
     }
     
-    public dispose():void
-    {
-        
-    }
     private onBtnLogin(e:Laya.Event):void
     {
         //测试
@@ -70,6 +66,8 @@ class EnterGameMediator extends BaseMediator{
         var jsonObj:any = JSON.parse(data);
         if(jsonObj.code == 200)
         {
+            
+
             GameDataManager.ins.loginToken = jsonObj.token;
             EventManager.ins.addEvent(EventManager.SERVER_CONNECTED,this,this.onServerConnected);
             WebSocketManager.ins.connect(GameDataManager.ins.curServerInfo.ip,GameDataManager.ins.curServerInfo.port);
@@ -88,5 +86,11 @@ class EnterGameMediator extends BaseMediator{
 
     private onBtnChoice():void{
         this.choiceServerMediator.show();     
+    }
+
+    public dispose():void
+    {
+        this.choiceServerMediator.dispose();
+        super.dispose();
     }
 }

@@ -47,8 +47,6 @@ var EnterGameMediator = /** @class */ (function (_super) {
     EnterGameMediator.prototype.updateServerInfo = function () {
         this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
     };
-    EnterGameMediator.prototype.dispose = function () {
-    };
     EnterGameMediator.prototype.onBtnLogin = function (e) {
         //测试
         // PreLoadingView.ins.show();
@@ -74,6 +72,10 @@ var EnterGameMediator = /** @class */ (function (_super) {
     };
     EnterGameMediator.prototype.onBtnChoice = function () {
         this.choiceServerMediator.show();
+    };
+    EnterGameMediator.prototype.dispose = function () {
+        this.choiceServerMediator.dispose();
+        _super.prototype.dispose.call(this);
     };
     return EnterGameMediator;
 }(BaseMediator));
