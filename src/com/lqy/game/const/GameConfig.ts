@@ -59,12 +59,34 @@ class Protocol{
 /**http请求地址 */
 class HTTPRequestUrl{
     /**测试登录 get*/
-    public static testLoginURL:string = "http://192.168.2.120:8080/api/testLogin.do";
+    public static testLoginURL:string = "http://192.168.2.126:8080/api/testLogin.do";
     /**获取区服列表 get*/
-    public static gameServerURL:string = "http://192.168.2.120:8080/api/gameserver.do";
+    public static gameServerURL:string = "http://192.168.2.126:8080/api/gameserver.do";
     /**进入游戏 get*/
-    public static enterGameURL:string = "http://192.168.2.120:8080/api/entergame.do";
+    public static enterGameURL:string = "http://192.168.2.126:8080/api/entergame.do";
 
+}
+/**服务器状态 */
+class GameServerState{
+
+    /**
+     * 正常在线
+     */
+    public static  GameServer_State_ON = 0;
+    /**
+     * 火爆
+     */
+    public static GameServer_State_FIRE = 1;
+     /**
+     * 停服
+     */
+    public static GameServer_State_OFF = -1;
+    /**
+     * 停服维护
+     */
+    public static GameServer_State_Maintain = -2;
+
+     
 }
 
 /**地图类型枚举 */

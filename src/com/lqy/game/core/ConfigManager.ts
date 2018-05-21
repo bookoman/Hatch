@@ -31,7 +31,6 @@ class ConfigManager{
 
     public skillConfigDic:Dictionary = null;
 
-    private languageMap:Object = {};
     private static _ins:ConfigManager = null;
 
     public static get ins():ConfigManager

@@ -19,6 +19,7 @@ var HttpManager = /** @class */ (function () {
      * @param url 地址
      * @param reqType 请求类型 post get
      * @param params 请求参数
+     * @param caller 封装heads
      * @param caller 请求回调caller
      * @param callBack 请求回调方法
      */
@@ -31,14 +32,19 @@ var HttpManager = /** @class */ (function () {
             xhr.once(Laya.Event.COMPLETE, caller, callBack);
         }
         var paramsStr = params ? this.formart(params) : "";
+        //封装heads
+        var heads;
+        if (GameDataManager.ins.loginAuthentication) {
+            heads = ["authentication", GameDataManager.ins.loginAuthentication];
+        }
         if (reqType == HTTPReqType.GET) {
             if (paramsStr != "") {
                 url = url + "?" + paramsStr;
             }
-            xhr.send(url, "", reqType, "text", ["Cookie"]);
+            xhr.send(url, "", reqType, "text", heads);
         }
         else if (reqType == HTTPReqType.POST) {
-            xhr.send(url, "", paramsStr, "text");
+            xhr.send(url, "", paramsStr, "text", heads);
         }
     };
     /**

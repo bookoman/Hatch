@@ -49,6 +49,10 @@ var GameMediator = /** @class */ (function (_super) {
         }
         // RoleManager.ins.resetRolePoint();
     };
+    /**
+     * 挑战boss
+     * @param e
+     */
     GameMediator.prototype.onChalleangeBoss = function (e) {
         MapManager.ins.enterMap("res/map", 10000, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
         GameDataManager.ins.productBossData();

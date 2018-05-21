@@ -4,16 +4,18 @@
 var SocketHanlder = /** @class */ (function () {
     function SocketHanlder(module, caller, callback) {
         if (callback === void 0) { callback = null; }
+        this.statusCode = 0;
         this.module = module;
         this.caller = caller;
         this.callBack = callback;
     }
-    SocketHanlder.prototype.explain = function (errorCode, data) {
-        if (errorCode == 0) {
+    SocketHanlder.prototype.explain = function (data) {
+        var statusCode = data.statusCode;
+        if (statusCode == 0) {
             this.success(data);
         }
         else {
-            console.log(errorCode);
+            console.log("服务器返回：" + data.statusCode);
         }
     };
     SocketHanlder.prototype.success = function (data) {

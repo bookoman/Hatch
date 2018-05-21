@@ -39,16 +39,7 @@ P 1C298A94 img_blood.png
 P C6B7D49F img_bloodbg.png
 P 3C936667 img_tzdb.png
 P 00C58ACB logo.png
-D template
 D unpack
-D template/List
-P 140B5401 arrow.png
-P 5EDC128C label.png
-R 11909C67 SimpleListBoxItemBackground.png
-P 52107B89 vscroll$bar.png
-P E26B933E vscroll$down.png
-P B9680947 vscroll$up.png
-P 7E990267 vscroll.png
 D unpack/challengeboss
 R 7ED07C71 bg.png
 D unpack/login

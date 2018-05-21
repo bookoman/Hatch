@@ -52,7 +52,7 @@ class WebSocketManager{
         var socketHanlder:SocketHanlder = this.socketHanlderDic.get(packageIn.module);
         if(socketHanlder)
         {
-            socketHanlder.explain(packageIn.errorCode,packageIn.body);
+            socketHanlder.explain(packageIn.body);
         }
     }
     private webSocketClose():void

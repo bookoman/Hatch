@@ -27,7 +27,6 @@ var ConfigManager = /** @class */ (function () {
         ];
         this.roleConfigDic = null;
         this.skillConfigDic = null;
-        this.languageMap = {};
         this.roleConfigDic = new Dictionary();
         this.skillConfigDic = new Dictionary();
         this.parseSkillConfig();

@@ -4,7 +4,6 @@
 class PackageIn extends Laya.Byte{
     
     public module:number;
-    public errorCode:number = 0;
     public body;
     constructor(){
         super();
@@ -26,6 +25,7 @@ class PackageIn extends Laya.Byte{
         //数据
         var tempByte = this.buffer.slice(this.pos);
         this.body = new Uint8Array(tempByte);
+
     }
     
 }

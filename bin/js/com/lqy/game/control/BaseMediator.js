@@ -30,6 +30,11 @@ var BaseMediator = /** @class */ (function () {
     };
     BaseMediator.prototype.removeEvents = function () {
     };
+    BaseMediator.prototype.dispose = function () {
+        this.view.removeSelf();
+        this.view = null;
+        this.removeEvents();
+    };
     return BaseMediator;
 }());
 //# sourceMappingURL=BaseMediator.js.map

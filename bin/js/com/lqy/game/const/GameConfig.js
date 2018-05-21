@@ -63,12 +63,34 @@ var HTTPRequestUrl = /** @class */ (function () {
     function HTTPRequestUrl() {
     }
     /**测试登录 get*/
-    HTTPRequestUrl.testLoginURL = "http://192.168.2.120:8080/api/testLogin.do";
+    HTTPRequestUrl.testLoginURL = "http://192.168.2.126:8080/api/testLogin.do";
     /**获取区服列表 get*/
-    HTTPRequestUrl.gameServerURL = "http://192.168.2.120:8080/api/gameserver.do";
+    HTTPRequestUrl.gameServerURL = "http://192.168.2.126:8080/api/gameserver.do";
     /**进入游戏 get*/
-    HTTPRequestUrl.enterGameURL = "http://192.168.2.120:8080/api/entergame.do";
+    HTTPRequestUrl.enterGameURL = "http://192.168.2.126:8080/api/entergame.do";
     return HTTPRequestUrl;
+}());
+/**服务器状态 */
+var GameServerState = /** @class */ (function () {
+    function GameServerState() {
+    }
+    /**
+     * 正常在线
+     */
+    GameServerState.GameServer_State_ON = 0;
+    /**
+     * 火爆
+     */
+    GameServerState.GameServer_State_FIRE = 1;
+    /**
+    * 停服
+    */
+    GameServerState.GameServer_State_OFF = -1;
+    /**
+     * 停服维护
+     */
+    GameServerState.GameServer_State_Maintain = -2;
+    return GameServerState;
 }());
 /**地图类型枚举 */
 var MapType;

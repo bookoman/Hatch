@@ -47,6 +47,10 @@ class GameMediator extends BaseMediator{
         }
         // RoleManager.ins.resetRolePoint();
     }
+    /**
+     * 挑战boss
+     * @param e 
+     */
     private onChalleangeBoss(e:Laya.Event):void
     {
         MapManager.ins.enterMap("res/map",10000,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);

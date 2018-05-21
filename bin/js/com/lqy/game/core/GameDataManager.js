@@ -19,9 +19,43 @@ var GameDataManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**保存服务器信息 */
+    GameDataManager.prototype.saveServerInfoList = function (data, lastServer) {
+        this.serverList = new Array();
+        var info;
+        var serverInfo;
+        for (var i = 0; i < data.length; i++) {
+            info = data[i];
+            serverInfo = new ServerInfoVo();
+            for (var key in info) {
+                if (info.hasOwnProperty(key)) {
+                    serverInfo[key] = info[key];
+                }
+            }
+            this.serverList.push(serverInfo);
+        }
+        /**上一次登录服务器信息 */
+        this.curServerInfo = new ServerInfoVo();
+        for (var key in lastServer) {
+            if (lastServer.hasOwnProperty(key)) {
+                this.curServerInfo[key] = lastServer[key];
+            }
+        }
+    };
+    GameDataManager.prototype.choiceServerInfo = function (index) {
+        this.curServerInfo = this.serverList[index];
+    };
+    /**保存自己玩家数据 */
+    GameDataManager.prototype.saveSelfPlayerData = function (data) {
+        this.loginAuthentication = data.authentication;
+        this.selfPlayerData = new PlayerData();
+        this.selfPlayerData.name = data.name;
+    };
     GameDataManager.prototype.initData = function () {
         //测试数据
-        this.selfPlayerData = new PlayerData();
+        if (!this.selfPlayerData) {
+            this.selfPlayerData = new PlayerData();
+        }
         this.selfPlayerData.id = 88888888;
         this.selfPlayerData.name = "SimplePlan";
         // this.selfPlayerData.lineupId = "1";

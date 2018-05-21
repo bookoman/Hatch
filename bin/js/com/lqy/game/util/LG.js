@@ -32,7 +32,7 @@ var LG = /** @class */ (function () {
     */
     LG.getTXT = function (translationId, args) {
         var reg = new RegExp("\\{(\\d+)\\}");
-        var input = this[translationId] ? this[translationId] : translationId + "";
+        var input = this.dic[translationId] ? this.dic[translationId] : translationId + "";
         var obj = reg.exec(input);
         while (obj && args.length > 0) {
             var id = parseInt(obj[1]);

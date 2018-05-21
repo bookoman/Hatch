@@ -2,6 +2,7 @@
 * 数据处理Hanlder
 */
 class SocketHanlder{
+    public statusCode:number = 0;
     public module:number;
     private caller:any;
     private callBack:Function;
@@ -11,15 +12,16 @@ class SocketHanlder{
         this.callBack = callback;
     }
 
-    public explain(errorCode:number,data):void
+    public explain(data):void
     {
-        if(errorCode == 0)
+        var statusCode = data.statusCode;
+        if(statusCode == 0)
         {
             this.success(data);
         }
         else
         {
-            console.log(errorCode);
+            console.log("服务器返回："+data.statusCode);
         }
     }
     protected success(data?:any):void

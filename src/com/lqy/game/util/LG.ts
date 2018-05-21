@@ -2,6 +2,7 @@
 * 语言包
 */
 class LG{
+
     private static dic:Dictionary = null;
     constructor(){
        
@@ -37,11 +38,11 @@ class LG{
      * @param rest
      * @return String
      */
-    public static getTXT(translationId:string,args):void
+    public static getTXT(translationId:string,args?:Array<string>):string
     {
         var reg=new RegExp("\\{(\\d+)\\}");
 
-        var input = this[translationId]  ? this[translationId] : translationId+"";
+        var input = this.dic[translationId]  ? this.dic[translationId] : translationId+"";
         var obj = reg.exec(input);
         while(obj && args.length > 0)
         {

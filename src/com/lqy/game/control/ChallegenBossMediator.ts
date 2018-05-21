@@ -68,7 +68,10 @@ class ChallegenBossMediator extends BaseMediator{
 
         BattleEngine.ins.challegenBoss(this.heroRoles,this.enemyRoles);
     }
-    
+    /**
+     * 快速结束
+     * @param e 
+     */
     private onBtnFast(e):void
     {
         BattleEngine.ins.challegenBossFastEnd();

@@ -72,6 +72,10 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         });
         BattleEngine.ins.challegenBoss(this.heroRoles, this.enemyRoles);
     };
+    /**
+     * 快速结束
+     * @param e
+     */
     ChallegenBossMediator.prototype.onBtnFast = function (e) {
         BattleEngine.ins.challegenBossFastEnd();
         this.dispose();
