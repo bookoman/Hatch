@@ -47,8 +47,8 @@ class BaseMediator{
     public dispose():void
     {
         this.view.removeSelf();
-        this.view = null;
         this.removeEvents();
+        this.view = null;
     }
 
     

@@ -54,7 +54,7 @@ class LoginMediator extends BaseMediator{
             console.log("登录异常！错误码:"+jsonObj.code);
         }
     }
-
+    
     private onGameServersList(data):void
     {
         var jsonObj:any = JSON.parse(data);

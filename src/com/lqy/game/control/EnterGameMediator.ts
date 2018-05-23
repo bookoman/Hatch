@@ -32,7 +32,6 @@ class EnterGameMediator extends BaseMediator{
     }
     private onWebSocketLogined(data):void
     {
-      
         if(data.statusCode == 0)
         {
             console.log("登录成功。。。"+data);    
@@ -66,8 +65,6 @@ class EnterGameMediator extends BaseMediator{
         var jsonObj:any = JSON.parse(data);
         if(jsonObj.code == 200)
         {
-            
-
             GameDataManager.ins.loginToken = jsonObj.token;
             EventManager.ins.addEvent(EventManager.SERVER_CONNECTED,this,this.onServerConnected);
             WebSocketManager.ins.connect(GameDataManager.ins.curServerInfo.ip,GameDataManager.ins.curServerInfo.port);

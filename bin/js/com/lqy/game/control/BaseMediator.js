@@ -32,8 +32,8 @@ var BaseMediator = /** @class */ (function () {
     };
     BaseMediator.prototype.dispose = function () {
         this.view.removeSelf();
-        this.view = null;
         this.removeEvents();
+        this.view = null;
     };
     return BaseMediator;
 }());
