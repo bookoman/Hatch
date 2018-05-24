@@ -19,14 +19,17 @@ var Skill = /** @class */ (function () {
             this.skeletonAni = new Skeleton();
             this.skeletonAni.pos(pos.x, pos.y);
             this.skeletonAni.scale(scale, scale);
-            this.skeletonAni.load("res/outside/anim/skill/" + skillId + "/" + skillId + ".sk");
+            this.skeletonAni.load("res/outside/anim/skill/" + skillId + "/" + skillId + ".sk", Laya.Handler.create(this, this.resLoaded));
             LayerManager.ins.addToLayer(this.skeletonAni, LayerManager.EFFECT_LAYER, false, true, false);
         }
-        // this.skeletonAni.play(0,false);
-        Laya.timer.once(1000, this, this.playSkillComplete, null, false);
+    };
+    Skill.prototype.resLoaded = function () {
+        this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
+        this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.playSkillComplete);
     };
     Skill.prototype.playSkillComplete = function () {
         if (this.skeletonAni) {
+            this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.playSkillComplete);
             this.skeletonAni.removeSelf();
             this.skeletonAni = null;
             ObjectPoolUtil.stillObject(ObjectPoolUtil.SKILL, this);

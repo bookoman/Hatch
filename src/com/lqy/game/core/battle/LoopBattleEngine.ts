@@ -9,8 +9,6 @@ class LoopBattleEngine{
     private enemyRoles:Array<BaseRole> = null;
     private loopBattleData:LoopBattleData = null;
     private roleMgr:RoleManager;
-    // private attRole:BaseRole;
-    // private defRole:BaseRole;
     constructor(){
         this.init();
     }
@@ -82,7 +80,7 @@ class LoopBattleEngine{
         this.battleTurnVoSum = this.loopBattleData.curBattleTurnVos.length;
         this.loopBattleData.curBattleTurnVos.forEach(battleTurnVo => {
             //根据攻击速度攻击延迟
-            Laya.timer.once(100 * battleTurnVo.attRoleVo.atts,this,this.battleAtt,[battleTurnVo.attRoleVo,battleTurnVo.defRoleVo],false);
+            Laya.timer.once(100 * battleTurnVo.attRoleVo.atts / GameConfig.BATTLE_ADDSPEED_TIMES,this,this.battleAtt,[battleTurnVo.attRoleVo,battleTurnVo.defRoleVo],false);
         });
         // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
     }

@@ -100,7 +100,7 @@ class BaseRole extends Laya.Sprite{
                 {
                     this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted,[defRole]);
                 }
-                this.skeletonAni.playbackRate(2);
+                this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.aniCaller = caller;
                 this.aniMethod = method;
                 

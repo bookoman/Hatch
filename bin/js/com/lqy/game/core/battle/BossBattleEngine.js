@@ -72,7 +72,7 @@ var BossBattleEngine = /** @class */ (function () {
             else { //近攻
                 this.attRole.aniPlay(RoleAniIndex.MOVE);
                 var tempX = defRoleVo.isEnemy ? 200 : -200;
-                Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000, null, new Handler(this, this.playAttackAni, [attRoleVo, defRoleVo], true), 0, true);
+                Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.playAttackAni, [attRoleVo, defRoleVo], true), 0, true);
             }
         }
     };
@@ -115,7 +115,7 @@ var BossBattleEngine = /** @class */ (function () {
      */
     BossBattleEngine.prototype.moveBackLineup = function () {
         var attRoleVo = this.attRole.roleVo;
-        Laya.Tween.to(this.attRole, { x: attRoleVo.posPoint.x, y: attRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / 2, null, new Handler(this, this.moveBackLineupComplete, null, true), 0, true);
+        Laya.Tween.to(this.attRole, { x: attRoleVo.posPoint.x, y: attRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / 2 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.moveBackLineupComplete, null, true), 0, true);
     };
     /**
      * 移动回阵型完成

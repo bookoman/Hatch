@@ -64,7 +64,7 @@ var BaseRole = /** @class */ (function (_super) {
                 if (!this.skeletonAni.hasListener(Laya.Event.COMPLETE)) {
                     this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted, [defRole]);
                 }
-                this.skeletonAni.playbackRate(2);
+                this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.aniCaller = caller;
                 this.aniMethod = method;
                 this.skeletonAni.play(aniID, loop);
