@@ -49,7 +49,7 @@ var GameDataManager = /** @class */ (function () {
     GameDataManager.prototype.saveSelfPlayerData = function (data) {
         this.loginAuthentication = data.authentication;
         this.selfPlayerData = new PlayerData();
-        this.selfPlayerData.name = data.name;
+        this.selfPlayerData.name = data.data;
     };
     GameDataManager.prototype.initData = function () {
         //测试数据

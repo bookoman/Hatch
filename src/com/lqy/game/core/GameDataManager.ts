@@ -64,7 +64,7 @@ class GameDataManager{
     {
         this.loginAuthentication = data.authentication;
         this.selfPlayerData = new PlayerData();
-        this.selfPlayerData.name = data.name;
+        this.selfPlayerData.name = data.data;
     }
 
     public initData():void

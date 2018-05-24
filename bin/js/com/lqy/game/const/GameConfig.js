@@ -40,7 +40,7 @@ var GameConfig = /** @class */ (function () {
     /**战斗攻击需要时间(s) */
     GameConfig.BATTLE_ATT_TIME = 0.3;
     /**战斗加速倍数*/
-    GameConfig.BATTLE_ADDSPEED_TIMES = 1;
+    GameConfig.BATTLE_ADDSPEED_TIMES = 3;
     /**调试视图开关 */
     GameConfig.DEBUG_VIEW_SWITCH = false;
     /**场景战斗开关 */
