@@ -23,6 +23,8 @@ var GameConfig = /** @class */ (function () {
     GameConfig.BATTLE_TURN_ATTACK_SUM = 1;
     /**循环假战斗我方英雄参与人数 */
     GameConfig.BATTLE_LOOP_HERO_SUM = 3;
+    /**挑战boss我方英雄参与人数 */
+    GameConfig.BATTLE_BOSS_HERO_SUM = 5;
     /**场景缓存 */
     GameConfig.SCENE_CACHE = 1;
     /**阵型配置 */
@@ -113,6 +115,15 @@ var RoleAniIndex;
     RoleAniIndex[RoleAniIndex["SKILL3"] = 7] = "SKILL3";
     RoleAniIndex[RoleAniIndex["SKILL4"] = 8] = "SKILL4";
 })(RoleAniIndex || (RoleAniIndex = {}));
+/**新角色动画枚举 */
+var NewRoleAniIndex;
+(function (NewRoleAniIndex) {
+    NewRoleAniIndex[NewRoleAniIndex["ATTACK"] = 0] = "ATTACK";
+    NewRoleAniIndex[NewRoleAniIndex["INJURED"] = 1] = "INJURED";
+    NewRoleAniIndex[NewRoleAniIndex["DEATH"] = 2] = "DEATH";
+    NewRoleAniIndex[NewRoleAniIndex["MOVE"] = 3] = "MOVE";
+    NewRoleAniIndex[NewRoleAniIndex["STAND"] = 4] = "STAND";
+})(NewRoleAniIndex || (NewRoleAniIndex = {}));
 /**
  * 战斗攻击阵营
  */

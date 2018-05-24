@@ -1,0 +1,62 @@
+
+alien-pro.png
+size: 256,128
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+body
+  rotate: false
+  xy: 2, 59
+  size: 129, 67
+  orig: 129, 67
+  offset: 0, 0
+  index: -1
+da tui
+  rotate: false
+  xy: 192, 99
+  size: 25, 27
+  orig: 25, 27
+  offset: 0, 0
+  index: -1
+jiao
+  rotate: false
+  xy: 133, 61
+  size: 39, 35
+  orig: 39, 35
+  offset: 0, 0
+  index: -1
+shang bi
+  rotate: false
+  xy: 174, 76
+  size: 15, 20
+  orig: 15, 20
+  offset: 0, 0
+  index: -1
+tou
+  rotate: false
+  xy: 2, 3
+  size: 94, 54
+  orig: 94, 54
+  offset: 0, 0
+  index: -1
+wei ba
+  rotate: false
+  xy: 133, 98
+  size: 57, 28
+  orig: 57, 28
+  offset: 0, 0
+  index: -1
+zhua zi
+  rotate: false
+  xy: 133, 36
+  size: 28, 23
+  orig: 28, 23
+  offset: 0, 0
+  index: -1
+zui
+  rotate: true
+  xy: 98, 2
+  size: 55, 33
+  orig: 55, 33
+  offset: 0, 0
+  index: -1

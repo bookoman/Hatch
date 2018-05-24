@@ -19,7 +19,6 @@ var BaseRole = /** @class */ (function (_super) {
         _this.skeletonAni = null;
         _this.aniCount = 0;
         _this.aniScale = 1;
-        _this.isLoaded = false;
         _this.LblName = null;
         _this.roleBloodBar = null;
         _this.showPriority = 0;
@@ -57,46 +56,58 @@ var BaseRole = /** @class */ (function (_super) {
      */
     BaseRole.prototype.aniPlay = function (aniID, loop, caller, method, defRole) {
         if (this.isLoaded) {
+            /**测试自己龙动作 */
+            if (this.roleVo.id == "20005") {
+                if (aniID == RoleAniIndex.ATTACK)
+                    aniID = NewRoleAniIndex.ATTACK;
+                else if (aniID == RoleAniIndex.INJURED)
+                    aniID = NewRoleAniIndex.INJURED;
+                else if (aniID == RoleAniIndex.DEATH)
+                    aniID = NewRoleAniIndex.DEATH;
+                else if (aniID == RoleAniIndex.MOVE)
+                    aniID = NewRoleAniIndex.MOVE;
+                else if (aniID == RoleAniIndex.STAND)
+                    aniID = NewRoleAniIndex.STAND;
+            }
             loop = loop === undefined ? true : loop;
             aniID = aniID % this.aniCount;
             //>= aniCount默认播放第一个动画
             if (this.skeletonAni) {
                 if (!this.skeletonAni.hasListener(Laya.Event.COMPLETE)) {
-                    this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted, [defRole]);
+                    this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted, [defRole, caller, method]);
                 }
                 this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
-                this.aniCaller = caller;
-                this.aniMethod = method;
                 this.skeletonAni.play(aniID, loop);
-                // if(aniID == RoleAniIndex.ATTACK)
-                // {
-                //     console.log(1111);
-                // }
             }
         }
         else {
-            //分帧加载
-            Laya.timer.frameOnce(this.showPriority * 6, this, this.skeletonAniLoad, [aniID, loop]);
+            Laya.timer.frameOnce(this.showPriority * 6, this, this.skeletonAniLoad, [aniID, loop, caller, method], false);
         }
     };
     /**播放一次动画回调 */
-    BaseRole.prototype.onPlayCompleted = function (defRole) {
-        if (this.aniCaller && this.aniMethod) {
+    BaseRole.prototype.onPlayCompleted = function (defRole, caller, method) {
+        if (caller && method) {
             // console.log(this.roleVo.name);
             this.skeletonAni.paused();
-            this.aniMethod.call(this.aniCaller, [this, defRole]);
+            method.call(caller, [this, defRole]);
         }
     };
-    BaseRole.prototype.skeletonAniLoad = function (aniID, loop) {
-        this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk", new Laya.Handler(this, this.loadCompleted, [aniID, loop]));
+    BaseRole.prototype.skeletonAniLoad = function (aniID, loop, caller, method) {
+        //分帧加载
+        if (this.roleVo) {
+            var url = "res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk";
+            if (this.roleVo.id == "20005") {
+                url = "res/outside/anim/role/role" + this.roleVo.id + "/alien-pro.sk";
+            }
+            this.skeletonAni.load(url, Laya.Handler.create(this, this.loadCompleted, [aniID, loop, caller, method]));
+        }
     };
-    BaseRole.prototype.loadCompleted = function (ind, loop) {
+    BaseRole.prototype.loadCompleted = function (aniID, loop, caller, method) {
         if (!this.isLoaded) {
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();
-            this.aniPlay(ind, loop);
+            this.aniPlay(aniID, loop, caller, method);
             this.initComponets();
-            // console.log("播放动画名字："+this.aniCount);
         }
     };
     BaseRole.prototype.initComponets = function () {

@@ -36,6 +36,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
     /**初始化地图数据 */
     ChallegenBossMediator.prototype.initRoles = function () {
         var _this = this;
+        BossBattleData.curLoadNum = 0;
         //英雄
         this.heroRoles = new Array();
         var playerData = GameDataManager.ins.selfPlayerData;
@@ -49,8 +50,8 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
             hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
             hero.initRole(roleVo, i, 1, this.roleLayer);
             // hero.setBlood(0);
-            this.heroRoles.push(hero);
             hero.aniPlay(RoleAniIndex.STAND);
+            this.heroRoles.push(hero);
         }
         this.heroRoles.forEach(function (heroView) {
             heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
@@ -64,12 +65,13 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
             roleVo = bossData.roleVoAry[i];
             enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
             enemy.initRole(roleVo, i, 1, this.roleLayer);
-            this.enemyRoles.push(enemy);
             enemy.aniPlay(RoleAniIndex.STAND);
+            this.enemyRoles.push(enemy);
         }
         this.enemyRoles.forEach(function (enemyView) {
             enemyView.setShowIndex(_this.heroRoles.length + enemyView.roleVo.lineupGrid - 1);
         });
+        BossBattleData.loadSum = this.heroRoles.length + this.enemyRoles.length;
         BattleEngine.ins.challegenBoss(this.heroRoles, this.enemyRoles);
     };
     /**

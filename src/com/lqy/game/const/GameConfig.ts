@@ -21,6 +21,8 @@ class GameConfig{
     public static BATTLE_TURN_ATTACK_SUM:number = 1;
     /**循环假战斗我方英雄参与人数 */
     public static BATTLE_LOOP_HERO_SUM:number = 3;
+    /**挑战boss我方英雄参与人数 */
+    public static BATTLE_BOSS_HERO_SUM:number = 5;
     
     /**场景缓存 */
     public static SCENE_CACHE:number = 1;
@@ -100,6 +102,11 @@ enum MapType
 enum RoleAniIndex
 {
     STAND = 0,INJURED,DEATH,ATTACK,MOVE,SKILL1,SKILL2,SKILL3,SKILL4
+}
+/**新角色动画枚举 */
+enum NewRoleAniIndex
+{
+    ATTACK = 0,INJURED,DEATH,MOVE,STAND
 }
 /**
  * 战斗攻击阵营

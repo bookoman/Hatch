@@ -2,6 +2,9 @@
 * name;
 */
 class BossBattleData{
+    /**动画加载准备完毕 */
+    public static curLoadNum:number = 0;
+    public static loadSum:number = 0;
     private attHeroVos:Array<RoleVo>;
     private attEnemyVos:Array<RoleVo>;
     public curAttCamp:number = 0;
@@ -9,12 +12,14 @@ class BossBattleData{
     public curDefRoleVo:RoleVo;
     public isWin:boolean;
     public isEnd:boolean;
+    
     constructor(){
 
     }
     public initData():void
     {
-        this.attHeroVos = GameDataManager.ins.selfPlayerData.roleVoAry;
+        // this.attHeroVos = GameDataManager.ins.selfPlayerData.roleVoAry;
+        this.attHeroVos = this.getJoinBattleHeroVo();
         this.attEnemyVos = GameDataManager.ins.bossData.roleVoAry;
         this.attHeroVos.forEach(roleVo => {
             roleVo.battleHP = roleVo.hp;
@@ -34,6 +39,19 @@ class BossBattleData{
         this.seekAttTarget2(this.attHeroVos,this.attEnemyVos);
         this.seekAttTarget2(this.attEnemyVos,this.attHeroVos);
         this.curAttCamp = BattleAttCampType.HERO;
+    }
+    /**得到参战英雄RoleVo */
+    private getJoinBattleHeroVo():Array<RoleVo>
+    {
+        var tempAry:Array<RoleVo> = new Array();
+        GameDataManager.ins.selfPlayerData.roleVoAry.forEach(roleVo => {
+            tempAry.push(roleVo);
+        });
+        tempAry.sort(function(vo1:RoleVo,vo2:RoleVo):number{
+            return vo1.gridX > vo2.gridX ? -1 : 1;
+        })
+        tempAry = tempAry.slice(0,GameConfig.BATTLE_BOSS_HERO_SUM);
+        return tempAry;
     }
     /**
      * 开始战斗

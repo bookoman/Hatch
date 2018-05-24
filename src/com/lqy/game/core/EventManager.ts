@@ -11,8 +11,11 @@ class EventManager{
     public static ENEMY_ATT_COMPLETE:string = "ENEMY_ATT_COMPLETE";
      /**敌人攻击跑动完成 */
     public static CHALLENGE_BOSS:string = "CHALLENGE_BOSS";
+     /**挑战boss准备完成 */
+    public static CHALLENGE_BOSS_READY:string = "CHALLENGE_BOSS_READY";
     /**服务器连接成功 */
     public static SERVER_CONNECTED:string = "SERVER_CONNECTED";
+
     /**事件管理器 */
     public eventObj:Dictionary = null;
     constructor(){

@@ -2,29 +2,55 @@
 * name;
 */
 class BossBattleEngine{
-    private timeCount:number = 0;
-    private battleTimeInterval = 0;
     private heroRoles:Array<BaseRole> = null;
     private enemyRoles:Array<BaseRole> = null;
     private bossBattleData:BossBattleData = null;
     // private roleMgr:RoleManager;
     private attRole:BaseRole;
     private defRole:BaseRole;
+    private roleAry:Array<BaseRole>;
     constructor(){
 
     }
-
+    /**得到参战英雄 */
+    private getJoinBattleHeroVo(herosAry):Array<BaseRole>
+    {
+        var tempAry:Array<BaseRole> = new Array();
+        herosAry.forEach(hero => {
+            tempAry.push(hero);
+        });
+        tempAry.sort(function(vo1:BaseRole,vo2:BaseRole):number{
+            return vo1.roleVo.gridX > vo2.roleVo.gridX ? -1 : 1;
+        })
+        tempAry = tempAry.slice(0,GameConfig.BATTLE_BOSS_HERO_SUM);
+        return tempAry;
+    }
     /**开始战斗 */
     public startBattle(herosAry:Array<BaseRole>,enemyAry:Array<BaseRole>):void
     {
-        this.timeCount = 0;
-        this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
         this.bossBattleData = new BossBattleData();
         this.bossBattleData.initData();
 
-        this.heroRoles = herosAry;
+        this.heroRoles =  this.getJoinBattleHeroVo(herosAry);
         this.enemyRoles = enemyAry;
-        this.attack();
+        //检测所有角色是否加载完毕
+        this.roleAry = herosAry.concat(enemyAry);
+        Laya.timer.loop(100,this,this.battleIsReady);
+    }
+    private battleIsReady():void
+    {
+        var isRead:boolean = true;
+        this.roleAry.forEach(baseRole => {
+            if(!baseRole.isLoaded){
+                isRead = false;
+            }
+        });
+        if(isRead)
+        {
+            Laya.timer.clear(this,this.battleIsReady);
+            this.roleAry = null;
+            this.attack();
+        }
     }
     private attack():void
     {
@@ -52,7 +78,6 @@ class BossBattleEngine{
         Laya.timer.clearAll(this);
         this.heroRoles = null;
         this.enemyRoles = null;
-        this.timeCount = 0;
         this.bossBattleData.isEnd = false;
         GameDataManager.ins.isChallengeBoss = false;
         MapManager.ins.backLoopMap();

@@ -6,7 +6,8 @@ var BossBattleData = /** @class */ (function () {
         this.curAttCamp = 0;
     }
     BossBattleData.prototype.initData = function () {
-        this.attHeroVos = GameDataManager.ins.selfPlayerData.roleVoAry;
+        // this.attHeroVos = GameDataManager.ins.selfPlayerData.roleVoAry;
+        this.attHeroVos = this.getJoinBattleHeroVo();
         this.attEnemyVos = GameDataManager.ins.bossData.roleVoAry;
         this.attHeroVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
@@ -25,6 +26,18 @@ var BossBattleData = /** @class */ (function () {
         this.seekAttTarget2(this.attHeroVos, this.attEnemyVos);
         this.seekAttTarget2(this.attEnemyVos, this.attHeroVos);
         this.curAttCamp = BattleAttCampType.HERO;
+    };
+    /**得到参战英雄RoleVo */
+    BossBattleData.prototype.getJoinBattleHeroVo = function () {
+        var tempAry = new Array();
+        GameDataManager.ins.selfPlayerData.roleVoAry.forEach(function (roleVo) {
+            tempAry.push(roleVo);
+        });
+        tempAry.sort(function (vo1, vo2) {
+            return vo1.gridX > vo2.gridX ? -1 : 1;
+        });
+        tempAry = tempAry.slice(0, GameConfig.BATTLE_BOSS_HERO_SUM);
+        return tempAry;
     };
     /**
      * 开始战斗
@@ -195,6 +208,9 @@ var BossBattleData = /** @class */ (function () {
             });
         }
     };
+    /**动画加载准备完毕 */
+    BossBattleData.curLoadNum = 0;
+    BossBattleData.loadSum = 0;
     return BossBattleData;
 }());
 //# sourceMappingURL=BossBattleData.js.map

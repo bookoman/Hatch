@@ -3,21 +3,44 @@
 */
 var BossBattleEngine = /** @class */ (function () {
     function BossBattleEngine() {
-        this.timeCount = 0;
-        this.battleTimeInterval = 0;
         this.heroRoles = null;
         this.enemyRoles = null;
         this.bossBattleData = null;
     }
+    /**得到参战英雄 */
+    BossBattleEngine.prototype.getJoinBattleHeroVo = function (herosAry) {
+        var tempAry = new Array();
+        herosAry.forEach(function (hero) {
+            tempAry.push(hero);
+        });
+        tempAry.sort(function (vo1, vo2) {
+            return vo1.roleVo.gridX > vo2.roleVo.gridX ? -1 : 1;
+        });
+        tempAry = tempAry.slice(0, GameConfig.BATTLE_BOSS_HERO_SUM);
+        return tempAry;
+    };
     /**开始战斗 */
     BossBattleEngine.prototype.startBattle = function (herosAry, enemyAry) {
-        this.timeCount = 0;
-        this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
         this.bossBattleData = new BossBattleData();
         this.bossBattleData.initData();
-        this.heroRoles = herosAry;
+        this.heroRoles = this.getJoinBattleHeroVo(herosAry);
         this.enemyRoles = enemyAry;
-        this.attack();
+        //检测所有角色是否加载完毕
+        this.roleAry = herosAry.concat(enemyAry);
+        Laya.timer.loop(100, this, this.battleIsReady);
+    };
+    BossBattleEngine.prototype.battleIsReady = function () {
+        var isRead = true;
+        this.roleAry.forEach(function (baseRole) {
+            if (!baseRole.isLoaded) {
+                isRead = false;
+            }
+        });
+        if (isRead) {
+            Laya.timer.clear(this, this.battleIsReady);
+            this.roleAry = null;
+            this.attack();
+        }
     };
     BossBattleEngine.prototype.attack = function () {
         this.bossBattleData.startAtt();
@@ -38,7 +61,6 @@ var BossBattleEngine = /** @class */ (function () {
         Laya.timer.clearAll(this);
         this.heroRoles = null;
         this.enemyRoles = null;
-        this.timeCount = 0;
         this.bossBattleData.isEnd = false;
         GameDataManager.ins.isChallengeBoss = false;
         MapManager.ins.backLoopMap();

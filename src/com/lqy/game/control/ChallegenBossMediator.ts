@@ -29,6 +29,7 @@ class ChallegenBossMediator extends BaseMediator{
     /**初始化地图数据 */
     public initRoles():void
     {
+        BossBattleData.curLoadNum = 0;
         //英雄
         this.heroRoles = new Array();
         var playerData:PlayerData = GameDataManager.ins.selfPlayerData;
@@ -43,8 +44,8 @@ class ChallegenBossMediator extends BaseMediator{
             hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
             hero.initRole(roleVo,i,1,this.roleLayer);
             // hero.setBlood(0);
-            this.heroRoles.push(hero);
             hero.aniPlay(RoleAniIndex.STAND);
+            this.heroRoles.push(hero);
         }
         this.heroRoles.forEach(heroView =>{
             heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
@@ -59,13 +60,13 @@ class ChallegenBossMediator extends BaseMediator{
             roleVo = bossData.roleVoAry[i];
             enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
             enemy.initRole(roleVo,i,1,this.roleLayer);
-            this.enemyRoles.push(enemy);
             enemy.aniPlay(RoleAniIndex.STAND);
+            this.enemyRoles.push(enemy);
         }
         this.enemyRoles.forEach(enemyView =>{
             enemyView.setShowIndex(this.heroRoles.length + enemyView.roleVo.lineupGrid-1);
         });
-
+        BossBattleData.loadSum = this.heroRoles.length + this.enemyRoles.length;
         BattleEngine.ins.challegenBoss(this.heroRoles,this.enemyRoles);
     }
     /**
