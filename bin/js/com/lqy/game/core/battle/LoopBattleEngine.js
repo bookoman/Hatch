@@ -2,6 +2,8 @@
 * 循环假战斗引擎
 */
 var LoopBattleEngine = /** @class */ (function () {
+    // private attRole:BaseRole;
+    // private defRole:BaseRole;
     function LoopBattleEngine() {
         this.timeCount = 0;
         this.battleTimeInterval = 0;
@@ -88,22 +90,23 @@ var LoopBattleEngine = /** @class */ (function () {
      * @param defRoleVo
      */
     LoopBattleEngine.prototype.battleAtt = function (attRoleVo, defRoleVo) {
-        var _this = this;
         if (!attRoleVo || !defRoleVo) {
             return;
         }
+        var attRole;
+        var defRole;
         var tempAry = this.heroRoles.concat(this.enemyRoles);
         tempAry.forEach(function (roleView) {
             if (roleView) {
                 if (roleView.roleVo.id == attRoleVo.id) {
-                    _this.attRole = roleView;
+                    attRole = roleView;
                 }
                 else if (roleView.roleVo.id == defRoleVo.id) {
-                    _this.defRole = roleView;
+                    defRole = roleView;
                 }
             }
         });
-        if (this.attRole && this.defRole) {
+        if (attRole && defRole) {
             // //远攻
             // if(this.attRole.roleVo.attFar == 1)
             // {
@@ -115,20 +118,20 @@ var LoopBattleEngine = /** @class */ (function () {
             //     var tempX:number = defRoleVo.isEnemy ? 200 : -200;
             //     Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.playAttackAni,[attRoleVo,defRoleVo],true),0,true);
             // }
-            this.playAttackAni();
+            this.playAttackAni(attRole, defRole);
         }
     };
     /**
      * 移动到敌方攻击
      * @param data
      */
-    LoopBattleEngine.prototype.playAttackAni = function () {
-        var attRoleVo = this.attRole.roleVo;
-        var defRoleVo = this.defRole.roleVo;
+    LoopBattleEngine.prototype.playAttackAni = function (attRole, defRole) {
+        var attRoleVo = attRole.roleVo;
+        var defRoleVo = defRole.roleVo;
         var skillID = attRoleVo.getCanUserSkill();
         if (skillID > 0) {
             //技能释放
-            this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 1400, this, this.moveBackLineupComplete);
+            attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
             var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
             skill.playSkill(skillID, defRoleVo.posPoint);
         }
@@ -142,18 +145,18 @@ var LoopBattleEngine = /** @class */ (function () {
             // {
             //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
             // }
-            this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 1400, this, this.moveBackLineupComplete);
+            attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
         }
         this.loopBattleData.calculationAttribute(attRoleVo, defRoleVo);
         if (defRoleVo.isDeath) {
-            this.defRole.aniPlay(RoleAniIndex.DEATH, false);
-            this.defRole.setVisible(false);
+            defRole.aniPlay(RoleAniIndex.DEATH, false);
+            defRole.setVisible(false);
         }
         else {
-            this.defRole.aniPlay(RoleAniIndex.INJURED, false);
-            this.defRole.showFloatFont(attRoleVo.att);
+            defRole.aniPlay(RoleAniIndex.INJURED, false);
+            defRole.showFloatFont(attRoleVo.att);
         }
-        this.defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
+        defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
     };
     // /**
     //  * 攻击完移动回阵型
@@ -166,11 +169,13 @@ var LoopBattleEngine = /** @class */ (function () {
     /**
      * 移动回阵型完成
      */
-    LoopBattleEngine.prototype.moveBackLineupComplete = function () {
-        DebugViewUtil.log("攻击返回", this.attRole.roleVo.name);
-        this.attRole.aniPlay(RoleAniIndex.STAND);
-        if (!this.defRole.roleVo.isDeath) {
-            this.defRole.aniPlay(RoleAniIndex.STAND);
+    LoopBattleEngine.prototype.moveBackLineupComplete = function (roleAry) {
+        var attRole = roleAry[0];
+        var defRole = roleAry[1];
+        // console.log("攻击返回",this.attRole.roleVo.name);
+        attRole.aniPlay(RoleAniIndex.STAND);
+        if (!attRole.roleVo.isDeath) {
+            defRole.aniPlay(RoleAniIndex.STAND);
         }
         this.battleTurnVoSum--;
         if (this.battleTurnVoSum <= 0) {

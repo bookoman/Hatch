@@ -10,7 +10,8 @@ var Game = /** @class */ (function () {
         var resAry = [
             { url: "res/atlas/comp.atlas", type: Loader.ATLAS },
             { url: "unpack/main/main.jpg", type: Loader.IMAGE },
-            { url: "res/config/language.txt", type: Loader.TEXT }
+            { url: "res/config/language.txt", type: Loader.TEXT },
+            { url: "res/config/TestSample.xml", type: Loader.TEXT }
         ];
         Laya.loader.load(resAry, new Laya.Handler(this, this.onLoaded), new Laya.Handler(this, this.onLoadProgress));
     };
@@ -19,6 +20,7 @@ var Game = /** @class */ (function () {
         DebugViewUtil.init();
         LG.parse(Laya.loader.getRes("res/config/language.txt"));
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
+        ConfigManager.ins.parseTestSample();
     };
     /**资源加载进度 */
     Game.prototype.onLoadProgress = function (data) {

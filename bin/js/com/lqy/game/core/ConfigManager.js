@@ -27,6 +27,7 @@ var ConfigManager = /** @class */ (function () {
         ];
         this.roleConfigDic = null;
         this.skillConfigDic = null;
+        this.testSampleDic = null;
         this.roleConfigDic = new Dictionary();
         this.skillConfigDic = new Dictionary();
         this.parseSkillConfig();
@@ -91,6 +92,14 @@ var ConfigManager = /** @class */ (function () {
             _this.skillConfigDic.set(skillVo.id, skillVo);
         });
     };
+    ConfigManager.prototype.parseTestSample = function () {
+        if (this.testSampleDic == null) {
+            this.testSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/TestSample.xml");
+        this.xmlToObjcet(configStr, TestSample, "key", this.testSampleDic);
+        Laya.loader.clearRes("res/config/TestSample.xml");
+    };
     /**
      *得到角色配置
      * @param id
@@ -100,6 +109,38 @@ var ConfigManager = /** @class */ (function () {
     };
     ConfigManager.prototype.getSkillVoByID = function (id) {
         return this.skillConfigDic.get(id);
+    };
+    /**
+     * xml转为对象
+     * @param str
+     * @param DineClass
+     * @param keyPro
+     * @param dic
+     */
+    ConfigManager.prototype.xmlToObjcet = function (str, DineClass, keyPro, dic) {
+        var content = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
+        var datas = content.split("\r\n");
+        var element;
+        var tempAry;
+        var value;
+        var objs = [];
+        var obj;
+        for (var i = 0; i < datas.length; i++) {
+            if (datas[i].indexOf("<element") != -1) {
+                element = datas[i];
+                tempAry = element.split(" ");
+                obj = new DineClass();
+                for (var j = 0; j < tempAry.length; j++) {
+                    value = tempAry[j];
+                    if (value.indexOf("<element") == -1 && value.indexOf("=") == -1 && value.indexOf("/>") == -1) {
+                        j = j + 2;
+                        obj[value] = tempAry[j].split("\"")[1];
+                    }
+                }
+                // console.log(obj);
+                dic.set(obj[keyPro], obj);
+            }
+        }
     };
     ConfigManager._ins = null;
     return ConfigManager;

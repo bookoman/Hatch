@@ -109,7 +109,7 @@ class BossBattleEngine{
         if(skillID > 0)
         {
             //技能释放
-            this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
+            this.attRole.aniPlay(RoleAniIndex.ATTACK,true,this,this.moveBackLineup);
             var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
             skill.playSkill(skillID,defRoleVo.posPoint);
         }
@@ -118,11 +118,11 @@ class BossBattleEngine{
             //远攻，近攻击
             if(attRoleVo.attFar == 1)
             {
-                this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineupComplete);
+                this.attRole.aniPlay(RoleAniIndex.ATTACK,true,this,this.moveBackLineupComplete);
             }
             else
             {
-                this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
+                this.attRole.aniPlay(RoleAniIndex.ATTACK,true,this,this.moveBackLineup);
             }
         }
         this.bossBattleData.calculationAttribute();
@@ -133,7 +133,7 @@ class BossBattleEngine{
         }
         else
         {
-            this.defRole.aniPlay(RoleAniIndex.INJURED);
+            this.defRole.aniPlay(RoleAniIndex.INJURED,false);
             this.defRole.showFloatFont(attRoleVo.att);
         }
         this.defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);

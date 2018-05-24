@@ -31,6 +31,8 @@ class ConfigManager{
 
     public skillConfigDic:Dictionary = null;
 
+    public testSampleDic:Dictionary = null;
+
     private static _ins:ConfigManager = null;
 
     public static get ins():ConfigManager
@@ -44,6 +46,7 @@ class ConfigManager{
     constructor(){
         this.roleConfigDic = new Dictionary();
         this.skillConfigDic = new Dictionary();
+        
         this.parseSkillConfig();
         this.parseRoleConfig();
     }
@@ -99,6 +102,19 @@ class ConfigManager{
         
     }
 
+    public parseTestSample():void
+    {
+        if(this.testSampleDic == null)
+        {
+            this.testSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/TestSample.xml");
+        this.xmlToObjcet(configStr,TestSample,"key",this.testSampleDic);
+
+        Laya.loader.clearRes("res/config/TestSample.xml");
+    }
+
+
     /**
      *得到角色配置
      * @param id 
@@ -111,5 +127,43 @@ class ConfigManager{
     public getSkillVoByID(id:string):SkillVo
     {
         return this.skillConfigDic.get(id);
+    }
+
+    /**
+     * xml转为对象
+     * @param str 
+     * @param DineClass 
+     * @param keyPro 
+     * @param dic 
+     */
+    private xmlToObjcet(str:string,DineClass?:any,keyPro?:any,dic?:Dictionary):void
+    {
+        var content:string = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
+        var datas:Array<string> = content.split("\r\n");
+        var element:string;
+        var tempAry;
+        var value:string;
+        var objs:Array<any> = [];
+        var obj:any;
+        for(var i = 0;i < datas.length;i++)
+        {
+            if(datas[i].indexOf("<element") != -1)
+            {
+                element = datas[i];
+                tempAry = element.split(" ");
+                obj = new DineClass();
+                for(var j = 0;j < tempAry.length;j++)
+                {
+                    value = tempAry[j];
+                    if(value.indexOf("<element") == -1 && value.indexOf("=") == -1 && value.indexOf("/>") == -1)
+                    {
+                        j = j + 2;
+                        obj[value] = tempAry[j].split("\"")[1];
+                    }
+                }
+                // console.log(obj);
+                dic.set(obj[keyPro],obj);
+            }
+        }
     }
 }

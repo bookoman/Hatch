@@ -31,6 +31,7 @@ var BaseMediator = /** @class */ (function () {
     BaseMediator.prototype.removeEvents = function () {
     };
     BaseMediator.prototype.dispose = function () {
+        Laya.loader.clearRes(this.assetsUrl);
         this.view.removeSelf();
         this.removeEvents();
         this.view = null;

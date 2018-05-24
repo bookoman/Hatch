@@ -30,20 +30,20 @@ class ObjectPoolUtil{
     public static init():void
     {
         this.floatFontTipsAry = new Array();
-        for(var i = 0;i < 30; i++)
+        for(var i = 0;i < 20; i++)
         {
             this.floatFontTipsAry.push(new FloatFontTips());
         }
         
         this.roleBloodBarAry = new Array();
-        for(i = 0;i < 30;i++)
+        for(i = 0;i < 20;i++)
         {
             this.roleBloodBarAry.push(new RoleBloodBar());
         }
 
         this.heroAry = new Array();
         this.enemyAry = new Array();
-        for(i = 0;i < 20;i++)
+        for(i = 0;i < 15;i++)
         {
             this.heroAry.push(new Hero());
             this.enemyAry.push(new Enemy());

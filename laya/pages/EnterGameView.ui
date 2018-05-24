@@ -1,8 +1,8 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":34,
-    "selecteID":36,
+    "selectedBox":1,
+    "selecteID":7,
     "props":{"width":750,"sceneColor":"#100606","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -92,7 +92,7 @@
                 {
                     "x":30,
                     "type":"Line",
-                    "props":{"y":0,"x":0,"toY":0,"toX":300,"renderType":"hit","lineWidth":1,"lineColor":"#ff0000"},
+                    "props":{"y":0,"x":0,"toY":0,"toX":300,"lineWidth":1,"lineColor":"#ff0000"},
                     "nodeParent":34,
                     "label":"Line",
                     "isDirectory":false,
@@ -105,7 +105,7 @@
                 {
                     "x":30,
                     "type":"Line",
-                    "props":{"y":60,"x":0,"toY":0,"toX":300,"renderType":"hit","lineWidth":1,"lineColor":"#ff0000"},
+                    "props":{"y":60,"x":0,"toY":0,"toX":300,"lineWidth":1,"lineColor":"#ff0000"},
                     "nodeParent":34,
                     "label":"Line",
                     "isDirectory":false,

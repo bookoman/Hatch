@@ -36,7 +36,10 @@ class BaseRole extends Laya.Sprite{
             LayerManager.ins.addToLayer(this,LayerManager.ROLE_LAYER,false,true,false);
         }
         this.visible = true;
+        
     }
+    
+    
     
     public showFloatFont(blood:number):void
     {
@@ -47,29 +50,67 @@ class BaseRole extends Laya.Sprite{
             floatFontTip.show("-"+blood,this,-50,-180,1.0,80);
         }
     }
-    
+
+
     /**
      * 
      * @param aniID 动画id
      */
-    public aniPlay(aniID:number,loop?:boolean,laterTime?:number,caller?:any,method?:Function)
+    // public aniPlay(aniID:number,loop?:boolean,laterTime?:number,caller?:any,method?:Function)
+    // {
+    //     if(this.isLoaded)
+    //     {   
+    //         loop = loop === undefined ? true : loop; 
+    //         aniID = aniID % this.aniCount;
+    //          //>= aniCount默认播放第一个动画
+    //         if(this.skeletonAni)
+    //         {
+    //             this.skeletonAni.play(aniID,loop,false);
+    //             if(laterTime && caller && method)
+    //             {
+    //                 Laya.timer.once(laterTime,caller,method,null,false);
+    //             }
+    //             // this.skeletonAni.playbackRate(1);
+
+    //         }
+
+    //     }
+    //     else
+    //     {
+    //         //分帧加载
+    //         Laya.timer.frameOnce(this.showPriority * 6,this,this.skeletonAniLoad,[aniID,loop]);
+    //     }
+    // }
+    public aniCaller:any;
+    public aniMethod:Function;
+    /**
+     * 
+     * @param aniID 动画id
+     */
+    public aniPlay(aniID:number,loop?:boolean,caller?:any,method?:Function,defRole?:BaseRole)
     {
         if(this.isLoaded)
         {   
-            loop = loop === undefined ? true : false; 
+            loop = loop === undefined ? true : loop; 
             aniID = aniID % this.aniCount;
              //>= aniCount默认播放第一个动画
             if(this.skeletonAni)
             {
-                this.skeletonAni.play(aniID,loop,false);
-                if(laterTime && caller && method)
+                if(!this.skeletonAni.hasListener(Laya.Event.COMPLETE))
                 {
-                    Laya.timer.once(laterTime,caller,method,null,false);
+                    this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted,[defRole]);
                 }
-                // if(this.roleVo.name == "蓝狼"){
-                //     console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID),this.visible);
+                this.skeletonAni.playbackRate(2);
+                this.aniCaller = caller;
+                this.aniMethod = method;
+                
+                this.skeletonAni.play(aniID,loop);
+                // if(aniID == RoleAniIndex.ATTACK)
+                // {
+                //     console.log(1111);
                 // }
             }
+
         }
         else
         {
@@ -77,6 +118,17 @@ class BaseRole extends Laya.Sprite{
             Laya.timer.frameOnce(this.showPriority * 6,this,this.skeletonAniLoad,[aniID,loop]);
         }
     }
+    /**播放一次动画回调 */
+    private onPlayCompleted(defRole:BaseRole):void
+    {
+        if(this.aniCaller && this.aniMethod)
+        {
+            // console.log(this.roleVo.name);
+            this.skeletonAni.paused();
+            this.aniMethod.call(this.aniCaller,[this,defRole]);
+        }
+    }
+
     private skeletonAniLoad(aniID,loop):void
     {
         this.skeletonAni.load("res/outside/anim/role/role"+this.roleVo.id+"/"+ this.roleVo.id +".sk",new Laya.Handler(this,this.loadCompleted,[aniID,loop]));
@@ -145,10 +197,13 @@ class BaseRole extends Laya.Sprite{
     }
     public dispose():void
     {
+
         this.parent.setChildIndex(this,0);
         this.removeSelf();
         if(this.skeletonAni)
         {
+            // this.skeletonAni.player.off(Laya.Event.COMPLETE,this,this.onPlayCompleted);
+            Laya.loader.clearRes(this.skeletonAni.url);
             this.skeletonAni.destroy();
         }
         this.skeletonAni = null;
