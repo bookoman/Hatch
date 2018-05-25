@@ -158,7 +158,7 @@ class LoopBattleEngine{
             //技能释放
             attRole.aniPlay(RoleAniIndex.ATTACK,true,this,this.moveBackLineupComplete,defRole);
             var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillID,defRoleVo.posPoint);
+            skill.playSkill(skillID,defRole);
         }
         else
         {

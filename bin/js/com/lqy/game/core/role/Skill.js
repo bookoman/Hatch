@@ -11,20 +11,24 @@ var Skill = /** @class */ (function () {
      * @param pos
      * @param scale
      */
-    Skill.prototype.playSkill = function (skillId, pos, scale) {
+    Skill.prototype.playSkill = function (skillId, parentDis, pos, scale) {
         if (scale === undefined || scale === null) {
             scale = 1;
         }
         if (this.skeletonAni == null) {
             this.skeletonAni = new Skeleton();
-            this.skeletonAni.pos(pos.x, pos.y);
+            if (pos) {
+                this.skeletonAni.pos(pos.x, pos.y);
+            }
             this.skeletonAni.scale(scale, scale);
             this.skeletonAni.load("res/outside/anim/skill/" + skillId + "/" + skillId + ".sk", Laya.Handler.create(this, this.resLoaded));
-            LayerManager.ins.addToLayer(this.skeletonAni, LayerManager.EFFECT_LAYER, false, true, false);
+            // LayerManager.ins.addToLayer(this.skeletonAni,LayerManager.EFFECT_LAYER,false,true,false);
+            parentDis.addChild(this.skeletonAni);
         }
     };
     Skill.prototype.resLoaded = function () {
         this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
+        this.skeletonAni.play(0, true);
         this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.playSkillComplete);
     };
     Skill.prototype.playSkillComplete = function () {

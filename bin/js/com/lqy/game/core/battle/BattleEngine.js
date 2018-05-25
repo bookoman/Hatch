@@ -34,6 +34,9 @@ var BattleEngine = /** @class */ (function () {
         if (!GameDataManager.ins.isChallengeBoss) {
             this.loopBattleEngine.runUpdate();
         }
+        else {
+            this.bossBattleEngine.runUpdate();
+        }
     };
     /**循环假战斗 */
     BattleEngine.prototype.loopBattleRun = function () {

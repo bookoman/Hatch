@@ -64,10 +64,10 @@ class MapLoopEngine extends Laya.Sprite{
         }
         this.visualHeight = visualHeight;
         
-        var url:string = this.rootPath+"/11_background_"+this.mapID+".png";
+        var url:string = this.rootPath+"/"+mapID+"/middle.png";
         if(mapType == MapType.NEAR_MAP)
         {
-            url = this.rootPath+"/11_prospect_"+this.mapID+".png";
+            url = this.rootPath+"/"+mapID+"/near.png";
         }
         Laya.loader.load(url,new Handler(this,this.loadMapCompleted),null,Loader.IMAGE);
     }

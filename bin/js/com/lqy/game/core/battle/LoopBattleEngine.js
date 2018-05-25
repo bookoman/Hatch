@@ -131,7 +131,7 @@ var LoopBattleEngine = /** @class */ (function () {
             //技能释放
             attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
             var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillID, defRoleVo.posPoint);
+            skill.playSkill(skillID, defRole);
         }
         else {
             //远攻，近攻击

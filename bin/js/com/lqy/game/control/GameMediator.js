@@ -25,7 +25,7 @@ var GameMediator = /** @class */ (function (_super) {
         this.battleReportMediator = new BattleReportMediator();
         //初始化游戏场景
         ObjectPoolUtil.init();
-        MapManager.ins.enterMap("res/map", 1, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
+        MapManager.ins.enterMap("res/map", 2, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
         GameDataManager.ins.initData();
         RoleManager.ins.initHeros();
         BattleEngine.ins.run();

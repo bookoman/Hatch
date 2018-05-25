@@ -12,6 +12,10 @@ class BossBattleEngine{
     constructor(){
 
     }
+    public runUpdate():void
+    {
+        this.bossBattleData.runRoleSkillCD();
+    }
     /**得到参战英雄 */
     private getJoinBattleHeroVo(herosAry):Array<BaseRole>
     {
@@ -136,7 +140,7 @@ class BossBattleEngine{
             //技能释放
             this.attRole.aniPlay(RoleAniIndex.ATTACK,true,this,this.moveBackLineup);
             var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillID,defRoleVo.posPoint);
+            skill.playSkill(skillID,this.defRole);
         }
         else
         {

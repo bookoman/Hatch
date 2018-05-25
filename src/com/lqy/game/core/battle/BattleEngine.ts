@@ -39,6 +39,10 @@ class BattleEngine{
         {
             this.loopBattleEngine.runUpdate();
         }
+        else
+        {
+            this.bossBattleEngine.runUpdate();
+        }
     } 
     /**循环假战斗 */
     public loopBattleRun():void

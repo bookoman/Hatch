@@ -5,7 +5,7 @@ var ConfigManager = /** @class */ (function () {
     function ConfigManager() {
         /*********测试配置数据 */
         this.roleConfigAry = [
-            { "id": "10000", "name": "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10000", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 10, "attFar": 1 },
+            { "id": "10000", "name": "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10006", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 10, "attFar": 1 },
             { "id": "10001", "name": "黄狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10001", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 0 },
             { "id": "10002", "name": "巨石人", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 6, "attFar": 0 },
             { "id": "10003", "name": "蓝狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 8, "attFar": 0 },
@@ -24,7 +24,8 @@ var ConfigManager = /** @class */ (function () {
             { "id": "10002", "name": "暴雨针", "cd": 12, "attFar": 1 },
             { "id": "10003", "name": "啸如虎", "cd": 10, "attFar": 0 },
             { "id": "10004", "name": "徐如林", "cd": 6, "attFar": 0 },
-            { "id": "10005", "name": "破风", "cd": 16, "attFar": 0 }
+            { "id": "10005", "name": "破风", "cd": 16, "attFar": 0 },
+            { "id": "10006", "name": "绿色", "cd": 2, "attFar": 0 }
         ];
         this.roleConfigDic = null;
         this.skillConfigDic = null;

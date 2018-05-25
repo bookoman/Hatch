@@ -7,6 +7,9 @@ var BossBattleEngine = /** @class */ (function () {
         this.enemyRoles = null;
         this.bossBattleData = null;
     }
+    BossBattleEngine.prototype.runUpdate = function () {
+        this.bossBattleData.runRoleSkillCD();
+    };
     /**得到参战英雄 */
     BossBattleEngine.prototype.getJoinBattleHeroVo = function (herosAry) {
         var tempAry = new Array();
@@ -110,7 +113,7 @@ var BossBattleEngine = /** @class */ (function () {
             //技能释放
             this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineup);
             var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillID, defRoleVo.posPoint);
+            skill.playSkill(skillID, this.defRole);
         }
         else {
             //远攻，近攻击

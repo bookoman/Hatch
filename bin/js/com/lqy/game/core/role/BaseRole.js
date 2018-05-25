@@ -73,9 +73,7 @@ var BaseRole = /** @class */ (function (_super) {
             aniID = aniID % this.aniCount;
             //>= aniCount默认播放第一个动画
             if (this.skeletonAni) {
-                if (!this.skeletonAni.hasListener(Laya.Event.COMPLETE)) {
-                    this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted, [defRole, caller, method]);
-                }
+                this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted, [defRole, caller, method]);
                 this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID, loop);
             }
@@ -86,6 +84,7 @@ var BaseRole = /** @class */ (function (_super) {
     };
     /**播放一次动画回调 */
     BaseRole.prototype.onPlayCompleted = function (defRole, caller, method) {
+        this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.onPlayCompleted);
         if (caller && method) {
             // console.log(this.roleVo.name);
             this.skeletonAni.paused();
@@ -156,7 +155,6 @@ var BaseRole = /** @class */ (function (_super) {
         this.parent.setChildIndex(this, 0);
         this.removeSelf();
         if (this.skeletonAni) {
-            // this.skeletonAni.player.off(Laya.Event.COMPLETE,this,this.onPlayCompleted);
             Laya.loader.clearRes(this.skeletonAni.url);
             this.skeletonAni.destroy();
         }

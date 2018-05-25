@@ -79,10 +79,8 @@ class BaseRole extends Laya.Sprite{
              //>= aniCount默认播放第一个动画
             if(this.skeletonAni)
             {
-                if(!this.skeletonAni.hasListener(Laya.Event.COMPLETE))
-                {
-                    this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted,[defRole,caller,method]);
-                }
+                
+                this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted,[defRole,caller,method]);
                 this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID,loop);
             }
@@ -96,7 +94,7 @@ class BaseRole extends Laya.Sprite{
     /**播放一次动画回调 */
     private onPlayCompleted(defRole:BaseRole,caller,method):void
     {
-        
+        this.skeletonAni.player.off(Laya.Event.COMPLETE,this,this.onPlayCompleted);
         if(caller && method)
         {
             // console.log(this.roleVo.name);
@@ -188,7 +186,6 @@ class BaseRole extends Laya.Sprite{
         this.removeSelf();
         if(this.skeletonAni)
         {
-            // this.skeletonAni.player.off(Laya.Event.COMPLETE,this,this.onPlayCompleted);
             Laya.loader.clearRes(this.skeletonAni.url);
             this.skeletonAni.destroy();
         }
