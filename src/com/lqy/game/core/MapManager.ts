@@ -5,7 +5,7 @@ class MapManager{
     //地图测试数据 mapId >> mapVO
     private mapCofing:Object = {
         "1":{"mapID":1,"name":"1","battleHeroGrid":[[1,0],[0,1],[0,2],[1,2],[0,3],[1,4]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"mapInitY":600,"battleSceneH":500,"gw":240,"gh":100},
-        "2":{"mapID":2,"name":"2","battleHeroGrid":[[1,0],[0,1],[0,2],[1,2],[0,3],[1,4]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"mapInitY":600,"battleSceneH":500,"gw":240,"gh":100},
+        "2":{"mapID":2,"name":"2","battleHeroGrid":[[1,0],[0,1],[0,2],[1,2],[0,3],[1,4]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"mapInitY":560,"battleSceneH":500,"gw":240,"gh":100},
         "10000":{"mapID":10000,"name":"Boss挑战","battleHeroGrid":[[1,2],[1,6],[0,10],[1,10],[1,14],[1,18]],"battleEnemyGrid":[[4,2],[4,6],[4,10],[4,14],[4,18]],"mapInitY":100,"battleSceneH":1000,"gw":140,"gh":100}
     }
     constructor(){
@@ -14,6 +14,7 @@ class MapManager{
     private static _ins:MapManager = null;
     private curMapConfig:Object;
     private mapEngine:MapEngine = null;
+    private farMapEngine:MapLoopEngine = null;
     private mapLoopEngine:MapLoopEngine = null;
     private nearMapLoopEngin:MapLoopEngine = null;
 
@@ -73,6 +74,10 @@ class MapManager{
             {
                 this.curLoopMapId = mapID;
                 //地图循环
+                this.farMapEngine = new MapLoopEngine();
+                this.farMapEngine.initMap("res/outside/map",mapID,MapType.FAR_MAP,1,GameConfig.STAGE_WIDTH);
+                this.farMapEngine.y = 0;
+                LayerManager.ins.addToLayer(this.farMapEngine,LayerManager.BG_LAYER,false,true,false);
                 this.mapLoopEngine = new MapLoopEngine();
                 this.mapLoopEngine.initMap("res/outside/map",mapID,MapType.BACKGROUND_MAP,6,GameConfig.STAGE_WIDTH);
                 this.mapLoopEngine.y = GameConfig.MAP_INIT_Y;
@@ -107,17 +112,21 @@ class MapManager{
         //地图循环滚动
         if(this.mapScrollSwitch)
         {
+            if(this.farMapEngine)
+            {   
+                this.farMapEngine.onScroll();
+            }
             if(this.mapLoopEngine)
             {   
-                this.mapLoopEngine.onScroll(4);
+                this.mapLoopEngine.onScroll();
             }
             if(this.nearMapLoopEngin)
             {   
-                this.nearMapLoopEngin.onScroll(3);
+                this.nearMapLoopEngin.onScroll();
             }
             if(this.enemyMoveSwitch)
             {
-                RoleManager.ins.enemyMoveByMap(4);
+                RoleManager.ins.enemyMoveByMap(this.mapLoopEngine.scrollXSpeed);
             }
         }
         // console.log("地图打印："+this.tx);

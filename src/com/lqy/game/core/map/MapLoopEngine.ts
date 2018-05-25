@@ -22,7 +22,7 @@ class MapLoopEngine extends Laya.Sprite{
     //地图纹理
     private mapTexture:Texture = null;
     //滚动速度X
-    private scrollXSpeed:number = 2;
+    public scrollXSpeed:number = 2;
     //滚动速度Y
     private scrollYSpeed:number = 2;
    
@@ -64,10 +64,18 @@ class MapLoopEngine extends Laya.Sprite{
         }
         this.visualHeight = visualHeight;
         
-        var url:string = this.rootPath+"/"+mapID+"/middle.png";
+        var url:string;
         if(mapType == MapType.NEAR_MAP)
         {
             url = this.rootPath+"/"+mapID+"/near.png";
+        }
+        else if(mapType == MapType.FAR_MAP)
+        {
+            url = this.rootPath+"/"+mapID+"/far.png";
+        }
+        else
+        {
+            url = this.rootPath+"/"+mapID+"/middle.png";
         }
         Laya.loader.load(url,new Handler(this,this.loadMapCompleted),null,Loader.IMAGE);
     }

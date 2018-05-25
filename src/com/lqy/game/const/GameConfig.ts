@@ -96,7 +96,7 @@ class GameServerState{
 /**地图类型枚举 */
 enum MapType
 {
-    BACKGROUND_MAP = 1,NEAR_MAP
+    FAR_MAP = 1,BACKGROUND_MAP,NEAR_MAP
 }
 /**角色动画枚举 */
 enum RoleAniIndex

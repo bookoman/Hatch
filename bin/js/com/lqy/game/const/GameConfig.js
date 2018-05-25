@@ -99,8 +99,9 @@ var GameServerState = /** @class */ (function () {
 /**地图类型枚举 */
 var MapType;
 (function (MapType) {
-    MapType[MapType["BACKGROUND_MAP"] = 1] = "BACKGROUND_MAP";
-    MapType[MapType["NEAR_MAP"] = 2] = "NEAR_MAP";
+    MapType[MapType["FAR_MAP"] = 1] = "FAR_MAP";
+    MapType[MapType["BACKGROUND_MAP"] = 2] = "BACKGROUND_MAP";
+    MapType[MapType["NEAR_MAP"] = 3] = "NEAR_MAP";
 })(MapType || (MapType = {}));
 /**角色动画枚举 */
 var RoleAniIndex;
