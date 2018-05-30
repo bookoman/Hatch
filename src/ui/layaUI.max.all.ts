@@ -96,7 +96,7 @@ module ui {
 		public btnOpen:Laya.Button;
 		public btnChalleangeBoss:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":12,"x":0,"width":750,"visible":false,"skin":"unpack/main/main.jpg","height":1334}},{"type":"Button","props":{"y":76,"x":410,"width":216,"var":"btnOpen","skin":"comp/button.png","labelStrokeColor":"#f88508","labelSize":32,"label":"打开拳击声效","height":83}},{"type":"Image","props":{"y":821,"x":335,"skin":"main/logo.png"}},{"type":"Button","props":{"y":72,"x":113,"width":243,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":88}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Button","props":{"y":76,"x":410,"width":216,"var":"btnOpen","skin":"comp/button.png","labelStrokeColor":"#f88508","labelSize":32,"label":"打开拳击声效","height":83}},{"type":"Button","props":{"y":72,"x":113,"width":243,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":88}}]};
         constructor(){ super()}
         createChildren():void {
         

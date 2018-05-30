@@ -14,7 +14,7 @@ var BattleEngine = /** @class */ (function () {
         this.skillView = new SkillView();
         this.skillView.x = 10;
         this.skillView.y = 900;
-        LayerManager.ins.addToLayer(this.skillView, LayerManager.UI_LAYER, false, false, false);
+        LayerManager.ins.addToLayer(this.skillView, LayerManager.UI_LAYER, false, true, false);
     }
     Object.defineProperty(BattleEngine, "ins", {
         get: function () {

@@ -20,7 +20,7 @@ var GameMediator = /** @class */ (function (_super) {
     }
     GameMediator.prototype.initView = function () {
         this.view = new ui.GameViewUI();
-        LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, false, false, true);
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         _super.prototype.initView.call(this);
         this.battleReportMediator = new BattleReportMediator();
         //初始化游戏场景

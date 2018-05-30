@@ -45,15 +45,17 @@ var EnterGameMediator = /** @class */ (function (_super) {
         }
     };
     EnterGameMediator.prototype.updateServerInfo = function () {
-        this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
+        if (GameDataManager.ins.curServerInfo) {
+            this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
+        }
     };
     EnterGameMediator.prototype.onBtnLogin = function (e) {
-        //测试
-        // PreLoadingView.ins.show();
-        // SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        //单机测试
+        PreLoadingView.ins.show();
+        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
         //登录web服
-        var curServerInfo = GameDataManager.ins.curServerInfo;
-        ClientSender.httpEnterGameReq(curServerInfo.guid, this, this.webEnterGameHanlder);
+        // var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
+        // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder)
     };
     EnterGameMediator.prototype.webEnterGameHanlder = function (data) {
         var jsonObj = JSON.parse(data);

@@ -14,20 +14,6 @@
     "child":[
         {
             "x":15,
-            "type":"Image",
-            "props":{"y":12,"x":0,"width":750,"visible":false,"skin":"unpack/main/main.jpg","height":1334},
-            "nodeParent":1,
-            "label":"Image",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":3,
-            "child":[
-                ],
-            "$LOCKED":false
-        },
-        {
-            "x":15,
             "type":"Button",
             "props":{"y":76,"x":410,"width":216,"var":"btnOpen","skin":"comp/button.png","labelStrokeColor":"#f88508","labelSize":32,"label":"打开拳击声效","height":83},
             "nodeParent":1,
@@ -36,19 +22,6 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":4,
-            "child":[
-                ]
-        },
-        {
-            "x":15,
-            "type":"Image",
-            "props":{"y":821,"x":335,"skin":"main/logo.png"},
-            "nodeParent":1,
-            "label":"Image",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":5,
             "child":[
                 ]
         },

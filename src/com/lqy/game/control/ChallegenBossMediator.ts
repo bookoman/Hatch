@@ -13,7 +13,7 @@ class ChallegenBossMediator extends BaseMediator{
         this.view = new ui.ChallengeBossViewUI();
         this.roleLayer = new Laya.Sprite();
         this.view.addChild(this.roleLayer);
-        LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,false,true);
+        LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,true,true);
         super.initView();
         this.initRoles();
     }

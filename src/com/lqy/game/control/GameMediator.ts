@@ -10,7 +10,7 @@ class GameMediator extends BaseMediator{
     protected initView():void
     {
         this.view = new ui.GameViewUI();
-        LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,false,false,true);
+        LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,false,true);
         super.initView();
         this.battleReportMediator = new BattleReportMediator();
         

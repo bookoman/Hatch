@@ -24,7 +24,6 @@ class BattleReportMediator extends BaseMediator{
     {
         
     }
-
     public setVisible(bool:boolean):void
     {
         this.view.visible = bool;

@@ -17,7 +17,7 @@ class BattleEngine{
         this.skillView = new SkillView();
         this.skillView.x = 10;
         this.skillView.y = 900;
-        LayerManager.ins.addToLayer(this.skillView,LayerManager.UI_LAYER,false,false,false);
+        LayerManager.ins.addToLayer(this.skillView,LayerManager.UI_LAYER,false,true,false);
     }
     private static _ins:BattleEngine = null;
     public static get ins():BattleEngine

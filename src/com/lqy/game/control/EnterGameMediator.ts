@@ -46,17 +46,20 @@ class EnterGameMediator extends BaseMediator{
     }
     public updateServerInfo():void
     {
-        this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
+        if(GameDataManager.ins.curServerInfo)
+        {
+            this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
+        }
     }
     
     private onBtnLogin(e:Laya.Event):void
     {
-        //测试
-        // PreLoadingView.ins.show();
-        // SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        //单机测试
+        PreLoadingView.ins.show();
+        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
         //登录web服
-        var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
-        ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder)
+        // var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
+        // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder)
 
     }
 

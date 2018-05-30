@@ -23,7 +23,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         this.view = new ui.ChallengeBossViewUI();
         this.roleLayer = new Laya.Sprite();
         this.view.addChild(this.roleLayer);
-        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
         _super.prototype.initView.call(this);
         this.initRoles();
     };
