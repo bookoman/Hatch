@@ -21,20 +21,26 @@ var GameConfig = /** @class */ (function () {
     GameConfig.BATTLE_SCENE_HEIGHT = 500;
     /**战斗每轮攻击人数 */
     GameConfig.BATTLE_TURN_ATTACK_SUM = 1;
+    /**循环假战斗我方英雄参与人数 */
+    GameConfig.BATTLE_LOOP_HERO_SUM = 3;
+    /**挑战boss我方英雄参与人数 */
+    GameConfig.BATTLE_BOSS_HERO_SUM = 5;
     /**场景缓存 */
     GameConfig.SCENE_CACHE = 1;
     /**阵型配置 */
     /**阵型格子宽 */
-    GameConfig.LINEUP_GRID_WIDTH = 180;
+    GameConfig.LINEUP_GRID_WIDTH = 240;
     /**阵型格子高 */
     GameConfig.LINEUP_GRID_HEIGHT = 100;
     /**战斗配置 */
     /**战斗时间间隔(S) */
-    GameConfig.BATTLE_INTERVAL_TIME = 3;
+    GameConfig.BATTLE_INTERVAL_TIME = 1;
     /**战斗跑到阵型需要时间(s) */
     GameConfig.BATTLE_RUN_TIME = 0.5;
     /**战斗攻击需要时间(s) */
     GameConfig.BATTLE_ATT_TIME = 0.3;
+    /**战斗加速倍数*/
+    GameConfig.BATTLE_ADDSPEED_TIMES = 1;
     /**调试视图开关 */
     GameConfig.DEBUG_VIEW_SWITCH = false;
     /**场景战斗开关 */
@@ -56,11 +62,46 @@ var Protocol = /** @class */ (function () {
     Protocol.USER_LOGIN_CMD = 1;
     return Protocol;
 }());
+/**http请求地址 */
+var HTTPRequestUrl = /** @class */ (function () {
+    function HTTPRequestUrl() {
+    }
+    /**测试登录 get*/
+    HTTPRequestUrl.testLoginURL = "http://192.168.2.126:8080/api/testLogin.do";
+    /**获取区服列表 get*/
+    HTTPRequestUrl.gameServerURL = "http://192.168.2.126:8080/api/gameserver.do";
+    /**进入游戏 get*/
+    HTTPRequestUrl.enterGameURL = "http://192.168.2.126:8080/api/entergame.do";
+    return HTTPRequestUrl;
+}());
+/**服务器状态 */
+var GameServerState = /** @class */ (function () {
+    function GameServerState() {
+    }
+    /**
+     * 正常在线
+     */
+    GameServerState.GameServer_State_ON = 0;
+    /**
+     * 火爆
+     */
+    GameServerState.GameServer_State_FIRE = 1;
+    /**
+    * 停服
+    */
+    GameServerState.GameServer_State_OFF = -1;
+    /**
+     * 停服维护
+     */
+    GameServerState.GameServer_State_Maintain = -2;
+    return GameServerState;
+}());
 /**地图类型枚举 */
 var MapType;
 (function (MapType) {
-    MapType[MapType["BACKGROUND_MAP"] = 1] = "BACKGROUND_MAP";
-    MapType[MapType["NEAR_MAP"] = 2] = "NEAR_MAP";
+    MapType[MapType["FAR_MAP"] = 1] = "FAR_MAP";
+    MapType[MapType["BACKGROUND_MAP"] = 2] = "BACKGROUND_MAP";
+    MapType[MapType["NEAR_MAP"] = 3] = "NEAR_MAP";
 })(MapType || (MapType = {}));
 /**角色动画枚举 */
 var RoleAniIndex;
@@ -75,6 +116,15 @@ var RoleAniIndex;
     RoleAniIndex[RoleAniIndex["SKILL3"] = 7] = "SKILL3";
     RoleAniIndex[RoleAniIndex["SKILL4"] = 8] = "SKILL4";
 })(RoleAniIndex || (RoleAniIndex = {}));
+/**新角色动画枚举 */
+var NewRoleAniIndex;
+(function (NewRoleAniIndex) {
+    NewRoleAniIndex[NewRoleAniIndex["ATTACK"] = 0] = "ATTACK";
+    NewRoleAniIndex[NewRoleAniIndex["INJURED"] = 1] = "INJURED";
+    NewRoleAniIndex[NewRoleAniIndex["DEATH"] = 2] = "DEATH";
+    NewRoleAniIndex[NewRoleAniIndex["MOVE"] = 3] = "MOVE";
+    NewRoleAniIndex[NewRoleAniIndex["STAND"] = 4] = "STAND";
+})(NewRoleAniIndex || (NewRoleAniIndex = {}));
 /**
  * 战斗攻击阵营
  */
@@ -84,4 +134,10 @@ var BattleAttCampType;
     BattleAttCampType[BattleAttCampType["ENEMY"] = 2] = "ENEMY";
     BattleAttCampType[BattleAttCampType["OTHER"] = 3] = "OTHER";
 })(BattleAttCampType || (BattleAttCampType = {}));
+/**游戏底部按钮索引 */
+var GameButtomTabIndex;
+(function (GameButtomTabIndex) {
+    GameButtomTabIndex[GameButtomTabIndex["MAP_BATTLE"] = 0] = "MAP_BATTLE";
+    GameButtomTabIndex[GameButtomTabIndex["LINEUP"] = 1] = "LINEUP";
+})(GameButtomTabIndex || (GameButtomTabIndex = {}));
 //# sourceMappingURL=GameConfig.js.map

@@ -15,7 +15,7 @@
         {
             "x":15,
             "type":"ProgressBar",
-            "props":{"y":662,"x":96,"width":566,"var":"progressBar","skin":"comp/progress.png","height":14},
+            "props":{"y":662,"x":92,"width":566,"var":"progressBar","skin":"comp/progress.png","height":14},
             "nodeParent":1,
             "label":"ProgressBar(progressBar)",
             "isDirectory":false,

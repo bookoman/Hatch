@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":3,
+    "selecteID":4,
     "props":{"sceneColor":"#000000"},
     "nodeParent":-1,
     "label":"View",
@@ -28,7 +28,7 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"y":28,"x":0,"wordWrap":true,"width":500,"var":"lblDec","text":"label","styleSkin":"comp/label.png","leading":2,"height":24,"fontSize":16,"color":"#f4f1f1"},
+            "props":{"y":42,"x":85,"wordWrap":true,"width":500,"var":"lblDec","text":"label","styleSkin":"comp/label.png","leading":2,"height":24,"fontSize":16,"color":"#f4f1f1"},
             "nodeParent":1,
             "label":"Label(lblDec)",
             "isDirectory":false,
@@ -41,7 +41,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":3,"x":416,"width":75,"var":"btnClear","skin":"comp/button.png","label":"clear","height":23},
+            "props":{"y":3,"x":362,"width":75,"var":"btnClear","skin":"comp/button.png","label":"clear","height":23},
             "nodeParent":1,
             "label":"Button(btnClear)",
             "isDirectory":false,

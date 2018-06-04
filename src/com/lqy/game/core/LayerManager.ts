@@ -17,8 +17,10 @@ class LayerManager{
     public static EFFECT_LAYER:number = 5;
     /**UI层 */
     public static UI_LAYER:number = 6;
+    /**顶部层 */
+    public static TOP_LAYER:number = 7;
     /**tip层 */
-    public static TIP_LAYER:number = 7;
+    public static TIP_LAYER:number = 8;
 
     private bgLayer:MyLayer = null;
     private bgPreLayer:MyLayer = null;
@@ -27,6 +29,7 @@ class LayerManager{
     private roleLayer:MyLayer = null;
     private effectLayer:MyLayer = null;
     private uiLayer:MyLayer = null;
+    private topLayer:MyLayer = null;
     private tipLayer:MyLayer = null;
 
     constructor(){
@@ -57,6 +60,8 @@ class LayerManager{
         Laya.stage.addChild(this.effectLayer);
         this.uiLayer = new MyLayer();
         Laya.stage.addChild(this.uiLayer);
+        this.topLayer = new MyLayer();
+        Laya.stage.addChild(this.topLayer);
         this.tipLayer = new MyLayer();
         Laya.stage.addChild(this.tipLayer);
     }
@@ -96,6 +101,8 @@ class LayerManager{
                 return this.effectLayer;
             case LayerManager.UI_LAYER:
                 return this.uiLayer;
+            case LayerManager.TOP_LAYER:
+                return this.topLayer;
             case LayerManager.TIP_LAYER:
                 return this.tipLayer;
         }

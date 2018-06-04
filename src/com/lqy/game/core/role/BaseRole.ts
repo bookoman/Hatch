@@ -39,8 +39,6 @@ class BaseRole extends Laya.Sprite{
         
     }
     
-    
-    
     public showFloatFont(blood:number):void
     {
         var floatFontTip:FloatFontTips = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);

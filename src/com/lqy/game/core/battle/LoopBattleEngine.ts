@@ -155,8 +155,7 @@ class LoopBattleEngine{
         var skillID:number = attRoleVo.getCanUserSkill();
         if(skillID > 0)
         {
-            //技能释放
-            attRole.aniPlay(RoleAniIndex.ATTACK,true,this,this.moveBackLineupComplete,defRole);
+            //技能释放                
             var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
             skill.playSkill(skillID,defRole);
         }

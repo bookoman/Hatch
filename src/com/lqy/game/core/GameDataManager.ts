@@ -16,6 +16,8 @@ class GameDataManager{
     public bossData:EnemyData = null;
     /**是否再挑战boss */
     public isChallengeBoss:boolean = false;
+    /**挂机章节 */
+    public hundUpChapterData:any = null;
     
     constructor(){
         

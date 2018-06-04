@@ -115,14 +115,16 @@ class BossBattleEngine{
         {
             //远攻
             if(this.attRole.roleVo.attFar == 1)
-            {
+            {              
                 this.playAttackAni();
+                SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
             }
             else
-            {//近攻
+            {//近攻               
                 this.attRole.aniPlay(RoleAniIndex.MOVE);
-                var tempX:number = defRoleVo.isEnemy ? 200 : -200;
+                var tempX:number = defRoleVo.isEnemy ? 200 : -200;               
                 Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000 / GameConfig.BATTLE_ADDSPEED_TIMES,null,new Handler(this,this.playAttackAni,[attRoleVo,defRoleVo],true),0,true);
+                SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
             }
         }
     }

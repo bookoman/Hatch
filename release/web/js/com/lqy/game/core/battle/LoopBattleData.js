@@ -6,10 +6,11 @@ var LoopBattleData = /** @class */ (function () {
         this.curAttCamp = 0;
     }
     LoopBattleData.prototype.initData = function () {
-        this.attHeroVos = GameDataManager.ins.selfPlayerData.roleVoAry;
+        this.attHeroVos = this.getJoinBattleHeroVo();
         this.attEnemyVos = GameDataManager.ins.enemyData.roleVoAry;
         this.attHeroVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
+            roleVo.battleDieAttTimes = roleVo.dieAttTimes;
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
             roleVo.isAtted = false;
@@ -17,14 +18,27 @@ var LoopBattleData = /** @class */ (function () {
         });
         this.attEnemyVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
+            roleVo.battleDieAttTimes = roleVo.dieAttTimes;
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
             roleVo.isAtted = false;
             roleVo.attEnemyVos = [];
         });
-        this.seekAttTarget2(this.attHeroVos, this.attEnemyVos);
-        this.seekAttTarget2(this.attEnemyVos, this.attHeroVos);
+        this.seekAttTarget(this.attHeroVos, this.attEnemyVos);
+        this.seekAttTarget(this.attEnemyVos, this.attHeroVos);
         this.curAttCamp = BattleAttCampType.HERO;
+    };
+    /**得到参战英雄RoleVo */
+    LoopBattleData.prototype.getJoinBattleHeroVo = function () {
+        var tempAry = new Array();
+        GameDataManager.ins.selfPlayerData.roleVoAry.forEach(function (roleVo) {
+            tempAry.push(roleVo);
+        });
+        tempAry.sort(function (vo1, vo2) {
+            return vo1.gridX > vo2.gridX ? -1 : 1;
+        });
+        tempAry = tempAry.slice(0, GameConfig.BATTLE_LOOP_HERO_SUM);
+        return tempAry;
     };
     /**
      * 开始战斗
@@ -34,29 +48,53 @@ var LoopBattleData = /** @class */ (function () {
         if (this.curAttCamp == 0) {
         }
         else if (this.curAttCamp == BattleAttCampType.HERO) {
-            this.curAttRoleVo = this.getAttRoleVo(this.attHeroVos);
+            this.curBattleTurnVos = this.getBattleTurnVos(this.attHeroVos, this.attEnemyVos);
         }
         else if (this.curAttCamp == BattleAttCampType.ENEMY) {
-            this.curAttRoleVo = this.getAttRoleVo(this.attEnemyVos);
-        }
-        //寻找攻击具体对象
-        for (var i = 0; i < this.curAttRoleVo.attEnemyVos.length; i++) {
-            this.curDefRoleVo = this.curAttRoleVo.attEnemyVos[i];
-            if (!this.curDefRoleVo.isDeath) {
-                break;
-            }
+            this.curBattleTurnVos = this.getBattleTurnVos(this.attEnemyVos, this.attHeroVos);
         }
     };
-    /**计算属性 */
-    LoopBattleData.prototype.calculationAttribute = function () {
-        this.curDefRoleVo.battleHP -= this.curAttRoleVo.att;
-        this.curDefRoleVo.isDeath = this.curDefRoleVo.battleHP <= 0;
-        this.curAttRoleVo.isAtted = true;
-        this.checkBattleEnd();
-        if (this.curAttCamp == BattleAttCampType.ENEMY) {
-            //DebugViewUtil.log("战斗日记：","....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVo.name + "("+ this.curDefRoleVo.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVo.battleHP);
-            // console.log("....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVo.name + "("+ this.curDefRoleVo.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVo.battleHP);
+    /**
+    * 得到当前攻击角色
+    * @param roleVos
+    */
+    LoopBattleData.prototype.getBattleTurnVos = function (attRoleVos, defRoleVos) {
+        var ary = [];
+        var battleTurnVo;
+        var attRoleVo;
+        for (var i = 0; i < attRoleVos.length; i++) {
+            attRoleVo = attRoleVos[i];
+            battleTurnVo = new BattleTurnVo();
+            var defRoleVo;
+            if (!attRoleVo.isDeath && !attRoleVo.isAtted) {
+                //寻找攻击具体对象
+                for (var j = 0; j < attRoleVo.attEnemyVos.length; j++) {
+                    defRoleVo = attRoleVo.attEnemyVos[j];
+                    if (defRoleVo && !defRoleVo.isDeath) {
+                        break;
+                    }
+                }
+            }
+            battleTurnVo.attRoleVo = attRoleVo;
+            battleTurnVo.defRoleVo = defRoleVo;
+            ary.push(battleTurnVo);
         }
+        return ary;
+    };
+    /**计算属性 */
+    LoopBattleData.prototype.calculationAttribute = function (attRoleVo, defRoleVo) {
+        //血量检测
+        // this.curDefRoleVo.battleHP -= this.curAttRoleVo.att;
+        // this.curDefRoleVo.isDeath = this.curDefRoleVo.battleHP <= 0;
+        // this.curAttRoleVo.isAtted = true;
+        // this.checkBattleEnd();
+        //攻击次数检测
+        this.curBattleTurnVos.forEach(function (battleTurnVo) {
+            if (attRoleVo.id == battleTurnVo.attRoleVo.id && defRoleVo.id == battleTurnVo.defRoleVo.id) {
+                battleTurnVo.calculationAttribute();
+            }
+        });
+        this.checkBattleEnd();
     };
     /**
      * 检测战斗结束
@@ -77,7 +115,7 @@ var LoopBattleData = /** @class */ (function () {
         });
         if (this.isEnd) {
             this.isWin = false;
-            console.log("战斗结束" + this.isWin);
+            // console.log("战斗结束"+this.isWin);
             return;
         }
         if (isChangeAttStatus) {
@@ -98,7 +136,7 @@ var LoopBattleData = /** @class */ (function () {
         });
         if (this.isEnd) {
             this.isWin = true;
-            console.log("战斗结束" + this.isWin);
+            // console.log("战斗结束"+this.isWin);
             return;
         }
         if (isChangeAttStatus) {
@@ -115,23 +153,9 @@ var LoopBattleData = /** @class */ (function () {
         }
     };
     /**
-     * 得到当前攻击角色
-     * @param roleVos
-     */
-    LoopBattleData.prototype.getAttRoleVo = function (roleVos) {
-        var roleVo;
-        for (var i = 0; i < roleVos.length; i++) {
-            roleVo = roleVos[i];
-            if (!roleVo.isDeath && !roleVo.isAtted) {
-                break;
-            }
-        }
-        return roleVo;
-    };
-    /**
      * 寻找攻击目标
      * 普通攻击:
-     *  1,找同gy，再又上至下找gy
+     *  1,找同gy，再向上向下找攻击对象
      * 技能攻击:
      *  1,一个目标：找同gy，再又上至下找gy
      *  2,攻击一行gx,攻击一列gy
@@ -139,24 +163,27 @@ var LoopBattleData = /** @class */ (function () {
      * @param defAry
      */
     LoopBattleData.prototype.seekAttTarget = function (attAry, defAry) {
+        var reduceAry = [];
+        var plusAry = [];
         var attRoleVo;
         var defRoleVo;
         for (var i = 0; i < attAry.length; i++) {
             attRoleVo = attAry[i];
             for (var j = 0; j < defAry.length; j++) {
                 defRoleVo = defAry[j];
-                var attInd = Math.abs(attRoleVo.gridY - defRoleVo.gridY);
-                if (attInd < defAry.length) {
-                    attRoleVo.attEnemyVos[attInd] = defRoleVo;
+                var attInd = attRoleVo.gridY - defRoleVo.gridY;
+                if (attInd < 0) {
+                    reduceAry[Math.abs(attInd)] = defRoleVo;
                 }
                 else {
-                    attRoleVo.attEnemyVos.push(defRoleVo);
+                    plusAry[attInd] = defRoleVo;
                 }
             }
+            attRoleVo.attEnemyVos = plusAry.concat(reduceAry);
         }
     };
     /**
-     * 寻找攻击目标2
+     * 寻找攻击目标2----格子坐标规律
      * 先攻击前排，前排击败后再攻击后排
      * @param attAry
      * @param defAry
@@ -170,6 +197,7 @@ var LoopBattleData = /** @class */ (function () {
             }
             if (attRoleVo.isEnemy) {
                 attRoleVo.attEnemyVos.sort(function (a, b) {
+                    //格子坐标规律
                     return a.gridY % 2 == 0 ? 1 : -1;
                 });
             }
@@ -196,5 +224,15 @@ var LoopBattleData = /** @class */ (function () {
         }
     };
     return LoopBattleData;
+}());
+var BattleTurnVo = /** @class */ (function () {
+    function BattleTurnVo() {
+    }
+    BattleTurnVo.prototype.calculationAttribute = function () {
+        this.defRoleVo.battleDieAttTimes--;
+        this.defRoleVo.isDeath = this.defRoleVo.battleDieAttTimes <= 0;
+        this.defRoleVo.isAtted = true;
+    };
+    return BattleTurnVo;
 }());
 //# sourceMappingURL=LoopBattleData.js.map

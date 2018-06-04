@@ -14,12 +14,18 @@ var __extends = (this && this.__extends) || (function () {
 var LoginScene = /** @class */ (function (_super) {
     __extends(LoginScene, _super);
     function LoginScene() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this.loginMediator = null;
+        return _this;
     }
     LoginScene.prototype.enter = function () {
-        new LoginMediator();
+        this.loginMediator = new LoginMediator();
     };
     LoginScene.prototype.leave = function () {
+        if (this.loginMediator) {
+            this.loginMediator.dispose();
+            this.loginMediator = null;
+        }
     };
     return LoginScene;
 }(BaseScene));

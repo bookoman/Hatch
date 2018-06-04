@@ -9,13 +9,15 @@ var Game = /** @class */ (function () {
     Game.prototype.init = function () {
         var resAry = [
             { url: "res/atlas/comp.atlas", type: Loader.ATLAS },
-            { url: "unpack/login/logo.png", type: Loader.IMAGE }
+            { url: "unpack/main/main.jpg", type: Loader.IMAGE },
+            { url: "res/config/language.txt", type: Loader.TEXT }
         ];
         Laya.loader.load(resAry, new Laya.Handler(this, this.onLoaded), new Laya.Handler(this, this.onLoadProgress));
     };
     Game.prototype.onLoaded = function () {
         LayerManager.ins.init();
         DebugViewUtil.init();
+        LG.parse(Laya.loader.getRes("res/config/language.txt"));
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
     };
     /**资源加载进度 */

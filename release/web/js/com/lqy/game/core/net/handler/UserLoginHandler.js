@@ -17,14 +17,13 @@ var UserLoginHandler = /** @class */ (function (_super) {
         if (callback === void 0) { callback = null; }
         return _super.call(this, module, caller, callback) || this;
     }
-    UserLoginHandler.prototype.explain = function (errorCode, data) {
-        _super.prototype.explain.call(this, errorCode, data);
-    };
-    /**处理数据 */
-    UserLoginHandler.prototype.success = function (data) {
+    UserLoginHandler.prototype.explain = function (data) {
         var LoginResponse = WebSocketManager.ins.defineProtoClass("LoginResponse");
         var message = LoginResponse.decode(data);
-        console.log("服务器返回：" + message.statusCode);
+        _super.prototype.explain.call(this, message);
+    };
+    /**处理数据 */
+    UserLoginHandler.prototype.success = function (message) {
         _super.prototype.success.call(this, message);
     };
     return UserLoginHandler;

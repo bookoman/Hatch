@@ -16,10 +16,10 @@ var Enemy = /** @class */ (function (_super) {
     function Enemy() {
         return _super.call(this) || this;
     }
-    Enemy.prototype.initRole = function (roleVo, showPriority, scale) {
-        _super.prototype.initRole.call(this, roleVo, showPriority, scale);
+    Enemy.prototype.initRole = function (roleVo, showPriority, scale, parentDis) {
+        _super.prototype.initRole.call(this, roleVo, showPriority, scale, parentDis);
         // this.x = GameConfig.STAGE_WIDTH + GameConfig.LINEUP_GRID_WIDTH + roleVo.runWidth;
-        this.x = this.roleVo.posPoint.x + GameConfig.STAGE_WIDTH;
+        this.x = this.roleVo.posPoint.x + (parentDis ? 0 : GameConfig.STAGE_WIDTH / 2);
         this.y = this.roleVo.posPoint.y;
     };
     // public run():void

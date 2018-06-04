@@ -134,4 +134,13 @@ var BattleAttCampType;
     BattleAttCampType[BattleAttCampType["ENEMY"] = 2] = "ENEMY";
     BattleAttCampType[BattleAttCampType["OTHER"] = 3] = "OTHER";
 })(BattleAttCampType || (BattleAttCampType = {}));
+/**游戏底部按钮索引 */
+var GameButtomTabIndex;
+(function (GameButtomTabIndex) {
+    GameButtomTabIndex[GameButtomTabIndex["MAP_BATTLE"] = 0] = "MAP_BATTLE";
+    GameButtomTabIndex[GameButtomTabIndex["LINEUP"] = 1] = "LINEUP";
+    GameButtomTabIndex[GameButtomTabIndex["HERO"] = 2] = "HERO";
+    GameButtomTabIndex[GameButtomTabIndex["EQUIP"] = 3] = "EQUIP";
+    GameButtomTabIndex[GameButtomTabIndex["HOME"] = 4] = "HOME";
+})(GameButtomTabIndex || (GameButtomTabIndex = {}));
 //# sourceMappingURL=GameConfig.js.map

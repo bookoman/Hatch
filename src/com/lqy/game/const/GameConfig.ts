@@ -115,3 +115,8 @@ enum BattleAttCampType
 {
     HERO = 1,ENEMY,OTHER
 }
+/**游戏底部按钮索引 */
+enum GameButtomTabIndex
+{
+    MAP_BATTLE = 0,LINEUP,HERO,EQUIP,HOME
+}

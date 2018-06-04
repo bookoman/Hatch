@@ -12,8 +12,9 @@ enum LoginCommandProtocl {
 
 //请求登录 [C_Login]
 message LoginRequest {
-	required string name = 1;     				// 帐号
-	optional string nickname = 2; 				// 昵称
+	required string nickname = 1;				// 昵称
+	required string token = 2;     				// 令牌码
+	optional string platform = 3; 				// 登录终端类型【android,ios,pc】
 }
 
 //返回登录结果 [C_Login]

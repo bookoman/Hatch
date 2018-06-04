@@ -30,6 +30,24 @@ var BaseMediator = /** @class */ (function () {
     };
     BaseMediator.prototype.removeEvents = function () {
     };
+    BaseMediator.prototype.dispose = function () {
+        if (this.assetsUrl) {
+            if (this.assetsUrl) {
+                this.assetsUrl.forEach(function (element) {
+                    Laya.loader.clearRes(element.url);
+                });
+            }
+            else {
+                Laya.loader.clearRes(this.assetsUrl);
+            }
+            this.assetsUrl = null;
+        }
+        if (this.view) {
+            this.removeEvents();
+            this.view.removeSelf();
+        }
+        this.view = null;
+    };
     return BaseMediator;
 }());
 //# sourceMappingURL=BaseMediator.js.map

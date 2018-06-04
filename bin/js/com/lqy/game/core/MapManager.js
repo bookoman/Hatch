@@ -131,6 +131,7 @@ var MapManager = /** @class */ (function () {
         var mapWidth = GameConfig.STAGE_WIDTH;
         var mapHeight = GameConfig.BATTLE_SCENE_HEIGHT;
         this.squintAngleGrid = new SquintAngleGrid(mapWidth, mapHeight, false);
+        0;
         this.squintAngleGrid.initGrid();
     };
     MapManager.prototype.getHeroMapBalltGridPoint = function (gridNum) {

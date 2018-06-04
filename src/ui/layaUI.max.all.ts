@@ -5,7 +5,7 @@ module ui {
     export class BattleReportViewUI extends View {
 		public texaArea:Laya.TextArea;
 
-        public static  uiView:any ={"type":"View","props":{},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"unpack/main/img_reportsbg.png","sizeGrid":"30,4,4,4","height":374}},{"type":"TextArea","props":{"y":57,"x":10,"width":731,"var":"texaArea","height":300}},{"type":"Label","props":{"y":15,"x":322,"width":85,"text":"战    报","height":25,"fontSize":24,"color":"#000000","bold":true,"align":"center"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":375},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"unpack/main/img_reportsbg.png","sizeGrid":"30,4,4,4","height":374}},{"type":"TextArea","props":{"y":57,"x":10,"width":731,"var":"texaArea","height":300}},{"type":"Label","props":{"y":15,"x":322,"width":85,"text":"战    报","height":25,"fontSize":24,"color":"#000000","bold":true,"align":"center"}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -21,7 +21,7 @@ module ui {
     export class ChallengeBossViewUI extends View {
 		public btnFast:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/challengeboss/bg.png"}},{"type":"Button","props":{"y":1131,"x":235,"width":285,"var":"btnFast","skin":"comp/button.png","labelSize":30,"label":"快速结束","height":110}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/challengeboss/bg.png"}},{"type":"Button","props":{"y":1111,"x":277,"width":195,"var":"btnFast","skin":"comp/button.png","labelSize":30,"label":"快速结束","height":71}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -50,13 +50,30 @@ module ui {
     }
 }
 
+module ui.comp {
+    export class IconViewUI extends View {
+		public clipBG:Laya.Clip;
+		public imgIcon:Laya.Image;
+
+        public static  uiView:any ={"type":"View","props":{"width":115,"height":115},"child":[{"type":"Clip","props":{"y":3,"x":3,"width":110,"var":"clipBG","skin":"comp/clip_qulity1.png","height":110,"clipY":2}},{"type":"Image","props":{"y":10,"x":10,"width":95,"var":"imgIcon","height":96}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.comp.IconViewUI.uiView);
+
+        }
+
+    }
+}
+
 module ui {
     export class DebugViewUI extends View {
 		public imgBg:Laya.Image;
 		public lblDec:Laya.Label;
 		public btnClear:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{},"child":[{"type":"Image","props":{"y":0,"x":0,"width":500,"var":"imgBg","skin":"comp/blank.png","height":60}},{"type":"Label","props":{"y":28,"x":0,"wordWrap":true,"width":500,"var":"lblDec","text":"label","leading":2,"height":24,"fontSize":16,"color":"#f4f1f1"}},{"type":"Button","props":{"y":3,"x":416,"width":75,"var":"btnClear","skin":"comp/button.png","label":"clear","height":23}}]};
+        public static  uiView:any ={"type":"View","props":{},"child":[{"type":"Image","props":{"y":0,"x":0,"width":500,"var":"imgBg","skin":"comp/blank.png","height":60}},{"type":"Label","props":{"y":42,"x":85,"wordWrap":true,"width":500,"var":"lblDec","text":"label","leading":2,"height":24,"fontSize":16,"color":"#f4f1f1"}},{"type":"Button","props":{"y":3,"x":362,"width":75,"var":"btnClear","skin":"comp/button.png","label":"clear","height":23}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -94,14 +111,73 @@ module ui {
 module ui {
     export class GameViewUI extends View {
 		public btnOpen:Laya.Button;
-		public btnChalleangeBoss:Laya.Button;
+		public btnMap:Laya.Button;
+		public btnLineup:Laya.Button;
+		public btnHero:Laya.Button;
+		public btnEquip:Laya.Button;
+		public btnHome:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Button","props":{"y":76,"x":410,"width":216,"var":"btnOpen","skin":"comp/button.png","labelStrokeColor":"#f88508","labelSize":32,"label":"打开拳击声效","height":83}},{"type":"Button","props":{"y":72,"x":113,"width":243,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":88}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"mouseThrough":true,"height":1334},"child":[{"type":"Button","props":{"y":17,"x":706,"width":34,"var":"btnOpen","stateNum":1,"skin":"main/laba.png","sizeGrid":"-10,0,-6,-14","labelStrokeColor":"#f88508","labelSize":32,"height":31,"alpha":0.6}},{"type":"Image","props":{"y":1215,"x":0,"width":750,"skin":"unpack/main/diban.png","height":119}},{"type":"Image","props":{"y":1320,"x":0,"width":750,"skin":"main/img_blood.png","height":14}},{"type":"Tab","props":{"y":1214,"x":2,"width":746,"height":124},"child":[{"type":"Button","props":{"y":-7,"x":-1,"width":145,"var":"btnMap","stateNum":1,"skin":"main/huic.png","labelSize":40,"height":102}},{"type":"Button","props":{"y":-1,"x":148,"width":148,"var":"btnLineup","stateNum":1,"skin":"main/juese.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":299,"width":148,"var":"btnHero","stateNum":1,"skin":"main/tansuo.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":449,"width":148,"var":"btnEquip","stateNum":1,"skin":"main/bag.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":598,"width":148,"var":"btnHome","stateNum":1,"skin":"main/zuoz.png","labelSize":40,"height":100}}]}]};
         constructor(){ super()}
         createChildren():void {
         
             super.createChildren();
             this.createView(ui.GameViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.lineup {
+    export class LineupGridViewUI extends View {
+		public clipShadow:Laya.Clip;
+
+        public static  uiView:any ={"type":"View","props":{},"child":[{"type":"Clip","props":{"y":0,"x":0,"width":134,"var":"clipShadow","skin":"lineup/clip_shadow.png","index":0,"height":54,"clipY":2}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.lineup.LineupGridViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.lineup {
+    export class LineupViewUI extends View {
+		public listIcon:Laya.List;
+		public grid0:ui.lineup.LineupGridViewUI;
+		public grid1:ui.lineup.LineupGridViewUI;
+		public grid2:ui.lineup.LineupGridViewUI;
+		public grid3:ui.lineup.LineupGridViewUI;
+		public grid4:ui.lineup.LineupGridViewUI;
+		public grid5:ui.lineup.LineupGridViewUI;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"renderType":"render","height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"lineup/龙与猎人-上阵.png"}},{"type":"List","props":{"y":967,"x":23,"width":716,"var":"listIcon","repeatY":2,"repeatX":6,"height":234},"child":[{"type":"VScrollBar","props":{"y":4,"x":698,"width":17,"skin":"comp/vscroll.png","name":"scrollBar","height":188}},{"type":"IconView","props":{"y":0,"x":0,"runtime":"IconView","name":"render"}}]},{"type":"LineupGridView","props":{"y":581,"x":367,"var":"grid0","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":708,"x":470,"var":"grid1","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":831,"x":573,"var":"grid2","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":580,"x":26,"var":"grid3","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":707,"x":129,"var":"grid4","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":830,"x":232,"var":"grid5","runtime":"ui.lineup.LineupGridViewUI"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        			View.regComponent("IconView",IconView);
+			View.regComponent("ui.lineup.LineupGridViewUI",ui.lineup.LineupGridViewUI);
+
+            super.createChildren();
+            this.createView(ui.lineup.LineupViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
+    export class LineupViewUI extends View {
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"lineup/龙与猎人-上阵.png"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.LineupViewUI.uiView);
 
         }
 
@@ -114,7 +190,7 @@ module ui {
 		public inputPwd:Laya.TextInput;
 		public btnLogin:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"unpack/main/main.jpg","height":1334}},{"type":"Box","props":{"y":576,"x":148,"width":496,"height":317},"child":[{"type":"Image","props":{"width":496,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":361,"centerY":0,"centerX":0}},{"type":"TextInput","props":{"y":73,"x":187,"width":216,"var":"inputAccount","text":"xielong","skin":"comp/textinput.png","height":36,"fontSize":30}},{"type":"Label","props":{"y":72,"x":95,"width":100,"text":"帐号：","height":38,"fontSize":30,"color":"#000000"}},{"type":"TextInput","props":{"y":141,"x":187,"width":216,"var":"inputPwd","type":"password","text":"123456","skin":"comp/textinput.png","height":36,"fontSize":30}},{"type":"Label","props":{"y":140,"x":95,"width":100,"text":"密码：","height":38,"fontSize":30}},{"type":"Button","props":{"y":209,"x":158,"width":211,"var":"btnLogin","skin":"comp/button.png","labelSize":38,"label":"登  录","height":72}}]}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"unpack/main/main.jpg","height":1334}},{"type":"Box","props":{"y":576,"x":127,"width":496,"height":317},"child":[{"type":"Image","props":{"width":496,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":361,"centerY":0,"centerX":0}},{"type":"TextInput","props":{"y":73,"x":187,"width":216,"var":"inputAccount","text":"xielong","skin":"comp/textinput.png","height":36,"fontSize":30}},{"type":"Label","props":{"y":72,"x":95,"width":100,"text":"帐号：","height":38,"fontSize":30,"color":"#000000"}},{"type":"TextInput","props":{"y":141,"x":187,"width":216,"var":"inputPwd","type":"password","text":"123456","skin":"comp/textinput.png","height":36,"fontSize":30}},{"type":"Label","props":{"y":140,"x":95,"width":100,"text":"密码：","height":38,"fontSize":30}},{"type":"Button","props":{"y":209,"x":158,"width":211,"var":"btnLogin","skin":"comp/button.png","labelSize":38,"label":"登  录","height":72}}]}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -142,10 +218,44 @@ module ui.main {
 }
 
 module ui {
+    export class MapBattleViewUI extends View {
+		public btnChalleangeBoss:Laya.Button;
+		public mapWordView:ui.MapWorldViewUI;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Button","props":{"y":265,"x":253,"width":243,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":88}},{"type":"MapWorldView","props":{"y":0,"x":0,"var":"mapWordView","runtime":"ui.MapWorldViewUI"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        			View.regComponent("ui.MapWorldViewUI",ui.MapWorldViewUI);
+
+            super.createChildren();
+            this.createView(ui.MapBattleViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
+    export class MapWorldViewUI extends View {
+		public btnEnter:Laya.Button;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Button","props":{"y":566,"x":253,"width":243,"var":"btnEnter","skin":"comp/button.png","labelSize":40,"label":"进入关卡","height":88}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.MapWorldViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
     export class PreLoadViewUI extends View {
 		public progressBar:Laya.ProgressBar;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"ProgressBar","props":{"y":662,"x":96,"width":566,"var":"progressBar","skin":"comp/progress.png","height":14}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"ProgressBar","props":{"y":662,"x":92,"width":566,"var":"progressBar","skin":"comp/progress.png","height":14}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -161,8 +271,10 @@ module ui {
     export class SignViewUI extends View {
 		public btnClose:Laya.Button;
 		public inputName:Laya.TextInput;
+		public btnRecharge:Laya.Button;
+		public btnRechargeExit:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":6,"skin":"test/img_bg.png"}},{"type":"Image","props":{"y":504,"x":154,"width":441,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":415}},{"type":"Button","props":{"y":508,"x":566,"var":"btnClose","skin":"comp/btn_close.png"}},{"type":"TextInput","props":{"y":706,"x":304,"var":"inputName","skin":"comp/textinput.png"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":504,"x":154,"width":441,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":415}},{"type":"Button","props":{"y":508,"x":566,"var":"btnClose","skin":"comp/btn_close.png"}},{"type":"Label","props":{"y":505,"x":353,"text":"注册","strokeColor":"#000000","fontSize":22}},{"type":"TextInput","props":{"y":590,"x":330,"width":225,"var":"inputName","strokeColor":"#190101","stroke":0,"skin":"comp/textinput.png","height":43}},{"type":"TextInput","props":{"y":661,"x":330,"width":225,"strokeColor":"#190101","stroke":0,"skin":"comp/textinput.png","height":43}},{"type":"Button","props":{"y":830,"x":257,"width":100,"var":"btnRecharge","skin":"comp/button.png","labelSize":20,"label":"注册","height":32}},{"type":"Button","props":{"y":830,"x":414,"width":100,"var":"btnRechargeExit","skin":"comp/button.png","labelSize":20,"label":"取消","height":32}},{"type":"Label","props":{"y":595,"x":216,"text":"帐号","fontSize":32}},{"type":"Label","props":{"y":666,"x":216,"text":"密码","fontSize":32}},{"type":"TextInput","props":{"y":731,"x":330,"width":225,"strokeColor":"#190101","stroke":0,"skin":"comp/textinput.png","height":43}},{"type":"Label","props":{"y":736,"x":216,"text":"密码","fontSize":32}}]};
         constructor(){ super()}
         createChildren():void {
         

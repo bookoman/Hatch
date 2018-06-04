@@ -10,7 +10,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var Loader = Laya.Loader;
 /*
-* name;
+* 游戏场景
 */
 var GameScene = /** @class */ (function (_super) {
     __extends(GameScene, _super);
@@ -19,7 +19,7 @@ var GameScene = /** @class */ (function (_super) {
     }
     GameScene.prototype.enter = function () {
         // super.enter();
-        new GameMediator([{ url: "res/atlas/main.atlas", type: Loader.ATLAS }, { url: "test/img_bg.png", type: Loader.IMAGE }]);
+        new GameMediator([{ url: "res/atlas/main.atlas", type: Loader.ATLAS }]);
         // new GameMediator("res/atlas/main.atlas");
     };
     GameScene.prototype.leave = function () {

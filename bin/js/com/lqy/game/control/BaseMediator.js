@@ -31,9 +31,21 @@ var BaseMediator = /** @class */ (function () {
     BaseMediator.prototype.removeEvents = function () {
     };
     BaseMediator.prototype.dispose = function () {
-        Laya.loader.clearRes(this.assetsUrl);
-        this.view.removeSelf();
-        this.removeEvents();
+        if (this.assetsUrl) {
+            if (this.assetsUrl) {
+                this.assetsUrl.forEach(function (element) {
+                    Laya.loader.clearRes(element.url);
+                });
+            }
+            else {
+                Laya.loader.clearRes(this.assetsUrl);
+            }
+            this.assetsUrl = null;
+        }
+        if (this.view) {
+            this.removeEvents();
+            this.view.removeSelf();
+        }
         this.view = null;
     };
     return BaseMediator;

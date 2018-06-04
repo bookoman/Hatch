@@ -14,18 +14,29 @@ class SignMediator extends BaseMediator{
     protected addEvents():void
     {
         this.view.btnClose.on(Laya.Event.CLICK,this,this.onBtnClose);
+        this.view.btnRecharge.on(Laya.Event.CLICK,this,this.onBtnRecharge);
+        this.view.btnRechargeExit.on(Laya.Event.CLICK,this,this.onBtnRechargeExit);       
     }
 
     protected removeEvents():void
     {
         this.view.btnOpen.off(Laya.Event.CLICK,this,this.onBtnClose);
+        this.view.btnRecharge.off(Laya.Event.CLICK,this,this.onBtnRecharge);
+        this.view.btnRechargeExit.off(Laya.Event.CLICK,this,this.onBtnRechargeExit);
     }
 
     private onBtnClose(e:Laya.Event):void
     {
-        console.log("输入框："+ this.view.inputName.text);
+        console.log("功能暂时关闭"+ this.view.inputName.text);   
     }
 
+    private onBtnRecharge(e:Laya.Event):void
+    {
+        console.log("功能暂时关闭"+ this.view.inputName.text);   
+    }
     
-
+    private onBtnRechargeExit(e:Laya.Event):void
+    {
+          console.log("功能暂时关闭"+ this.view.inputName.text);   
+    }
 }

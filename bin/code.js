@@ -52045,6 +52045,7730 @@ if (typeof define === 'function' && define.amd){
         }
     });
 }
+/*!
+ * protobuf.js v6.7.0 (c) 2016, Daniel Wirtz
+ * Compiled Sun, 12 Mar 2017 21:09:56 UTC
+ * Licensed under the BSD-3-Clause License
+ * see: https://github.com/dcodeIO/protobuf.js for details
+ */
+(function(global,undefined){"use strict";(function prelude(modules, cache, entries) {
+
+    // This is the prelude used to bundle protobuf.js for the browser. Wraps up the CommonJS
+    // sources through a conflict-free require shim and is again wrapped within an iife that
+    // provides a unified `global` and a minification-friendly `undefined` var plus a global
+    // "use strict" directive so that minification can remove the directives of each module.
+
+    function $require(name) {
+        var $module = cache[name];
+        if (!$module)
+            modules[name][0].call($module = cache[name] = { exports: {} }, $require, $module, $module.exports);
+        return $module.exports;
+    }
+
+    // Expose globally
+    var protobuf = global.protobuf = $require(entries[0]);
+
+    // Be nice to AMD
+    if (typeof define === "function" && define.amd)
+        define(["long"], function(Long) {
+            protobuf.util.Long = Long;
+            protobuf.configure();
+            return protobuf;
+        });
+
+    // Be nice to CommonJS
+    if (typeof module === "object" && module && module.exports)
+        module.exports = protobuf;
+
+})/* end of prelude */({1:[function(require,module,exports){
+"use strict";
+module.exports = asPromise;
+
+/**
+ * Returns a promise from a node-style callback function.
+ * @memberof util
+ * @param {function(?Error, ...*)} fn Function to call
+ * @param {*} ctx Function context
+ * @param {...*} params Function arguments
+ * @returns {Promise<*>} Promisified function
+ */
+function asPromise(fn, ctx/*, varargs */) {
+    var params = [];
+    for (var i = 2; i < arguments.length;)
+        params.push(arguments[i++]);
+    var pending = true;
+    return new Promise(function asPromiseExecutor(resolve, reject) {
+        params.push(function asPromiseCallback(err/*, varargs */) {
+            if (pending) {
+                pending = false;
+                if (err)
+                    reject(err);
+                else {
+                    var args = [];
+                    for (var i = 1; i < arguments.length;)
+                        args.push(arguments[i++]);
+                    resolve.apply(null, args);
+                }
+            }
+        });
+        try {
+            fn.apply(ctx || this, params); // eslint-disable-line no-invalid-this
+        } catch (err) {
+            if (pending) {
+                pending = false;
+                reject(err);
+            }
+        }
+    });
+}
+
+},{}],2:[function(require,module,exports){
+"use strict";
+
+/**
+ * A minimal base64 implementation for number arrays.
+ * @memberof util
+ * @namespace
+ */
+var base64 = exports;
+
+/**
+ * Calculates the byte length of a base64 encoded string.
+ * @param {string} string Base64 encoded string
+ * @returns {number} Byte length
+ */
+base64.length = function length(string) {
+    var p = string.length;
+    if (!p)
+        return 0;
+    var n = 0;
+    while (--p % 4 > 1 && string.charAt(p) === "=")
+        ++n;
+    return Math.ceil(string.length * 3) / 4 - n;
+};
+
+// Base64 encoding table
+var b64 = new Array(64);
+
+// Base64 decoding table
+var s64 = new Array(123);
+
+// 65..90, 97..122, 48..57, 43, 47
+for (var i = 0; i < 64;)
+    s64[b64[i] = i < 26 ? i + 65 : i < 52 ? i + 71 : i < 62 ? i - 4 : i - 59 | 43] = i++;
+
+/**
+ * Encodes a buffer to a base64 encoded string.
+ * @param {Uint8Array} buffer Source buffer
+ * @param {number} start Source start
+ * @param {number} end Source end
+ * @returns {string} Base64 encoded string
+ */
+base64.encode = function encode(buffer, start, end) {
+    var string = []; // alt: new Array(Math.ceil((end - start) / 3) * 4);
+    var i = 0, // output index
+        j = 0, // goto index
+        t;     // temporary
+    while (start < end) {
+        var b = buffer[start++];
+        switch (j) {
+            case 0:
+                string[i++] = b64[b >> 2];
+                t = (b & 3) << 4;
+                j = 1;
+                break;
+            case 1:
+                string[i++] = b64[t | b >> 4];
+                t = (b & 15) << 2;
+                j = 2;
+                break;
+            case 2:
+                string[i++] = b64[t | b >> 6];
+                string[i++] = b64[b & 63];
+                j = 0;
+                break;
+        }
+    }
+    if (j) {
+        string[i++] = b64[t];
+        string[i  ] = 61;
+        if (j === 1)
+            string[i + 1] = 61;
+    }
+    return String.fromCharCode.apply(String, string);
+};
+
+var invalidEncoding = "invalid encoding";
+
+/**
+ * Decodes a base64 encoded string to a buffer.
+ * @param {string} string Source string
+ * @param {Uint8Array} buffer Destination buffer
+ * @param {number} offset Destination offset
+ * @returns {number} Number of bytes written
+ * @throws {Error} If encoding is invalid
+ */
+base64.decode = function decode(string, buffer, offset) {
+    var start = offset;
+    var j = 0, // goto index
+        t;     // temporary
+    for (var i = 0; i < string.length;) {
+        var c = string.charCodeAt(i++);
+        if (c === 61 && j > 1)
+            break;
+        if ((c = s64[c]) === undefined)
+            throw Error(invalidEncoding);
+        switch (j) {
+            case 0:
+                t = c;
+                j = 1;
+                break;
+            case 1:
+                buffer[offset++] = t << 2 | (c & 48) >> 4;
+                t = c;
+                j = 2;
+                break;
+            case 2:
+                buffer[offset++] = (t & 15) << 4 | (c & 60) >> 2;
+                t = c;
+                j = 3;
+                break;
+            case 3:
+                buffer[offset++] = (t & 3) << 6 | c;
+                j = 0;
+                break;
+        }
+    }
+    if (j === 1)
+        throw Error(invalidEncoding);
+    return offset - start;
+};
+
+/**
+ * Tests if the specified string appears to be base64 encoded.
+ * @param {string} string String to test
+ * @returns {boolean} `true` if probably base64 encoded, otherwise false
+ */
+base64.test = function test(string) {
+    return /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(string);
+};
+
+},{}],3:[function(require,module,exports){
+"use strict";
+module.exports = codegen;
+
+var blockOpenRe  = /[{[]$/,
+    blockCloseRe = /^[}\]]/,
+    casingRe     = /:$/,
+    branchRe     = /^\s*(?:if|}?else if|while|for)\b|\b(?:else)\s*$/,
+    breakRe      = /\b(?:break|continue)(?: \w+)?;?$|^\s*return\b/;
+
+/**
+ * A closure for generating functions programmatically.
+ * @memberof util
+ * @namespace
+ * @function
+ * @param {...string} params Function parameter names
+ * @returns {Codegen} Codegen instance
+ * @property {boolean} supported Whether code generation is supported by the environment.
+ * @property {boolean} verbose=false When set to true, codegen will log generated code to console. Useful for debugging.
+ * @property {function(string, ...*):string} sprintf Underlying sprintf implementation
+ */
+function codegen() {
+    var params = [],
+        src    = [],
+        indent = 1,
+        inCase = false;
+    for (var i = 0; i < arguments.length;)
+        params.push(arguments[i++]);
+
+    /**
+     * A codegen instance as returned by {@link codegen}, that also is a sprintf-like appender function.
+     * @typedef Codegen
+     * @type {function}
+     * @param {string} format Format string
+     * @param {...*} args Replacements
+     * @returns {Codegen} Itself
+     * @property {function(string=):string} str Stringifies the so far generated function source.
+     * @property {function(string=, Object=):function} eof Ends generation and builds the function whilst applying a scope.
+     */
+    /**/
+    function gen() {
+        var args = [],
+            i = 0;
+        for (; i < arguments.length;)
+            args.push(arguments[i++]);
+        var line = sprintf.apply(null, args);
+        var level = indent;
+        if (src.length) {
+            var prev = src[src.length - 1];
+
+            // block open or one time branch
+            if (blockOpenRe.test(prev))
+                level = ++indent; // keep
+            else if (branchRe.test(prev))
+                ++level; // once
+
+            // casing
+            if (casingRe.test(prev) && !casingRe.test(line)) {
+                level = ++indent;
+                inCase = true;
+            } else if (inCase && breakRe.test(prev)) {
+                level = --indent;
+                inCase = false;
+            }
+
+            // block close
+            if (blockCloseRe.test(line))
+                level = --indent;
+        }
+        for (i = 0; i < level; ++i)
+            line = "\t" + line;
+        src.push(line);
+        return gen;
+    }
+
+    /**
+     * Stringifies the so far generated function source.
+     * @param {string} [name] Function name, defaults to generate an anonymous function
+     * @returns {string} Function source using tabs for indentation
+     * @inner
+     */
+    function str(name) {
+        return "function" + (name ? " " + name.replace(/[^\w_$]/g, "_") : "") + "(" + params.join(",") + ") {\n" + src.join("\n") + "\n}";
+    }
+
+    gen.str = str;
+
+    /**
+     * Ends generation and builds the function whilst applying a scope.
+     * @param {string} [name] Function name, defaults to generate an anonymous function
+     * @param {Object.<string,*>} [scope] Function scope
+     * @returns {function} The generated function, with scope applied if specified
+     * @inner
+     */
+    function eof(name, scope) {
+        if (typeof name === "object") {
+            scope = name;
+            name = undefined;
+        }
+        var source = gen.str(name);
+        if (codegen.verbose)
+            console.log("--- codegen ---\n" + source.replace(/^/mg, "> ").replace(/\t/g, "  ")); // eslint-disable-line no-console
+        var keys = Object.keys(scope || (scope = {}));
+        return Function.apply(null, keys.concat("return " + source)).apply(null, keys.map(function(key) { return scope[key]; })); // eslint-disable-line no-new-func
+        //     ^ Creates a wrapper function with the scoped variable names as its parameters,
+        //       calls it with the respective scoped variable values ^
+        //       and returns our brand-new properly scoped function.
+        //
+        // This works because "Invoking the Function constructor as a function (without using the
+        // new operator) has the same effect as invoking it as a constructor."
+        // https://developer.mozilla.org/de/docs/Web/JavaScript/Reference/Global_Objects/Function
+    }
+
+    gen.eof = eof;
+
+    return gen;
+}
+
+function sprintf(format) {
+    var args = [],
+        i = 1;
+    for (; i < arguments.length;)
+        args.push(arguments[i++]);
+    i = 0;
+    format = format.replace(/%([dfjs])/g, function($0, $1) {
+        switch ($1) {
+            case "d":
+                return Math.floor(args[i++]);
+            case "f":
+                return Number(args[i++]);
+            case "j":
+                return JSON.stringify(args[i++]);
+            default:
+                return args[i++];
+        }
+    });
+    if (i !== args.length)
+        throw Error("argument count mismatch");
+    return format;
+}
+
+codegen.sprintf   = sprintf;
+codegen.supported = false; try { codegen.supported = codegen("a","b")("return a-b").eof()(2,1) === 1; } catch (e) {} // eslint-disable-line no-empty
+codegen.verbose   = false;
+
+},{}],4:[function(require,module,exports){
+"use strict";
+module.exports = EventEmitter;
+
+/**
+ * Constructs a new event emitter instance.
+ * @classdesc A minimal event emitter.
+ * @memberof util
+ * @constructor
+ */
+function EventEmitter() {
+
+    /**
+     * Registered listeners.
+     * @type {Object.<string,*>}
+     * @private
+     */
+    this._listeners = {};
+}
+
+/**
+ * Registers an event listener.
+ * @param {string} evt Event name
+ * @param {function} fn Listener
+ * @param {*} [ctx] Listener context
+ * @returns {util.EventEmitter} `this`
+ */
+EventEmitter.prototype.on = function on(evt, fn, ctx) {
+    (this._listeners[evt] || (this._listeners[evt] = [])).push({
+        fn  : fn,
+        ctx : ctx || this
+    });
+    return this;
+};
+
+/**
+ * Removes an event listener or any matching listeners if arguments are omitted.
+ * @param {string} [evt] Event name. Removes all listeners if omitted.
+ * @param {function} [fn] Listener to remove. Removes all listeners of `evt` if omitted.
+ * @returns {util.EventEmitter} `this`
+ */
+EventEmitter.prototype.off = function off(evt, fn) {
+    if (evt === undefined)
+        this._listeners = {};
+    else {
+        if (fn === undefined)
+            this._listeners[evt] = [];
+        else {
+            var listeners = this._listeners[evt];
+            for (var i = 0; i < listeners.length;)
+                if (listeners[i].fn === fn)
+                    listeners.splice(i, 1);
+                else
+                    ++i;
+        }
+    }
+    return this;
+};
+
+/**
+ * Emits an event by calling its listeners with the specified arguments.
+ * @param {string} evt Event name
+ * @param {...*} args Arguments
+ * @returns {util.EventEmitter} `this`
+ */
+EventEmitter.prototype.emit = function emit(evt) {
+    var listeners = this._listeners[evt];
+    if (listeners) {
+        var args = [],
+            i = 1;
+        for (; i < arguments.length;)
+            args.push(arguments[i++]);
+        for (i = 0; i < listeners.length;)
+            listeners[i].fn.apply(listeners[i++].ctx, args);
+    }
+    return this;
+};
+
+},{}],5:[function(require,module,exports){
+"use strict";
+module.exports = fetch;
+
+var asPromise = require(1),
+    inquire   = require(6);
+
+var fs = inquire("fs");
+
+/**
+ * Node-style callback as used by {@link util.fetch}.
+ * @typedef FetchCallback
+ * @type {function}
+ * @param {?Error} error Error, if any, otherwise `null`
+ * @param {string} [contents] File contents, if there hasn't been an error
+ * @returns {undefined}
+ */
+
+/**
+ * Options as used by {@link util.fetch}.
+ * @typedef FetchOptions
+ * @type {Object}
+ * @property {boolean} [binary=false] Whether expecting a binary response
+ * @property {boolean} [xhr=false] If `true`, forces the use of XMLHttpRequest
+ */
+
+/**
+ * Fetches the contents of a file.
+ * @memberof util
+ * @param {string} filename File path or url
+ * @param {FetchOptions} options Fetch options
+ * @param {FetchCallback} callback Callback function
+ * @returns {undefined}
+ */
+function fetch(filename, options, callback) {
+    if (typeof options === "function") {
+        callback = options;
+        options = {};
+    } else if (!options)
+        options = {};
+
+    if (!callback)
+        return asPromise(fetch, this, filename, options); // eslint-disable-line no-invalid-this
+
+    // if a node-like filesystem is present, try it first but fall back to XHR if nothing is found.
+    if (!options.xhr && fs && fs.readFile)
+        return fs.readFile(filename, function fetchReadFileCallback(err, contents) {
+            return err && typeof XMLHttpRequest !== "undefined"
+                ? fetch.xhr(filename, options, callback)
+                : err
+                ? callback(err)
+                : callback(null, options.binary ? contents : contents.toString("utf8"));
+        });
+
+    // use the XHR version otherwise.
+    return fetch.xhr(filename, options, callback);
+}
+
+/**
+ * Fetches the contents of a file.
+ * @name util.fetch
+ * @function
+ * @param {string} path File path or url
+ * @param {FetchCallback} callback Callback function
+ * @returns {undefined}
+ * @variation 2
+ */
+
+/**
+ * Fetches the contents of a file.
+ * @name util.fetch
+ * @function
+ * @param {string} path File path or url
+ * @param {FetchOptions} [options] Fetch options
+ * @returns {Promise<string|Uint8Array>} Promise
+ * @variation 3
+ */
+
+/**/
+fetch.xhr = function fetch_xhr(filename, options, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange /* works everywhere */ = function fetchOnReadyStateChange() {
+
+        if (xhr.readyState !== 4)
+            return undefined;
+
+        // local cors security errors return status 0 / empty string, too. afaik this cannot be
+        // reliably distinguished from an actually empty file for security reasons. feel free
+        // to send a pull request if you are aware of a solution.
+        if (xhr.status !== 0 && xhr.status !== 200)
+            return callback(Error("status " + xhr.status));
+
+        // if binary data is expected, make sure that some sort of array is returned, even if
+        // ArrayBuffers are not supported. the binary string fallback, however, is unsafe.
+        if (options.binary) {
+            var buffer = xhr.response;
+            if (!buffer) {
+                buffer = [];
+                for (var i = 0; i < xhr.responseText.length; ++i)
+                    buffer.push(xhr.responseText.charCodeAt(i) & 255);
+            }
+            return callback(null, typeof Uint8Array !== "undefined" ? new Uint8Array(buffer) : buffer);
+        }
+        return callback(null, xhr.responseText);
+    };
+
+    if (options.binary) {
+        // ref: https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Sending_and_Receiving_Binary_Data#Receiving_binary_data_in_older_browsers
+        if ("overrideMimeType" in xhr)
+            xhr.overrideMimeType("text/plain; charset=x-user-defined");
+        xhr.responseType = "arraybuffer";
+    }
+
+    xhr.open("GET", filename);
+    xhr.send();
+};
+
+},{"1":1,"6":6}],6:[function(require,module,exports){
+"use strict";
+module.exports = inquire;
+
+/**
+ * Requires a module only if available.
+ * @memberof util
+ * @param {string} moduleName Module to require
+ * @returns {?Object} Required module if available and not empty, otherwise `null`
+ */
+function inquire(moduleName) {
+    try {
+        var mod = eval("quire".replace(/^/,"re"))(moduleName); // eslint-disable-line no-eval
+        if (mod && (mod.length || Object.keys(mod).length))
+            return mod;
+    } catch (e) {} // eslint-disable-line no-empty
+    return null;
+}
+
+},{}],7:[function(require,module,exports){
+"use strict";
+
+/**
+ * A minimal path module to resolve Unix, Windows and URL paths alike.
+ * @memberof util
+ * @namespace
+ */
+var path = exports;
+
+var isAbsolute =
+/**
+ * Tests if the specified path is absolute.
+ * @param {string} path Path to test
+ * @returns {boolean} `true` if path is absolute
+ */
+path.isAbsolute = function isAbsolute(path) {
+    return /^(?:\/|\w+:)/.test(path);
+};
+
+var normalize =
+/**
+ * Normalizes the specified path.
+ * @param {string} path Path to normalize
+ * @returns {string} Normalized path
+ */
+path.normalize = function normalize(path) {
+    path = path.replace(/\\/g, "/")
+               .replace(/\/{2,}/g, "/");
+    var parts    = path.split("/"),
+        absolute = isAbsolute(path),
+        prefix   = "";
+    if (absolute)
+        prefix = parts.shift() + "/";
+    for (var i = 0; i < parts.length;) {
+        if (parts[i] === "..") {
+            if (i > 0 && parts[i - 1] !== "..")
+                parts.splice(--i, 2);
+            else if (absolute)
+                parts.splice(i, 1);
+            else
+                ++i;
+        } else if (parts[i] === ".")
+            parts.splice(i, 1);
+        else
+            ++i;
+    }
+    return prefix + parts.join("/");
+};
+
+/**
+ * Resolves the specified include path against the specified origin path.
+ * @param {string} originPath Path to the origin file
+ * @param {string} includePath Include path relative to origin path
+ * @param {boolean} [alreadyNormalized=false] `true` if both paths are already known to be normalized
+ * @returns {string} Path to the include file
+ */
+path.resolve = function resolve(originPath, includePath, alreadyNormalized) {
+    if (!alreadyNormalized)
+        includePath = normalize(includePath);
+    if (isAbsolute(includePath))
+        return includePath;
+    if (!alreadyNormalized)
+        originPath = normalize(originPath);
+    return (originPath = originPath.replace(/(?:\/|^)[^/]+$/, "")).length ? normalize(originPath + "/" + includePath) : includePath;
+};
+
+},{}],8:[function(require,module,exports){
+"use strict";
+module.exports = pool;
+
+/**
+ * An allocator as used by {@link util.pool}.
+ * @typedef PoolAllocator
+ * @type {function}
+ * @param {number} size Buffer size
+ * @returns {Uint8Array} Buffer
+ */
+
+/**
+ * A slicer as used by {@link util.pool}.
+ * @typedef PoolSlicer
+ * @type {function}
+ * @param {number} start Start offset
+ * @param {number} end End offset
+ * @returns {Uint8Array} Buffer slice
+ * @this {Uint8Array}
+ */
+
+/**
+ * A general purpose buffer pool.
+ * @memberof util
+ * @function
+ * @param {PoolAllocator} alloc Allocator
+ * @param {PoolSlicer} slice Slicer
+ * @param {number} [size=8192] Slab size
+ * @returns {PoolAllocator} Pooled allocator
+ */
+function pool(alloc, slice, size) {
+    var SIZE   = size || 8192;
+    var MAX    = SIZE >>> 1;
+    var slab   = null;
+    var offset = SIZE;
+    return function pool_alloc(size) {
+        if (size < 1 || size > MAX)
+            return alloc(size);
+        if (offset + size > SIZE) {
+            slab = alloc(SIZE);
+            offset = 0;
+        }
+        var buf = slice.call(slab, offset, offset += size);
+        if (offset & 7) // align to 32 bit
+            offset = (offset | 7) + 1;
+        return buf;
+    };
+}
+
+},{}],9:[function(require,module,exports){
+"use strict";
+
+/**
+ * A minimal UTF8 implementation for number arrays.
+ * @memberof util
+ * @namespace
+ */
+var utf8 = exports;
+
+/**
+ * Calculates the UTF8 byte length of a string.
+ * @param {string} string String
+ * @returns {number} Byte length
+ */
+utf8.length = function utf8_length(string) {
+    var len = 0,
+        c = 0;
+    for (var i = 0; i < string.length; ++i) {
+        c = string.charCodeAt(i);
+        if (c < 128)
+            len += 1;
+        else if (c < 2048)
+            len += 2;
+        else if ((c & 0xFC00) === 0xD800 && (string.charCodeAt(i + 1) & 0xFC00) === 0xDC00) {
+            ++i;
+            len += 4;
+        } else
+            len += 3;
+    }
+    return len;
+};
+
+/**
+ * Reads UTF8 bytes as a string.
+ * @param {Uint8Array} buffer Source buffer
+ * @param {number} start Source start
+ * @param {number} end Source end
+ * @returns {string} String read
+ */
+utf8.read = function utf8_read(buffer, start, end) {
+    var len = end - start;
+    if (len < 1)
+        return "";
+    var parts = null,
+        chunk = [],
+        i = 0, // char offset
+        t;     // temporary
+    while (start < end) {
+        t = buffer[start++];
+        if (t < 128)
+            chunk[i++] = t;
+        else if (t > 191 && t < 224)
+            chunk[i++] = (t & 31) << 6 | buffer[start++] & 63;
+        else if (t > 239 && t < 365) {
+            t = ((t & 7) << 18 | (buffer[start++] & 63) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63) - 0x10000;
+            chunk[i++] = 0xD800 + (t >> 10);
+            chunk[i++] = 0xDC00 + (t & 1023);
+        } else
+            chunk[i++] = (t & 15) << 12 | (buffer[start++] & 63) << 6 | buffer[start++] & 63;
+        if (i > 8191) {
+            (parts || (parts = [])).push(String.fromCharCode.apply(String, chunk));
+            i = 0;
+        }
+    }
+    if (parts) {
+        if (i)
+            parts.push(String.fromCharCode.apply(String, chunk.slice(0, i)));
+        return parts.join("");
+    }
+    return String.fromCharCode.apply(String, chunk.slice(0, i));
+};
+
+/**
+ * Writes a string as UTF8 bytes.
+ * @param {string} string Source string
+ * @param {Uint8Array} buffer Destination buffer
+ * @param {number} offset Destination offset
+ * @returns {number} Bytes written
+ */
+utf8.write = function utf8_write(string, buffer, offset) {
+    var start = offset,
+        c1, // character 1
+        c2; // character 2
+    for (var i = 0; i < string.length; ++i) {
+        c1 = string.charCodeAt(i);
+        if (c1 < 128) {
+            buffer[offset++] = c1;
+        } else if (c1 < 2048) {
+            buffer[offset++] = c1 >> 6       | 192;
+            buffer[offset++] = c1       & 63 | 128;
+        } else if ((c1 & 0xFC00) === 0xD800 && ((c2 = string.charCodeAt(i + 1)) & 0xFC00) === 0xDC00) {
+            c1 = 0x10000 + ((c1 & 0x03FF) << 10) + (c2 & 0x03FF);
+            ++i;
+            buffer[offset++] = c1 >> 18      | 240;
+            buffer[offset++] = c1 >> 12 & 63 | 128;
+            buffer[offset++] = c1 >> 6  & 63 | 128;
+            buffer[offset++] = c1       & 63 | 128;
+        } else {
+            buffer[offset++] = c1 >> 12      | 224;
+            buffer[offset++] = c1 >> 6  & 63 | 128;
+            buffer[offset++] = c1       & 63 | 128;
+        }
+    }
+    return offset - start;
+};
+
+},{}],10:[function(require,module,exports){
+"use strict";
+module.exports = Class;
+
+var Message = require(21),
+    util    = require(36);
+
+var Type; // cyclic
+
+/**
+ * Constructs a new message prototype for the specified reflected type and sets up its constructor.
+ * @classdesc Runtime class providing the tools to create your own custom classes.
+ * @constructor
+ * @param {Type} type Reflected message type
+ * @param {*} [ctor] Custom constructor to set up, defaults to create a generic one if omitted
+ * @returns {Message} Message prototype
+ */
+function Class(type, ctor) {
+    if (!Type)
+        Type = require(34);
+
+    if (!(type instanceof Type))
+        throw TypeError("type must be a Type");
+
+    if (ctor) {
+        if (typeof ctor !== "function")
+            throw TypeError("ctor must be a function");
+    } else
+        ctor = Class.generate(type).eof(type.name); // named constructor function (codegen is required anyway)
+
+    // Let's pretend...
+    ctor.constructor = Class;
+
+    // new Class() -> Message.prototype
+    (ctor.prototype = new Message()).constructor = ctor;
+
+    // Static methods on Message are instance methods on Class and vice versa
+    util.merge(ctor, Message, true);
+
+    // Classes and messages reference their reflected type
+    ctor.$type = type;
+    ctor.prototype.$type = type;
+
+    // Messages have non-enumerable default values on their prototype
+    var i = 0;
+    for (; i < /* initializes */ type.fieldsArray.length; ++i) {
+        // objects on the prototype must be immmutable. users must assign a new object instance and
+        // cannot use Array#push on empty arrays on the prototype for example, as this would modify
+        // the value on the prototype for ALL messages of this type. Hence, these objects are frozen.
+        ctor.prototype[type._fieldsArray[i].name] = Array.isArray(type._fieldsArray[i].resolve().defaultValue)
+            ? util.emptyArray
+            : util.isObject(type._fieldsArray[i].defaultValue) && !type._fieldsArray[i].long
+              ? util.emptyObject
+              : type._fieldsArray[i].defaultValue; // if a long, it is frozen when initialized
+    }
+
+    // Messages have non-enumerable getters and setters for each virtual oneof field
+    var ctorProperties = {};
+    for (i = 0; i < /* initializes */ type.oneofsArray.length; ++i)
+        ctorProperties[type._oneofsArray[i].resolve().name] = {
+            get: util.oneOfGetter(type._oneofsArray[i].oneof),
+            set: util.oneOfSetter(type._oneofsArray[i].oneof)
+        };
+    if (i)
+        Object.defineProperties(ctor.prototype, ctorProperties);
+
+    // Register
+    type.ctor = ctor;
+
+    return ctor.prototype;
+}
+
+/**
+ * Generates a constructor function for the specified type.
+ * @param {Type} type Type to use
+ * @returns {Codegen} Codegen instance
+ */
+Class.generate = function generate(type) { // eslint-disable-line no-unused-vars
+    /* eslint-disable no-unexpected-multiline */
+    var gen = util.codegen("p");
+    // see issue #700
+    /*
+    for (var i = 0, field; i < type.fieldsArray.length; ++i)
+        if ((field = type._fieldsArray[i]).map) gen
+            ("this%s={}", util.safeProp(field.name));
+        else if (field.repeated) gen
+            ("this%s=[]", util.safeProp(field.name));
+    */
+    return gen
+    ("if(p){")
+        ("for(var ks=Object.keys(p),i=0;i<ks.length;++i)")
+            ("this[ks[i]]=p[ks[i]];")
+    ("}");
+    /* eslint-enable no-unexpected-multiline */
+};
+
+/**
+ * Constructs a new message prototype for the specified reflected type and sets up its constructor.
+ * @function
+ * @param {Type} type Reflected message type
+ * @param {*} [ctor] Custom constructor to set up, defaults to create a generic one if omitted
+ * @returns {Message} Message prototype
+ */
+Class.create = Class;
+
+// Static methods on Message are instance methods on Class and vice versa
+Class.prototype = Message;
+
+/**
+ * Creates a new message of this type from a plain object. Also converts values to their respective internal types.
+ * @name Class#fromObject
+ * @function
+ * @param {Object.<string,*>} object Plain object
+ * @returns {Message} Message instance
+ */
+
+/**
+ * Creates a new message of this type from a plain object. Also converts values to their respective internal types.
+ * This is an alias of {@link Class#fromObject}.
+ * @name Class#from
+ * @function
+ * @param {Object.<string,*>} object Plain object
+ * @returns {Message} Message instance
+ */
+
+/**
+ * Creates a plain object from a message of this type. Also converts values to other types if specified.
+ * @name Class#toObject
+ * @function
+ * @param {Message} message Message instance
+ * @param {ConversionOptions} [options] Conversion options
+ * @returns {Object.<string,*>} Plain object
+ */
+
+/**
+ * Encodes a message of this type.
+ * @name Class#encode
+ * @function
+ * @param {Message|Object} message Message to encode
+ * @param {Writer} [writer] Writer to use
+ * @returns {Writer} Writer
+ */
+
+/**
+ * Encodes a message of this type preceeded by its length as a varint.
+ * @name Class#encodeDelimited
+ * @function
+ * @param {Message|Object} message Message to encode
+ * @param {Writer} [writer] Writer to use
+ * @returns {Writer} Writer
+ */
+
+/**
+ * Decodes a message of this type.
+ * @name Class#decode
+ * @function
+ * @param {Reader|Uint8Array} reader Reader or buffer to decode
+ * @returns {Message} Decoded message
+ */
+
+/**
+ * Decodes a message of this type preceeded by its length as a varint.
+ * @name Class#decodeDelimited
+ * @function
+ * @param {Reader|Uint8Array} reader Reader or buffer to decode
+ * @returns {Message} Decoded message
+ */
+
+/**
+ * Verifies a message of this type.
+ * @name Class#verify
+ * @function
+ * @param {Message|Object} message Message or plain object to verify
+ * @returns {?string} `null` if valid, otherwise the reason why it is not
+ */
+
+},{"21":21,"34":34,"36":36}],11:[function(require,module,exports){
+"use strict";
+module.exports = common;
+
+/**
+ * Provides common type definitions.
+ * Can also be used to provide additional google types or your own custom types.
+ * @param {string} name Short name as in `google/protobuf/[name].proto` or full file name
+ * @param {Object.<string,*>} json JSON definition within `google.protobuf` if a short name, otherwise the file's root definition
+ * @returns {undefined}
+ * @property {Object.<string,*>} google/protobuf/any.proto Any
+ * @property {Object.<string,*>} google/protobuf/duration.proto Duration
+ * @property {Object.<string,*>} google/protobuf/empty.proto Empty
+ * @property {Object.<string,*>} google/protobuf/struct.proto Struct, Value, NullValue and ListValue
+ * @property {Object.<string,*>} google/protobuf/timestamp.proto Timestamp
+ * @property {Object.<string,*>} google/protobuf/wrappers.proto Wrappers
+ * @example
+ * // manually provides descriptor.proto (assumes google/protobuf/ namespace and .proto extension)
+ * protobuf.common("descriptor", descriptorJson);
+ *
+ * // manually provides a custom definition (uses my.foo namespace)
+ * protobuf.common("my/foo/bar.proto", myFooBarJson);
+ */
+function common(name, json) {
+    if (!commonRe.test(name)) {
+        name = "google/protobuf/" + name + ".proto";
+        json = { nested: { google: { nested: { protobuf: { nested: json } } } } };
+    }
+    common[name] = json;
+}
+
+var commonRe = /\/|\./;
+
+// Not provided because of limited use (feel free to discuss or to provide yourself):
+//
+// google/protobuf/descriptor.proto
+// google/protobuf/field_mask.proto
+// google/protobuf/source_context.proto
+// google/protobuf/type.proto
+//
+// Stripped and pre-parsed versions of these non-bundled files are instead available as part of
+// the repository or package within the google/protobuf directory.
+
+common("any", {
+    Any: {
+        fields: {
+            type_url: {
+                type: "string",
+                id: 1
+            },
+            value: {
+                type: "bytes",
+                id: 2
+            }
+        }
+    }
+});
+
+var timeType;
+
+common("duration", {
+    Duration: timeType = {
+        fields: {
+            seconds: {
+                type: "int64",
+                id: 1
+            },
+            nanos: {
+                type: "int32",
+                id: 2
+            }
+        }
+    }
+});
+
+common("timestamp", {
+    Timestamp: timeType
+});
+
+common("empty", {
+    Empty: {
+        fields: {}
+    }
+});
+
+common("struct", {
+    Struct: {
+        fields: {
+            fields: {
+                keyType: "string",
+                type: "Value",
+                id: 1
+            }
+        }
+    },
+    Value: {
+        oneofs: {
+            kind: {
+                oneof: [
+                    "nullValue",
+                    "numberValue",
+                    "stringValue",
+                    "boolValue",
+                    "structValue",
+                    "listValue"
+                ]
+            }
+        },
+        fields: {
+            nullValue: {
+                type: "NullValue",
+                id: 1
+            },
+            numberValue: {
+                type: "double",
+                id: 2
+            },
+            stringValue: {
+                type: "string",
+                id: 3
+            },
+            boolValue: {
+                type: "bool",
+                id: 4
+            },
+            structValue: {
+                type: "Struct",
+                id: 5
+            },
+            listValue: {
+                type: "ListValue",
+                id: 6
+            }
+        }
+    },
+    NullValue: {
+        values: {
+            NULL_VALUE: 0
+        }
+    },
+    ListValue: {
+        fields: {
+            values: {
+                rule: "repeated",
+                type: "Value",
+                id: 1
+            }
+        }
+    }
+});
+
+common("wrappers", {
+    DoubleValue: {
+        fields: {
+            value: {
+                type: "double",
+                id: 1
+            }
+        }
+    },
+    FloatValue: {
+        fields: {
+            value: {
+                type: "float",
+                id: 1
+            }
+        }
+    },
+    Int64Value: {
+        fields: {
+            value: {
+                type: "int64",
+                id: 1
+            }
+        }
+    },
+    UInt64Value: {
+        fields: {
+            value: {
+                type: "uint64",
+                id: 1
+            }
+        }
+    },
+    Int32Value: {
+        fields: {
+            value: {
+                type: "int32",
+                id: 1
+            }
+        }
+    },
+    UInt32Value: {
+        fields: {
+            value: {
+                type: "uint32",
+                id: 1
+            }
+        }
+    },
+    BoolValue: {
+        fields: {
+            value: {
+                type: "bool",
+                id: 1
+            }
+        }
+    },
+    StringValue: {
+        fields: {
+            value: {
+                type: "string",
+                id: 1
+            }
+        }
+    },
+    BytesValue: {
+        fields: {
+            value: {
+                type: "bytes",
+                id: 1
+            }
+        }
+    }
+});
+
+},{}],12:[function(require,module,exports){
+"use strict";
+/**
+ * Runtime message from/to plain object converters.
+ * @namespace
+ */
+var converter = exports;
+
+var Enum = require(15),
+    util = require(36);
+
+/**
+ * Generates a partial value fromObject conveter.
+ * @param {Codegen} gen Codegen instance
+ * @param {Field} field Reflected field
+ * @param {number} fieldIndex Field index
+ * @param {string} prop Property reference
+ * @returns {Codegen} Codegen instance
+ * @ignore
+ */
+function genValuePartial_fromObject(gen, field, fieldIndex, prop) {
+    /* eslint-disable no-unexpected-multiline, block-scoped-var, no-redeclare */
+    if (field.resolvedType) {
+        if (field.resolvedType instanceof Enum) { gen
+            ("switch(d%s){", prop);
+            for (var values = field.resolvedType.values, keys = Object.keys(values), i = 0; i < keys.length; ++i) {
+                if (field.repeated && values[keys[i]] === field.typeDefault) gen
+                ("default:");
+                gen
+                ("case%j:", keys[i])
+                ("case %j:", values[keys[i]])
+                    ("m%s=%j", prop, values[keys[i]])
+                    ("break");
+            } gen
+            ("}");
+        } else gen
+            ("if(typeof d%s!==\"object\")", prop)
+                ("throw TypeError(%j)", field.fullName + ": object expected")
+            ("m%s=types[%d].fromObject(d%s)", prop, fieldIndex, prop);
+    } else {
+        var isUnsigned = false;
+        switch (field.type) {
+            case "double":
+            case "float":gen
+                ("m%s=Number(d%s)", prop, prop);
+                break;
+            case "uint32":
+            case "fixed32": gen
+                ("m%s=d%s>>>0", prop, prop);
+                break;
+            case "int32":
+            case "sint32":
+            case "sfixed32": gen
+                ("m%s=d%s|0", prop, prop);
+                break;
+            case "uint64":
+                isUnsigned = true;
+                // eslint-disable-line no-fallthrough
+            case "int64":
+            case "sint64":
+            case "fixed64":
+            case "sfixed64": gen
+                ("if(util.Long)")
+                    ("(m%s=util.Long.fromValue(d%s)).unsigned=%j", prop, prop, isUnsigned)
+                ("else if(typeof d%s===\"string\")", prop)
+                    ("m%s=parseInt(d%s,10)", prop, prop)
+                ("else if(typeof d%s===\"number\")", prop)
+                    ("m%s=d%s", prop, prop)
+                ("else if(typeof d%s===\"object\")", prop)
+                    ("m%s=new util.LongBits(d%s.low>>>0,d%s.high>>>0).toNumber(%s)", prop, prop, prop, isUnsigned ? "true" : "");
+                break;
+            case "bytes": gen
+                ("if(typeof d%s===\"string\")", prop)
+                    ("util.base64.decode(d%s,m%s=util.newBuffer(util.base64.length(d%s)),0)", prop, prop, prop)
+                ("else if(d%s.length)", prop)
+                    ("m%s=d%s", prop, prop);
+                break;
+            case "string": gen
+                ("m%s=String(d%s)", prop, prop);
+                break;
+            case "bool": gen
+                ("m%s=Boolean(d%s)", prop, prop);
+                break;
+            /* default: gen
+                ("m%s=d%s", prop, prop);
+                break; */
+        }
+    }
+    return gen;
+    /* eslint-enable no-unexpected-multiline, block-scoped-var, no-redeclare */
+}
+
+/**
+ * Generates a plain object to runtime message converter specific to the specified message type.
+ * @param {Type} mtype Message type
+ * @returns {Codegen} Codegen instance
+ */
+converter.fromObject = function fromObject(mtype) {
+    /* eslint-disable no-unexpected-multiline, block-scoped-var, no-redeclare */
+    var fields = mtype.fieldsArray;
+    var gen = util.codegen("d")
+    ("if(d instanceof this.ctor)")
+        ("return d");
+    if (!fields.length) return gen
+    ("return new this.ctor");
+    gen
+    ("var m=new this.ctor");
+    for (var i = 0; i < fields.length; ++i) {
+        var field  = fields[i].resolve(),
+            prop   = util.safeProp(field.name);
+
+        // Map fields
+        if (field.map) { gen
+    ("if(d%s){", prop)
+        ("if(typeof d%s!==\"object\")", prop)
+            ("throw TypeError(%j)", field.fullName + ": object expected")
+        ("m%s={}", prop)
+        ("for(var ks=Object.keys(d%s),i=0;i<ks.length;++i){", prop);
+            genValuePartial_fromObject(gen, field, i, prop + "[ks[i]]")
+        ("}")
+    ("}");
+
+        // Repeated fields
+        } else if (field.repeated) { gen
+    ("if(d%s){", prop)
+        ("if(!Array.isArray(d%s))", prop)
+            ("throw TypeError(%j)", field.fullName + ": array expected")
+        ("m%s=[]", prop)
+        ("for(var i=0;i<d%s.length;++i){", prop);
+            genValuePartial_fromObject(gen, field, i, prop + "[i]")
+        ("}")
+    ("}");
+
+        // Non-repeated fields
+        } else {
+            if (!(field.resolvedType instanceof Enum)) gen // no need to test for null/undefined if an enum (uses switch)
+    ("if(d%s!==undefined&&d%s!==null){", prop, prop);
+        genValuePartial_fromObject(gen, field, i, prop);
+            if (!(field.resolvedType instanceof Enum)) gen
+    ("}");
+        }
+    } return gen
+    ("return m");
+    /* eslint-enable no-unexpected-multiline, block-scoped-var, no-redeclare */
+};
+
+/**
+ * Generates a partial value toObject converter.
+ * @param {Codegen} gen Codegen instance
+ * @param {Field} field Reflected field
+ * @param {number} fieldIndex Field index
+ * @param {string} prop Property reference
+ * @returns {Codegen} Codegen instance
+ * @ignore
+ */
+function genValuePartial_toObject(gen, field, fieldIndex, prop) {
+    /* eslint-disable no-unexpected-multiline, block-scoped-var, no-redeclare */
+    if (field.resolvedType) {
+        if (field.resolvedType instanceof Enum) gen
+            ("d%s=o.enums===String?types[%d].values[m%s]:m%s", prop, fieldIndex, prop, prop);
+        else gen
+            ("d%s=types[%d].toObject(m%s,o)", prop, fieldIndex, prop);
+    } else {
+        var isUnsigned = false;
+        switch (field.type) {
+            case "uint64":
+                isUnsigned = true;
+                // eslint-disable-line no-fallthrough
+            case "int64":
+            case "sint64":
+            case "fixed64":
+            case "sfixed64": gen
+            ("if(typeof m%s===\"number\")", prop)
+                ("d%s=o.longs===String?String(m%s):m%s", prop, prop, prop)
+            ("else") // Long-like
+                ("d%s=o.longs===String?util.Long.prototype.toString.call(m%s):o.longs===Number?new util.LongBits(m%s.low>>>0,m%s.high>>>0).toNumber(%s):m%s", prop, prop, prop, prop, isUnsigned ? "true": "", prop);
+                break;
+            case "bytes": gen
+            ("d%s=o.bytes===String?util.base64.encode(m%s,0,m%s.length):o.bytes===Array?Array.prototype.slice.call(m%s):m%s", prop, prop, prop, prop, prop);
+                break;
+            default: gen
+            ("d%s=m%s", prop, prop);
+                break;
+        }
+    }
+    return gen;
+    /* eslint-enable no-unexpected-multiline, block-scoped-var, no-redeclare */
+}
+
+/**
+ * Generates a runtime message to plain object converter specific to the specified message type.
+ * @param {Type} mtype Message type
+ * @returns {Codegen} Codegen instance
+ */
+converter.toObject = function toObject(mtype) {
+    /* eslint-disable no-unexpected-multiline, block-scoped-var, no-redeclare */
+    var fields = mtype.fieldsArray;
+    if (!fields.length)
+        return util.codegen()("return {}");
+    var gen = util.codegen("m", "o")
+    ("if(!o)")
+        ("o={}")
+    ("var d={}");
+
+    var repeatedFields = [],
+        mapFields = [],
+        otherFields = [],
+        i = 0;
+    for (; i < fields.length; ++i)
+        if (fields[i].resolve().repeated)
+            repeatedFields.push(fields[i]);
+        else if (fields[i].map)
+            mapFields.push(fields[i]);
+        else
+            otherFields.push(fields[i]);
+
+    if (repeatedFields.length) { gen
+    ("if(o.arrays||o.defaults){");
+        for (i = 0; i < repeatedFields.length; ++i) gen
+        ("d%s=[]", util.safeProp(repeatedFields[i].name));
+        gen
+    ("}");
+    }
+
+    if (mapFields.length) { gen
+    ("if(o.objects||o.defaults){");
+        for (i = 0; i < mapFields.length; ++i) gen
+        ("d%s={}", util.safeProp(mapFields[i].name));
+        gen
+    ("}");
+    }
+
+    if (otherFields.length) { gen
+    ("if(o.defaults){");
+        for (i = 0, field; i < otherFields.length; ++i) {
+            var field = otherFields[i],
+                prop  = util.safeProp(field.name);
+            if (field.resolvedType instanceof Enum) gen
+        ("d%s=o.enums===String?%j:%j", prop, field.resolvedType.valuesById[field.typeDefault], field.typeDefault);
+            else if (field.long) gen
+        ("if(util.Long){")
+            ("var n=new util.Long(%d,%d,%j)", field.typeDefault.low, field.typeDefault.high, field.typeDefault.unsigned)
+            ("d%s=o.longs===String?n.toString():o.longs===Number?n.toNumber():n", prop)
+        ("}else")
+            ("d%s=o.longs===String?%j:%d", prop, field.typeDefault.toString(), field.typeDefault.toNumber());
+            else if (field.bytes) gen
+        ("d%s=o.bytes===String?%j:%s", prop, String.fromCharCode.apply(String, field.typeDefault), "[" + Array.prototype.slice.call(field.typeDefault).join(",") + "]");
+            else gen
+        ("d%s=%j", prop, field.typeDefault); // also messages (=null)
+        } gen
+    ("}");
+    }
+    for (i = 0, field; i < fields.length; ++i) {
+        var field = fields[i],
+            prop  = util.safeProp(field.name); gen
+    ("if(m%s!==undefined&&m%s!==null&&m.hasOwnProperty(%j)){", prop, prop, field.name);
+        if (field.map) { gen
+        ("d%s={}", prop)
+        ("for(var ks2=Object.keys(m%s),j=0;j<ks2.length;++j){", prop);
+            genValuePartial_toObject(gen, field, i, prop + "[ks2[j]]")
+        ("}");
+        } else if (field.repeated) { gen
+        ("d%s=[]", prop)
+        ("for(var j=0;j<m%s.length;++j){", prop);
+            genValuePartial_toObject(gen, field, i, prop + "[j]")
+        ("}");
+        } else
+        genValuePartial_toObject(gen, field, i, prop);
+        gen
+    ("}");
+    }
+    return gen
+    ("return d");
+    /* eslint-enable no-unexpected-multiline, block-scoped-var, no-redeclare */
+};
+
+},{"15":15,"36":36}],13:[function(require,module,exports){
+"use strict";
+module.exports = decoder;
+
+decoder.compat = true;
+
+var Enum    = require(15),
+    types   = require(35),
+    util    = require(36);
+
+function missing(field) {
+    return "missing required '" + field.name + "'";
+}
+
+/**
+ * Generates a decoder specific to the specified message type.
+ * @param {Type} mtype Message type
+ * @returns {Codegen} Codegen instance
+ * @property {boolean} compat=true Generates backward/forward compatible decoders (packed fields)
+ */
+function decoder(mtype) {
+    /* eslint-disable no-unexpected-multiline */
+    var gen = util.codegen("r", "l")
+    ("if(!(r instanceof Reader))")
+        ("r=Reader.create(r)")
+    ("var c=l===undefined?r.len:r.pos+l,m=new this.ctor")
+    ("while(r.pos<c){")
+        ("var t=r.uint32()");
+    if (mtype.group) gen
+        ("if((t&7)===4)")
+            ("break");
+    gen
+        ("switch(t>>>3){");
+
+    var i = 0;
+    for (; i < /* initializes */ mtype.fieldsArray.length; ++i) {
+        var field = mtype._fieldsArray[i].resolve(),
+            type  = field.resolvedType instanceof Enum ? "uint32" : field.type,
+            ref   = "m" + util.safeProp(field.name); gen
+            ("case %d:", field.id);
+
+        // Map fields
+        if (field.map) { gen
+
+                ("r.skip().pos++") // assumes id 1 + key wireType
+                ("if(%s===util.emptyObject)", ref)
+                    ("%s={}", ref)
+                ("var k=r.%s()", field.keyType)
+                ("r.pos++"); // assumes id 2 + value wireType
+            if (types.basic[type] === undefined) gen
+                ("%s[typeof k===\"object\"?util.longToHash(k):k]=types[%d].decode(r,r.uint32())", ref, i); // can't be groups
+            else gen
+                ("%s[typeof k===\"object\"?util.longToHash(k):k]=r.%s()", ref, type);
+
+        // Repeated fields
+        } else if (field.repeated) { gen
+
+                ("if(!(%s&&%s.length))", ref, ref)
+                    ("%s=[]", ref);
+
+            // Packable (always check for forward and backward compatiblity)
+            if ((decoder.compat || field.packed) && types.packed[type] !== undefined) gen
+                ("if((t&7)===2){")
+                    ("var c2=r.uint32()+r.pos")
+                    ("while(r.pos<c2)")
+                        ("%s.push(r.%s())", ref, type)
+                ("}else");
+
+            // Non-packed
+            if (types.basic[type] === undefined) gen(field.resolvedType.group
+                    ? "%s.push(types[%d].decode(r))"
+                    : "%s.push(types[%d].decode(r,r.uint32()))", ref, i);
+            else gen
+                    ("%s.push(r.%s())", ref, type);
+
+        // Non-repeated
+        } else if (types.basic[type] === undefined) gen(field.resolvedType.group
+                ? "%s=types[%d].decode(r)"
+                : "%s=types[%d].decode(r,r.uint32())", ref, i);
+        else gen
+                ("%s=r.%s()", ref, type);
+        gen
+                ("break");
+
+    // Unknown fields
+    } gen
+            ("default:")
+                ("r.skipType(t&7)")
+                ("break")
+
+        ("}")
+    ("}");
+
+    // Field presence
+    for (i = 0; i < mtype._fieldsArray.length; ++i) {
+        var rfield = mtype._fieldsArray[i];
+        if (rfield.required) gen
+    ("if(!m.hasOwnProperty(%j))", rfield.name)
+        ("throw util.ProtocolError(%j,{instance:m})", missing(rfield));
+    }
+
+    return gen
+    ("return m");
+    /* eslint-enable no-unexpected-multiline */
+}
+
+},{"15":15,"35":35,"36":36}],14:[function(require,module,exports){
+"use strict";
+module.exports = encoder;
+
+encoder.compat = true;
+
+var Enum     = require(15),
+    types    = require(35),
+    util     = require(36);
+
+/**
+ * Generates a partial message type encoder.
+ * @param {Codegen} gen Codegen instance
+ * @param {Field} field Reflected field
+ * @param {number} fieldIndex Field index
+ * @param {string} ref Variable reference
+ * @returns {Codegen} Codegen instance
+ * @ignore
+ */
+function genTypePartial(gen, field, fieldIndex, ref) {
+    return field.resolvedType.group
+        ? gen("types[%d].encode(%s,w.uint32(%d)).uint32(%d)", fieldIndex, ref, (field.id << 3 | 3) >>> 0, (field.id << 3 | 4) >>> 0)
+        : gen("types[%d].encode(%s,w.uint32(%d).fork()).ldelim()", fieldIndex, ref, (field.id << 3 | 2) >>> 0);
+}
+
+/**
+ * Compares reflected fields by id.
+ * @param {Field} a First field
+ * @param {Field} b Second field
+ * @returns {number} Comparison value
+ * @ignore
+ */
+function compareFieldsById(a, b) {
+    return a.id - b.id;
+}
+
+/**
+ * Generates an encoder specific to the specified message type.
+ * @param {Type} mtype Message type
+ * @returns {Codegen} Codegen instance
+ * @property {boolean} compat=true Generates encoders serializing in ascending field order
+ */
+function encoder(mtype) {
+    /* eslint-disable no-unexpected-multiline, block-scoped-var, no-redeclare */
+    var gen = util.codegen("m", "w")
+    ("if(!w)")
+        ("w=Writer.create()");
+
+    var i, ref;
+
+    // "when a message is serialized its known fields should be written sequentially by field number"
+    var fields = /* initializes */ mtype.fieldsArray;
+    /* istanbul ignore else */
+    if (encoder.compat)
+        fields = fields.slice().sort(compareFieldsById);
+
+    for (var i = 0; i < fields.length; ++i) {
+        var field    = fields[i].resolve(),
+            index    = encoder.compat ? mtype._fieldsArray.indexOf(field) : /* istanbul ignore next */ i;
+        if (field.partOf) // see below for oneofs
+            continue;
+        var type     = field.resolvedType instanceof Enum ? "uint32" : field.type,
+            wireType = types.basic[type];
+            ref      = "m" + util.safeProp(field.name);
+
+        // Map fields
+        if (field.map) {
+            gen
+    ("if(%s&&m.hasOwnProperty(%j)){", ref, field.name)
+        ("for(var ks=Object.keys(%s),i=0;i<ks.length;++i){", ref)
+            ("w.uint32(%d).fork().uint32(%d).%s(ks[i])", (field.id << 3 | 2) >>> 0, 8 | types.mapKey[field.keyType], field.keyType);
+            if (wireType === undefined) gen
+            ("types[%d].encode(%s[ks[i]],w.uint32(18).fork()).ldelim().ldelim()", index, ref); // can't be groups
+            else gen
+            (".uint32(%d).%s(%s[ks[i]]).ldelim()", 16 | wireType, type, ref);
+            gen
+        ("}")
+    ("}");
+
+        // Repeated fields
+        } else if (field.repeated) {
+
+            // Packed repeated
+            if (field.packed && types.packed[type] !== undefined) { gen
+
+    ("if(%s&&%s.length&&m.hasOwnProperty(%j)){", ref, ref, field.name)
+        ("w.uint32(%d).fork()", (field.id << 3 | 2) >>> 0)
+        ("for(var i=0;i<%s.length;++i)", ref)
+            ("w.%s(%s[i])", type, ref)
+        ("w.ldelim()")
+    ("}");
+
+            // Non-packed
+            } else { gen
+
+    ("if(%s!==undefined&&m.hasOwnProperty(%j)){", ref, field.name)
+        ("for(var i=0;i<%s.length;++i)", ref);
+                if (wireType === undefined)
+            genTypePartial(gen, field, index, ref + "[i]");
+                else gen
+            ("w.uint32(%d).%s(%s[i])", (field.id << 3 | wireType) >>> 0, type, ref);
+                gen
+    ("}");
+
+            }
+
+        // Non-repeated
+        } else {
+            if (!field.required) {
+
+                if (field.long) gen
+    ("if(%s!==undefined&&%s!==null&&m.hasOwnProperty(%j))", ref, ref, field.name);
+                else if (field.bytes || field.resolvedType && !(field.resolvedType instanceof Enum)) gen
+    ("if(%s&&m.hasOwnProperty(%j))", ref, field.name);
+                else gen
+    ("if(%s!==undefined&&m.hasOwnProperty(%j))", ref, field.name);
+
+            }
+
+            if (wireType === undefined)
+        genTypePartial(gen, field, index, ref);
+            else gen
+        ("w.uint32(%d).%s(%s)", (field.id << 3 | wireType) >>> 0, type, ref);
+
+        }
+    }
+
+    // oneofs
+    for (var i = 0; i < /* initializes */ mtype.oneofsArray.length; ++i) {
+        var oneof = mtype._oneofsArray[i]; gen
+        ("switch(%s){", "m" + util.safeProp(oneof.name));
+        for (var j = 0; j < /* direct */ oneof.fieldsArray.length; ++j) {
+            var field    = oneof.fieldsArray[j],
+                type     = field.resolvedType instanceof Enum ? "uint32" : field.type,
+                wireType = types.basic[type];
+                ref      = "m" + util.safeProp(field.name); gen
+            ("case%j:", field.name);
+            if (wireType === undefined)
+                genTypePartial(gen, field, mtype._fieldsArray.indexOf(field), ref);
+            else gen
+                ("w.uint32(%d).%s(%s)", (field.id << 3 | wireType) >>> 0, type, ref);
+            gen
+                ("break");
+        } gen
+        ("}");
+    }
+
+    return gen
+    ("return w");
+    /* eslint-enable no-unexpected-multiline, block-scoped-var, no-redeclare */
+}
+},{"15":15,"35":35,"36":36}],15:[function(require,module,exports){
+"use strict";
+module.exports = Enum;
+
+// extends ReflectionObject
+var ReflectionObject = require(24);
+((Enum.prototype = Object.create(ReflectionObject.prototype)).constructor = Enum).className = "Enum";
+
+var util = require(36);
+
+/**
+ * Constructs a new enum instance.
+ * @classdesc Reflected enum.
+ * @extends ReflectionObject
+ * @constructor
+ * @param {string} name Unique name within its namespace
+ * @param {Object.<string,number>} [values] Enum values as an object, by name
+ * @param {Object.<string,*>} [options] Declared options
+ */
+function Enum(name, values, options) {
+    ReflectionObject.call(this, name, options);
+
+    if (values && typeof values !== "object")
+        throw TypeError("values must be an object");
+
+    /**
+     * Enum values by id.
+     * @type {Object.<number,string>}
+     */
+    this.valuesById = {};
+
+    /**
+     * Enum values by name.
+     * @type {Object.<string,number>}
+     */
+    this.values = Object.create(this.valuesById); // toJSON, marker
+
+    /**
+     * Value comment texts, if any.
+     * @type {Object.<string,string>}
+     */
+    this.comments = {};
+
+    // Note that values inherit valuesById on their prototype which makes them a TypeScript-
+    // compatible enum. This is used by pbts to write actual enum definitions that work for
+    // static and reflection code alike instead of emitting generic object definitions.
+
+    if (values)
+        for (var keys = Object.keys(values), i = 0; i < keys.length; ++i)
+            this.valuesById[ this.values[keys[i]] = values[keys[i]] ] = keys[i];
+}
+
+/**
+ * Creates an enum from JSON.
+ * @param {string} name Enum name
+ * @param {Object.<string,*>} json JSON object
+ * @returns {Enum} Created enum
+ * @throws {TypeError} If arguments are invalid
+ */
+Enum.fromJSON = function fromJSON(name, json) {
+    return new Enum(name, json.values, json.options);
+};
+
+/**
+ * @override
+ */
+Enum.prototype.toJSON = function toJSON() {
+    return {
+        options : this.options,
+        values  : this.values
+    };
+};
+
+/**
+ * Adds a value to this enum.
+ * @param {string} name Value name
+ * @param {number} id Value id
+ * @param {?string} comment Comment, if any
+ * @returns {Enum} `this`
+ * @throws {TypeError} If arguments are invalid
+ * @throws {Error} If there is already a value with this name or id
+ */
+Enum.prototype.add = function(name, id, comment) {
+    // utilized by the parser but not by .fromJSON
+
+    if (!util.isString(name))
+        throw TypeError("name must be a string");
+
+    if (!util.isInteger(id))
+        throw TypeError("id must be an integer");
+
+    if (this.values[name] !== undefined)
+        throw Error("duplicate name");
+
+    if (this.valuesById[id] !== undefined) {
+        if (!(this.options && this.options.allow_alias))
+            throw Error("duplicate id");
+        this.values[name] = id;
+    } else
+        this.valuesById[this.values[name] = id] = name;
+
+    this.comments[name] = comment || null;
+    return this;
+};
+
+/**
+ * Removes a value from this enum
+ * @param {string} name Value name
+ * @returns {Enum} `this`
+ * @throws {TypeError} If arguments are invalid
+ * @throws {Error} If `name` is not a name of this enum
+ */
+Enum.prototype.remove = function(name) {
+
+    if (!util.isString(name))
+        throw TypeError("name must be a string");
+
+    var val = this.values[name];
+    if (val === undefined)
+        throw Error("name does not exist");
+
+    delete this.valuesById[val];
+    delete this.values[name];
+    delete this.comments[name];
+
+    return this;
+};
+
+},{"24":24,"36":36}],16:[function(require,module,exports){
+"use strict";
+module.exports = Field;
+
+// extends ReflectionObject
+var ReflectionObject = require(24);
+((Field.prototype = Object.create(ReflectionObject.prototype)).constructor = Field).className = "Field";
+
+var Enum  = require(15),
+    types = require(35),
+    util  = require(36);
+
+var Type; // cyclic
+
+var ruleRe = /^required|optional|repeated$/;
+
+/**
+ * Constructs a new message field instance. Note that {@link MapField|map fields} have their own class.
+ * @classdesc Reflected message field.
+ * @extends ReflectionObject
+ * @constructor
+ * @param {string} name Unique name within its namespace
+ * @param {number} id Unique id within its namespace
+ * @param {string} type Value type
+ * @param {string|Object.<string,*>} [rule="optional"] Field rule
+ * @param {string|Object.<string,*>} [extend] Extended type if different from parent
+ * @param {Object.<string,*>} [options] Declared options
+ */
+function Field(name, id, type, rule, extend, options) {
+
+    if (util.isObject(rule)) {
+        options = rule;
+        rule = extend = undefined;
+    } else if (util.isObject(extend)) {
+        options = extend;
+        extend = undefined;
+    }
+
+    ReflectionObject.call(this, name, options);
+
+    if (!util.isInteger(id) || id < 0)
+        throw TypeError("id must be a non-negative integer");
+
+    if (!util.isString(type))
+        throw TypeError("type must be a string");
+
+    if (rule !== undefined && !ruleRe.test(rule = rule.toString().toLowerCase()))
+        throw TypeError("rule must be a string rule");
+
+    if (extend !== undefined && !util.isString(extend))
+        throw TypeError("extend must be a string");
+
+    /**
+     * Field rule, if any.
+     * @type {string|undefined}
+     */
+    this.rule = rule && rule !== "optional" ? rule : undefined; // toJSON
+
+    /**
+     * Field type.
+     * @type {string}
+     */
+    this.type = type; // toJSON
+
+    /**
+     * Unique field id.
+     * @type {number}
+     */
+    this.id = id; // toJSON, marker
+
+    /**
+     * Extended type if different from parent.
+     * @type {string|undefined}
+     */
+    this.extend = extend || undefined; // toJSON
+
+    /**
+     * Whether this field is required.
+     * @type {boolean}
+     */
+    this.required = rule === "required";
+
+    /**
+     * Whether this field is optional.
+     * @type {boolean}
+     */
+    this.optional = !this.required;
+
+    /**
+     * Whether this field is repeated.
+     * @type {boolean}
+     */
+    this.repeated = rule === "repeated";
+
+    /**
+     * Whether this field is a map or not.
+     * @type {boolean}
+     */
+    this.map = false;
+
+    /**
+     * Message this field belongs to.
+     * @type {?Type}
+     */
+    this.message = null;
+
+    /**
+     * OneOf this field belongs to, if any,
+     * @type {?OneOf}
+     */
+    this.partOf = null;
+
+    /**
+     * The field type's default value.
+     * @type {*}
+     */
+    this.typeDefault = null;
+
+    /**
+     * The field's default value on prototypes.
+     * @type {*}
+     */
+    this.defaultValue = null;
+
+    /**
+     * Whether this field's value should be treated as a long.
+     * @type {boolean}
+     */
+    this.long = util.Long ? types.long[type] !== undefined : /* istanbul ignore next */ false;
+
+    /**
+     * Whether this field's value is a buffer.
+     * @type {boolean}
+     */
+    this.bytes = type === "bytes";
+
+    /**
+     * Resolved type if not a basic type.
+     * @type {?(Type|Enum)}
+     */
+    this.resolvedType = null;
+
+    /**
+     * Sister-field within the extended type if a declaring extension field.
+     * @type {?Field}
+     */
+    this.extensionField = null;
+
+    /**
+     * Sister-field within the declaring namespace if an extended field.
+     * @type {?Field}
+     */
+    this.declaringField = null;
+
+    /**
+     * Internally remembers whether this field is packed.
+     * @type {?boolean}
+     * @private
+     */
+    this._packed = null;
+}
+
+/**
+ * Determines whether this field is packed. Only relevant when repeated and working with proto2.
+ * @name Field#packed
+ * @type {boolean}
+ * @readonly
+ */
+Object.defineProperty(Field.prototype, "packed", {
+    get: function() {
+        // defaults to packed=true if not explicity set to false
+        if (this._packed === null)
+            this._packed = this.getOption("packed") !== false;
+        return this._packed;
+    }
+});
+
+/**
+ * @override
+ */
+Field.prototype.setOption = function setOption(name, value, ifNotSet) {
+    if (name === "packed") // clear cached before setting
+        this._packed = null;
+    return ReflectionObject.prototype.setOption.call(this, name, value, ifNotSet);
+};
+
+/**
+ * Constructs a field from JSON.
+ * @param {string} name Field name
+ * @param {Object.<string,*>} json JSON object
+ * @returns {Field} Created field
+ * @throws {TypeError} If arguments are invalid
+ */
+Field.fromJSON = function fromJSON(name, json) {
+    return new Field(name, json.id, json.type, json.rule, json.extend, json.options);
+};
+
+/**
+ * @override
+ */
+Field.prototype.toJSON = function toJSON() {
+    return {
+        rule    : this.rule !== "optional" && this.rule || undefined,
+        type    : this.type,
+        id      : this.id,
+        extend  : this.extend,
+        options : this.options
+    };
+};
+
+/**
+ * Resolves this field's type references.
+ * @returns {Field} `this`
+ * @throws {Error} If any reference cannot be resolved
+ */
+Field.prototype.resolve = function resolve() {
+
+    if (this.resolved)
+        return this;
+
+    if ((this.typeDefault = types.defaults[this.type]) === undefined) { // if not a basic type, resolve it
+
+        /* istanbul ignore if */
+        if (!Type)
+            Type = require(34);
+
+        var scope = this.declaringField ? this.declaringField.parent : this.parent;
+        if (this.resolvedType = scope.lookup(this.type, Type))
+            this.typeDefault = null;
+        else if (this.resolvedType = scope.lookup(this.type, Enum))
+            this.typeDefault = this.resolvedType.values[Object.keys(this.resolvedType.values)[0]]; // first defined
+        else
+            throw Error("unresolvable field type: " + this.type + " in " + scope);
+    }
+
+    // use explicitly set default value if present
+    if (this.options && this.options["default"] !== undefined) {
+        this.typeDefault = this.options["default"];
+        if (this.resolvedType instanceof Enum && typeof this.typeDefault === "string")
+            this.typeDefault = this.resolvedType.values[this.typeDefault];
+    }
+
+    // remove unnecessary packed option (parser adds this) if not referencing an enum
+    if (this.options && this.options.packed !== undefined && this.resolvedType && !(this.resolvedType instanceof Enum))
+        delete this.options.packed;
+
+    // convert to internal data type if necesssary
+    if (this.long) {
+        this.typeDefault = util.Long.fromNumber(this.typeDefault, this.type.charAt(0) === "u");
+
+        /* istanbul ignore else */
+        if (Object.freeze)
+            Object.freeze(this.typeDefault); // long instances are meant to be immutable anyway (i.e. use small int cache that even requires it)
+
+    } else if (this.bytes && typeof this.typeDefault === "string") {
+        var buf;
+        if (util.base64.test(this.typeDefault))
+            util.base64.decode(this.typeDefault, buf = util.newBuffer(util.base64.length(this.typeDefault)), 0);
+        else
+            util.utf8.write(this.typeDefault, buf = util.newBuffer(util.utf8.length(this.typeDefault)), 0);
+        this.typeDefault = buf;
+    }
+
+    // take special care of maps and repeated fields
+    if (this.map)
+        this.defaultValue = util.emptyObject;
+    else if (this.repeated)
+        this.defaultValue = util.emptyArray;
+    else
+        this.defaultValue = this.typeDefault;
+
+    return ReflectionObject.prototype.resolve.call(this);
+};
+
+},{"15":15,"24":24,"34":34,"35":35,"36":36}],17:[function(require,module,exports){
+"use strict";
+var protobuf = module.exports = require(18);
+
+protobuf.build = "light";
+
+/**
+ * A node-style callback as used by {@link load} and {@link Root#load}.
+ * @typedef LoadCallback
+ * @type {function}
+ * @param {?Error} error Error, if any, otherwise `null`
+ * @param {Root} [root] Root, if there hasn't been an error
+ * @returns {undefined}
+ */
+
+/**
+ * Loads one or multiple .proto or preprocessed .json files into a common root namespace and calls the callback.
+ * @param {string|string[]} filename One or multiple files to load
+ * @param {Root} root Root namespace, defaults to create a new one if omitted.
+ * @param {LoadCallback} callback Callback function
+ * @returns {undefined}
+ * @see {@link Root#load}
+ */
+function load(filename, root, callback) {
+    if (typeof root === "function") {
+        callback = root;
+        root = new protobuf.Root();
+    } else if (!root)
+        root = new protobuf.Root();
+    return root.load(filename, callback);
+}
+
+/**
+ * Loads one or multiple .proto or preprocessed .json files into a common root namespace and calls the callback.
+ * @name load
+ * @function
+ * @param {string|string[]} filename One or multiple files to load
+ * @param {LoadCallback} callback Callback function
+ * @returns {undefined}
+ * @see {@link Root#load}
+ * @variation 2
+ */
+// function load(filename:string, callback:LoadCallback):undefined
+
+/**
+ * Loads one or multiple .proto or preprocessed .json files into a common root namespace and returns a promise.
+ * @name load
+ * @function
+ * @param {string|string[]} filename One or multiple files to load
+ * @param {Root} [root] Root namespace, defaults to create a new one if omitted.
+ * @returns {Promise<Root>} Promise
+ * @see {@link Root#load}
+ * @variation 3
+ */
+// function load(filename:string, [root:Root]):Promise<Root>
+
+protobuf.load = load;
+
+/**
+ * Synchronously loads one or multiple .proto or preprocessed .json files into a common root namespace (node only).
+ * @param {string|string[]} filename One or multiple files to load
+ * @param {Root} [root] Root namespace, defaults to create a new one if omitted.
+ * @returns {Root} Root namespace
+ * @throws {Error} If synchronous fetching is not supported (i.e. in browsers) or if a file's syntax is invalid
+ * @see {@link Root#loadSync}
+ */
+function loadSync(filename, root) {
+    if (!root)
+        root = new protobuf.Root();
+    return root.loadSync(filename);
+}
+
+protobuf.loadSync = loadSync;
+
+// Serialization
+protobuf.encoder          = require(14);
+protobuf.decoder          = require(13);
+protobuf.verifier         = require(39);
+protobuf.converter        = require(12);
+
+// Reflection
+protobuf.ReflectionObject = require(24);
+protobuf.Namespace        = require(23);
+protobuf.Root             = require(29);
+protobuf.Enum             = require(15);
+protobuf.Type             = require(34);
+protobuf.Field            = require(16);
+protobuf.OneOf            = require(25);
+protobuf.MapField         = require(20);
+protobuf.Service          = require(32);
+protobuf.Method           = require(22);
+
+// Runtime
+protobuf.Class            = require(10);
+protobuf.Message          = require(21);
+
+// Utility
+protobuf.types            = require(35);
+protobuf.util             = require(36);
+
+// Configure reflection
+protobuf.ReflectionObject._configure(protobuf.Root);
+protobuf.Namespace._configure(protobuf.Type, protobuf.Service);
+protobuf.Root._configure(protobuf.Type);
+
+},{"10":10,"12":12,"13":13,"14":14,"15":15,"16":16,"18":18,"20":20,"21":21,"22":22,"23":23,"24":24,"25":25,"29":29,"32":32,"34":34,"35":35,"36":36,"39":39}],18:[function(require,module,exports){
+"use strict";
+var protobuf = exports;
+
+/**
+ * Build type, one of `"full"`, `"light"` or `"minimal"`.
+ * @name build
+ * @type {string}
+ * @const
+ */
+protobuf.build = "minimal";
+
+/**
+ * Named roots.
+ * This is where pbjs stores generated structures (the option `-r, --root` specifies a name).
+ * Can also be used manually to make roots available accross modules.
+ * @name roots
+ * @type {Object.<string,Root>}
+ * @example
+ * // pbjs -r myroot -o compiled.js ...
+ *
+ * // in another module:
+ * require("./compiled.js");
+ *
+ * // in any subsequent module:
+ * var root = protobuf.roots["myroot"];
+ */
+protobuf.roots = {};
+
+// Serialization
+protobuf.Writer       = require(40);
+protobuf.BufferWriter = require(41);
+protobuf.Reader       = require(27);
+protobuf.BufferReader = require(28);
+
+// Utility
+protobuf.util         = require(38);
+protobuf.rpc          = require(30);
+protobuf.configure    = configure;
+
+/* istanbul ignore next */
+/**
+ * Reconfigures the library according to the environment.
+ * @returns {undefined}
+ */
+function configure() {
+    protobuf.Reader._configure(protobuf.BufferReader);
+    protobuf.util._configure();
+}
+
+// Configure serialization
+protobuf.Writer._configure(protobuf.BufferWriter);
+configure();
+
+},{"27":27,"28":28,"30":30,"38":38,"40":40,"41":41}],19:[function(require,module,exports){
+"use strict";
+var protobuf = module.exports = require(17);
+
+protobuf.build = "full";
+
+// Parser
+protobuf.tokenize         = require(33);
+protobuf.parse            = require(26);
+protobuf.common           = require(11);
+
+// Configure parser
+protobuf.Root._configure(protobuf.Type, protobuf.parse, protobuf.common);
+
+},{"11":11,"17":17,"26":26,"33":33}],20:[function(require,module,exports){
+"use strict";
+module.exports = MapField;
+
+// extends Field
+var Field = require(16);
+((MapField.prototype = Object.create(Field.prototype)).constructor = MapField).className = "MapField";
+
+var types   = require(35),
+    util    = require(36);
+
+/**
+ * Constructs a new map field instance.
+ * @classdesc Reflected map field.
+ * @extends Field
+ * @constructor
+ * @param {string} name Unique name within its namespace
+ * @param {number} id Unique id within its namespace
+ * @param {string} keyType Key type
+ * @param {string} type Value type
+ * @param {Object.<string,*>} [options] Declared options
+ */
+function MapField(name, id, keyType, type, options) {
+    Field.call(this, name, id, type, options);
+
+    /* istanbul ignore next */
+    if (!util.isString(keyType))
+        throw TypeError("keyType must be a string");
+
+    /**
+     * Key type.
+     * @type {string}
+     */
+    this.keyType = keyType; // toJSON, marker
+
+    /**
+     * Resolved key type if not a basic type.
+     * @type {?ReflectionObject}
+     */
+    this.resolvedKeyType = null;
+
+    // Overrides Field#map
+    this.map = true;
+}
+
+/**
+ * Constructs a map field from JSON.
+ * @param {string} name Field name
+ * @param {Object.<string,*>} json JSON object
+ * @returns {MapField} Created map field
+ * @throws {TypeError} If arguments are invalid
+ */
+MapField.fromJSON = function fromJSON(name, json) {
+    return new MapField(name, json.id, json.keyType, json.type, json.options);
+};
+
+/**
+ * @override
+ */
+MapField.prototype.toJSON = function toJSON() {
+    return {
+        keyType : this.keyType,
+        type    : this.type,
+        id      : this.id,
+        extend  : this.extend,
+        options : this.options
+    };
+};
+
+/**
+ * @override
+ */
+MapField.prototype.resolve = function resolve() {
+    if (this.resolved)
+        return this;
+
+    // Besides a value type, map fields have a key type that may be "any scalar type except for floating point types and bytes"
+    if (types.mapKey[this.keyType] === undefined)
+        throw Error("invalid key type: " + this.keyType);
+
+    return Field.prototype.resolve.call(this);
+};
+
+},{"16":16,"35":35,"36":36}],21:[function(require,module,exports){
+"use strict";
+module.exports = Message;
+
+var util = require(36);
+
+/**
+ * Constructs a new message instance.
+ *
+ * This function should also be called from your custom constructors, i.e. `Message.call(this, properties)`.
+ * @classdesc Abstract runtime message.
+ * @constructor
+ * @param {Object.<string,*>} [properties] Properties to set
+ * @see {@link Class.create}
+ */
+function Message(properties) {
+    if (properties)
+        for (var keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+            this[keys[i]] = properties[keys[i]];
+}
+
+/**
+ * Reference to the reflected type.
+ * @name Message.$type
+ * @type {Type}
+ * @readonly
+ */
+
+/**
+ * Reference to the reflected type.
+ * @name Message#$type
+ * @type {Type}
+ * @readonly
+ */
+
+/**
+ * Encodes a message of this type.
+ * @param {Message|Object} message Message to encode
+ * @param {Writer} [writer] Writer to use
+ * @returns {Writer} Writer
+ */
+Message.encode = function encode(message, writer) {
+    return this.$type.encode(message, writer);
+};
+
+/**
+ * Encodes a message of this type preceeded by its length as a varint.
+ * @param {Message|Object} message Message to encode
+ * @param {Writer} [writer] Writer to use
+ * @returns {Writer} Writer
+ */
+Message.encodeDelimited = function encodeDelimited(message, writer) {
+    return this.$type.encodeDelimited(message, writer);
+};
+
+/**
+ * Decodes a message of this type.
+ * @name Message.decode
+ * @function
+ * @param {Reader|Uint8Array} reader Reader or buffer to decode
+ * @returns {Message} Decoded message
+ */
+Message.decode = function decode(reader) {
+    return this.$type.decode(reader);
+};
+
+/**
+ * Decodes a message of this type preceeded by its length as a varint.
+ * @name Message.decodeDelimited
+ * @function
+ * @param {Reader|Uint8Array} reader Reader or buffer to decode
+ * @returns {Message} Decoded message
+ */
+Message.decodeDelimited = function decodeDelimited(reader) {
+    return this.$type.decodeDelimited(reader);
+};
+
+/**
+ * Verifies a message of this type.
+ * @name Message.verify
+ * @function
+ * @param {Message|Object} message Message or plain object to verify
+ * @returns {?string} `null` if valid, otherwise the reason why it is not
+ */
+Message.verify = function verify(message) {
+    return this.$type.verify(message);
+};
+
+/**
+ * Creates a new message of this type from a plain object. Also converts values to their respective internal types.
+ * @param {Object.<string,*>} object Plain object
+ * @returns {Message} Message instance
+ */
+Message.fromObject = function fromObject(object) {
+    return this.$type.fromObject(object);
+};
+
+/**
+ * Creates a new message of this type from a plain object. Also converts values to their respective internal types.
+ * This is an alias of {@link Message.fromObject}.
+ * @function
+ * @param {Object.<string,*>} object Plain object
+ * @returns {Message} Message instance
+ */
+Message.from = Message.fromObject;
+
+/**
+ * Creates a plain object from a message of this type. Also converts values to other types if specified.
+ * @param {Message} message Message instance
+ * @param {ConversionOptions} [options] Conversion options
+ * @returns {Object.<string,*>} Plain object
+ */
+Message.toObject = function toObject(message, options) {
+    return this.$type.toObject(message, options);
+};
+
+/**
+ * Creates a plain object from this message. Also converts values to other types if specified.
+ * @param {ConversionOptions} [options] Conversion options
+ * @returns {Object.<string,*>} Plain object
+ */
+Message.prototype.toObject = function toObject(options) {
+    return this.$type.toObject(this, options);
+};
+
+/**
+ * Converts this message to JSON.
+ * @returns {Object.<string,*>} JSON object
+ */
+Message.prototype.toJSON = function toJSON() {
+    return this.$type.toObject(this, util.toJSONOptions);
+};
+
+},{"36":36}],22:[function(require,module,exports){
+"use strict";
+module.exports = Method;
+
+// extends ReflectionObject
+var ReflectionObject = require(24);
+((Method.prototype = Object.create(ReflectionObject.prototype)).constructor = Method).className = "Method";
+
+var util = require(36);
+
+/**
+ * Constructs a new service method instance.
+ * @classdesc Reflected service method.
+ * @extends ReflectionObject
+ * @constructor
+ * @param {string} name Method name
+ * @param {string|undefined} type Method type, usually `"rpc"`
+ * @param {string} requestType Request message type
+ * @param {string} responseType Response message type
+ * @param {boolean|Object.<string,*>} [requestStream] Whether the request is streamed
+ * @param {boolean|Object.<string,*>} [responseStream] Whether the response is streamed
+ * @param {Object.<string,*>} [options] Declared options
+ */
+function Method(name, type, requestType, responseType, requestStream, responseStream, options) {
+
+    /* istanbul ignore next */
+    if (util.isObject(requestStream)) {
+        options = requestStream;
+        requestStream = responseStream = undefined;
+    /* istanbul ignore next */
+    } else if (util.isObject(responseStream)) {
+        options = responseStream;
+        responseStream = undefined;
+    }
+
+    /* istanbul ignore next */
+    if (!(type === undefined || util.isString(type)))
+        throw TypeError("type must be a string");
+    /* istanbul ignore next */
+    if (!util.isString(requestType))
+        throw TypeError("requestType must be a string");
+    /* istanbul ignore next */
+    if (!util.isString(responseType))
+        throw TypeError("responseType must be a string");
+
+    ReflectionObject.call(this, name, options);
+
+    /**
+     * Method type.
+     * @type {string}
+     */
+    this.type = type || "rpc"; // toJSON
+
+    /**
+     * Request type.
+     * @type {string}
+     */
+    this.requestType = requestType; // toJSON, marker
+
+    /**
+     * Whether requests are streamed or not.
+     * @type {boolean|undefined}
+     */
+    this.requestStream = requestStream ? true : undefined; // toJSON
+
+    /**
+     * Response type.
+     * @type {string}
+     */
+    this.responseType = responseType; // toJSON
+
+    /**
+     * Whether responses are streamed or not.
+     * @type {boolean|undefined}
+     */
+    this.responseStream = responseStream ? true : undefined; // toJSON
+
+    /**
+     * Resolved request type.
+     * @type {?Type}
+     */
+    this.resolvedRequestType = null;
+
+    /**
+     * Resolved response type.
+     * @type {?Type}
+     */
+    this.resolvedResponseType = null;
+}
+
+/**
+ * Constructs a service method from JSON.
+ * @param {string} name Method name
+ * @param {Object.<string,*>} json JSON object
+ * @returns {Method} Created method
+ * @throws {TypeError} If arguments are invalid
+ */
+Method.fromJSON = function fromJSON(name, json) {
+    return new Method(name, json.type, json.requestType, json.responseType, json.requestStream, json.responseStream, json.options);
+};
+
+/**
+ * @override
+ */
+Method.prototype.toJSON = function toJSON() {
+    return {
+        type           : this.type !== "rpc" && /* istanbul ignore next */ this.type || undefined,
+        requestType    : this.requestType,
+        requestStream  : this.requestStream,
+        responseType   : this.responseType,
+        responseStream : this.responseStream,
+        options        : this.options
+    };
+};
+
+/**
+ * @override
+ */
+Method.prototype.resolve = function resolve() {
+
+    /* istanbul ignore if */
+    if (this.resolved)
+        return this;
+
+    this.resolvedRequestType = this.parent.lookupType(this.requestType);
+    this.resolvedResponseType = this.parent.lookupType(this.responseType);
+
+    return ReflectionObject.prototype.resolve.call(this);
+};
+
+},{"24":24,"36":36}],23:[function(require,module,exports){
+"use strict";
+module.exports = Namespace;
+
+// extends ReflectionObject
+var ReflectionObject = require(24);
+((Namespace.prototype = Object.create(ReflectionObject.prototype)).constructor = Namespace).className = "Namespace";
+
+var Enum     = require(15),
+    Field    = require(16),
+    util     = require(36);
+
+var Type,    // cyclic
+    Service; // "
+
+/**
+ * Constructs a new namespace instance.
+ * @name Namespace
+ * @classdesc Reflected namespace.
+ * @extends NamespaceBase
+ * @constructor
+ * @param {string} name Namespace name
+ * @param {Object.<string,*>} [options] Declared options
+ */
+
+/**
+ * Constructs a namespace from JSON.
+ * @memberof Namespace
+ * @function
+ * @param {string} name Namespace name
+ * @param {Object.<string,*>} json JSON object
+ * @returns {Namespace} Created namespace
+ * @throws {TypeError} If arguments are invalid
+ */
+Namespace.fromJSON = function fromJSON(name, json) {
+    return new Namespace(name, json.options).addJSON(json.nested);
+};
+
+/**
+ * Converts an array of reflection objects to JSON.
+ * @memberof Namespace
+ * @param {ReflectionObject[]} array Object array
+ * @returns {Object.<string,*>|undefined} JSON object or `undefined` when array is empty
+ */
+function arrayToJSON(array) {
+    if (!(array && array.length))
+        return undefined;
+    var obj = {};
+    for (var i = 0; i < array.length; ++i)
+        obj[array[i].name] = array[i].toJSON();
+    return obj;
+}
+
+Namespace.arrayToJSON = arrayToJSON;
+
+/**
+ * Not an actual constructor. Use {@link Namespace} instead.
+ * @classdesc Base class of all reflection objects containing nested objects. This is not an actual class but here for the sake of having consistent type definitions.
+ * @exports NamespaceBase
+ * @extends ReflectionObject
+ * @abstract
+ * @constructor
+ * @param {string} name Namespace name
+ * @param {Object.<string,*>} [options] Declared options
+ * @see {@link Namespace}
+ */
+function Namespace(name, options) {
+    ReflectionObject.call(this, name, options);
+
+    /**
+     * Nested objects by name.
+     * @type {Object.<string,ReflectionObject>|undefined}
+     */
+    this.nested = undefined; // toJSON
+
+    /**
+     * Cached nested objects as an array.
+     * @type {?ReflectionObject[]}
+     * @private
+     */
+    this._nestedArray = null;
+}
+
+function clearCache(namespace) {
+    namespace._nestedArray = null;
+    return namespace;
+}
+
+/**
+ * Nested objects of this namespace as an array for iteration.
+ * @name NamespaceBase#nestedArray
+ * @type {ReflectionObject[]}
+ * @readonly
+ */
+Object.defineProperty(Namespace.prototype, "nestedArray", {
+    get: function() {
+        return this._nestedArray || (this._nestedArray = util.toArray(this.nested));
+    }
+});
+
+/**
+ * @override
+ */
+Namespace.prototype.toJSON = function toJSON() {
+    return {
+        options : this.options,
+        nested  : arrayToJSON(this.nestedArray)
+    };
+};
+
+/**
+ * Adds nested elements to this namespace from JSON.
+ * @param {Object.<string,*>} nestedJson Nested JSON
+ * @returns {Namespace} `this`
+ */
+Namespace.prototype.addJSON = function addJSON(nestedJson) {
+    var ns = this;
+    /* istanbul ignore else */
+    if (nestedJson) {
+        for (var names = Object.keys(nestedJson), i = 0, nested; i < names.length; ++i) {
+            nested = nestedJson[names[i]];
+            ns.add( // most to least likely
+                ( nested.fields !== undefined
+                ? Type.fromJSON
+                : nested.values !== undefined
+                ? Enum.fromJSON
+                : nested.methods !== undefined
+                ? Service.fromJSON
+                : nested.id !== undefined
+                ? Field.fromJSON
+                : Namespace.fromJSON )(names[i], nested)
+            );
+        }
+    }
+    return this;
+};
+
+/**
+ * Gets the nested object of the specified name.
+ * @param {string} name Nested object name
+ * @returns {?ReflectionObject} The reflection object or `null` if it doesn't exist
+ */
+Namespace.prototype.get = function get(name) {
+    return this.nested && this.nested[name]
+        || null;
+};
+
+/**
+ * Gets the values of the nested {@link Enum|enum} of the specified name.
+ * This methods differs from {@link Namespace#get|get} in that it returns an enum's values directly and throws instead of returning `null`.
+ * @param {string} name Nested enum name
+ * @returns {Object.<string,number>} Enum values
+ * @throws {Error} If there is no such enum
+ */
+Namespace.prototype.getEnum = function getEnum(name) {
+    if (this.nested && this.nested[name] instanceof Enum)
+        return this.nested[name].values;
+    throw Error("no such enum");
+};
+
+/**
+ * Adds a nested object to this namespace.
+ * @param {ReflectionObject} object Nested object to add
+ * @returns {Namespace} `this`
+ * @throws {TypeError} If arguments are invalid
+ * @throws {Error} If there is already a nested object with this name
+ */
+Namespace.prototype.add = function add(object) {
+
+    if (!(object instanceof Field && object.extend !== undefined || object instanceof Type || object instanceof Enum || object instanceof Service || object instanceof Namespace))
+        throw TypeError("object must be a valid nested object");
+
+    if (!this.nested)
+        this.nested = {};
+    else {
+        var prev = this.get(object.name);
+        if (prev) {
+            if (prev instanceof Namespace && object instanceof Namespace && !(prev instanceof Type || prev instanceof Service)) {
+                // replace plain namespace but keep existing nested elements and options
+                var nested = prev.nestedArray;
+                for (var i = 0; i < nested.length; ++i)
+                    object.add(nested[i]);
+                this.remove(prev);
+                if (!this.nested)
+                    this.nested = {};
+                object.setOptions(prev.options, true);
+
+            } else
+                throw Error("duplicate name '" + object.name + "' in " + this);
+        }
+    }
+    this.nested[object.name] = object;
+    object.onAdd(this);
+    return clearCache(this);
+};
+
+/**
+ * Removes a nested object from this namespace.
+ * @param {ReflectionObject} object Nested object to remove
+ * @returns {Namespace} `this`
+ * @throws {TypeError} If arguments are invalid
+ * @throws {Error} If `object` is not a member of this namespace
+ */
+Namespace.prototype.remove = function remove(object) {
+
+    if (!(object instanceof ReflectionObject))
+        throw TypeError("object must be a ReflectionObject");
+    if (object.parent !== this)
+        throw Error(object + " is not a member of " + this);
+
+    delete this.nested[object.name];
+    if (!Object.keys(this.nested).length)
+        this.nested = undefined;
+
+    object.onRemove(this);
+    return clearCache(this);
+};
+
+/**
+ * Defines additial namespaces within this one if not yet existing.
+ * @param {string|string[]} path Path to create
+ * @param {*} [json] Nested types to create from JSON
+ * @returns {Namespace} Pointer to the last namespace created or `this` if path is empty
+ */
+Namespace.prototype.define = function define(path, json) {
+
+    if (util.isString(path))
+        path = path.split(".");
+    else if (!Array.isArray(path))
+        throw TypeError("illegal path");
+    if (path && path.length && path[0] === "")
+        throw Error("path must be relative");
+
+    var ptr = this;
+    while (path.length > 0) {
+        var part = path.shift();
+        if (ptr.nested && ptr.nested[part]) {
+            ptr = ptr.nested[part];
+            if (!(ptr instanceof Namespace))
+                throw Error("path conflicts with non-namespace objects");
+        } else
+            ptr.add(ptr = new Namespace(part));
+    }
+    if (json)
+        ptr.addJSON(json);
+    return ptr;
+};
+
+/**
+ * Resolves this namespace's and all its nested objects' type references. Useful to validate a reflection tree, but comes at a cost.
+ * @returns {Namespace} `this`
+ */
+Namespace.prototype.resolveAll = function resolveAll() {
+    var nested = this.nestedArray, i = 0;
+    while (i < nested.length)
+        if (nested[i] instanceof Namespace)
+            nested[i++].resolveAll();
+        else
+            nested[i++].resolve();
+    return this.resolve();
+};
+
+/**
+ * Looks up the reflection object at the specified path, relative to this namespace.
+ * @param {string|string[]} path Path to look up
+ * @param {function(new: ReflectionObject)} filterType Filter type, one of `protobuf.Type`, `protobuf.Enum`, `protobuf.Service` etc.
+ * @param {boolean} [parentAlreadyChecked=false] If known, whether the parent has already been checked
+ * @returns {?ReflectionObject} Looked up object or `null` if none could be found
+ */
+Namespace.prototype.lookup = function lookup(path, filterType, parentAlreadyChecked) {
+
+    /* istanbul ignore next */
+    if (typeof filterType === "boolean") {
+        parentAlreadyChecked = filterType;
+        filterType = undefined;
+    }
+
+    if (util.isString(path) && path.length) {
+        if (path === ".")
+            return this.root;
+        path = path.split(".");
+    } else if (!path.length)
+        return this;
+
+    // Start at root if path is absolute
+    if (path[0] === "")
+        return this.root.lookup(path.slice(1), filterType);
+    // Test if the first part matches any nested object, and if so, traverse if path contains more
+    var found = this.get(path[0]);
+    if (found) {
+        if (path.length === 1) {
+            if (!filterType || found instanceof filterType)
+                return found;
+        } else if (found instanceof Namespace && (found = found.lookup(path.slice(1), filterType, true)))
+            return found;
+    }
+    // If there hasn't been a match, try again at the parent
+    if (this.parent === null || parentAlreadyChecked)
+        return null;
+    return this.parent.lookup(path, filterType);
+};
+
+/**
+ * Looks up the reflection object at the specified path, relative to this namespace.
+ * @name NamespaceBase#lookup
+ * @function
+ * @param {string|string[]} path Path to look up
+ * @param {boolean} [parentAlreadyChecked=false] Whether the parent has already been checked
+ * @returns {?ReflectionObject} Looked up object or `null` if none could be found
+ * @variation 2
+ */
+// lookup(path: string, [parentAlreadyChecked: boolean])
+
+/**
+ * Looks up the {@link Type|type} at the specified path, relative to this namespace.
+ * Besides its signature, this methods differs from {@link Namespace#lookup|lookup} in that it throws instead of returning `null`.
+ * @param {string|string[]} path Path to look up
+ * @returns {Type} Looked up type
+ * @throws {Error} If `path` does not point to a type
+ */
+Namespace.prototype.lookupType = function lookupType(path) {
+    var found = this.lookup(path, Type);
+    if (!found)
+        throw Error("no such type");
+    return found;
+};
+
+/**
+ * Looks up the {@link Service|service} at the specified path, relative to this namespace.
+ * Besides its signature, this methods differs from {@link Namespace#lookup|lookup} in that it throws instead of returning `null`.
+ * @param {string|string[]} path Path to look up
+ * @returns {Service} Looked up service
+ * @throws {Error} If `path` does not point to a service
+ */
+Namespace.prototype.lookupService = function lookupService(path) {
+    var found = this.lookup(path, Service);
+    if (!found)
+        throw Error("no such service");
+    return found;
+};
+
+/**
+ * Looks up the values of the {@link Enum|enum} at the specified path, relative to this namespace.
+ * Besides its signature, this methods differs from {@link Namespace#lookup|lookup} in that it returns the enum's values directly and throws instead of returning `null`.
+ * @param {string|string[]} path Path to look up
+ * @returns {Object.<string,number>} Enum values
+ * @throws {Error} If `path` does not point to an enum
+ */
+Namespace.prototype.lookupEnum = function lookupEnum(path) {
+    var found = this.lookup(path, Enum);
+    if (!found)
+        throw Error("no such enum");
+    return found.values;
+};
+
+Namespace._configure = function(Type_, Service_) {
+    Type    = Type_;
+    Service = Service_;
+};
+
+},{"15":15,"16":16,"24":24,"36":36}],24:[function(require,module,exports){
+"use strict";
+module.exports = ReflectionObject;
+
+ReflectionObject.className = "ReflectionObject";
+
+var util = require(36);
+
+var Root; // cyclic
+
+/**
+ * Constructs a new reflection object instance.
+ * @classdesc Base class of all reflection objects.
+ * @constructor
+ * @param {string} name Object name
+ * @param {Object.<string,*>} [options] Declared options
+ * @abstract
+ */
+function ReflectionObject(name, options) {
+
+    if (!util.isString(name))
+        throw TypeError("name must be a string");
+
+    if (options && !util.isObject(options))
+        throw TypeError("options must be an object");
+
+    /**
+     * Options.
+     * @type {Object.<string,*>|undefined}
+     */
+    this.options = options; // toJSON
+
+    /**
+     * Unique name within its namespace.
+     * @type {string}
+     */
+    this.name = name;
+
+    /**
+     * Parent namespace.
+     * @type {?Namespace}
+     */
+    this.parent = null;
+
+    /**
+     * Whether already resolved or not.
+     * @type {boolean}
+     */
+    this.resolved = false;
+
+    /**
+     * Comment text, if any.
+     * @type {?string}
+     */
+    this.comment = null;
+
+    /**
+     * Defining file name.
+     * @type {?string}
+     */
+    this.filename = null;
+}
+
+Object.defineProperties(ReflectionObject.prototype, {
+
+    /**
+     * Reference to the root namespace.
+     * @name ReflectionObject#root
+     * @type {Root}
+     * @readonly
+     */
+    root: {
+        get: function() {
+            var ptr = this;
+            while (ptr.parent !== null)
+                ptr = ptr.parent;
+            return ptr;
+        }
+    },
+
+    /**
+     * Full name including leading dot.
+     * @name ReflectionObject#fullName
+     * @type {string}
+     * @readonly
+     */
+    fullName: {
+        get: function() {
+            var path = [ this.name ],
+                ptr = this.parent;
+            while (ptr) {
+                path.unshift(ptr.name);
+                ptr = ptr.parent;
+            }
+            return path.join(".");
+        }
+    }
+});
+
+/**
+ * Converts this reflection object to its JSON representation.
+ * @returns {Object.<string,*>} JSON object
+ * @abstract
+ */
+ReflectionObject.prototype.toJSON = /* istanbul ignore next */ function toJSON() {
+    throw Error(); // not implemented, shouldn't happen
+};
+
+/**
+ * Called when this object is added to a parent.
+ * @param {ReflectionObject} parent Parent added to
+ * @returns {undefined}
+ */
+ReflectionObject.prototype.onAdd = function onAdd(parent) {
+    if (this.parent && this.parent !== parent)
+        this.parent.remove(this);
+    this.parent = parent;
+    this.resolved = false;
+    var root = parent.root;
+    if (root instanceof Root)
+        root._handleAdd(this);
+};
+
+/**
+ * Called when this object is removed from a parent.
+ * @param {ReflectionObject} parent Parent removed from
+ * @returns {undefined}
+ */
+ReflectionObject.prototype.onRemove = function onRemove(parent) {
+    var root = parent.root;
+    if (root instanceof Root)
+        root._handleRemove(this);
+    this.parent = null;
+    this.resolved = false;
+};
+
+/**
+ * Resolves this objects type references.
+ * @returns {ReflectionObject} `this`
+ */
+ReflectionObject.prototype.resolve = function resolve() {
+    if (this.resolved)
+        return this;
+    if (this.root instanceof Root)
+        this.resolved = true; // only if part of a root
+    return this;
+};
+
+/**
+ * Gets an option value.
+ * @param {string} name Option name
+ * @returns {*} Option value or `undefined` if not set
+ */
+ReflectionObject.prototype.getOption = function getOption(name) {
+    if (this.options)
+        return this.options[name];
+    return undefined;
+};
+
+/**
+ * Sets an option.
+ * @param {string} name Option name
+ * @param {*} value Option value
+ * @param {boolean} [ifNotSet] Sets the option only if it isn't currently set
+ * @returns {ReflectionObject} `this`
+ */
+ReflectionObject.prototype.setOption = function setOption(name, value, ifNotSet) {
+    if (!ifNotSet || !this.options || this.options[name] === undefined)
+        (this.options || (this.options = {}))[name] = value;
+    return this;
+};
+
+/**
+ * Sets multiple options.
+ * @param {Object.<string,*>} options Options to set
+ * @param {boolean} [ifNotSet] Sets an option only if it isn't currently set
+ * @returns {ReflectionObject} `this`
+ */
+ReflectionObject.prototype.setOptions = function setOptions(options, ifNotSet) {
+    if (options)
+        for (var keys = Object.keys(options), i = 0; i < keys.length; ++i)
+            this.setOption(keys[i], options[keys[i]], ifNotSet);
+    return this;
+};
+
+/**
+ * Converts this instance to its string representation.
+ * @returns {string} Class name[, space, full name]
+ */
+ReflectionObject.prototype.toString = function toString() {
+    var className = this.constructor.className,
+        fullName  = this.fullName;
+    if (fullName.length)
+        return className + " " + fullName;
+    return className;
+};
+
+ReflectionObject._configure = function(Root_) {
+    Root = Root_;
+};
+
+},{"36":36}],25:[function(require,module,exports){
+"use strict";
+module.exports = OneOf;
+
+// extends ReflectionObject
+var ReflectionObject = require(24);
+((OneOf.prototype = Object.create(ReflectionObject.prototype)).constructor = OneOf).className = "OneOf";
+
+var Field = require(16);
+
+/**
+ * Constructs a new oneof instance.
+ * @classdesc Reflected oneof.
+ * @extends ReflectionObject
+ * @constructor
+ * @param {string} name Oneof name
+ * @param {string[]|Object} [fieldNames] Field names
+ * @param {Object.<string,*>} [options] Declared options
+ */
+function OneOf(name, fieldNames, options) {
+    if (!Array.isArray(fieldNames)) {
+        options = fieldNames;
+        fieldNames = undefined;
+    }
+    ReflectionObject.call(this, name, options);
+
+    /* istanbul ignore next */
+    if (!(fieldNames === undefined || Array.isArray(fieldNames)))
+        throw TypeError("fieldNames must be an Array");
+
+    /**
+     * Field names that belong to this oneof.
+     * @type {string[]}
+     */
+    this.oneof = fieldNames || []; // toJSON, marker
+
+    /**
+     * Fields that belong to this oneof as an array for iteration.
+     * @type {Field[]}
+     * @readonly
+     */
+    this.fieldsArray = []; // declared readonly for conformance, possibly not yet added to parent
+}
+
+/**
+ * Constructs a oneof from JSON.
+ * @param {string} name Oneof name
+ * @param {Object.<string,*>} json JSON object
+ * @returns {MapField} Created oneof
+ * @throws {TypeError} If arguments are invalid
+ */
+OneOf.fromJSON = function fromJSON(name, json) {
+    return new OneOf(name, json.oneof, json.options);
+};
+
+/**
+ * @override
+ */
+OneOf.prototype.toJSON = function toJSON() {
+    return {
+        oneof   : this.oneof,
+        options : this.options
+    };
+};
+
+/**
+ * Adds the fields of the specified oneof to the parent if not already done so.
+ * @param {OneOf} oneof The oneof
+ * @returns {undefined}
+ * @inner
+ * @ignore
+ */
+function addFieldsToParent(oneof) {
+    if (oneof.parent)
+        for (var i = 0; i < oneof.fieldsArray.length; ++i)
+            if (!oneof.fieldsArray[i].parent)
+                oneof.parent.add(oneof.fieldsArray[i]);
+}
+
+/**
+ * Adds a field to this oneof and removes it from its current parent, if any.
+ * @param {Field} field Field to add
+ * @returns {OneOf} `this`
+ */
+OneOf.prototype.add = function add(field) {
+
+    /* istanbul ignore next */
+    if (!(field instanceof Field))
+        throw TypeError("field must be a Field");
+    if (field.parent && field.parent !== this.parent)
+        field.parent.remove(field);
+    this.oneof.push(field.name);
+    this.fieldsArray.push(field);
+    field.partOf = this; // field.parent remains null
+    addFieldsToParent(this);
+    return this;
+};
+
+/**
+ * Removes a field from this oneof and puts it back to the oneof's parent.
+ * @param {Field} field Field to remove
+ * @returns {OneOf} `this`
+ */
+OneOf.prototype.remove = function remove(field) {
+
+    /* istanbul ignore next */
+    if (!(field instanceof Field))
+        throw TypeError("field must be a Field");
+
+    var index = this.fieldsArray.indexOf(field);
+    /* istanbul ignore next */
+    if (index < 0)
+        throw Error(field + " is not a member of " + this);
+
+    this.fieldsArray.splice(index, 1);
+    index = this.oneof.indexOf(field.name);
+    /* istanbul ignore else */
+    if (index > -1) // theoretical
+        this.oneof.splice(index, 1);
+    field.partOf = null;
+    return this;
+};
+
+/**
+ * @override
+ */
+OneOf.prototype.onAdd = function onAdd(parent) {
+    ReflectionObject.prototype.onAdd.call(this, parent);
+    var self = this;
+    // Collect present fields
+    for (var i = 0; i < this.oneof.length; ++i) {
+        var field = parent.get(this.oneof[i]);
+        if (field && !field.partOf) {
+            field.partOf = self;
+            self.fieldsArray.push(field);
+        }
+    }
+    // Add not yet present fields
+    addFieldsToParent(this);
+};
+
+/**
+ * @override
+ */
+OneOf.prototype.onRemove = function onRemove(parent) {
+    for (var i = 0, field; i < this.fieldsArray.length; ++i)
+        if ((field = this.fieldsArray[i]).parent)
+            field.parent.remove(field);
+    ReflectionObject.prototype.onRemove.call(this, parent);
+};
+
+},{"16":16,"24":24}],26:[function(require,module,exports){
+"use strict";
+module.exports = parse;
+
+parse.filename = null;
+parse.defaults = { keepCase: false };
+
+var tokenize  = require(33),
+    Root      = require(29),
+    Type      = require(34),
+    Field     = require(16),
+    MapField  = require(20),
+    OneOf     = require(25),
+    Enum      = require(15),
+    Service   = require(32),
+    Method    = require(22),
+    types     = require(35),
+    util      = require(36);
+
+var base10Re    = /^[1-9][0-9]*$/,
+    base10NegRe = /^-?[1-9][0-9]*$/,
+    base16Re    = /^0[x][0-9a-f]+$/,
+    base16NegRe = /^-?0[x][0-9a-f]+$/,
+    base8Re     = /^0[0-7]+$/,
+    base8NegRe  = /^-?0[0-7]+$/,
+    numberRe    = /^(?!e)[0-9]*(?:\.[0-9]*)?(?:[e][+-]?[0-9]+)?$/,
+    nameRe      = /^[a-zA-Z_][a-zA-Z_0-9]*$/,
+    typeRefRe   = /^(?:\.?[a-zA-Z_][a-zA-Z_0-9]*)+$/,
+    fqTypeRefRe = /^(?:\.[a-zA-Z][a-zA-Z_0-9]*)+$/;
+
+function lower(token) {
+    return token === null ? null : token.toLowerCase();
+}
+
+var camelCaseRe = /_([a-z])(?=[a-z]|$)/g;
+
+function camelCase(str) {
+    return str.substring(0,1)
+         + str.substring(1)
+               .replace(camelCaseRe, function($0, $1) { return $1.toUpperCase(); });
+}
+
+/**
+ * Result object returned from {@link parse}.
+ * @typedef ParserResult
+ * @type {Object.<string,*>}
+ * @property {string|undefined} package Package name, if declared
+ * @property {string[]|undefined} imports Imports, if any
+ * @property {string[]|undefined} weakImports Weak imports, if any
+ * @property {string|undefined} syntax Syntax, if specified (either `"proto2"` or `"proto3"`)
+ * @property {Root} root Populated root instance
+ */
+
+/**
+ * Options modifying the behavior of {@link parse}.
+ * @typedef ParseOptions
+ * @type {Object.<string,*>}
+ * @property {boolean} [keepCase=false] Keeps field casing instead of converting to camel case
+ */
+
+/**
+ * Parses the given .proto source and returns an object with the parsed contents.
+ * @function
+ * @param {string} source Source contents
+ * @param {Root} root Root to populate
+ * @param {ParseOptions} [options] Parse options. Defaults to {@link parse.defaults} when omitted.
+ * @returns {ParserResult} Parser result
+ * @property {string} filename=null Currently processing file name for error reporting, if known
+ * @property {ParseOptions} defaults Default {@link ParseOptions}
+ */
+function parse(source, root, options) {
+    /* eslint-disable callback-return */
+    if (!(root instanceof Root)) {
+        options = root;
+        root = new Root();
+    }
+    if (!options)
+        options = parse.defaults;
+
+    var tn = tokenize(source),
+        next = tn.next,
+        push = tn.push,
+        peek = tn.peek,
+        skip = tn.skip,
+        cmnt = tn.cmnt;
+
+    var head = true,
+        pkg,
+        imports,
+        weakImports,
+        syntax,
+        isProto3 = false;
+
+    var ptr = root;
+
+    var applyCase = options.keepCase ? function(name) { return name; } : camelCase;
+
+    /* istanbul ignore next */
+    function illegal(token, name, insideTryCatch) {
+        var filename = parse.filename;
+        if (!insideTryCatch)
+            parse.filename = null;
+        return Error("illegal " + (name || "token") + " '" + token + "' (" + (filename ? filename + ", " : "") + "line " + tn.line() + ")");
+    }
+
+    function readString() {
+        var values = [],
+            token;
+        /* istanbul ignore next */
+        do {
+            if ((token = next()) !== "\"" && token !== "'")
+                throw illegal(token);
+            values.push(next());
+            skip(token);
+            token = peek();
+        } while (token === "\"" || token === "'");
+        return values.join("");
+    }
+
+    function readValue(acceptTypeRef) {
+        var token = next();
+        switch (lower(token)) {
+            case "'":
+            case "\"":
+                push(token);
+                return readString();
+            case "true":
+                return true;
+            case "false":
+                return false;
+        }
+        try {
+            return parseNumber(token, /* insideTryCatch */ true);
+        } catch (e) {
+            /* istanbul ignore else */
+            if (acceptTypeRef && typeRefRe.test(token))
+                return token;
+            /* istanbul ignore next */
+            throw illegal(token, "value");
+        }
+    }
+
+    function readRanges(target, acceptStrings) {
+        var token, start;
+        do {
+            if (acceptStrings && ((token = peek()) === "\"" || token === "'"))
+                target.push(readString());
+            else
+                target.push([ start = parseId(next()), skip("to", true) ? parseId(next()) : start ]);
+        } while (skip(",", true));
+        skip(";");
+    }
+
+    function parseNumber(token, insideTryCatch) {
+        var sign = 1;
+        if (token.charAt(0) === "-") {
+            sign = -1;
+            token = token.substring(1);
+        }
+        var tokenLower = lower(token);
+        switch (tokenLower) {
+            case "inf": return sign * Infinity;
+            case "nan": return NaN;
+            case "0": return 0;
+        }
+        if (base10Re.test(token))
+            return sign * parseInt(token, 10);
+        if (base16Re.test(tokenLower))
+            return sign * parseInt(token, 16);
+        if (base8Re.test(token))
+            return sign * parseInt(token, 8);
+        if (numberRe.test(tokenLower))
+            return sign * parseFloat(token);
+        /* istanbul ignore next */
+        throw illegal(token, "number", insideTryCatch);
+    }
+
+    function parseId(token, acceptNegative) {
+        var tokenLower = lower(token);
+        switch (tokenLower) {
+            case "max": return 536870911;
+            case "0": return 0;
+        }
+        /* istanbul ignore next */
+        if (token.charAt(0) === "-" && !acceptNegative)
+            throw illegal(token, "id");
+        if (base10NegRe.test(token))
+            return parseInt(token, 10);
+        if (base16NegRe.test(tokenLower))
+            return parseInt(token, 16);
+        /* istanbul ignore else */
+        if (base8NegRe.test(token))
+            return parseInt(token, 8);
+        /* istanbul ignore next */
+        throw illegal(token, "id");
+    }
+
+    function parsePackage() {
+        /* istanbul ignore next */
+        if (pkg !== undefined)
+            throw illegal("package");
+        pkg = next();
+        /* istanbul ignore next */
+        if (!typeRefRe.test(pkg))
+            throw illegal(pkg, "name");
+        ptr = ptr.define(pkg);
+        skip(";");
+    }
+
+    function parseImport() {
+        var token = peek();
+        var whichImports;
+        switch (token) {
+            case "weak":
+                whichImports = weakImports || (weakImports = []);
+                next();
+                break;
+            case "public":
+                next();
+                // eslint-disable-line no-fallthrough
+            default:
+                whichImports = imports || (imports = []);
+                break;
+        }
+        token = readString();
+        skip(";");
+        whichImports.push(token);
+    }
+
+    function parseSyntax() {
+        skip("=");
+        syntax = lower(readString());
+        isProto3 = syntax === "proto3";
+        /* istanbul ignore next */
+        if (!isProto3 && syntax !== "proto2")
+            throw illegal(syntax, "syntax");
+        skip(";");
+    }
+
+    function parseCommon(parent, token) {
+        switch (token) {
+
+            case "option":
+                parseOption(parent, token);
+                skip(";");
+                return true;
+
+            case "message":
+                parseType(parent, token);
+                return true;
+
+            case "enum":
+                parseEnum(parent, token);
+                return true;
+
+            case "service":
+                parseService(parent, token);
+                return true;
+
+            case "extend":
+                parseExtension(parent, token);
+                return true;
+        }
+        return false;
+    }
+
+    function parseType(parent, token) {
+        var name = next();
+        /* istanbul ignore next */
+        if (!nameRe.test(name))
+            throw illegal(name, "type name");
+        var type = new Type(name);
+        type.comment = cmnt();
+        type.filename = parse.filename;
+        if (skip("{", true)) {
+            while ((token = next()) !== "}") {
+                var tokenLower = lower(token);
+                if (parseCommon(type, token))
+                    continue;
+                switch (tokenLower) {
+
+                    case "map":
+                        parseMapField(type, tokenLower);
+                        break;
+
+                    case "required":
+                    case "optional":
+                    case "repeated":
+                        parseField(type, tokenLower);
+                        break;
+
+                    case "oneof":
+                        parseOneOf(type, tokenLower);
+                        break;
+
+                    case "extensions":
+                        readRanges(type.extensions || (type.extensions = []));
+                        break;
+
+                    case "reserved":
+                        readRanges(type.reserved || (type.reserved = []), true);
+                        break;
+
+                    default:
+                        /* istanbul ignore next */
+                        if (!isProto3 || !typeRefRe.test(token))
+                            throw illegal(token);
+                        push(token);
+                        parseField(type, "optional");
+                        break;
+                }
+            }
+            skip(";", true);
+        } else
+            skip(";");
+        parent.add(type);
+    }
+
+    function parseField(parent, rule, extend) {
+        var type = next();
+        if (type === "group") {
+            parseGroup(parent, rule);
+            return;
+        }
+        /* istanbul ignore next */
+        if (!typeRefRe.test(type))
+            throw illegal(type, "type");
+        var name = next();
+        /* istanbul ignore next */
+        if (!nameRe.test(name))
+            throw illegal(name, "name");
+        name = applyCase(name);
+        skip("=");
+        var field = new Field(name, parseId(next()), type, rule, extend),
+            trailingLine = tn.line();
+        field.comment = cmnt();
+        field.filename = parse.filename;
+        parseInlineOptions(field);
+        if (!field.comment)
+            field.comment = cmnt(trailingLine);
+        // JSON defaults to packed=true if not set so we have to set packed=false explicity when
+        // parsing proto2 descriptors without the option, where applicable. This must be done for
+        // any type (not just packable types) because enums also use varint encoding and it is not
+        // yet known whether a type is an enum or not.
+        if (!isProto3 && field.repeated)
+            field.setOption("packed", false, /* ifNotSet */ true);
+        parent.add(field);
+    }
+
+    function parseGroup(parent, rule) {
+        var name = next();
+        /* istanbul ignore next */
+        if (!nameRe.test(name))
+            throw illegal(name, "name");
+        var fieldName = util.lcFirst(name);
+        if (name === fieldName)
+            name = util.ucFirst(name);
+        skip("=");
+        var id = parseId(next());
+        var type = new Type(name);
+        type.group = true;
+        type.comment = cmnt();
+        var field = new Field(fieldName, id, name, rule);
+        type.filename = field.filename = parse.filename;
+        skip("{");
+        while ((token = next()) !== "}") {
+            switch (token = lower(token)) {
+                case "option":
+                    parseOption(type, token);
+                    skip(";");
+                    break;
+                case "required":
+                case "optional":
+                case "repeated":
+                    parseField(type, token);
+                    break;
+
+                /* istanbul ignore next */
+                default:
+                    throw illegal(token); // there are no groups with proto3 semantics
+            }
+        }
+        skip(";", true);
+        parent.add(type).add(field);
+    }
+
+    function parseMapField(parent) {
+        skip("<");
+        var keyType = next();
+
+        /* istanbul ignore next */
+        if (types.mapKey[keyType] === undefined)
+            throw illegal(keyType, "type");
+        skip(",");
+        var valueType = next();
+        /* istanbul ignore next */
+        if (!typeRefRe.test(valueType))
+            throw illegal(valueType, "type");
+        skip(">");
+        var name = next();
+        /* istanbul ignore next */
+        if (!nameRe.test(name))
+            throw illegal(name, "name");
+
+        name = applyCase(name);
+        skip("=");
+        var field = new MapField(name, parseId(next()), keyType, valueType),
+            trailingLine = tn.line();
+        field.comment = cmnt();
+        field.filename = parse.filename;
+        parseInlineOptions(field);
+        if (!field.comment)
+            field.comment = cmnt(trailingLine);
+        parent.add(field);
+    }
+
+    function parseOneOf(parent, token) {
+        var name = next();
+
+        /* istanbul ignore next */
+        if (!nameRe.test(name))
+            throw illegal(name, "name");
+
+        name = applyCase(name);
+        var oneof = new OneOf(name),
+            trailingLine = tn.line();
+        oneof.comment = cmnt();
+        oneof.filename = parse.filename;
+        if (skip("{", true)) {
+            while ((token = next()) !== "}") {
+                if (token === "option") {
+                    parseOption(oneof, token);
+                    skip(";");
+                } else {
+                    push(token);
+                    parseField(oneof, "optional");
+                }
+            }
+            skip(";", true);
+        } else {
+            skip(";");
+            if (!oneof.comment)
+                oneof.comment = cmnt(trailingLine);
+        }
+        parent.add(oneof);
+    }
+
+    function parseEnum(parent, token) {
+        var name = next();
+
+        /* istanbul ignore next */
+        if (!nameRe.test(name))
+            throw illegal(name, "name");
+
+        var enm = new Enum(name);
+        enm.comment = cmnt();
+        enm.filename = parse.filename;
+        if (skip("{", true)) {
+            while ((token = next()) !== "}") {
+                if (lower(token) === "option") {
+                    parseOption(enm, token);
+                    skip(";");
+                } else
+                    parseEnumValue(enm, token);
+            }
+            skip(";", true);
+        } else
+            skip(";");
+        parent.add(enm);
+    }
+
+    function parseEnumValue(parent, token) {
+
+        /* istanbul ignore next */
+        if (!nameRe.test(token))
+            throw illegal(token, "name");
+
+        var name = token;
+        skip("=");
+        var value = parseId(next(), true),
+            trailingLine = tn.line();
+        parent.add(name, value, cmnt());
+        parseInlineOptions({}); // skips enum value options
+        if (!parent.comments[name])
+            parent.comments[name] = cmnt(trailingLine);
+    }
+
+    function parseOption(parent, token) {
+        var custom = skip("(", true);
+        var name = next();
+
+        /* istanbul ignore next */
+        if (!typeRefRe.test(name))
+            throw illegal(name, "name");
+
+        if (custom) {
+            skip(")");
+            name = "(" + name + ")";
+            token = peek();
+            if (fqTypeRefRe.test(token)) {
+                name += token;
+                next();
+            }
+        }
+        skip("=");
+        parseOptionValue(parent, name);
+    }
+
+    function parseOptionValue(parent, name) {
+        if (skip("{", true)) { // { a: "foo" b { c: "bar" } }
+            /* istanbul ignore next */
+            do {
+                if (!nameRe.test(token = next()))
+                    throw illegal(token, "name");
+                if (peek() === "{")
+                    parseOptionValue(parent, name + "." + token);
+                else {
+                    skip(":");
+                    setOption(parent, name + "." + token, readValue(true));
+                }
+            } while (!skip("}", true));
+        } else
+            setOption(parent, name, readValue(true));
+        // Does not enforce a delimiter to be universal
+    }
+
+    function setOption(parent, name, value) {
+        if (parent.setOption)
+            parent.setOption(name, value);
+    }
+
+    function parseInlineOptions(parent) {
+        if (skip("[", true)) {
+            do {
+                parseOption(parent, "option");
+            } while (skip(",", true));
+            skip("]");
+        }
+        skip(";");
+        return parent;
+    }
+
+    function parseService(parent, token) {
+        token = next();
+
+        /* istanbul ignore next */
+        if (!nameRe.test(token))
+            throw illegal(token, "service name");
+
+        var name = token;
+        var service = new Service(name);
+        service.comment = cmnt();
+        service.filename = parse.filename;
+        if (skip("{", true)) {
+            while ((token = next()) !== "}") {
+                var tokenLower = lower(token);
+                switch (tokenLower) {
+                    case "option":
+                        parseOption(service, tokenLower);
+                        skip(";");
+                        break;
+                    case "rpc":
+                        parseMethod(service, tokenLower);
+                        break;
+
+                    /* istanbul ignore next */
+                    default:
+                        throw illegal(token);
+                }
+            }
+            skip(";", true);
+        } else
+            skip(";");
+        parent.add(service);
+    }
+
+    function parseMethod(parent, token) {
+        var type = token;
+        var name = next();
+
+        /* istanbul ignore next */
+        if (!nameRe.test(name))
+            throw illegal(name, "name");
+        var requestType, requestStream,
+            responseType, responseStream;
+        skip("(");
+        if (skip("stream", true))
+            requestStream = true;
+        /* istanbul ignore next */
+        if (!typeRefRe.test(token = next()))
+            throw illegal(token);
+        requestType = token;
+        skip(")"); skip("returns"); skip("(");
+        if (skip("stream", true))
+            responseStream = true;
+        /* istanbul ignore next */
+        if (!typeRefRe.test(token = next()))
+            throw illegal(token);
+
+        responseType = token;
+        skip(")");
+        var method = new Method(name, type, requestType, responseType, requestStream, responseStream),
+            trailingLine = tn.line();
+        method.comment = cmnt();
+        method.filename = parse.filename;
+        if (skip("{", true)) {
+            while ((token = next()) !== "}") {
+                var tokenLower = lower(token);
+                switch (tokenLower) {
+                    case "option":
+                        parseOption(method, tokenLower);
+                        skip(";");
+                        break;
+
+                    /* istanbul ignore next */
+                    default:
+                        throw illegal(token);
+                }
+            }
+            skip(";", true);
+        } else {
+            skip(";");
+            if (!method.comment)
+                method.comment = cmnt(trailingLine);
+        }
+        parent.add(method);
+    }
+
+    function parseExtension(parent, token) {
+        var reference = next();
+
+        /* istanbul ignore next */
+        if (!typeRefRe.test(reference))
+            throw illegal(reference, "reference");
+
+        if (skip("{", true)) {
+            while ((token = next()) !== "}") {
+                var tokenLower = lower(token);
+                switch (tokenLower) {
+                    case "required":
+                    case "repeated":
+                    case "optional":
+                        parseField(parent, tokenLower, reference);
+                        break;
+                    default:
+                        /* istanbul ignore next */
+                        if (!isProto3 || !typeRefRe.test(token))
+                            throw illegal(token);
+                        push(token);
+                        parseField(parent, "optional", reference);
+                        break;
+                }
+            }
+            skip(";", true);
+        } else
+            skip(";");
+    }
+
+    var token;
+    while ((token = next()) !== null) {
+        var tokenLower = lower(token);
+        switch (tokenLower) {
+
+            case "package":
+                /* istanbul ignore next */
+                if (!head)
+                    throw illegal(token);
+                parsePackage();
+                break;
+
+            case "import":
+                /* istanbul ignore next */
+                if (!head)
+                    throw illegal(token);
+                parseImport();
+                break;
+
+            case "syntax":
+                /* istanbul ignore next */
+                if (!head)
+                    throw illegal(token);
+                parseSyntax();
+                break;
+
+            case "option":
+                /* istanbul ignore next */
+                if (!head)
+                    throw illegal(token);
+                parseOption(ptr, token);
+                skip(";");
+                break;
+
+            default:
+                /* istanbul ignore else */
+                if (parseCommon(ptr, token)) {
+                    head = false;
+                    continue;
+                }
+                /* istanbul ignore next */
+                throw illegal(token);
+        }
+    }
+
+    parse.filename = null;
+    return {
+        "package"     : pkg,
+        "imports"     : imports,
+         weakImports  : weakImports,
+         syntax       : syntax,
+         root         : root
+    };
+}
+
+/**
+ * Parses the given .proto source and returns an object with the parsed contents.
+ * @name parse
+ * @function
+ * @param {string} source Source contents
+ * @param {ParseOptions} [options] Parse options. Defaults to {@link parse.defaults} when omitted.
+ * @returns {ParserResult} Parser result
+ * @property {string} filename=null Currently processing file name for error reporting, if known
+ * @property {ParseOptions} defaults Default {@link ParseOptions}
+ * @variation 2
+ */
+
+},{"15":15,"16":16,"20":20,"22":22,"25":25,"29":29,"32":32,"33":33,"34":34,"35":35,"36":36}],27:[function(require,module,exports){
+"use strict";
+module.exports = Reader;
+
+var util      = require(38);
+
+var BufferReader; // cyclic
+
+var LongBits  = util.LongBits,
+    utf8      = util.utf8;
+
+/* istanbul ignore next */
+function indexOutOfRange(reader, writeLength) {
+    return RangeError("index out of range: " + reader.pos + " + " + (writeLength || 1) + " > " + reader.len);
+}
+
+/**
+ * Constructs a new reader instance using the specified buffer.
+ * @classdesc Wire format reader using `Uint8Array` if available, otherwise `Array`.
+ * @constructor
+ * @param {Uint8Array} buffer Buffer to read from
+ */
+function Reader(buffer) {
+
+    /**
+     * Read buffer.
+     * @type {Uint8Array}
+     */
+    this.buf = buffer;
+
+    /**
+     * Read buffer position.
+     * @type {number}
+     */
+    this.pos = 0;
+
+    /**
+     * Read buffer length.
+     * @type {number}
+     */
+    this.len = buffer.length;
+}
+
+var create_array = typeof Uint8Array !== "undefined"
+    ? function create_typed_array(buffer) {
+        if (buffer instanceof Uint8Array || Array.isArray(buffer))
+            return new Reader(buffer);
+        throw Error("illegal buffer");
+    }
+    /* istanbul ignore next */
+    : function create_array(buffer) {
+        if (Array.isArray(buffer))
+            return new Reader(buffer);
+        throw Error("illegal buffer");
+    };
+
+/**
+ * Creates a new reader using the specified buffer.
+ * @function
+ * @param {Uint8Array|Buffer} buffer Buffer to read from
+ * @returns {Reader|BufferReader} A {@link BufferReader} if `buffer` is a Buffer, otherwise a {@link Reader}
+ * @throws {Error} If `buffer` is not a valid buffer
+ */
+Reader.create = util.Buffer
+    ? function create_buffer_setup(buffer) {
+        return (Reader.create = function create_buffer(buffer) {
+            return util.Buffer.isBuffer(buffer)
+                ? new BufferReader(buffer)
+                /* istanbul ignore next */
+                : create_array(buffer);
+        })(buffer);
+    }
+    /* istanbul ignore next */
+    : create_array;
+
+Reader.prototype._slice = util.Array.prototype.subarray || /* istanbul ignore next */ util.Array.prototype.slice;
+
+/**
+ * Reads a varint as an unsigned 32 bit value.
+ * @function
+ * @returns {number} Value read
+ */
+Reader.prototype.uint32 = (function read_uint32_setup() {
+    var value = 4294967295; // optimizer type-hint, tends to deopt otherwise (?!)
+    return function read_uint32() {
+        value = (         this.buf[this.pos] & 127       ) >>> 0; if (this.buf[this.pos++] < 128) return value;
+        value = (value | (this.buf[this.pos] & 127) <<  7) >>> 0; if (this.buf[this.pos++] < 128) return value;
+        value = (value | (this.buf[this.pos] & 127) << 14) >>> 0; if (this.buf[this.pos++] < 128) return value;
+        value = (value | (this.buf[this.pos] & 127) << 21) >>> 0; if (this.buf[this.pos++] < 128) return value;
+        value = (value | (this.buf[this.pos] &  15) << 28) >>> 0; if (this.buf[this.pos++] < 128) return value;
+
+        /* istanbul ignore next */
+        if ((this.pos += 5) > this.len) {
+            this.pos = this.len;
+            throw indexOutOfRange(this, 10);
+        }
+        return value;
+    };
+})();
+
+/**
+ * Reads a varint as a signed 32 bit value.
+ * @returns {number} Value read
+ */
+Reader.prototype.int32 = function read_int32() {
+    return this.uint32() | 0;
+};
+
+/**
+ * Reads a zig-zag encoded varint as a signed 32 bit value.
+ * @returns {number} Value read
+ */
+Reader.prototype.sint32 = function read_sint32() {
+    var value = this.uint32();
+    return value >>> 1 ^ -(value & 1) | 0;
+};
+
+/* eslint-disable no-invalid-this */
+
+function readLongVarint() {
+    // tends to deopt with local vars for octet etc.
+    var bits = new LongBits(0, 0);
+    var i = 0;
+    if (this.len - this.pos > 4) { // fast route (lo)
+        for (; i < 4; ++i) {
+            // 1st..4th
+            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
+            if (this.buf[this.pos++] < 128)
+                return bits;
+        }
+        // 5th
+        bits.lo = (bits.lo | (this.buf[this.pos] & 127) << 28) >>> 0;
+        bits.hi = (bits.hi | (this.buf[this.pos] & 127) >>  4) >>> 0;
+        if (this.buf[this.pos++] < 128)
+            return bits;
+        i = 0;
+    } else {
+        for (; i < 3; ++i) {
+            /* istanbul ignore next */
+            if (this.pos >= this.len)
+                throw indexOutOfRange(this);
+            // 1st..3th
+            bits.lo = (bits.lo | (this.buf[this.pos] & 127) << i * 7) >>> 0;
+            if (this.buf[this.pos++] < 128)
+                return bits;
+        }
+        // 4th
+        bits.lo = (bits.lo | (this.buf[this.pos++] & 127) << i * 7) >>> 0;
+        return bits;
+    }
+    if (this.len - this.pos > 4) { // fast route (hi)
+        for (; i < 5; ++i) {
+            // 6th..10th
+            bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
+            if (this.buf[this.pos++] < 128)
+                return bits;
+        }
+    } else {
+        for (; i < 5; ++i) {
+            /* istanbul ignore next */
+            if (this.pos >= this.len)
+                throw indexOutOfRange(this);
+            // 6th..10th
+            bits.hi = (bits.hi | (this.buf[this.pos] & 127) << i * 7 + 3) >>> 0;
+            if (this.buf[this.pos++] < 128)
+                return bits;
+        }
+    }
+    /* istanbul ignore next */
+    throw Error("invalid varint encoding");
+}
+
+/* eslint-enable no-invalid-this */
+
+/**
+ * Reads a varint as a signed 64 bit value.
+ * @name Reader#int64
+ * @function
+ * @returns {Long|number} Value read
+ */
+
+/**
+ * Reads a varint as an unsigned 64 bit value.
+ * @name Reader#uint64
+ * @function
+ * @returns {Long|number} Value read
+ */
+
+/**
+ * Reads a zig-zag encoded varint as a signed 64 bit value.
+ * @name Reader#sint64
+ * @function
+ * @returns {Long|number} Value read
+ */
+
+/**
+ * Reads a varint as a boolean.
+ * @returns {boolean} Value read
+ */
+Reader.prototype.bool = function read_bool() {
+    return this.uint32() !== 0;
+};
+
+function readFixed32(buf, end) {
+    return (buf[end - 4]
+          | buf[end - 3] << 8
+          | buf[end - 2] << 16
+          | buf[end - 1] << 24) >>> 0;
+}
+
+/**
+ * Reads fixed 32 bits as an unsigned 32 bit integer.
+ * @returns {number} Value read
+ */
+Reader.prototype.fixed32 = function read_fixed32() {
+
+    /* istanbul ignore next */
+    if (this.pos + 4 > this.len)
+        throw indexOutOfRange(this, 4);
+
+    return readFixed32(this.buf, this.pos += 4);
+};
+
+/**
+ * Reads fixed 32 bits as a signed 32 bit integer.
+ * @returns {number} Value read
+ */
+Reader.prototype.sfixed32 = function read_sfixed32() {
+
+    /* istanbul ignore next */
+    if (this.pos + 4 > this.len)
+        throw indexOutOfRange(this, 4);
+
+    return readFixed32(this.buf, this.pos += 4) | 0;
+};
+
+/* eslint-disable no-invalid-this */
+
+function readFixed64(/* this: Reader */) {
+
+    /* istanbul ignore next */
+    if (this.pos + 8 > this.len)
+        throw indexOutOfRange(this, 8);
+
+    return new LongBits(readFixed32(this.buf, this.pos += 4), readFixed32(this.buf, this.pos += 4));
+}
+
+/* eslint-enable no-invalid-this */
+
+/**
+ * Reads fixed 64 bits.
+ * @name Reader#fixed64
+ * @function
+ * @returns {Long|number} Value read
+ */
+
+/**
+ * Reads zig-zag encoded fixed 64 bits.
+ * @name Reader#sfixed64
+ * @function
+ * @returns {Long|number} Value read
+ */
+
+var readFloat = typeof Float32Array !== "undefined"
+    ? (function() {
+        var f32 = new Float32Array(1),
+            f8b = new Uint8Array(f32.buffer);
+        f32[0] = -0;
+        return f8b[3] // already le?
+            ? function readFloat_f32(buf, pos) {
+                f8b[0] = buf[pos    ];
+                f8b[1] = buf[pos + 1];
+                f8b[2] = buf[pos + 2];
+                f8b[3] = buf[pos + 3];
+                return f32[0];
+            }
+            /* istanbul ignore next */
+            : function readFloat_f32_le(buf, pos) {
+                f8b[0] = buf[pos + 3];
+                f8b[1] = buf[pos + 2];
+                f8b[2] = buf[pos + 1];
+                f8b[3] = buf[pos    ];
+                return f32[0];
+            };
+    })()
+    /* istanbul ignore next */
+    : function readFloat_ieee754(buf, pos) {
+        var uint = readFixed32(buf, pos + 4),
+            sign = (uint >> 31) * 2 + 1,
+            exponent = uint >>> 23 & 255,
+            mantissa = uint & 8388607;
+        return exponent === 255
+            ? mantissa
+              ? NaN
+              : sign * Infinity
+            : exponent === 0 // denormal
+              ? sign * 1.401298464324817e-45 * mantissa
+              : sign * Math.pow(2, exponent - 150) * (mantissa + 8388608);
+    };
+
+/**
+ * Reads a float (32 bit) as a number.
+ * @function
+ * @returns {number} Value read
+ */
+Reader.prototype.float = function read_float() {
+
+    /* istanbul ignore next */
+    if (this.pos + 4 > this.len)
+        throw indexOutOfRange(this, 4);
+
+    var value = readFloat(this.buf, this.pos);
+    this.pos += 4;
+    return value;
+};
+
+var readDouble = typeof Float64Array !== "undefined"
+    ? (function() {
+        var f64 = new Float64Array(1),
+            f8b = new Uint8Array(f64.buffer);
+        f64[0] = -0;
+        return f8b[7] // already le?
+            ? function readDouble_f64(buf, pos) {
+                f8b[0] = buf[pos    ];
+                f8b[1] = buf[pos + 1];
+                f8b[2] = buf[pos + 2];
+                f8b[3] = buf[pos + 3];
+                f8b[4] = buf[pos + 4];
+                f8b[5] = buf[pos + 5];
+                f8b[6] = buf[pos + 6];
+                f8b[7] = buf[pos + 7];
+                return f64[0];
+            }
+            /* istanbul ignore next */
+            : function readDouble_f64_le(buf, pos) {
+                f8b[0] = buf[pos + 7];
+                f8b[1] = buf[pos + 6];
+                f8b[2] = buf[pos + 5];
+                f8b[3] = buf[pos + 4];
+                f8b[4] = buf[pos + 3];
+                f8b[5] = buf[pos + 2];
+                f8b[6] = buf[pos + 1];
+                f8b[7] = buf[pos    ];
+                return f64[0];
+            };
+    })()
+    /* istanbul ignore next */
+    : function readDouble_ieee754(buf, pos) {
+        var lo = readFixed32(buf, pos + 4),
+            hi = readFixed32(buf, pos + 8);
+        var sign = (hi >> 31) * 2 + 1,
+            exponent = hi >>> 20 & 2047,
+            mantissa = 4294967296 * (hi & 1048575) + lo;
+        return exponent === 2047
+            ? mantissa
+              ? NaN
+              : sign * Infinity
+            : exponent === 0 // denormal
+              ? sign * 5e-324 * mantissa
+              : sign * Math.pow(2, exponent - 1075) * (mantissa + 4503599627370496);
+    };
+
+/**
+ * Reads a double (64 bit float) as a number.
+ * @function
+ * @returns {number} Value read
+ */
+Reader.prototype.double = function read_double() {
+
+    /* istanbul ignore next */
+    if (this.pos + 8 > this.len)
+        throw indexOutOfRange(this, 4);
+
+    var value = readDouble(this.buf, this.pos);
+    this.pos += 8;
+    return value;
+};
+
+/**
+ * Reads a sequence of bytes preceeded by its length as a varint.
+ * @returns {Uint8Array} Value read
+ */
+Reader.prototype.bytes = function read_bytes() {
+    var length = this.uint32(),
+        start  = this.pos,
+        end    = this.pos + length;
+
+    /* istanbul ignore next */
+    if (end > this.len)
+        throw indexOutOfRange(this, length);
+
+    this.pos += length;
+    return start === end // fix for IE 10/Win8 and others' subarray returning array of size 1
+        ? new this.buf.constructor(0)
+        : this._slice.call(this.buf, start, end);
+};
+
+/**
+ * Reads a string preceeded by its byte length as a varint.
+ * @returns {string} Value read
+ */
+Reader.prototype.string = function read_string() {
+    var bytes = this.bytes();
+    return utf8.read(bytes, 0, bytes.length);
+};
+
+/**
+ * Skips the specified number of bytes if specified, otherwise skips a varint.
+ * @param {number} [length] Length if known, otherwise a varint is assumed
+ * @returns {Reader} `this`
+ */
+Reader.prototype.skip = function skip(length) {
+    if (typeof length === "number") {
+        /* istanbul ignore next */
+        if (this.pos + length > this.len)
+            throw indexOutOfRange(this, length);
+        this.pos += length;
+    } else {
+        /* istanbul ignore next */
+        do {
+            if (this.pos >= this.len)
+                throw indexOutOfRange(this);
+        } while (this.buf[this.pos++] & 128);
+    }
+    return this;
+};
+
+/**
+ * Skips the next element of the specified wire type.
+ * @param {number} wireType Wire type received
+ * @returns {Reader} `this`
+ */
+Reader.prototype.skipType = function(wireType) {
+    switch (wireType) {
+        case 0:
+            this.skip();
+            break;
+        case 1:
+            this.skip(8);
+            break;
+        case 2:
+            this.skip(this.uint32());
+            break;
+        case 3:
+            do { // eslint-disable-line no-constant-condition
+                if ((wireType = this.uint32() & 7) === 4)
+                    break;
+                this.skipType(wireType);
+            } while (true);
+            break;
+        case 5:
+            this.skip(4);
+            break;
+
+        /* istanbul ignore next */
+        default:
+            throw Error("invalid wire type " + wireType + " at offset " + this.pos);
+    }
+    return this;
+};
+
+Reader._configure = function(BufferReader_) {
+    BufferReader = BufferReader_;
+
+    var fn = util.Long ? "toLong" : /* istanbul ignore next */ "toNumber";
+    util.merge(Reader.prototype, {
+
+        int64: function read_int64() {
+            return readLongVarint.call(this)[fn](false);
+        },
+
+        uint64: function read_uint64() {
+            return readLongVarint.call(this)[fn](true);
+        },
+
+        sint64: function read_sint64() {
+            return readLongVarint.call(this).zzDecode()[fn](false);
+        },
+
+        fixed64: function read_fixed64() {
+            return readFixed64.call(this)[fn](true);
+        },
+
+        sfixed64: function read_sfixed64() {
+            return readFixed64.call(this)[fn](false);
+        }
+
+    });
+};
+
+},{"38":38}],28:[function(require,module,exports){
+"use strict";
+module.exports = BufferReader;
+
+// extends Reader
+var Reader = require(27);
+(BufferReader.prototype = Object.create(Reader.prototype)).constructor = BufferReader;
+
+var util = require(38);
+
+/**
+ * Constructs a new buffer reader instance.
+ * @classdesc Wire format reader using node buffers.
+ * @extends Reader
+ * @constructor
+ * @param {Buffer} buffer Buffer to read from
+ */
+function BufferReader(buffer) {
+    Reader.call(this, buffer);
+
+    /**
+     * Read buffer.
+     * @name BufferReader#buf
+     * @type {Buffer}
+     */
+}
+
+/* istanbul ignore else */
+if (util.Buffer)
+    BufferReader.prototype._slice = util.Buffer.prototype.slice;
+
+/**
+ * @override
+ */
+BufferReader.prototype.string = function read_string_buffer() {
+    var len = this.uint32(); // modifies pos
+    return this.buf.utf8Slice(this.pos, this.pos = Math.min(this.pos + len, this.len));
+};
+
+/**
+ * Reads a sequence of bytes preceeded by its length as a varint.
+ * @name BufferReader#bytes
+ * @function
+ * @returns {Buffer} Value read
+ */
+
+},{"27":27,"38":38}],29:[function(require,module,exports){
+"use strict";
+module.exports = Root;
+
+// extends Namespace
+var Namespace = require(23);
+((Root.prototype = Object.create(Namespace.prototype)).constructor = Root).className = "Root";
+
+var Field   = require(16),
+    Enum    = require(15),
+    util    = require(36);
+
+var Type,   // cyclic
+    parse,  // might be excluded
+    common; // "
+
+/**
+ * Constructs a new root namespace instance.
+ * @classdesc Root namespace wrapping all types, enums, services, sub-namespaces etc. that belong together.
+ * @extends NamespaceBase
+ * @constructor
+ * @param {Object.<string,*>} [options] Top level options
+ */
+function Root(options) {
+    Namespace.call(this, "", options);
+
+    /**
+     * Deferred extension fields.
+     * @type {Field[]}
+     */
+    this.deferred = [];
+
+    /**
+     * Resolved file names of loaded files.
+     * @type {string[]}
+     */
+    this.files = [];
+}
+
+/**
+ * Loads a JSON definition into a root namespace.
+ * @param {Object.<string,*>} json JSON definition
+ * @param {Root} [root] Root namespace, defaults to create a new one if omitted
+ * @returns {Root} Root namespace
+ */
+Root.fromJSON = function fromJSON(json, root) {
+    if (!root)
+        root = new Root();
+    if (json.options)
+        root.setOptions(json.options);
+    return root.addJSON(json.nested);
+};
+
+/**
+ * Resolves the path of an imported file, relative to the importing origin.
+ * This method exists so you can override it with your own logic in case your imports are scattered over multiple directories.
+ * @function
+ * @param {string} origin The file name of the importing file
+ * @param {string} target The file name being imported
+ * @returns {?string} Resolved path to `target` or `null` to skip the file
+ */
+Root.prototype.resolvePath = util.path.resolve;
+
+// A symbol-like function to safely signal synchronous loading
+/* istanbul ignore next */
+function SYNC() {} // eslint-disable-line no-empty-function
+
+/**
+ * Loads one or multiple .proto or preprocessed .json files into this root namespace and calls the callback.
+ * @param {string|string[]} filename Names of one or multiple files to load
+ * @param {ParseOptions} options Parse options
+ * @param {LoadCallback} callback Callback function
+ * @returns {undefined}
+ */
+Root.prototype.load = function load(filename, options, callback) {
+    if (typeof options === "function") {
+        callback = options;
+        options = undefined;
+    }
+    var self = this;
+    if (!callback)
+        return util.asPromise(load, self, filename, options);
+
+    var sync = callback === SYNC; // undocumented
+
+    // Finishes loading by calling the callback (exactly once)
+    function finish(err, root) {
+        /* istanbul ignore next */
+        if (!callback)
+            return;
+        var cb = callback;
+        callback = null;
+        if (sync)
+            throw err;
+        cb(err, root);
+    }
+
+    // Processes a single file
+    function process(filename, source) {
+        try {
+            if (util.isString(source) && source.charAt(0) === "{")
+                source = JSON.parse(source);
+            if (!util.isString(source))
+                self.setOptions(source.options).addJSON(source.nested);
+            else {
+                parse.filename = filename;
+                var parsed = parse(source, self, options),
+                    resolved,
+                    i = 0;
+                if (parsed.imports)
+                    for (; i < parsed.imports.length; ++i)
+                        if (resolved = self.resolvePath(filename, parsed.imports[i]))
+                            fetch(resolved);
+                if (parsed.weakImports)
+                    for (i = 0; i < parsed.weakImports.length; ++i)
+                        if (resolved = self.resolvePath(filename, parsed.weakImports[i]))
+                            fetch(resolved, true);
+            }
+        } catch (err) {
+            finish(err);
+        }
+        if (!sync && !queued)
+            finish(null, self); // only once anyway
+    }
+
+    // Fetches a single file
+    function fetch(filename, weak) {
+
+        // Strip path if this file references a bundled definition
+        var idx = filename.lastIndexOf("google/protobuf/");
+        if (idx > -1) {
+            var altname = filename.substring(idx);
+            if (altname in common)
+                filename = altname;
+        }
+
+        // Skip if already loaded / attempted
+        if (self.files.indexOf(filename) > -1)
+            return;
+        self.files.push(filename);
+
+        // Shortcut bundled definitions
+        if (filename in common) {
+            if (sync)
+                process(filename, common[filename]);
+            else {
+                ++queued;
+                setTimeout(function() {
+                    --queued;
+                    process(filename, common[filename]);
+                });
+            }
+            return;
+        }
+
+        // Otherwise fetch from disk or network
+        if (sync) {
+            var source;
+            try {
+                source = util.fs.readFileSync(filename).toString("utf8");
+            } catch (err) {
+                if (!weak)
+                    finish(err);
+                return;
+            }
+            process(filename, source);
+        } else {
+            ++queued;
+            util.fetch(filename, function(err, source) {
+                --queued;
+                /* istanbul ignore next */
+                if (!callback)
+                    return; // terminated meanwhile
+                if (err) {
+                    if (!weak)
+                        finish(err);
+                    else /* istanbul ignore next */ if (!queued) // can't be covered reliably
+                        finish(null, self);
+                    return;
+                }
+                process(filename, source);
+            });
+        }
+    }
+    var queued = 0;
+
+    // Assembling the root namespace doesn't require working type
+    // references anymore, so we can load everything in parallel
+    if (util.isString(filename))
+        filename = [ filename ];
+    for (var i = 0, resolved; i < filename.length; ++i)
+        if (resolved = self.resolvePath("", filename[i]))
+            fetch(resolved);
+
+    if (sync)
+        return self;
+    if (!queued)
+        finish(null, self);
+    return undefined;
+};
+// function load(filename:string, options:ParseOptions, callback:LoadCallback):undefined
+
+/**
+ * Loads one or multiple .proto or preprocessed .json files into this root namespace and calls the callback.
+ * @param {string|string[]} filename Names of one or multiple files to load
+ * @param {LoadCallback} callback Callback function
+ * @returns {undefined}
+ * @variation 2
+ */
+// function load(filename:string, callback:LoadCallback):undefined
+
+/**
+ * Loads one or multiple .proto or preprocessed .json files into this root namespace and returns a promise.
+ * @name Root#load
+ * @function
+ * @param {string|string[]} filename Names of one or multiple files to load
+ * @param {ParseOptions} [options] Parse options. Defaults to {@link parse.defaults} when omitted.
+ * @returns {Promise<Root>} Promise
+ * @variation 3
+ */
+// function load(filename:string, [options:ParseOptions]):Promise<Root>
+
+/**
+ * Synchronously loads one or multiple .proto or preprocessed .json files into this root namespace (node only).
+ * @name Root#loadSync
+ * @function
+ * @param {string|string[]} filename Names of one or multiple files to load
+ * @param {ParseOptions} [options] Parse options. Defaults to {@link parse.defaults} when omitted.
+ * @returns {Root} Root namespace
+ * @throws {Error} If synchronous fetching is not supported (i.e. in browsers) or if a file's syntax is invalid
+ */
+Root.prototype.loadSync = function loadSync(filename, options) {
+    if (!util.isNode)
+        throw Error("not supported");
+    return this.load(filename, options, SYNC);
+};
+
+/**
+ * @override
+ */
+Root.prototype.resolveAll = function resolveAll() {
+    if (this.deferred.length)
+        throw Error("unresolvable extensions: " + this.deferred.map(function(field) {
+            return "'extend " + field.extend + "' in " + field.parent.fullName;
+        }).join(", "));
+    return Namespace.prototype.resolveAll.call(this);
+};
+
+// only uppercased (and thus conflict-free) children are exposed, see below
+var exposeRe = /^[A-Z]/;
+
+/**
+ * Handles a deferred declaring extension field by creating a sister field to represent it within its extended type.
+ * @param {Root} root Root instance
+ * @param {Field} field Declaring extension field witin the declaring type
+ * @returns {boolean} `true` if successfully added to the extended type, `false` otherwise
+ * @inner
+ * @ignore
+ */
+function tryHandleExtension(root, field) {
+    var extendedType = field.parent.lookup(field.extend);
+    if (extendedType) {
+        var sisterField = new Field(field.fullName, field.id, field.type, field.rule, undefined, field.options);
+        sisterField.declaringField = field;
+        field.extensionField = sisterField;
+        extendedType.add(sisterField);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Called when any object is added to this root or its sub-namespaces.
+ * @param {ReflectionObject} object Object added
+ * @returns {undefined}
+ * @private
+ */
+Root.prototype._handleAdd = function _handleAdd(object) {
+    if (object instanceof Field) {
+
+        if (/* an extension field (implies not part of a oneof) */ object.extend !== undefined && /* not already handled */ !object.extensionField)
+            if (!tryHandleExtension(this, object))
+                this.deferred.push(object);
+
+    } else if (object instanceof Enum) {
+
+        if (exposeRe.test(object.name))
+            object.parent[object.name] = object.values; // expose enum values as property of its parent
+
+    } else /* everything else is a namespace */ {
+
+        if (object instanceof Type) // Try to handle any deferred extensions
+            for (var i = 0; i < this.deferred.length;)
+                if (tryHandleExtension(this, this.deferred[i]))
+                    this.deferred.splice(i, 1);
+                else
+                    ++i;
+        for (var j = 0; j < /* initializes */ object.nestedArray.length; ++j) // recurse into the namespace
+            this._handleAdd(object._nestedArray[j]);
+        if (exposeRe.test(object.name))
+            object.parent[object.name] = object; // expose namespace as property of its parent
+    }
+
+    // The above also adds uppercased (and thus conflict-free) nested types, services and enums as
+    // properties of namespaces just like static code does. This allows using a .d.ts generated for
+    // a static module with reflection-based solutions where the condition is met.
+};
+
+/**
+ * Called when any object is removed from this root or its sub-namespaces.
+ * @param {ReflectionObject} object Object removed
+ * @returns {undefined}
+ * @private
+ */
+Root.prototype._handleRemove = function _handleRemove(object) {
+    if (object instanceof Field) {
+
+        if (/* an extension field */ object.extend !== undefined) {
+            if (/* already handled */ object.extensionField) { // remove its sister field
+                object.extensionField.parent.remove(object.extensionField);
+                object.extensionField = null;
+            } else { // cancel the extension
+                var index = this.deferred.indexOf(object);
+                /* istanbul ignore else */
+                if (index > -1)
+                    this.deferred.splice(index, 1);
+            }
+        }
+
+    } else if (object instanceof Enum) {
+
+        if (exposeRe.test(object.name))
+            delete object.parent[object.name]; // unexpose enum values
+
+    } else if (object instanceof Namespace) {
+
+        for (var i = 0; i < /* initializes */ object.nestedArray.length; ++i) // recurse into the namespace
+            this._handleRemove(object._nestedArray[i]);
+
+        if (exposeRe.test(object.name))
+            delete object.parent[object.name]; // unexpose namespaces
+
+    }
+};
+
+Root._configure = function(Type_, parse_, common_) {
+    Type = Type_;
+    parse = parse_;
+    common = common_;
+};
+
+},{"15":15,"16":16,"23":23,"36":36}],30:[function(require,module,exports){
+"use strict";
+
+/**
+ * Streaming RPC helpers.
+ * @namespace
+ */
+var rpc = exports;
+
+/**
+ * RPC implementation passed to {@link Service#create} performing a service request on network level, i.e. by utilizing http requests or websockets.
+ * @typedef RPCImpl
+ * @type {function}
+ * @param {Method|rpc.ServiceMethod} method Reflected or static method being called
+ * @param {Uint8Array} requestData Request data
+ * @param {RPCImplCallback} callback Callback function
+ * @returns {undefined}
+ * @example
+ * function rpcImpl(method, requestData, callback) {
+ *     if (protobuf.util.lcFirst(method.name) !== "myMethod") // compatible with static code
+ *         throw Error("no such method");
+ *     asynchronouslyObtainAResponse(requestData, function(err, responseData) {
+ *         callback(err, responseData);
+ *     });
+ * }
+ */
+
+/**
+ * Node-style callback as used by {@link RPCImpl}.
+ * @typedef RPCImplCallback
+ * @type {function}
+ * @param {?Error} error Error, if any, otherwise `null`
+ * @param {?Uint8Array} [response] Response data or `null` to signal end of stream, if there hasn't been an error
+ * @returns {undefined}
+ */
+
+rpc.Service = require(31);
+
+},{"31":31}],31:[function(require,module,exports){
+"use strict";
+module.exports = Service;
+
+var util = require(38);
+
+// Extends EventEmitter
+(Service.prototype = Object.create(util.EventEmitter.prototype)).constructor = Service;
+
+/**
+ * A service method callback as used by {@link rpc.ServiceMethod|ServiceMethod}.
+ *
+ * Differs from {@link RPCImplCallback} in that it is an actual callback of a service method which may not return `response = null`.
+ * @typedef rpc.ServiceMethodCallback
+ * @type {function}
+ * @param {?Error} error Error, if any
+ * @param {?Message} [response] Response message
+ * @returns {undefined}
+ */
+
+/**
+ * A service method part of a {@link rpc.ServiceMethodMixin|ServiceMethodMixin} and thus {@link rpc.Service} as created by {@link Service.create}.
+ * @typedef rpc.ServiceMethod
+ * @type {function}
+ * @param {Message|Object} request Request message or plain object
+ * @param {rpc.ServiceMethodCallback} [callback] Node-style callback called with the error, if any, and the response message
+ * @returns {Promise<Message>} Promise if `callback` has been omitted, otherwise `undefined`
+ */
+
+/**
+ * A service method mixin.
+ *
+ * When using TypeScript, mixed in service methods are only supported directly with a type definition of a static module (used with reflection). Otherwise, explicit casting is required.
+ * @typedef rpc.ServiceMethodMixin
+ * @type {Object.<string,rpc.ServiceMethod>}
+ * @example
+ * // Explicit casting with TypeScript
+ * (myRpcService["myMethod"] as protobuf.rpc.ServiceMethod)(...)
+ */
+
+/**
+ * Constructs a new RPC service instance.
+ * @classdesc An RPC service as returned by {@link Service#create}.
+ * @exports rpc.Service
+ * @extends util.EventEmitter
+ * @augments rpc.ServiceMethodMixin
+ * @constructor
+ * @param {RPCImpl} rpcImpl RPC implementation
+ * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+ * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+ */
+function Service(rpcImpl, requestDelimited, responseDelimited) {
+
+    if (typeof rpcImpl !== "function")
+        throw TypeError("rpcImpl must be a function");
+
+    util.EventEmitter.call(this);
+
+    /**
+     * RPC implementation. Becomes `null` once the service is ended.
+     * @type {?RPCImpl}
+     */
+    this.rpcImpl = rpcImpl;
+
+    /**
+     * Whether requests are length-delimited.
+     * @type {boolean}
+     */
+    this.requestDelimited = Boolean(requestDelimited);
+
+    /**
+     * Whether responses are length-delimited.
+     * @type {boolean}
+     */
+    this.responseDelimited = Boolean(responseDelimited);
+}
+
+/**
+ * Calls a service method through {@link rpc.Service#rpcImpl|rpcImpl}.
+ * @param {Method|rpc.ServiceMethod} method Reflected or static method
+ * @param {function} requestCtor Request constructor
+ * @param {function} responseCtor Response constructor
+ * @param {Message|Object} request Request message or plain object
+ * @param {rpc.ServiceMethodCallback} callback Service callback
+ * @returns {undefined}
+ */
+Service.prototype.rpcCall = function rpcCall(method, requestCtor, responseCtor, request, callback) {
+
+    if (!request)
+        throw TypeError("request must be specified");
+
+    var self = this;
+    if (!callback)
+        return util.asPromise(rpcCall, self, method, requestCtor, responseCtor, request);
+
+    if (!self.rpcImpl) {
+        setTimeout(function() { callback(Error("already ended")); }, 0);
+        return undefined;
+    }
+
+    try {
+        return self.rpcImpl(
+            method,
+            requestCtor[self.requestDelimited ? "encodeDelimited" : "encode"](request).finish(),
+            function rpcCallback(err, response) {
+
+                if (err) {
+                    self.emit("error", err, method);
+                    return callback(err);
+                }
+
+                if (response === null) {
+                    self.end(/* endedByRPC */ true);
+                    return undefined;
+                }
+
+                if (!(response instanceof responseCtor)) {
+                    try {
+                        response = responseCtor[self.responseDelimited ? "decodeDelimited" : "decode"](response);
+                    } catch (err) {
+                        self.emit("error", err, method);
+                        return callback(err);
+                    }
+                }
+
+                self.emit("data", response, method);
+                return callback(null, response);
+            }
+        );
+    } catch (err) {
+        self.emit("error", err, method);
+        setTimeout(function() { callback(err); }, 0);
+        return undefined;
+    }
+};
+
+/**
+ * Ends this service and emits the `end` event.
+ * @param {boolean} [endedByRPC=false] Whether the service has been ended by the RPC implementation.
+ * @returns {rpc.Service} `this`
+ */
+Service.prototype.end = function end(endedByRPC) {
+    if (this.rpcImpl) {
+        if (!endedByRPC) // signal end to rpcImpl
+            this.rpcImpl(null, null, null);
+        this.rpcImpl = null;
+        this.emit("end").off();
+    }
+    return this;
+};
+
+},{"38":38}],32:[function(require,module,exports){
+"use strict";
+module.exports = Service;
+
+// extends Namespace
+var Namespace = require(23);
+((Service.prototype = Object.create(Namespace.prototype)).constructor = Service).className = "Service";
+
+var Method = require(22),
+    util   = require(36),
+    rpc    = require(30);
+
+/**
+ * Constructs a new service instance.
+ * @classdesc Reflected service.
+ * @extends NamespaceBase
+ * @constructor
+ * @param {string} name Service name
+ * @param {Object.<string,*>} [options] Service options
+ * @throws {TypeError} If arguments are invalid
+ */
+function Service(name, options) {
+    Namespace.call(this, name, options);
+
+    /**
+     * Service methods.
+     * @type {Object.<string,Method>}
+     */
+    this.methods = {}; // toJSON, marker
+
+    /**
+     * Cached methods as an array.
+     * @type {?Method[]}
+     * @private
+     */
+    this._methodsArray = null;
+}
+
+/**
+ * Constructs a service from JSON.
+ * @param {string} name Service name
+ * @param {Object.<string,*>} json JSON object
+ * @returns {Service} Created service
+ * @throws {TypeError} If arguments are invalid
+ */
+Service.fromJSON = function fromJSON(name, json) {
+    var service = new Service(name, json.options);
+    /* istanbul ignore else */
+    if (json.methods)
+        for (var names = Object.keys(json.methods), i = 0; i < names.length; ++i)
+            service.add(Method.fromJSON(names[i], json.methods[names[i]]));
+    return service;
+};
+
+/**
+ * Methods of this service as an array for iteration.
+ * @name Service#methodsArray
+ * @type {Method[]}
+ * @readonly
+ */
+Object.defineProperty(Service.prototype, "methodsArray", {
+    get: function() {
+        return this._methodsArray || (this._methodsArray = util.toArray(this.methods));
+    }
+});
+
+function clearCache(service) {
+    service._methodsArray = null;
+    return service;
+}
+
+/**
+ * @override
+ */
+Service.prototype.toJSON = function toJSON() {
+    var inherited = Namespace.prototype.toJSON.call(this);
+    return {
+        options : inherited && inherited.options || undefined,
+        methods : Namespace.arrayToJSON(this.methodsArray) || /* istanbul ignore next */ {},
+        nested  : inherited && inherited.nested || undefined
+    };
+};
+
+/**
+ * @override
+ */
+Service.prototype.get = function get(name) {
+    return this.methods[name]
+        || Namespace.prototype.get.call(this, name);
+};
+
+/**
+ * @override
+ */
+Service.prototype.resolveAll = function resolveAll() {
+    var methods = this.methodsArray;
+    for (var i = 0; i < methods.length; ++i)
+        methods[i].resolve();
+    return Namespace.prototype.resolve.call(this);
+};
+
+/**
+ * @override
+ */
+Service.prototype.add = function add(object) {
+    /* istanbul ignore next */
+    if (this.get(object.name))
+        throw Error("duplicate name '" + object.name + "' in " + this);
+    if (object instanceof Method) {
+        this.methods[object.name] = object;
+        object.parent = this;
+        return clearCache(this);
+    }
+    return Namespace.prototype.add.call(this, object);
+};
+
+/**
+ * @override
+ */
+Service.prototype.remove = function remove(object) {
+    if (object instanceof Method) {
+
+        /* istanbul ignore next */
+        if (this.methods[object.name] !== object)
+            throw Error(object + " is not a member of " + this);
+
+        delete this.methods[object.name];
+        object.parent = null;
+        return clearCache(this);
+    }
+    return Namespace.prototype.remove.call(this, object);
+};
+
+/**
+ * Creates a runtime service using the specified rpc implementation.
+ * @param {RPCImpl} rpcImpl RPC implementation
+ * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+ * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+ * @returns {rpc.Service} RPC service. Useful where requests and/or responses are streamed.
+ */
+Service.prototype.create = function create(rpcImpl, requestDelimited, responseDelimited) {
+    var rpcService = new rpc.Service(rpcImpl, requestDelimited, responseDelimited);
+    for (var i = 0; i < /* initializes */ this.methodsArray.length; ++i) {
+        rpcService[util.lcFirst(this._methodsArray[i].resolve().name)] = util.codegen("r","c")("return this.rpcCall(m,q,s,r,c)").eof(util.lcFirst(this._methodsArray[i].name), {
+            m: this._methodsArray[i],
+            q: this._methodsArray[i].resolvedRequestType.ctor,
+            s: this._methodsArray[i].resolvedResponseType.ctor
+        });
+    }
+    return rpcService;
+};
+
+},{"22":22,"23":23,"30":30,"36":36}],33:[function(require,module,exports){
+"use strict";
+module.exports = tokenize;
+
+var delimRe        = /[\s{}=;:[\],'"()<>]/g,
+    stringDoubleRe = /(?:"([^"\\]*(?:\\.[^"\\]*)*)")/g,
+    stringSingleRe = /(?:'([^'\\]*(?:\\.[^'\\]*)*)')/g;
+
+var setCommentRe = /^ *[*/]+ */,
+    setCommentSplitRe = /\n/g,
+    whitespaceRe = /\s/,
+    unescapeRe = /\\(.?)/g;
+
+var unescapeMap = {
+    "0": "\0",
+    "r": "\r",
+    "n": "\n",
+    "t": "\t"
+};
+
+/**
+ * Unescapes a string.
+ * @param {string} str String to unescape
+ * @returns {string} Unescaped string
+ * @property {Object.<string,string>} map Special characters map
+ * @ignore
+ */
+function unescape(str) {
+    return str.replace(unescapeRe, function($0, $1) {
+        switch ($1) {
+            case "\\":
+            case "":
+                return $1;
+            default:
+                return unescapeMap[$1] || "";
+        }
+    });
+}
+
+tokenize.unescape = unescape;
+
+/**
+ * Handle object returned from {@link tokenize}.
+ * @typedef {Object.<string,*>} TokenizerHandle
+ * @property {function():number} line Gets the current line number
+ * @property {function():?string} next Gets the next token and advances (`null` on eof)
+ * @property {function():?string} peek Peeks for the next token (`null` on eof)
+ * @property {function(string)} push Pushes a token back to the stack
+ * @property {function(string, boolean=):boolean} skip Skips a token, returns its presence and advances or, if non-optional and not present, throws
+ * @property {function(number=):?string} cmnt Gets the comment on the previous line or the line comment on the specified line, if any
+ */
+
+/**
+ * Tokenizes the given .proto source and returns an object with useful utility functions.
+ * @param {string} source Source contents
+ * @returns {TokenizerHandle} Tokenizer handle
+ * @property {function(string):string} unescape Unescapes a string
+ */
+function tokenize(source) {
+    /* eslint-disable callback-return */
+    source = source.toString();
+
+    var offset = 0,
+        length = source.length,
+        line = 1,
+        commentType = null,
+        commentText = null,
+        commentLine = 0;
+
+    var stack = [];
+
+    var stringDelim = null;
+
+    /* istanbul ignore next */
+    /**
+     * Creates an error for illegal syntax.
+     * @param {string} subject Subject
+     * @returns {Error} Error created
+     * @inner
+     */
+    function illegal(subject) {
+        return Error("illegal " + subject + " (line " + line + ")");
+    }
+
+    /**
+     * Reads a string till its end.
+     * @returns {string} String read
+     * @inner
+     */
+    function readString() {
+        var re = stringDelim === "'" ? stringSingleRe : stringDoubleRe;
+        re.lastIndex = offset - 1;
+        var match = re.exec(source);
+        if (!match)
+            throw illegal("string");
+        offset = re.lastIndex;
+        push(stringDelim);
+        stringDelim = null;
+        return unescape(match[1]);
+    }
+
+    /**
+     * Gets the character at `pos` within the source.
+     * @param {number} pos Position
+     * @returns {string} Character
+     * @inner
+     */
+    function charAt(pos) {
+        return source.charAt(pos);
+    }
+
+    /**
+     * Sets the current comment text.
+     * @param {number} start Start offset
+     * @param {number} end End offset
+     * @returns {undefined}
+     * @inner
+     */
+    function setComment(start, end) {
+        commentType = source.charAt(start++);
+        commentLine = line;
+        var lines = source
+            .substring(start, end)
+            .split(setCommentSplitRe);
+        for (var i = 0; i < lines.length; ++i)
+            lines[i] = lines[i].replace(setCommentRe, "").trim();
+        commentText = lines
+            .join("\n")
+            .trim();
+    }
+
+    /**
+     * Obtains the next token.
+     * @returns {?string} Next token or `null` on eof
+     * @inner
+     */
+    function next() {
+        if (stack.length > 0)
+            return stack.shift();
+        if (stringDelim)
+            return readString();
+        var repeat,
+            prev,
+            curr,
+            start,
+            isComment;
+        do {
+            if (offset === length)
+                return null;
+            repeat = false;
+            while (whitespaceRe.test(curr = charAt(offset))) {
+                if (curr === "\n")
+                    ++line;
+                if (++offset === length)
+                    return null;
+            }
+            if (charAt(offset) === "/") {
+                if (++offset === length)
+                    throw illegal("comment");
+                if (charAt(offset) === "/") { // Line
+                    isComment = charAt(start = offset + 1) === "/";
+                    while (charAt(++offset) !== "\n")
+                        if (offset === length)
+                            return null;
+                    ++offset;
+                    if (isComment)
+                        setComment(start, offset - 1);
+                    ++line;
+                    repeat = true;
+                } else if ((curr = charAt(offset)) === "*") { /* Block */
+                    isComment = charAt(start = offset + 1) === "*";
+                    do {
+                        if (curr === "\n")
+                            ++line;
+                        if (++offset === length)
+                            throw illegal("comment");
+                        prev = curr;
+                        curr = charAt(offset);
+                    } while (prev !== "*" || curr !== "/");
+                    ++offset;
+                    if (isComment)
+                        setComment(start, offset - 2);
+                    repeat = true;
+                } else
+                    return "/";
+            }
+        } while (repeat);
+
+        // offset !== length if we got here
+
+        var end = offset;
+        delimRe.lastIndex = 0;
+        var delim = delimRe.test(charAt(end++));
+        if (!delim)
+            while (end < length && !delimRe.test(charAt(end)))
+                ++end;
+        var token = source.substring(offset, offset = end);
+        if (token === "\"" || token === "'")
+            stringDelim = token;
+        return token;
+    }
+
+    /**
+     * Pushes a token back to the stack.
+     * @param {string} token Token
+     * @returns {undefined}
+     * @inner
+     */
+    function push(token) {
+        stack.push(token);
+    }
+
+    /**
+     * Peeks for the next token.
+     * @returns {?string} Token or `null` on eof
+     * @inner
+     */
+    function peek() {
+        if (!stack.length) {
+            var token = next();
+            if (token === null)
+                return null;
+            push(token);
+        }
+        return stack[0];
+    }
+
+    /**
+     * Skips a token.
+     * @param {string} expected Expected token
+     * @param {boolean} [optional=false] Whether the token is optional
+     * @returns {boolean} `true` when skipped, `false` if not
+     * @throws {Error} When a required token is not present
+     * @inner
+     */
+    function skip(expected, optional) {
+        var actual = peek(),
+            equals = actual === expected;
+        if (equals) {
+            next();
+            return true;
+        }
+        if (!optional)
+            throw illegal("token '" + actual + "', '" + expected + "' expected");
+        return false;
+    }
+
+    return {
+        next: next,
+        peek: peek,
+        push: push,
+        skip: skip,
+        line: function() {
+            return line;
+        },
+        cmnt: function(trailingLine) {
+            var ret;
+            if (trailingLine === undefined)
+                ret = commentLine === line - 1 && commentText || null;
+            else {
+                if (!commentText)
+                    peek();
+                ret = commentLine === trailingLine && commentType === "/" && commentText || null;
+            }
+            if (ret) {
+                commentType = commentText = null;
+                commentLine = 0;
+            }
+            return ret;
+        }
+    };
+    /* eslint-enable callback-return */
+}
+
+},{}],34:[function(require,module,exports){
+"use strict";
+module.exports = Type;
+
+// extends Namespace
+var Namespace = require(23);
+((Type.prototype = Object.create(Namespace.prototype)).constructor = Type).className = "Type";
+
+var Enum      = require(15),
+    OneOf     = require(25),
+    Field     = require(16),
+    MapField  = require(20),
+    Service   = require(32),
+    Class     = require(10),
+    Message   = require(21),
+    Reader    = require(27),
+    Writer    = require(40),
+    util      = require(36),
+    encoder   = require(14),
+    decoder   = require(13),
+    verifier  = require(39),
+    converter = require(12);
+
+/**
+ * Creates a type from JSON.
+ * @param {string} name Message name
+ * @param {Object.<string,*>} json JSON object
+ * @returns {Type} Created message type
+ */
+Type.fromJSON = function fromJSON(name, json) {
+    var type = new Type(name, json.options);
+    type.extensions = json.extensions;
+    type.reserved = json.reserved;
+    var names = Object.keys(json.fields),
+        i = 0;
+    for (; i < names.length; ++i)
+        type.add(
+            ( typeof json.fields[names[i]].keyType !== "undefined"
+            ? MapField.fromJSON
+            : Field.fromJSON )(names[i], json.fields[names[i]])
+        );
+    if (json.oneofs)
+        for (names = Object.keys(json.oneofs), i = 0; i < names.length; ++i)
+            type.add(OneOf.fromJSON(names[i], json.oneofs[names[i]]));
+    if (json.nested)
+        for (names = Object.keys(json.nested), i = 0; i < names.length; ++i) {
+            var nested = json.nested[names[i]];
+            type.add( // most to least likely
+                ( nested.id !== undefined
+                ? Field.fromJSON
+                : nested.fields !== undefined
+                ? Type.fromJSON
+                : nested.values !== undefined
+                ? Enum.fromJSON
+                : nested.methods !== undefined
+                ? Service.fromJSON
+                : Namespace.fromJSON )(names[i], nested)
+            );
+        }
+    if (json.extensions && json.extensions.length)
+        type.extensions = json.extensions;
+    if (json.reserved && json.reserved.length)
+        type.reserved = json.reserved;
+    if (json.group)
+        type.group = true;
+    return type;
+};
+
+/**
+ * Constructs a new reflected message type instance.
+ * @classdesc Reflected message type.
+ * @extends NamespaceBase
+ * @constructor
+ * @param {string} name Message name
+ * @param {Object.<string,*>} [options] Declared options
+ */
+function Type(name, options) {
+    Namespace.call(this, name, options);
+
+    /**
+     * Message fields.
+     * @type {Object.<string,Field>}
+     */
+    this.fields = {};  // toJSON, marker
+
+    /**
+     * Oneofs declared within this namespace, if any.
+     * @type {Object.<string,OneOf>}
+     */
+    this.oneofs = undefined; // toJSON
+
+    /**
+     * Extension ranges, if any.
+     * @type {number[][]}
+     */
+    this.extensions = undefined; // toJSON
+
+    /**
+     * Reserved ranges, if any.
+     * @type {Array.<number[]|string>}
+     */
+    this.reserved = undefined; // toJSON
+
+    /*?
+     * Whether this type is a legacy group.
+     * @type {boolean|undefined}
+     */
+    this.group = undefined; // toJSON
+
+    /**
+     * Cached fields by id.
+     * @type {?Object.<number,Field>}
+     * @private
+     */
+    this._fieldsById = null;
+
+    /**
+     * Cached fields as an array.
+     * @type {?Field[]}
+     * @private
+     */
+    this._fieldsArray = null;
+
+    /**
+     * Cached oneofs as an array.
+     * @type {?OneOf[]}
+     * @private
+     */
+    this._oneofsArray = null;
+
+    /**
+     * Cached constructor.
+     * @type {*}
+     * @private
+     */
+    this._ctor = null;
+}
+
+Object.defineProperties(Type.prototype, {
+
+    /**
+     * Message fields by id.
+     * @name Type#fieldsById
+     * @type {Object.<number,Field>}
+     * @readonly
+     */
+    fieldsById: {
+        get: function() {
+            /* istanbul ignore next */
+            if (this._fieldsById)
+                return this._fieldsById;
+            this._fieldsById = {};
+            for (var names = Object.keys(this.fields), i = 0; i < names.length; ++i) {
+                var field = this.fields[names[i]],
+                    id = field.id;
+
+                /* istanbul ignore next */
+                if (this._fieldsById[id])
+                    throw Error("duplicate id " + id + " in " + this);
+
+                this._fieldsById[id] = field;
+            }
+            return this._fieldsById;
+        }
+    },
+
+    /**
+     * Fields of this message as an array for iteration.
+     * @name Type#fieldsArray
+     * @type {Field[]}
+     * @readonly
+     */
+    fieldsArray: {
+        get: function() {
+            return this._fieldsArray || (this._fieldsArray = util.toArray(this.fields));
+        }
+    },
+
+    /**
+     * Oneofs of this message as an array for iteration.
+     * @name Type#oneofsArray
+     * @type {OneOf[]}
+     * @readonly
+     */
+    oneofsArray: {
+        get: function() {
+            return this._oneofsArray || (this._oneofsArray = util.toArray(this.oneofs));
+        }
+    },
+
+    /**
+     * The registered constructor, if any registered, otherwise a generic constructor.
+     * @name Type#ctor
+     * @type {Class}
+     */
+    ctor: {
+        get: function() {
+            return this._ctor || (this._ctor = Class(this).constructor);
+        },
+        set: function(ctor) {
+            if (ctor && !(ctor.prototype instanceof Message))
+                throw TypeError("ctor must be a Message constructor");
+            if (!ctor.from)
+                ctor.from = Message.from;
+            this._ctor = ctor;
+        }
+    }
+});
+
+function clearCache(type) {
+    type._fieldsById = type._fieldsArray = type._oneofsArray = type._ctor = null;
+    delete type.encode;
+    delete type.decode;
+    delete type.verify;
+    return type;
+}
+
+/**
+ * @override
+ */
+Type.prototype.toJSON = function toJSON() {
+    var inherited = Namespace.prototype.toJSON.call(this);
+    return {
+        options    : inherited && inherited.options || undefined,
+        oneofs     : Namespace.arrayToJSON(this.oneofsArray),
+        fields     : Namespace.arrayToJSON(this.fieldsArray.filter(function(obj) { return !obj.declaringField; })) || {},
+        extensions : this.extensions && this.extensions.length ? this.extensions : undefined,
+        reserved   : this.reserved && this.reserved.length ? this.reserved : undefined,
+        group      : this.group || undefined,
+        nested     : inherited && inherited.nested || undefined
+    };
+};
+
+/**
+ * @override
+ */
+Type.prototype.resolveAll = function resolveAll() {
+    var fields = this.fieldsArray, i = 0;
+    while (i < fields.length)
+        fields[i++].resolve();
+    var oneofs = this.oneofsArray; i = 0;
+    while (i < oneofs.length)
+        oneofs[i++].resolve();
+    return Namespace.prototype.resolve.call(this);
+};
+
+/**
+ * @override
+ */
+Type.prototype.get = function get(name) {
+    return this.fields[name]
+        || this.oneofs && this.oneofs[name]
+        || this.nested && this.nested[name]
+        || null;
+};
+
+/**
+ * Adds a nested object to this type.
+ * @param {ReflectionObject} object Nested object to add
+ * @returns {Type} `this`
+ * @throws {TypeError} If arguments are invalid
+ * @throws {Error} If there is already a nested object with this name or, if a field, when there is already a field with this id
+ */
+Type.prototype.add = function add(object) {
+
+    if (this.get(object.name))
+        throw Error("duplicate name '" + object.name + "' in " + this);
+
+    if (object instanceof Field && object.extend === undefined) {
+        // NOTE: Extension fields aren't actual fields on the declaring type, but nested objects.
+        // The root object takes care of adding distinct sister-fields to the respective extended
+        // type instead.
+
+        // avoids calling the getter if not absolutely necessary because it's called quite frequently
+        if (this._fieldsById ? /* istanbul ignore next */ this._fieldsById[object.id] : this.fieldsById[object.id])
+            throw Error("duplicate id " + object.id + " in " + this);
+        if (this.isReservedId(object.id))
+            throw Error("id " + object.id + " is reserved in " + this);
+        if (this.isReservedName(object.name))
+            throw Error("name '" + object.name + "' is reserved in " + this);
+
+        if (object.parent)
+            object.parent.remove(object);
+        this.fields[object.name] = object;
+        object.message = this;
+        object.onAdd(this);
+        return clearCache(this);
+    }
+    if (object instanceof OneOf) {
+        if (!this.oneofs)
+            this.oneofs = {};
+        this.oneofs[object.name] = object;
+        object.onAdd(this);
+        return clearCache(this);
+    }
+    return Namespace.prototype.add.call(this, object);
+};
+
+/**
+ * Removes a nested object from this type.
+ * @param {ReflectionObject} object Nested object to remove
+ * @returns {Type} `this`
+ * @throws {TypeError} If arguments are invalid
+ * @throws {Error} If `object` is not a member of this type
+ */
+Type.prototype.remove = function remove(object) {
+    if (object instanceof Field && object.extend === undefined) {
+        // See Type#add for the reason why extension fields are excluded here.
+        /* istanbul ignore next */
+        if (!this.fields || this.fields[object.name] !== object)
+            throw Error(object + " is not a member of " + this);
+        delete this.fields[object.name];
+        object.parent = null;
+        object.onRemove(this);
+        return clearCache(this);
+    }
+    if (object instanceof OneOf) {
+        /* istanbul ignore next */
+        if (!this.oneofs || this.oneofs[object.name] !== object)
+            throw Error(object + " is not a member of " + this);
+        delete this.oneofs[object.name];
+        object.parent = null;
+        object.onRemove(this);
+        return clearCache(this);
+    }
+    return Namespace.prototype.remove.call(this, object);
+};
+
+/**
+ * Tests if the specified id is reserved.
+ * @param {number} id Id to test
+ * @returns {boolean} `true` if reserved, otherwise `false`
+ */
+Type.prototype.isReservedId = function isReservedId(id) {
+    if (this.reserved)
+        for (var i = 0; i < this.reserved.length; ++i)
+            if (typeof this.reserved[i] !== "string" && this.reserved[i][0] <= id && this.reserved[i][1] >= id)
+                return true;
+    return false;
+};
+
+/**
+ * Tests if the specified name is reserved.
+ * @param {string} name Name to test
+ * @returns {boolean} `true` if reserved, otherwise `false`
+ */
+Type.prototype.isReservedName = function isReservedName(name) {
+    if (this.reserved)
+        for (var i = 0; i < this.reserved.length; ++i)
+            if (this.reserved[i] === name)
+                return true;
+    return false;
+};
+
+/**
+ * Creates a new message of this type using the specified properties.
+ * @param {Object.<string,*>} [properties] Properties to set
+ * @returns {Message} Runtime message
+ */
+Type.prototype.create = function create(properties) {
+    return new this.ctor(properties);
+};
+
+/**
+ * Sets up {@link Type#encode|encode}, {@link Type#decode|decode} and {@link Type#verify|verify}.
+ * @returns {Type} `this`
+ */
+Type.prototype.setup = function setup() {
+    // Sets up everything at once so that the prototype chain does not have to be re-evaluated
+    // multiple times (V8, soft-deopt prototype-check).
+    var fullName = this.fullName,
+        types    = [];
+    for (var i = 0; i < /* initializes */ this.fieldsArray.length; ++i)
+        types.push(this._fieldsArray[i].resolve().resolvedType);
+    this.encode = encoder(this).eof(fullName + "$encode", {
+        Writer : Writer,
+        types  : types,
+        util   : util
+    });
+    this.decode = decoder(this).eof(fullName + "$decode", {
+        Reader : Reader,
+        types  : types,
+        util   : util
+    });
+    this.verify = verifier(this).eof(fullName + "$verify", {
+        types : types,
+        util  : util
+    });
+    this.fromObject = this.from = converter.fromObject(this).eof(fullName + "$fromObject", {
+        types : types,
+        util  : util
+    });
+    this.toObject = converter.toObject(this).eof(fullName + "$toObject", {
+        types : types,
+        util  : util
+    });
+    return this;
+};
+
+/**
+ * Encodes a message of this type. Does not implicitly {@link Type#verify|verify} messages.
+ * @param {Message|Object} message Message instance or plain object
+ * @param {Writer} [writer] Writer to encode to
+ * @returns {Writer} writer
+ */
+Type.prototype.encode = function encode_setup(message, writer) {
+    return this.setup().encode(message, writer); // overrides this method
+};
+
+/**
+ * Encodes a message of this type preceeded by its byte length as a varint. Does not implicitly {@link Type#verify|verify} messages.
+ * @param {Message|Object} message Message instance or plain object
+ * @param {Writer} [writer] Writer to encode to
+ * @returns {Writer} writer
+ */
+Type.prototype.encodeDelimited = function encodeDelimited(message, writer) {
+    return this.encode(message, writer && writer.len ? writer.fork() : writer).ldelim();
+};
+
+/**
+ * Decodes a message of this type.
+ * @param {Reader|Uint8Array} reader Reader or buffer to decode from
+ * @param {number} [length] Length of the message, if known beforehand
+ * @returns {Message} Decoded message
+ * @throws {Error} If the payload is not a reader or valid buffer
+ * @throws {util.ProtocolError} If required fields are missing
+ */
+Type.prototype.decode = function decode_setup(reader, length) {
+    return this.setup().decode(reader, length); // overrides this method
+};
+
+/**
+ * Decodes a message of this type preceeded by its byte length as a varint.
+ * @param {Reader|Uint8Array} reader Reader or buffer to decode from
+ * @returns {Message} Decoded message
+ * @throws {Error} If the payload is not a reader or valid buffer
+ * @throws {util.ProtocolError} If required fields are missing
+ */
+Type.prototype.decodeDelimited = function decodeDelimited(reader) {
+    if (!(reader instanceof Reader))
+        reader = Reader.create(reader);
+    return this.decode(reader, reader.uint32());
+};
+
+/**
+ * Verifies that field values are valid and that required fields are present.
+ * @param {Message|Object} message Message to verify
+ * @returns {?string} `null` if valid, otherwise the reason why it is not
+ */
+Type.prototype.verify = function verify_setup(message) {
+    return this.setup().verify(message); // overrides this method
+};
+
+/**
+ * Creates a new message of this type from a plain object. Also converts values to their respective internal types.
+ * @param {Object.<string,*>} object Plain object
+ * @returns {Message} Message instance
+ */
+Type.prototype.fromObject = function fromObject(object) {
+    return this.setup().fromObject(object);
+};
+
+/**
+ * Creates a new message of this type from a plain object. Also converts values to their respective internal types.
+ * This is an alias of {@link Type#fromObject}.
+ * @function
+ * @param {Object.<string,*>} object Plain object
+ * @returns {Message} Message instance
+ */
+Type.prototype.from = Type.prototype.fromObject;
+
+/**
+ * Conversion options as used by {@link Type#toObject} and {@link Message.toObject}.
+ * @typedef ConversionOptions
+ * @type {Object}
+ * @property {*} [longs] Long conversion type.
+ * Valid values are `String` and `Number` (the global types).
+ * Defaults to copy the present value, which is a possibly unsafe number without and a {@link Long} with a long library.
+ * @property {*} [enums] Enum value conversion type.
+ * Only valid value is `String` (the global type).
+ * Defaults to copy the present value, which is the numeric id.
+ * @property {*} [bytes] Bytes value conversion type.
+ * Valid values are `Array` and (a base64 encoded) `String` (the global types).
+ * Defaults to copy the present value, which usually is a Buffer under node and an Uint8Array in the browser.
+ * @property {boolean} [defaults=false] Also sets default values on the resulting object
+ * @property {boolean} [arrays=false] Sets empty arrays for missing repeated fields even if `defaults=false`
+ * @property {boolean} [objects=false] Sets empty objects for missing map fields even if `defaults=false`
+ */
+
+/**
+ * Creates a plain object from a message of this type. Also converts values to other types if specified.
+ * @param {Message} message Message instance
+ * @param {ConversionOptions} [options] Conversion options
+ * @returns {Object.<string,*>} Plain object
+ */
+Type.prototype.toObject = function toObject(message, options) {
+    return this.setup().toObject(message, options);
+};
+
+},{"10":10,"12":12,"13":13,"14":14,"15":15,"16":16,"20":20,"21":21,"23":23,"25":25,"27":27,"32":32,"36":36,"39":39,"40":40}],35:[function(require,module,exports){
+"use strict";
+
+/**
+ * Common type constants.
+ * @namespace
+ */
+var types = exports;
+
+var util = require(36);
+
+var s = [
+    "double",   // 0
+    "float",    // 1
+    "int32",    // 2
+    "uint32",   // 3
+    "sint32",   // 4
+    "fixed32",  // 5
+    "sfixed32", // 6
+    "int64",    // 7
+    "uint64",   // 8
+    "sint64",   // 9
+    "fixed64",  // 10
+    "sfixed64", // 11
+    "bool",     // 12
+    "string",   // 13
+    "bytes"     // 14
+];
+
+function bake(values, offset) {
+    var i = 0, o = {};
+    offset |= 0;
+    while (i < values.length) o[s[i + offset]] = values[i++];
+    return o;
+}
+
+/**
+ * Basic type wire types.
+ * @type {Object.<string,number>}
+ * @property {number} double=1 Fixed64 wire type
+ * @property {number} float=5 Fixed32 wire type
+ * @property {number} int32=0 Varint wire type
+ * @property {number} uint32=0 Varint wire type
+ * @property {number} sint32=0 Varint wire type
+ * @property {number} fixed32=5 Fixed32 wire type
+ * @property {number} sfixed32=5 Fixed32 wire type
+ * @property {number} int64=0 Varint wire type
+ * @property {number} uint64=0 Varint wire type
+ * @property {number} sint64=0 Varint wire type
+ * @property {number} fixed64=1 Fixed64 wire type
+ * @property {number} sfixed64=1 Fixed64 wire type
+ * @property {number} bool=0 Varint wire type
+ * @property {number} string=2 Ldelim wire type
+ * @property {number} bytes=2 Ldelim wire type
+ */
+types.basic = bake([
+    /* double   */ 1,
+    /* float    */ 5,
+    /* int32    */ 0,
+    /* uint32   */ 0,
+    /* sint32   */ 0,
+    /* fixed32  */ 5,
+    /* sfixed32 */ 5,
+    /* int64    */ 0,
+    /* uint64   */ 0,
+    /* sint64   */ 0,
+    /* fixed64  */ 1,
+    /* sfixed64 */ 1,
+    /* bool     */ 0,
+    /* string   */ 2,
+    /* bytes    */ 2
+]);
+
+/**
+ * Basic type defaults.
+ * @type {Object.<string,*>}
+ * @property {number} double=0 Double default
+ * @property {number} float=0 Float default
+ * @property {number} int32=0 Int32 default
+ * @property {number} uint32=0 Uint32 default
+ * @property {number} sint32=0 Sint32 default
+ * @property {number} fixed32=0 Fixed32 default
+ * @property {number} sfixed32=0 Sfixed32 default
+ * @property {number} int64=0 Int64 default
+ * @property {number} uint64=0 Uint64 default
+ * @property {number} sint64=0 Sint32 default
+ * @property {number} fixed64=0 Fixed64 default
+ * @property {number} sfixed64=0 Sfixed64 default
+ * @property {boolean} bool=false Bool default
+ * @property {string} string="" String default
+ * @property {Array.<number>} bytes=Array(0) Bytes default
+ * @property {Message} message=null Message default
+ */
+types.defaults = bake([
+    /* double   */ 0,
+    /* float    */ 0,
+    /* int32    */ 0,
+    /* uint32   */ 0,
+    /* sint32   */ 0,
+    /* fixed32  */ 0,
+    /* sfixed32 */ 0,
+    /* int64    */ 0,
+    /* uint64   */ 0,
+    /* sint64   */ 0,
+    /* fixed64  */ 0,
+    /* sfixed64 */ 0,
+    /* bool     */ false,
+    /* string   */ "",
+    /* bytes    */ util.emptyArray,
+    /* message  */ null
+]);
+
+/**
+ * Basic long type wire types.
+ * @type {Object.<string,number>}
+ * @property {number} int64=0 Varint wire type
+ * @property {number} uint64=0 Varint wire type
+ * @property {number} sint64=0 Varint wire type
+ * @property {number} fixed64=1 Fixed64 wire type
+ * @property {number} sfixed64=1 Fixed64 wire type
+ */
+types.long = bake([
+    /* int64    */ 0,
+    /* uint64   */ 0,
+    /* sint64   */ 0,
+    /* fixed64  */ 1,
+    /* sfixed64 */ 1
+], 7);
+
+/**
+ * Allowed types for map keys with their associated wire type.
+ * @type {Object.<string,number>}
+ * @property {number} int32=0 Varint wire type
+ * @property {number} uint32=0 Varint wire type
+ * @property {number} sint32=0 Varint wire type
+ * @property {number} fixed32=5 Fixed32 wire type
+ * @property {number} sfixed32=5 Fixed32 wire type
+ * @property {number} int64=0 Varint wire type
+ * @property {number} uint64=0 Varint wire type
+ * @property {number} sint64=0 Varint wire type
+ * @property {number} fixed64=1 Fixed64 wire type
+ * @property {number} sfixed64=1 Fixed64 wire type
+ * @property {number} bool=0 Varint wire type
+ * @property {number} string=2 Ldelim wire type
+ */
+types.mapKey = bake([
+    /* int32    */ 0,
+    /* uint32   */ 0,
+    /* sint32   */ 0,
+    /* fixed32  */ 5,
+    /* sfixed32 */ 5,
+    /* int64    */ 0,
+    /* uint64   */ 0,
+    /* sint64   */ 0,
+    /* fixed64  */ 1,
+    /* sfixed64 */ 1,
+    /* bool     */ 0,
+    /* string   */ 2
+], 2);
+
+/**
+ * Allowed types for packed repeated fields with their associated wire type.
+ * @type {Object.<string,number>}
+ * @property {number} double=1 Fixed64 wire type
+ * @property {number} float=5 Fixed32 wire type
+ * @property {number} int32=0 Varint wire type
+ * @property {number} uint32=0 Varint wire type
+ * @property {number} sint32=0 Varint wire type
+ * @property {number} fixed32=5 Fixed32 wire type
+ * @property {number} sfixed32=5 Fixed32 wire type
+ * @property {number} int64=0 Varint wire type
+ * @property {number} uint64=0 Varint wire type
+ * @property {number} sint64=0 Varint wire type
+ * @property {number} fixed64=1 Fixed64 wire type
+ * @property {number} sfixed64=1 Fixed64 wire type
+ * @property {number} bool=0 Varint wire type
+ */
+types.packed = bake([
+    /* double   */ 1,
+    /* float    */ 5,
+    /* int32    */ 0,
+    /* uint32   */ 0,
+    /* sint32   */ 0,
+    /* fixed32  */ 5,
+    /* sfixed32 */ 5,
+    /* int64    */ 0,
+    /* uint64   */ 0,
+    /* sint64   */ 0,
+    /* fixed64  */ 1,
+    /* sfixed64 */ 1,
+    /* bool     */ 0
+]);
+
+},{"36":36}],36:[function(require,module,exports){
+"use strict";
+
+/**
+ * Various utility functions.
+ * @namespace
+ */
+var util = module.exports = require(38);
+
+util.codegen = require(3);
+util.fetch   = require(5);
+util.path    = require(7);
+
+/**
+ * Node's fs module if available.
+ * @type {Object.<string,*>}
+ */
+util.fs = util.inquire("fs");
+
+/**
+ * Converts an object's values to an array.
+ * @param {Object.<string,*>} object Object to convert
+ * @returns {Array.<*>} Converted array
+ */
+util.toArray = function toArray(object) {
+    var array = [];
+    if (object)
+        for (var keys = Object.keys(object), i = 0; i < keys.length; ++i)
+            array.push(object[keys[i]]);
+    return array;
+};
+
+var safePropBackslashRe = /\\/g,
+    safePropQuoteRe     = /"/g;
+
+/**
+ * Returns a safe property accessor for the specified properly name.
+ * @param {string} prop Property name
+ * @returns {string} Safe accessor
+ */
+util.safeProp = function safeProp(prop) {
+    return "[\"" + prop.replace(safePropBackslashRe, "\\\\").replace(safePropQuoteRe, "\\\"") + "\"]";
+};
+
+/**
+ * Converts the first character of a string to upper case.
+ * @param {string} str String to convert
+ * @returns {string} Converted string
+ */
+util.ucFirst = function ucFirst(str) {
+    return str.charAt(0).toUpperCase() + str.substring(1);
+};
+
+},{"3":3,"38":38,"5":5,"7":7}],37:[function(require,module,exports){
+"use strict";
+module.exports = LongBits;
+
+var util = require(38);
+
+/**
+ * Any compatible Long instance.
+ *
+ * This is a minimal stand-alone definition of a Long instance. The actual type is that exported by long.js.
+ * @typedef Long
+ * @type {Object}
+ * @property {number} low Low bits
+ * @property {number} high High bits
+ * @property {boolean} unsigned Whether unsigned or not
+ */
+
+/**
+ * Constructs new long bits.
+ * @classdesc Helper class for working with the low and high bits of a 64 bit value.
+ * @memberof util
+ * @constructor
+ * @param {number} lo Low 32 bits, unsigned
+ * @param {number} hi High 32 bits, unsigned
+ */
+function LongBits(lo, hi) {
+
+    // note that the casts below are theoretically unnecessary as of today, but older statically
+    // generated converter code might still call the ctor with signed 32bits. kept for compat.
+
+    /**
+     * Low bits.
+     * @type {number}
+     */
+    this.lo = lo >>> 0;
+
+    /**
+     * High bits.
+     * @type {number}
+     */
+    this.hi = hi >>> 0;
+}
+
+/**
+ * Zero bits.
+ * @memberof util.LongBits
+ * @type {util.LongBits}
+ */
+var zero = LongBits.zero = new LongBits(0, 0);
+
+zero.toNumber = function() { return 0; };
+zero.zzEncode = zero.zzDecode = function() { return this; };
+zero.length = function() { return 1; };
+
+/**
+ * Zero hash.
+ * @memberof util.LongBits
+ * @type {string}
+ */
+var zeroHash = LongBits.zeroHash = "\0\0\0\0\0\0\0\0";
+
+/**
+ * Constructs new long bits from the specified number.
+ * @param {number} value Value
+ * @returns {util.LongBits} Instance
+ */
+LongBits.fromNumber = function fromNumber(value) {
+    if (value === 0)
+        return zero;
+    var sign = value < 0;
+    if (sign)
+        value = -value;
+    var lo = value >>> 0,
+        hi = (value - lo) / 4294967296 >>> 0;
+    if (sign) {
+        hi = ~hi >>> 0;
+        lo = ~lo >>> 0;
+        if (++lo > 4294967295) {
+            lo = 0;
+            if (++hi > 4294967295)
+                hi = 0;
+        }
+    }
+    return new LongBits(lo, hi);
+};
+
+/**
+ * Constructs new long bits from a number, long or string.
+ * @param {Long|number|string} value Value
+ * @returns {util.LongBits} Instance
+ */
+LongBits.from = function from(value) {
+    if (typeof value === "number")
+        return LongBits.fromNumber(value);
+    if (util.isString(value)) {
+        /* istanbul ignore else */
+        if (util.Long)
+            value = util.Long.fromString(value);
+        else
+            return LongBits.fromNumber(parseInt(value, 10));
+    }
+    return value.low || value.high ? new LongBits(value.low >>> 0, value.high >>> 0) : zero;
+};
+
+/**
+ * Converts this long bits to a possibly unsafe JavaScript number.
+ * @param {boolean} [unsigned=false] Whether unsigned or not
+ * @returns {number} Possibly unsafe number
+ */
+LongBits.prototype.toNumber = function toNumber(unsigned) {
+    if (!unsigned && this.hi >>> 31) {
+        var lo = ~this.lo + 1 >>> 0,
+            hi = ~this.hi     >>> 0;
+        if (!lo)
+            hi = hi + 1 >>> 0;
+        return -(lo + hi * 4294967296);
+    }
+    return this.lo + this.hi * 4294967296;
+};
+
+/**
+ * Converts this long bits to a long.
+ * @param {boolean} [unsigned=false] Whether unsigned or not
+ * @returns {Long} Long
+ */
+LongBits.prototype.toLong = function toLong(unsigned) {
+    return util.Long
+        ? new util.Long(this.lo | 0, this.hi | 0, Boolean(unsigned))
+        /* istanbul ignore next */
+        : { low: this.lo | 0, high: this.hi | 0, unsigned: Boolean(unsigned) };
+};
+
+var charCodeAt = String.prototype.charCodeAt;
+
+/**
+ * Constructs new long bits from the specified 8 characters long hash.
+ * @param {string} hash Hash
+ * @returns {util.LongBits} Bits
+ */
+LongBits.fromHash = function fromHash(hash) {
+    if (hash === zeroHash)
+        return zero;
+    return new LongBits(
+        ( charCodeAt.call(hash, 0)
+        | charCodeAt.call(hash, 1) << 8
+        | charCodeAt.call(hash, 2) << 16
+        | charCodeAt.call(hash, 3) << 24) >>> 0
+    ,
+        ( charCodeAt.call(hash, 4)
+        | charCodeAt.call(hash, 5) << 8
+        | charCodeAt.call(hash, 6) << 16
+        | charCodeAt.call(hash, 7) << 24) >>> 0
+    );
+};
+
+/**
+ * Converts this long bits to a 8 characters long hash.
+ * @returns {string} Hash
+ */
+LongBits.prototype.toHash = function toHash() {
+    return String.fromCharCode(
+        this.lo        & 255,
+        this.lo >>> 8  & 255,
+        this.lo >>> 16 & 255,
+        this.lo >>> 24      ,
+        this.hi        & 255,
+        this.hi >>> 8  & 255,
+        this.hi >>> 16 & 255,
+        this.hi >>> 24
+    );
+};
+
+/**
+ * Zig-zag encodes this long bits.
+ * @returns {util.LongBits} `this`
+ */
+LongBits.prototype.zzEncode = function zzEncode() {
+    var mask =   this.hi >> 31;
+    this.hi  = ((this.hi << 1 | this.lo >>> 31) ^ mask) >>> 0;
+    this.lo  = ( this.lo << 1                   ^ mask) >>> 0;
+    return this;
+};
+
+/**
+ * Zig-zag decodes this long bits.
+ * @returns {util.LongBits} `this`
+ */
+LongBits.prototype.zzDecode = function zzDecode() {
+    var mask = -(this.lo & 1);
+    this.lo  = ((this.lo >>> 1 | this.hi << 31) ^ mask) >>> 0;
+    this.hi  = ( this.hi >>> 1                  ^ mask) >>> 0;
+    return this;
+};
+
+/**
+ * Calculates the length of this longbits when encoded as a varint.
+ * @returns {number} Length
+ */
+LongBits.prototype.length = function length() {
+    var part0 =  this.lo,
+        part1 = (this.lo >>> 28 | this.hi << 4) >>> 0,
+        part2 =  this.hi >>> 24;
+    return part2 === 0
+         ? part1 === 0
+           ? part0 < 16384
+             ? part0 < 128 ? 1 : 2
+             : part0 < 2097152 ? 3 : 4
+           : part1 < 16384
+             ? part1 < 128 ? 5 : 6
+             : part1 < 2097152 ? 7 : 8
+         : part2 < 128 ? 9 : 10;
+};
+
+},{"38":38}],38:[function(require,module,exports){
+"use strict";
+var util = exports;
+
+// used to return a Promise where callback is omitted
+util.asPromise = require(1);
+
+// converts to / from base64 encoded strings
+util.base64 = require(2);
+
+// base class of rpc.Service
+util.EventEmitter = require(4);
+
+// requires modules optionally and hides the call from bundlers
+util.inquire = require(6);
+
+// converts to / from utf8 encoded strings
+util.utf8 = require(9);
+
+// provides a node-like buffer pool in the browser
+util.pool = require(8);
+
+// utility to work with the low and high bits of a 64 bit value
+util.LongBits = require(37);
+
+/**
+ * An immuable empty array.
+ * @memberof util
+ * @type {Array.<*>}
+ */
+util.emptyArray = Object.freeze ? Object.freeze([]) : /* istanbul ignore next */ []; // used on prototypes
+
+/**
+ * An immutable empty object.
+ * @type {Object}
+ */
+util.emptyObject = Object.freeze ? Object.freeze({}) : /* istanbul ignore next */ {}; // used on prototypes
+
+/**
+ * Whether running within node or not.
+ * @memberof util
+ * @type {boolean}
+ */
+util.isNode = Boolean(global.process && global.process.versions && global.process.versions.node);
+
+/**
+ * Tests if the specified value is an integer.
+ * @function
+ * @param {*} value Value to test
+ * @returns {boolean} `true` if the value is an integer
+ */
+util.isInteger = Number.isInteger || /* istanbul ignore next */ function isInteger(value) {
+    return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
+};
+
+/**
+ * Tests if the specified value is a string.
+ * @param {*} value Value to test
+ * @returns {boolean} `true` if the value is a string
+ */
+util.isString = function isString(value) {
+    return typeof value === "string" || value instanceof String;
+};
+
+/**
+ * Tests if the specified value is a non-null object.
+ * @param {*} value Value to test
+ * @returns {boolean} `true` if the value is a non-null object
+ */
+util.isObject = function isObject(value) {
+    return value && typeof value === "object";
+};
+
+/**
+ * Node's Buffer class if available.
+ * @type {?function(new: Buffer)}
+ */
+util.Buffer = (function() {
+    try {
+        var Buffer = util.inquire("buffer").Buffer;
+        // refuse to use non-node buffers if not explicitly assigned (perf reasons):
+        return Buffer.prototype.utf8Write ? Buffer : /* istanbul ignore next */ null;
+    } catch (e) {
+        /* istanbul ignore next */
+        return null;
+    }
+})();
+
+/**
+ * Internal alias of or polyfull for Buffer.from.
+ * @type {?function}
+ * @param {string|number[]} value Value
+ * @param {string} [encoding] Encoding if value is a string
+ * @returns {Uint8Array}
+ * @private
+ */
+util._Buffer_from = null;
+
+/**
+ * Internal alias of or polyfill for Buffer.allocUnsafe.
+ * @type {?function}
+ * @param {number} size Buffer size
+ * @returns {Uint8Array}
+ * @private
+ */
+util._Buffer_allocUnsafe = null;
+
+/**
+ * Creates a new buffer of whatever type supported by the environment.
+ * @param {number|number[]} [sizeOrArray=0] Buffer size or number array
+ * @returns {Uint8Array|Buffer} Buffer
+ */
+util.newBuffer = function newBuffer(sizeOrArray) {
+    /* istanbul ignore next */
+    return typeof sizeOrArray === "number"
+        ? util.Buffer
+            ? util._Buffer_allocUnsafe(sizeOrArray)
+            : new util.Array(sizeOrArray)
+        : util.Buffer
+            ? util._Buffer_from(sizeOrArray)
+            : typeof Uint8Array === "undefined"
+                ? sizeOrArray
+                : new Uint8Array(sizeOrArray);
+};
+
+/**
+ * Array implementation used in the browser. `Uint8Array` if supported, otherwise `Array`.
+ * @type {?function(new: Uint8Array, *)}
+ */
+util.Array = typeof Uint8Array !== "undefined" ? Uint8Array /* istanbul ignore next */ : Array;
+
+/**
+ * Long.js's Long class if available.
+ * @type {?function(new: Long)}
+ */
+util.Long = /* istanbul ignore next */ global.dcodeIO && /* istanbul ignore next */ global.dcodeIO.Long || util.inquire("long");
+
+/**
+ * Regular expression used to verify 2 bit (`bool`) map keys.
+ * @type {RegExp}
+ */
+util.key2Re = /^true|false|0|1$/;
+
+/**
+ * Regular expression used to verify 32 bit (`int32` etc.) map keys.
+ * @type {RegExp}
+ */
+util.key32Re = /^-?(?:0|[1-9][0-9]*)$/;
+
+/**
+ * Regular expression used to verify 64 bit (`int64` etc.) map keys.
+ * @type {RegExp}
+ */
+util.key64Re = /^(?:[\\x00-\\xff]{8}|-?(?:0|[1-9][0-9]*))$/;
+
+/**
+ * Converts a number or long to an 8 characters long hash string.
+ * @param {Long|number} value Value to convert
+ * @returns {string} Hash
+ */
+util.longToHash = function longToHash(value) {
+    return value
+        ? util.LongBits.from(value).toHash()
+        : util.LongBits.zeroHash;
+};
+
+/**
+ * Converts an 8 characters long hash string to a long or number.
+ * @param {string} hash Hash
+ * @param {boolean} [unsigned=false] Whether unsigned or not
+ * @returns {Long|number} Original value
+ */
+util.longFromHash = function longFromHash(hash, unsigned) {
+    var bits = util.LongBits.fromHash(hash);
+    if (util.Long)
+        return util.Long.fromBits(bits.lo, bits.hi, unsigned);
+    return bits.toNumber(Boolean(unsigned));
+};
+
+/**
+ * Merges the properties of the source object into the destination object.
+ * @memberof util
+ * @param {Object.<string,*>} dst Destination object
+ * @param {Object.<string,*>} src Source object
+ * @param {boolean} [ifNotSet=false] Merges only if the key is not already set
+ * @returns {Object.<string,*>} Destination object
+ */
+function merge(dst, src, ifNotSet) { // used by converters
+    for (var keys = Object.keys(src), i = 0; i < keys.length; ++i)
+        if (dst[keys[i]] === undefined || !ifNotSet)
+            dst[keys[i]] = src[keys[i]];
+    return dst;
+}
+
+util.merge = merge;
+
+/**
+ * Converts the first character of a string to lower case.
+ * @param {string} str String to convert
+ * @returns {string} Converted string
+ */
+util.lcFirst = function lcFirst(str) {
+    return str.charAt(0).toLowerCase() + str.substring(1);
+};
+
+/**
+ * Creates a custom error constructor.
+ * @memberof util
+ * @param {string} name Error name
+ * @returns {function} Custom error constructor
+ */
+function newError(name) {
+
+    function CustomError(message, properties) {
+
+        if (!(this instanceof CustomError))
+            return new CustomError(message, properties);
+
+        // Error.call(this, message);
+        // ^ just returns a new error instance because the ctor can be called as a function
+
+        Object.defineProperty(this, "message", { get: function() { return message; } });
+
+        /* istanbul ignore next */
+        if (Error.captureStackTrace) // node
+            Error.captureStackTrace(this, CustomError);
+        else
+            Object.defineProperty(this, "stack", { value: (new Error()).stack || "" });
+
+        if (properties)
+            merge(this, properties);
+    }
+
+    (CustomError.prototype = Object.create(Error.prototype)).constructor = CustomError;
+
+    Object.defineProperty(CustomError.prototype, "name", { get: function() { return name; } });
+
+    CustomError.prototype.toString = function toString() {
+        return this.name + ": " + this.message;
+    };
+
+    return CustomError;
+}
+
+util.newError = newError;
+
+/**
+ * Constructs a new protocol error.
+ * @classdesc Error subclass indicating a protocol specifc error.
+ * @memberof util
+ * @extends Error
+ * @constructor
+ * @param {string} message Error message
+ * @param {Object.<string,*>=} properties Additional properties
+ * @example
+ * try {
+ *     MyMessage.decode(someBuffer); // throws if required fields are missing
+ * } catch (e) {
+ *     if (e instanceof ProtocolError && e.instance)
+ *         console.log("decoded so far: " + JSON.stringify(e.instance));
+ * }
+ */
+util.ProtocolError = newError("ProtocolError");
+
+/**
+ * So far decoded message instance.
+ * @name util.ProtocolError#instance
+ * @type {Message}
+ */
+
+/**
+ * Builds a getter for a oneof's present field name.
+ * @param {string[]} fieldNames Field names
+ * @returns {function():string|undefined} Unbound getter
+ */
+util.oneOfGetter = function getOneOf(fieldNames) {
+    var fieldMap = {};
+    for (var i = 0; i < fieldNames.length; ++i)
+        fieldMap[fieldNames[i]] = 1;
+
+    /**
+     * @returns {string|undefined} Set field name, if any
+     * @this Object
+     * @ignore
+     */
+    return function() { // eslint-disable-line consistent-return
+        for (var keys = Object.keys(this), i = keys.length - 1; i > -1; --i)
+            if (fieldMap[keys[i]] === 1 && this[keys[i]] !== undefined && this[keys[i]] !== null)
+                return keys[i];
+    };
+};
+
+/**
+ * Builds a setter for a oneof's present field name.
+ * @param {string[]} fieldNames Field names
+ * @returns {function(?string):undefined} Unbound setter
+ */
+util.oneOfSetter = function setOneOf(fieldNames) {
+
+    /**
+     * @param {string} name Field name
+     * @returns {undefined}
+     * @this Object
+     * @ignore
+     */
+    return function(name) {
+        for (var i = 0; i < fieldNames.length; ++i)
+            if (fieldNames[i] !== name)
+                delete this[fieldNames[i]];
+    };
+};
+
+/**
+ * Lazily resolves fully qualified type names against the specified root.
+ * @param {Root} root Root instanceof
+ * @param {Object.<number,string|ReflectionObject>} lazyTypes Type names
+ * @returns {undefined}
+ */
+util.lazyResolve = function lazyResolve(root, lazyTypes) {
+    for (var i = 0; i < lazyTypes.length; ++i) {
+        for (var keys = Object.keys(lazyTypes[i]), j = 0; j < keys.length; ++j) {
+            var path = lazyTypes[i][keys[j]].split("."),
+                ptr  = root;
+            while (path.length)
+                ptr = ptr[path.shift()];
+            lazyTypes[i][keys[j]] = ptr;
+        }
+    }
+};
+
+/**
+ * Default conversion options used for toJSON implementations. Converts longs, enums and bytes to strings.
+ * @type {ConversionOptions}
+ */
+util.toJSONOptions = {
+    longs: String,
+    enums: String,
+    bytes: String
+};
+
+util._configure = function() {
+    var Buffer = util.Buffer;
+    /* istanbul ignore if */
+    if (!Buffer) {
+        util._Buffer_from = util._Buffer_allocUnsafe = null;
+        return;
+    }
+    // because node 4.x buffers are incompatible & immutable
+    // see: https://github.com/dcodeIO/protobuf.js/pull/665
+    util._Buffer_from = Buffer.from !== Uint8Array.from && Buffer.from ||
+        /* istanbul ignore next */
+        function Buffer_from(value, encoding) {
+            return new Buffer(value, encoding);
+        };
+    util._Buffer_allocUnsafe = Buffer.allocUnsafe ||
+        /* istanbul ignore next */
+        function Buffer_allocUnsafe(size) {
+            return new Buffer(size);
+        };
+};
+
+},{"1":1,"2":2,"37":37,"4":4,"6":6,"8":8,"9":9}],39:[function(require,module,exports){
+"use strict";
+module.exports = verifier;
+
+var Enum      = require(15),
+    util      = require(36);
+
+function invalid(field, expected) {
+    return field.name + ": " + expected + (field.repeated && expected !== "array" ? "[]" : field.map && expected !== "object" ? "{k:"+field.keyType+"}" : "") + " expected";
+}
+
+/**
+ * Generates a partial value verifier.
+ * @param {Codegen} gen Codegen instance
+ * @param {Field} field Reflected field
+ * @param {number} fieldIndex Field index
+ * @param {string} ref Variable reference
+ * @returns {Codegen} Codegen instance
+ * @ignore
+ */
+function genVerifyValue(gen, field, fieldIndex, ref) {
+    /* eslint-disable no-unexpected-multiline */
+    if (field.resolvedType) {
+        if (field.resolvedType instanceof Enum) { gen
+            ("switch(%s){", ref)
+                ("default:")
+                    ("return%j", invalid(field, "enum value"));
+            for (var keys = Object.keys(field.resolvedType.values), j = 0; j < keys.length; ++j) gen
+                ("case %d:", field.resolvedType.values[keys[j]]);
+            gen
+                    ("break")
+            ("}");
+        } else gen
+            ("var e=types[%d].verify(%s);", fieldIndex, ref)
+            ("if(e)")
+                ("return%j+e", field.name + ".");
+    } else {
+        switch (field.type) {
+            case "int32":
+            case "uint32":
+            case "sint32":
+            case "fixed32":
+            case "sfixed32": gen
+                ("if(!util.isInteger(%s))", ref)
+                    ("return%j", invalid(field, "integer"));
+                break;
+            case "int64":
+            case "uint64":
+            case "sint64":
+            case "fixed64":
+            case "sfixed64": gen
+                ("if(!util.isInteger(%s)&&!(%s&&util.isInteger(%s.low)&&util.isInteger(%s.high)))", ref, ref, ref, ref)
+                    ("return%j", invalid(field, "integer|Long"));
+                break;
+            case "float":
+            case "double": gen
+                ("if(typeof %s!==\"number\")", ref)
+                    ("return%j", invalid(field, "number"));
+                break;
+            case "bool": gen
+                ("if(typeof %s!==\"boolean\")", ref)
+                    ("return%j", invalid(field, "boolean"));
+                break;
+            case "string": gen
+                ("if(!util.isString(%s))", ref)
+                    ("return%j", invalid(field, "string"));
+                break;
+            case "bytes": gen
+                ("if(!(%s&&typeof %s.length===\"number\"||util.isString(%s)))", ref, ref, ref)
+                    ("return%j", invalid(field, "buffer"));
+                break;
+        }
+    }
+    return gen;
+    /* eslint-enable no-unexpected-multiline */
+}
+
+/**
+ * Generates a partial key verifier.
+ * @param {Codegen} gen Codegen instance
+ * @param {Field} field Reflected field
+ * @param {string} ref Variable reference
+ * @returns {Codegen} Codegen instance
+ * @ignore
+ */
+function genVerifyKey(gen, field, ref) {
+    /* eslint-disable no-unexpected-multiline */
+    switch (field.keyType) {
+        case "int32":
+        case "uint32":
+        case "sint32":
+        case "fixed32":
+        case "sfixed32": gen
+            ("if(!util.key32Re.test(%s))", ref)
+                ("return%j", invalid(field, "integer key"));
+            break;
+        case "int64":
+        case "uint64":
+        case "sint64":
+        case "fixed64":
+        case "sfixed64": gen
+            ("if(!util.key64Re.test(%s))", ref) // see comment above: x is ok, d is not
+                ("return%j", invalid(field, "integer|Long key"));
+            break;
+        case "bool": gen
+            ("if(!util.key2Re.test(%s))", ref)
+                ("return%j", invalid(field, "boolean key"));
+            break;
+    }
+    return gen;
+    /* eslint-enable no-unexpected-multiline */
+}
+
+/**
+ * Generates a verifier specific to the specified message type.
+ * @param {Type} mtype Message type
+ * @returns {Codegen} Codegen instance
+ */
+function verifier(mtype) {
+    /* eslint-disable no-unexpected-multiline */
+
+    var gen = util.codegen("m")
+    ("if(typeof m!==\"object\"||m===null)")
+        ("return%j", "object expected");
+
+    for (var i = 0; i < /* initializes */ mtype.fieldsArray.length; ++i) {
+        var field = mtype._fieldsArray[i].resolve(),
+            ref   = "m" + util.safeProp(field.name);
+
+        // map fields
+        if (field.map) { gen
+            ("if(%s!==undefined){", ref)
+                ("if(!util.isObject(%s))", ref)
+                    ("return%j", invalid(field, "object"))
+                ("var k=Object.keys(%s)", ref)
+                ("for(var i=0;i<k.length;++i){");
+                    genVerifyKey(gen, field, "k[i]");
+                    genVerifyValue(gen, field, i, ref + "[k[i]]")
+                ("}")
+            ("}");
+
+        // repeated fields
+        } else if (field.repeated) { gen
+            ("if(%s!==undefined){", ref)
+                ("if(!Array.isArray(%s))", ref)
+                    ("return%j", invalid(field, "array"))
+                ("for(var i=0;i<%s.length;++i){", ref);
+                    genVerifyValue(gen, field, i, ref + "[i]")
+                ("}")
+            ("}");
+
+        // required or present fields
+        } else {
+            if (!field.required) {
+                if (field.resolvedType && !(field.resolvedType instanceof Enum)) gen
+            ("if(%s!==undefined&&%s!==null){", ref, ref);
+                else gen
+            ("if(%s!==undefined){", ref);
+            }
+                genVerifyValue(gen, field, i, ref);
+            if (!field.required) gen
+            ("}");
+        }
+    } return gen
+    ("return null");
+    /* eslint-enable no-unexpected-multiline */
+}
+},{"15":15,"36":36}],40:[function(require,module,exports){
+"use strict";
+module.exports = Writer;
+
+var util      = require(38);
+
+var BufferWriter; // cyclic
+
+var LongBits  = util.LongBits,
+    base64    = util.base64,
+    utf8      = util.utf8;
+
+/**
+ * Constructs a new writer operation instance.
+ * @classdesc Scheduled writer operation.
+ * @constructor
+ * @param {function(*, Uint8Array, number)} fn Function to call
+ * @param {number} len Value byte length
+ * @param {*} val Value to write
+ * @ignore
+ */
+function Op(fn, len, val) {
+
+    /**
+     * Function to call.
+     * @type {function(Uint8Array, number, *)}
+     */
+    this.fn = fn;
+
+    /**
+     * Value byte length.
+     * @type {number}
+     */
+    this.len = len;
+
+    /**
+     * Next operation.
+     * @type {Writer.Op|undefined}
+     */
+    this.next = undefined;
+
+    /**
+     * Value to write.
+     * @type {*}
+     */
+    this.val = val; // type varies
+}
+
+/* istanbul ignore next */
+function noop() {} // eslint-disable-line no-empty-function
+
+/**
+ * Constructs a new writer state instance.
+ * @classdesc Copied writer state.
+ * @memberof Writer
+ * @constructor
+ * @param {Writer} writer Writer to copy state from
+ * @private
+ * @ignore
+ */
+function State(writer) {
+
+    /**
+     * Current head.
+     * @type {Writer.Op}
+     */
+    this.head = writer.head;
+
+    /**
+     * Current tail.
+     * @type {Writer.Op}
+     */
+    this.tail = writer.tail;
+
+    /**
+     * Current buffer length.
+     * @type {number}
+     */
+    this.len = writer.len;
+
+    /**
+     * Next state.
+     * @type {?State}
+     */
+    this.next = writer.states;
+}
+
+/**
+ * Constructs a new writer instance.
+ * @classdesc Wire format writer using `Uint8Array` if available, otherwise `Array`.
+ * @constructor
+ */
+function Writer() {
+
+    /**
+     * Current length.
+     * @type {number}
+     */
+    this.len = 0;
+
+    /**
+     * Operations head.
+     * @type {Object}
+     */
+    this.head = new Op(noop, 0, 0);
+
+    /**
+     * Operations tail
+     * @type {Object}
+     */
+    this.tail = this.head;
+
+    /**
+     * Linked forked states.
+     * @type {?Object}
+     */
+    this.states = null;
+
+    // When a value is written, the writer calculates its byte length and puts it into a linked
+    // list of operations to perform when finish() is called. This both allows us to allocate
+    // buffers of the exact required size and reduces the amount of work we have to do compared
+    // to first calculating over objects and then encoding over objects. In our case, the encoding
+    // part is just a linked list walk calling operations with already prepared values.
+}
+
+/**
+ * Creates a new writer.
+ * @function
+ * @returns {BufferWriter|Writer} A {@link BufferWriter} when Buffers are supported, otherwise a {@link Writer}
+ */
+Writer.create = util.Buffer
+    ? function create_buffer_setup() {
+        return (Writer.create = function create_buffer() {
+            return new BufferWriter();
+        })();
+    }
+    /* istanbul ignore next */
+    : function create_array() {
+        return new Writer();
+    };
+
+/**
+ * Allocates a buffer of the specified size.
+ * @param {number} size Buffer size
+ * @returns {Uint8Array} Buffer
+ */
+Writer.alloc = function alloc(size) {
+    return new util.Array(size);
+};
+
+// Use Uint8Array buffer pool in the browser, just like node does with buffers
+/* istanbul ignore else */
+if (util.Array !== Array)
+    Writer.alloc = util.pool(Writer.alloc, util.Array.prototype.subarray);
+
+/**
+ * Pushes a new operation to the queue.
+ * @param {function(Uint8Array, number, *)} fn Function to call
+ * @param {number} len Value byte length
+ * @param {number} val Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.push = function push(fn, len, val) {
+    this.tail = this.tail.next = new Op(fn, len, val);
+    this.len += len;
+    return this;
+};
+
+function writeByte(val, buf, pos) {
+    buf[pos] = val & 255;
+}
+
+function writeVarint32(val, buf, pos) {
+    while (val > 127) {
+        buf[pos++] = val & 127 | 128;
+        val >>>= 7;
+    }
+    buf[pos] = val;
+}
+
+/**
+ * Constructs a new varint writer operation instance.
+ * @classdesc Scheduled varint writer operation.
+ * @extends Op
+ * @constructor
+ * @param {number} len Value byte length
+ * @param {number} val Value to write
+ * @ignore
+ */
+function VarintOp(len, val) {
+    this.len = len;
+    this.next = undefined;
+    this.val = val;
+}
+
+VarintOp.prototype = Object.create(Op.prototype);
+VarintOp.prototype.fn = writeVarint32;
+
+/**
+ * Writes an unsigned 32 bit value as a varint.
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.uint32 = function write_uint32(value) {
+    // here, the call to this.push has been inlined and a varint specific Op subclass is used.
+    // uint32 is by far the most frequently used operation and benefits significantly from this.
+    this.len += (this.tail = this.tail.next = new VarintOp(
+        (value = value >>> 0)
+                < 128       ? 1
+        : value < 16384     ? 2
+        : value < 2097152   ? 3
+        : value < 268435456 ? 4
+        :                     5,
+    value)).len;
+    return this;
+};
+
+/**
+ * Writes a signed 32 bit value as a varint.
+ * @function
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.int32 = function write_int32(value) {
+    return value < 0
+        ? this.push(writeVarint64, 10, LongBits.fromNumber(value)) // 10 bytes per spec
+        : this.uint32(value);
+};
+
+/**
+ * Writes a 32 bit value as a varint, zig-zag encoded.
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.sint32 = function write_sint32(value) {
+    return this.uint32((value << 1 ^ value >> 31) >>> 0);
+};
+
+function writeVarint64(val, buf, pos) {
+    while (val.hi) {
+        buf[pos++] = val.lo & 127 | 128;
+        val.lo = (val.lo >>> 7 | val.hi << 25) >>> 0;
+        val.hi >>>= 7;
+    }
+    while (val.lo > 127) {
+        buf[pos++] = val.lo & 127 | 128;
+        val.lo = val.lo >>> 7;
+    }
+    buf[pos++] = val.lo;
+}
+
+/**
+ * Writes an unsigned 64 bit value as a varint.
+ * @param {Long|number|string} value Value to write
+ * @returns {Writer} `this`
+ * @throws {TypeError} If `value` is a string and no long library is present.
+ */
+Writer.prototype.uint64 = function write_uint64(value) {
+    var bits = LongBits.from(value);
+    return this.push(writeVarint64, bits.length(), bits);
+};
+
+/**
+ * Writes a signed 64 bit value as a varint.
+ * @function
+ * @param {Long|number|string} value Value to write
+ * @returns {Writer} `this`
+ * @throws {TypeError} If `value` is a string and no long library is present.
+ */
+Writer.prototype.int64 = Writer.prototype.uint64;
+
+/**
+ * Writes a signed 64 bit value as a varint, zig-zag encoded.
+ * @param {Long|number|string} value Value to write
+ * @returns {Writer} `this`
+ * @throws {TypeError} If `value` is a string and no long library is present.
+ */
+Writer.prototype.sint64 = function write_sint64(value) {
+    var bits = LongBits.from(value).zzEncode();
+    return this.push(writeVarint64, bits.length(), bits);
+};
+
+/**
+ * Writes a boolish value as a varint.
+ * @param {boolean} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.bool = function write_bool(value) {
+    return this.push(writeByte, 1, value ? 1 : 0);
+};
+
+function writeFixed32(val, buf, pos) {
+    buf[pos++] =  val         & 255;
+    buf[pos++] =  val >>> 8   & 255;
+    buf[pos++] =  val >>> 16  & 255;
+    buf[pos  ] =  val >>> 24;
+}
+
+/**
+ * Writes an unsigned 32 bit value as fixed 32 bits.
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.fixed32 = function write_fixed32(value) {
+    return this.push(writeFixed32, 4, value >>> 0);
+};
+
+/**
+ * Writes a signed 32 bit value as fixed 32 bits.
+ * @function
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.sfixed32 = Writer.prototype.fixed32;
+
+/**
+ * Writes an unsigned 64 bit value as fixed 64 bits.
+ * @param {Long|number|string} value Value to write
+ * @returns {Writer} `this`
+ * @throws {TypeError} If `value` is a string and no long library is present.
+ */
+Writer.prototype.fixed64 = function write_fixed64(value) {
+    var bits = LongBits.from(value);
+    return this.push(writeFixed32, 4, bits.lo).push(writeFixed32, 4, bits.hi);
+};
+
+/**
+ * Writes a signed 64 bit value as fixed 64 bits.
+ * @function
+ * @param {Long|number|string} value Value to write
+ * @returns {Writer} `this`
+ * @throws {TypeError} If `value` is a string and no long library is present.
+ */
+Writer.prototype.sfixed64 = Writer.prototype.fixed64;
+
+var writeFloat = typeof Float32Array !== "undefined"
+    ? (function() {
+        var f32 = new Float32Array(1),
+            f8b = new Uint8Array(f32.buffer);
+        f32[0] = -0;
+        return f8b[3] // already le?
+            ? function writeFloat_f32(val, buf, pos) {
+                f32[0] = val;
+                buf[pos++] = f8b[0];
+                buf[pos++] = f8b[1];
+                buf[pos++] = f8b[2];
+                buf[pos  ] = f8b[3];
+            }
+            /* istanbul ignore next */
+            : function writeFloat_f32_le(val, buf, pos) {
+                f32[0] = val;
+                buf[pos++] = f8b[3];
+                buf[pos++] = f8b[2];
+                buf[pos++] = f8b[1];
+                buf[pos  ] = f8b[0];
+            };
+    })()
+    /* istanbul ignore next */
+    : function writeFloat_ieee754(value, buf, pos) {
+        var sign = value < 0 ? 1 : 0;
+        if (sign)
+            value = -value;
+        if (value === 0)
+            writeFixed32(1 / value > 0 ? /* positive */ 0 : /* negative 0 */ 2147483648, buf, pos);
+        else if (isNaN(value))
+            writeFixed32(2147483647, buf, pos);
+        else if (value > 3.4028234663852886e+38) // +-Infinity
+            writeFixed32((sign << 31 | 2139095040) >>> 0, buf, pos);
+        else if (value < 1.1754943508222875e-38) // denormal
+            writeFixed32((sign << 31 | Math.round(value / 1.401298464324817e-45)) >>> 0, buf, pos);
+        else {
+            var exponent = Math.floor(Math.log(value) / Math.LN2),
+                mantissa = Math.round(value * Math.pow(2, -exponent) * 8388608) & 8388607;
+            writeFixed32((sign << 31 | exponent + 127 << 23 | mantissa) >>> 0, buf, pos);
+        }
+    };
+
+/**
+ * Writes a float (32 bit).
+ * @function
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.float = function write_float(value) {
+    return this.push(writeFloat, 4, value);
+};
+
+var writeDouble = typeof Float64Array !== "undefined"
+    ? (function() {
+        var f64 = new Float64Array(1),
+            f8b = new Uint8Array(f64.buffer);
+        f64[0] = -0;
+        return f8b[7] // already le?
+            ? function writeDouble_f64(val, buf, pos) {
+                f64[0] = val;
+                buf[pos++] = f8b[0];
+                buf[pos++] = f8b[1];
+                buf[pos++] = f8b[2];
+                buf[pos++] = f8b[3];
+                buf[pos++] = f8b[4];
+                buf[pos++] = f8b[5];
+                buf[pos++] = f8b[6];
+                buf[pos  ] = f8b[7];
+            }
+            /* istanbul ignore next */
+            : function writeDouble_f64_le(val, buf, pos) {
+                f64[0] = val;
+                buf[pos++] = f8b[7];
+                buf[pos++] = f8b[6];
+                buf[pos++] = f8b[5];
+                buf[pos++] = f8b[4];
+                buf[pos++] = f8b[3];
+                buf[pos++] = f8b[2];
+                buf[pos++] = f8b[1];
+                buf[pos  ] = f8b[0];
+            };
+    })()
+    /* istanbul ignore next */
+    : function writeDouble_ieee754(value, buf, pos) {
+        var sign = value < 0 ? 1 : 0;
+        if (sign)
+            value = -value;
+        if (value === 0) {
+            writeFixed32(0, buf, pos);
+            writeFixed32(1 / value > 0 ? /* positive */ 0 : /* negative 0 */ 2147483648, buf, pos + 4);
+        } else if (isNaN(value)) {
+            writeFixed32(4294967295, buf, pos);
+            writeFixed32(2147483647, buf, pos + 4);
+        } else if (value > 1.7976931348623157e+308) { // +-Infinity
+            writeFixed32(0, buf, pos);
+            writeFixed32((sign << 31 | 2146435072) >>> 0, buf, pos + 4);
+        } else {
+            var mantissa;
+            if (value < 2.2250738585072014e-308) { // denormal
+                mantissa = value / 5e-324;
+                writeFixed32(mantissa >>> 0, buf, pos);
+                writeFixed32((sign << 31 | mantissa / 4294967296) >>> 0, buf, pos + 4);
+            } else {
+                var exponent = Math.floor(Math.log(value) / Math.LN2);
+                if (exponent === 1024)
+                    exponent = 1023;
+                mantissa = value * Math.pow(2, -exponent);
+                writeFixed32(mantissa * 4503599627370496 >>> 0, buf, pos);
+                writeFixed32((sign << 31 | exponent + 1023 << 20 | mantissa * 1048576 & 1048575) >>> 0, buf, pos + 4);
+            }
+        }
+    };
+
+/**
+ * Writes a double (64 bit float).
+ * @function
+ * @param {number} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.double = function write_double(value) {
+    return this.push(writeDouble, 8, value);
+};
+
+var writeBytes = util.Array.prototype.set
+    ? function writeBytes_set(val, buf, pos) {
+        buf.set(val, pos); // also works for plain array values
+    }
+    /* istanbul ignore next */
+    : function writeBytes_for(val, buf, pos) {
+        for (var i = 0; i < val.length; ++i)
+            buf[pos + i] = val[i];
+    };
+
+/**
+ * Writes a sequence of bytes.
+ * @param {Uint8Array|string} value Buffer or base64 encoded string to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.bytes = function write_bytes(value) {
+    var len = value.length >>> 0;
+    if (!len)
+        return this.push(writeByte, 1, 0);
+    if (util.isString(value)) {
+        var buf = Writer.alloc(len = base64.length(value));
+        base64.decode(value, buf, 0);
+        value = buf;
+    }
+    return this.uint32(len).push(writeBytes, len, value);
+};
+
+/**
+ * Writes a string.
+ * @param {string} value Value to write
+ * @returns {Writer} `this`
+ */
+Writer.prototype.string = function write_string(value) {
+    var len = utf8.length(value);
+    return len
+        ? this.uint32(len).push(utf8.write, len, value)
+        : this.push(writeByte, 1, 0);
+};
+
+/**
+ * Forks this writer's state by pushing it to a stack.
+ * Calling {@link Writer#reset|reset} or {@link Writer#ldelim|ldelim} resets the writer to the previous state.
+ * @returns {Writer} `this`
+ */
+Writer.prototype.fork = function fork() {
+    this.states = new State(this);
+    this.head = this.tail = new Op(noop, 0, 0);
+    this.len = 0;
+    return this;
+};
+
+/**
+ * Resets this instance to the last state.
+ * @returns {Writer} `this`
+ */
+Writer.prototype.reset = function reset() {
+    if (this.states) {
+        this.head   = this.states.head;
+        this.tail   = this.states.tail;
+        this.len    = this.states.len;
+        this.states = this.states.next;
+    } else {
+        this.head = this.tail = new Op(noop, 0, 0);
+        this.len  = 0;
+    }
+    return this;
+};
+
+/**
+ * Resets to the last state and appends the fork state's current write length as a varint followed by its operations.
+ * @returns {Writer} `this`
+ */
+Writer.prototype.ldelim = function ldelim() {
+    var head = this.head,
+        tail = this.tail,
+        len  = this.len;
+    this.reset().uint32(len);
+    if (len) {
+        this.tail.next = head.next; // skip noop
+        this.tail = tail;
+        this.len += len;
+    }
+    return this;
+};
+
+/**
+ * Finishes the write operation.
+ * @returns {Uint8Array} Finished buffer
+ */
+Writer.prototype.finish = function finish() {
+    var head = this.head.next, // skip noop
+        buf  = this.constructor.alloc(this.len),
+        pos  = 0;
+    while (head) {
+        head.fn(head.val, buf, pos);
+        pos += head.len;
+        head = head.next;
+    }
+    // this.head = this.tail = null;
+    return buf;
+};
+
+Writer._configure = function(BufferWriter_) {
+    BufferWriter = BufferWriter_;
+};
+
+},{"38":38}],41:[function(require,module,exports){
+"use strict";
+module.exports = BufferWriter;
+
+// extends Writer
+var Writer = require(40);
+(BufferWriter.prototype = Object.create(Writer.prototype)).constructor = BufferWriter;
+
+var util = require(38);
+
+var Buffer = util.Buffer;
+
+/**
+ * Constructs a new buffer writer instance.
+ * @classdesc Wire format writer using node buffers.
+ * @extends Writer
+ * @constructor
+ */
+function BufferWriter() {
+    Writer.call(this);
+}
+
+/**
+ * Allocates a buffer of the specified size.
+ * @param {number} size Buffer size
+ * @returns {Buffer} Buffer
+ */
+BufferWriter.alloc = function alloc_buffer(size) {
+    return (BufferWriter.alloc = util._Buffer_allocUnsafe)(size);
+};
+
+var writeBytesBuffer = Buffer && Buffer.prototype instanceof Uint8Array && Buffer.prototype.set.name === "set"
+    ? function writeBytesBuffer_set(val, buf, pos) {
+        buf.set(val, pos); // faster than copy (requires node >= 4 where Buffers extend Uint8Array and set is properly inherited)
+                           // also works for plain array values
+    }
+    /* istanbul ignore next */
+    : function writeBytesBuffer_copy(val, buf, pos) {
+        if (val.copy) // Buffer values
+            val.copy(buf, pos, 0, val.length);
+        else for (var i = 0; i < val.length;) // plain array values
+            buf[pos++] = val[i++];
+    };
+
+/**
+ * @override
+ */
+BufferWriter.prototype.bytes = function write_bytes_buffer(value) {
+    if (util.isString(value))
+        value = util._Buffer_from(value, "base64");
+    var len = value.length >>> 0;
+    this.uint32(len);
+    if (len)
+        this.push(writeBytesBuffer, len, value);
+    return this;
+};
+
+function writeStringBuffer(val, buf, pos) {
+    if (val.length < 40) // plain js is faster for short strings (probably due to redundant assertions)
+        util.utf8.write(val, buf, pos);
+    else
+        buf.utf8Write(val, pos);
+}
+
+/**
+ * @override
+ */
+BufferWriter.prototype.string = function write_string_buffer(value) {
+    var len = Buffer.byteLength(value);
+    this.uint32(len);
+    if (len)
+        this.push(writeStringBuffer, len, value);
+    return this;
+};
+
+
+/**
+ * Finishes the write operation.
+ * @name BufferWriter#finish
+ * @function
+ * @returns {Buffer} Finished buffer
+ */
+
+},{"38":38,"40":40}]},{},[19])
+
+})(typeof window==="object"&&window||typeof self==="object"&&self||this);
+//# sourceMappingURL=protobuf.js.map
+
 /*
 * name;
 */
@@ -52100,16 +59824,16 @@ var ObjectPoolUtil = /** @class */ (function () {
     }
     ObjectPoolUtil.init = function () {
         this.floatFontTipsAry = new Array();
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < 20; i++) {
             this.floatFontTipsAry.push(new FloatFontTips());
         }
         this.roleBloodBarAry = new Array();
-        for (i = 0; i < 10; i++) {
+        for (i = 0; i < 20; i++) {
             this.roleBloodBarAry.push(new RoleBloodBar());
         }
         this.heroAry = new Array();
         this.enemyAry = new Array();
-        for (i = 0; i < 5; i++) {
+        for (i = 0; i < 15; i++) {
             this.heroAry.push(new Hero());
             this.enemyAry.push(new Enemy());
         }
@@ -52201,7 +59925,7 @@ var LG = /** @class */ (function () {
     */
     LG.getTXT = function (translationId, args) {
         var reg = new RegExp("\\{(\\d+)\\}");
-        var input = this[translationId] ? this[translationId] : translationId + "";
+        var input = this.dic[translationId] ? this.dic[translationId] : translationId + "";
         var obj = reg.exec(input);
         while (obj && args.length > 0) {
             var id = parseInt(obj[1]);
@@ -52239,7 +59963,7 @@ var DebugViewUtil = /** @class */ (function () {
         this.view.x = GameConfig.STAGE_WIDTH - this.view.width;
         this.view.y = 0;
         this.view.lblDec.text = "";
-        LayerManager.ins.addToLayer(this.view, LayerManager.TIP_LAYER, false, false, false);
+        LayerManager.ins.addToLayer(this.view, LayerManager.TIP_LAYER, false, true, false);
         this.view.btnClear.on(Laya.Event.CLICK, this, this.onBtnClear);
     };
     DebugViewUtil.onBtnClear = function (e) {
@@ -52279,6 +60003,102 @@ var CommonUtil = /** @class */ (function () {
     return CommonUtil;
 }());
 //# sourceMappingURL=CommonUtil.js.map
+var SoundChannel = Laya.SoundChannel;
+var LayaSoundManager = Laya.SoundManager;
+/*
+* 声音管理器
+*/
+var SoundsManager = /** @class */ (function () {
+    function SoundsManager() {
+        this.soundChannelDic = new Dictionary();
+    }
+    Object.defineProperty(SoundsManager, "ins", {
+        get: function () {
+            if (this._ins == null) {
+                this._ins = new SoundsManager();
+            }
+            return this._ins;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * 播放背景音乐
+     * @param url
+     * @param loops
+     * @param complete
+     * @param startTime
+     */
+    SoundsManager.prototype.playMusic = function (url, loops, complete, startTime) {
+        if (loops === void 0) { loops = 0; }
+        if (complete === void 0) { complete = null; }
+        if (startTime === void 0) { startTime = 0; }
+        LayaSoundManager.playMusic(url, loops, complete, startTime);
+    };
+    /**
+     * 播放音效
+     * @param url
+     * @param loops
+     * @param complete
+     * @param soundClass
+     * @param startTime
+     */
+    SoundsManager.prototype.playSound = function (url, loops, complete, soundClass, startTime) {
+        if (loops === void 0) { loops = 1; }
+        if (complete === void 0) { complete = null; }
+        if (soundClass === void 0) { soundClass = null; }
+        if (startTime === void 0) { startTime = 0; }
+        var soundChannel = this.soundChannelDic.get(url);
+        if (soundChannel) {
+            this.removeChannel(soundChannel);
+        }
+        this.soundChannelDic.set(url, LayaSoundManager.playSound(url, loops, complete, soundClass, startTime));
+    };
+    /**
+     * 设置背景音乐音量。音量范围从 0（静音）至 1（最大音量）。
+     * @param volume
+     */
+    SoundsManager.prototype.setMusicVolume = function (volume) {
+        LayaSoundManager.setMusicVolume(volume);
+    };
+    /**
+     * 设置声音音量。根据参数不同，可以分别设置指定声音（背景音乐或音效）音量或者所有音效（不包括背景音乐）音量。
+     * @param volume
+     * @param url
+     */
+    SoundsManager.prototype.setSoundVolume = function (volume, url) {
+        if (url === void 0) { url = null; }
+        LayaSoundManager.setSoundVolume(volume, url);
+    };
+    /**
+     * 停止所有音乐
+     */
+    SoundsManager.prototype.stopAll = function () {
+        LayaSoundManager.stopAll();
+    };
+    /**
+     * 停止播放所有音效（不包括背景音乐）
+     */
+    SoundsManager.prototype.stopAllSound = function () {
+        LayaSoundManager.stopAllSound();
+    };
+    /**
+     * 停止播放背景音乐
+     */
+    SoundsManager.prototype.stopMusic = function () {
+        LayaSoundManager.stopMusic();
+    };
+    /**
+     * 移除播放的声音实例。
+     * @param channel
+     */
+    SoundsManager.prototype.removeChannel = function (channel) {
+        LayaSoundManager.removeChannel(channel);
+    };
+    SoundsManager._ins = null;
+    return SoundsManager;
+}());
+//# sourceMappingURL=SoundsManager.js.map
 /*
 * 声音管理器
 */
@@ -52303,15 +60123,6 @@ var SoundManager = /** @class */ (function () {
     return SoundManager;
 }());
 //# sourceMappingURL=SoundManager.js.map
-/*
-* name;
-*/
-var SocketManager = /** @class */ (function () {
-    function SocketManager() {
-    }
-    return SocketManager;
-}());
-//# sourceMappingURL=SocketManager.js.map
 /*
 * 场景管理器
 */
@@ -52386,6 +60197,8 @@ var RoleManager = /** @class */ (function () {
         this.enemyRoles = null;
         /**敌人 */
         this.enemyRunCount = 0;
+        /**英雄 */
+        this.heroRunCount = 0;
     }
     Object.defineProperty(RoleManager, "ins", {
         get: function () {
@@ -52416,7 +60229,7 @@ var RoleManager = /** @class */ (function () {
             });
             if (hero == null) {
                 hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-                hero.initRole(roleVo, 1);
+                hero.initRole(roleVo, i, 1);
                 this.heroRoles.push(hero);
             }
             hero.aniPlay(RoleAniIndex.MOVE);
@@ -52425,8 +60238,17 @@ var RoleManager = /** @class */ (function () {
             heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
         });
     };
+    /**
+     * 重置角色坐标
+     */
+    RoleManager.prototype.resetRolePoint = function () {
+        this.heroRoles.forEach(function (heroView) {
+            Laya.Tween.to(heroView, { x: heroView.roleVo.posPoint.x, y: heroView.roleVo.posPoint.y }, 200);
+        });
+    };
     /**生产敌人 */
     RoleManager.prototype.produceEnemy = function () {
+        var _this = this;
         //怪物数据
         var enemyData = GameDataManager.ins.enemyData;
         this.enemyRoles = new Array();
@@ -52436,11 +60258,12 @@ var RoleManager = /** @class */ (function () {
         for (var i = 0; i < enemyData.roleVoAry.length; i++) {
             roleVo = enemyData.roleVoAry[i];
             enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
-            enemy.initRole(roleVo, 1);
+            enemy.initRole(roleVo, i, 1);
             this.enemyRoles.push(enemy);
+            enemy.aniPlay(RoleAniIndex.STAND);
         }
         this.enemyRoles.forEach(function (enemyView) {
-            enemyView.setShowIndex(enemyView.roleVo.lineupGrid - 1);
+            enemyView.setShowIndex(_this.heroRoles.length + enemyView.roleVo.lineupGrid - 1);
         });
     };
     /**
@@ -52468,90 +60291,23 @@ var RoleManager = /** @class */ (function () {
         });
     };
     /**
-     * 战斗
-     * @param attRoleVo
-     * @param defRoleVo
+     * 敌人跟随地图移动
+     * @param speed
      */
-    RoleManager.prototype.battleAtt = function (attRoleVo, defRoleVo) {
-        var _this = this;
-        var tempAry = this.heroRoles.concat(this.enemyRoles);
-        tempAry.forEach(function (roleView) {
-            if (roleView.roleVo.id == attRoleVo.id) {
-                _this.attRole = roleView;
-            }
-            else if (roleView.roleVo.id == defRoleVo.id) {
-                _this.defRole = roleView;
-            }
-        });
-        if (this.attRole && this.defRole) {
-            //远攻
-            if (this.attRole.roleVo.attFar == 1) {
-                this.playAttackAni();
-            }
-            else { //近攻
-                this.attRole.aniPlay(RoleAniIndex.MOVE);
-                var tempX = defRoleVo.isEnemy ? 200 : -200;
-                Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000, null, new Handler(this, this.playAttackAni, [attRoleVo, defRoleVo]));
-            }
+    RoleManager.prototype.enemyMoveByMap = function (speed) {
+        if (this.enemyRoles) {
+            this.enemyRoles.forEach(function (enemy) {
+                enemy.moveByMap(speed);
+            });
         }
-    };
-    /**
-     * 移动到敌方攻击
-     * @param data
-     */
-    RoleManager.prototype.playAttackAni = function () {
-        var attRoleVo = this.attRole.roleVo;
-        var defRoleVo = this.defRole.roleVo;
-        var skillID = attRoleVo.getCanUserSkill();
-        if (skillID > 0) {
-            //技能释放
-            this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 500, this, this.moveBackLineup);
-            var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillID, defRoleVo.posPoint);
-        }
-        else {
-            //远攻，近攻击
-            if (attRoleVo.attFar == 1) {
-                this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 500, this, this.moveBackLineupComplete);
-            }
-            else {
-                this.attRole.aniPlay(RoleAniIndex.ATTACK, false, 500, this, this.moveBackLineup);
-            }
-        }
-        BattleDataManager.ins.calculationAttribute();
-        if (defRoleVo.isDeath) {
-            this.defRole.aniPlay(RoleAniIndex.DEATH, false);
-            this.defRole.setVisible(false);
-        }
-        else {
-            this.defRole.aniPlay(RoleAniIndex.INJURED);
-            this.defRole.showFloatFont(attRoleVo.att);
-        }
-        this.defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
-    };
-    /**
-     * 攻击完移动回阵型
-     */
-    RoleManager.prototype.moveBackLineup = function () {
-        var attRoleVo = this.attRole.roleVo;
-        Laya.Tween.to(this.attRole, { x: attRoleVo.posPoint.x, y: attRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / 2, null, new Handler(this, this.moveBackLineupComplete));
-    };
-    /**
-     * 移动回阵型完成
-     */
-    RoleManager.prototype.moveBackLineupComplete = function () {
-        DebugViewUtil.log("攻击返回", this.attRole.roleVo.name);
-        this.attRole.aniPlay(RoleAniIndex.STAND);
-        if (!this.defRole.roleVo.isDeath) {
-            this.defRole.aniPlay(RoleAniIndex.STAND);
-        }
-        EventManager.ins.dispatchEvent(EventManager.ENEMY_ATT_COMPLETE);
     };
     /**清除舞台显示对象 */
     RoleManager.prototype.clearRole = function () {
         if (this.heroRoles) {
             var lastHeros = [];
             this.heroRoles.forEach(function (role) {
+                role.roleVo.isDeath = false;
+                Laya.Tween.clearAll(role);
                 //只移除死掉英雄
                 if (role.roleVo.isDeath) {
                     ObjectPoolUtil.stillObject(ObjectPoolUtil.HERO_ROLE, role);
@@ -52560,12 +60316,12 @@ var RoleManager = /** @class */ (function () {
                 else {
                     lastHeros.push(role);
                 }
-                role.roleVo.isDeath = false;
             });
             this.heroRoles = lastHeros;
         }
         if (this.enemyRoles) {
             this.enemyRoles.forEach(function (role) {
+                Laya.Tween.clearAll(role);
                 ObjectPoolUtil.stillObject(ObjectPoolUtil.ENEMY_ROLE, role);
                 role.dispose();
             });
@@ -52589,22 +60345,29 @@ var Skill = /** @class */ (function () {
      * @param pos
      * @param scale
      */
-    Skill.prototype.playSkill = function (skillId, pos, scale) {
+    Skill.prototype.playSkill = function (skillId, parentDis, pos, scale) {
         if (scale === undefined || scale === null) {
             scale = 1;
         }
         if (this.skeletonAni == null) {
             this.skeletonAni = new Skeleton();
-            this.skeletonAni.pos(pos.x, pos.y);
+            if (pos) {
+                this.skeletonAni.pos(pos.x, pos.y);
+            }
             this.skeletonAni.scale(scale, scale);
-            this.skeletonAni.load("res/outside/anim/skill/" + skillId + "/" + skillId + ".sk");
-            LayerManager.ins.addToLayer(this.skeletonAni, LayerManager.EFFECT_LAYER, false, true, false);
+            this.skeletonAni.load("res/outside/anim/skill/" + skillId + "/" + skillId + ".sk", Laya.Handler.create(this, this.resLoaded));
+            // LayerManager.ins.addToLayer(this.skeletonAni,LayerManager.EFFECT_LAYER,false,true,false);
+            parentDis.addChild(this.skeletonAni);
         }
-        // this.skeletonAni.play(0,false);
-        Laya.timer.once(1000, this, this.playSkillComplete);
+    };
+    Skill.prototype.resLoaded = function () {
+        this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
+        this.skeletonAni.play(0, true);
+        this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.playSkillComplete);
     };
     Skill.prototype.playSkillComplete = function () {
         if (this.skeletonAni) {
+            this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.playSkillComplete);
             this.skeletonAni.removeSelf();
             this.skeletonAni = null;
             ObjectPoolUtil.stillObject(ObjectPoolUtil.SKILL, this);
@@ -52613,6 +60376,213 @@ var Skill = /** @class */ (function () {
     return Skill;
 }());
 //# sourceMappingURL=Skill.js.map
+/*
+* websocket管理器
+*/
+var WebSocketManager = /** @class */ (function () {
+    function WebSocketManager() {
+        this.ProtoBuf = Laya.Browser.window.protobuf;
+        this.socketHanlderDic = new Laya.Dictionary();
+    }
+    Object.defineProperty(WebSocketManager, "ins", {
+        get: function () {
+            if (this._ins == null) {
+                this._ins = new WebSocketManager();
+            }
+            return this._ins;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    WebSocketManager.prototype.connect = function (ip, port) {
+        this.ip = ip;
+        this.port = port;
+        this.webSocket = new Laya.Socket();
+        this.webSocket.on(Laya.Event.OPEN, this, this.webSocketOpen);
+        this.webSocket.on(Laya.Event.MESSAGE, this, this.webSocketMessage);
+        this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
+        this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
+        this.ProtoBuf.load("res/outside/proto/login.proto", this.protoLoadComplete);
+    };
+    WebSocketManager.prototype.protoLoadComplete = function (error, root) {
+        WebSocketManager.ins.protoRoot = root;
+        WebSocketManager.ins.webSocket.connectByUrl("ws://" + WebSocketManager.ins.ip + ":" + WebSocketManager.ins.port);
+    };
+    WebSocketManager.prototype.webSocketOpen = function () {
+        console.log("websocket open...");
+        EventManager.ins.dispatchEvent(EventManager.SERVER_CONNECTED);
+    };
+    WebSocketManager.prototype.webSocketMessage = function (data) {
+        console.log("websocket msg...");
+        var packageIn = new PackageIn();
+        packageIn.read(data);
+        var socketHanlder = this.socketHanlderDic.get(packageIn.module);
+        if (socketHanlder) {
+            socketHanlder.explain(packageIn.body);
+        }
+    };
+    WebSocketManager.prototype.webSocketClose = function () {
+        console.log("websocket close...");
+    };
+    WebSocketManager.prototype.webSocketError = function () {
+        console.log("websocket error...");
+    };
+    /**
+     * 发送消息
+     * @param cmd
+     * @param data
+     */
+    WebSocketManager.prototype.sendMsg = function (module, cmd, data) {
+        var packageOut = new PackageOut();
+        packageOut.pack(module, cmd, data);
+        this.webSocket.send(packageOut.buffer);
+    };
+    /**定义protobuf类 */
+    WebSocketManager.prototype.defineProtoClass = function (classStr) {
+        return this.protoRoot.lookup(classStr);
+    };
+    /**注册 */
+    WebSocketManager.prototype.registerHandler = function (protocol, handler) {
+        var handlers = this.socketHanlderDic.get(protocol);
+        if (!handlers) {
+            handlers = new Array();
+            this.socketHanlderDic.set(protocol, handler);
+        }
+        handlers.push(handler);
+    };
+    /**删除 */
+    WebSocketManager.prototype.unregisterHandler = function (protocol, handler) {
+        var handlers = this.socketHanlderDic.get(protocol);
+        if (handlers) {
+            handlers.splice(handlers.indexOf(handler), 1);
+            if (handlers.length == 0) {
+                this.socketHanlderDic.remove(protocol);
+            }
+        }
+    };
+    WebSocketManager._ins = null;
+    return WebSocketManager;
+}());
+//# sourceMappingURL=WebSocketManager.js.map
+/*
+* http请求管理器
+*/
+var HttpManager = /** @class */ (function () {
+    function HttpManager() {
+    }
+    Object.defineProperty(HttpManager, "ins", {
+        get: function () {
+            if (this._ins == null) {
+                this._ins = new HttpManager();
+            }
+            return this._ins;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**
+     * 发送请求
+     * @param url 地址
+     * @param reqType 请求类型 post get
+     * @param params 请求参数
+     * @param caller 封装heads
+     * @param caller 请求回调caller
+     * @param callBack 请求回调方法
+     */
+    HttpManager.prototype.send = function (url, reqType, params, caller, callBack) {
+        var xhr = new Laya.HttpRequest();
+        xhr.http.timeout = 10000; //设置超时时间；
+        xhr.once(Laya.Event.ERROR, this, this.errorHandler);
+        xhr.on(Laya.Event.PROGRESS, this, this.processHandler);
+        if (caller && callBack) {
+            xhr.once(Laya.Event.COMPLETE, caller, callBack);
+        }
+        var paramsStr = params ? this.formart(params) : "";
+        //封装heads
+        var heads;
+        if (GameDataManager.ins.loginAuthentication) {
+            heads = ["authentication", GameDataManager.ins.loginAuthentication];
+        }
+        if (reqType == HTTPReqType.GET) {
+            if (paramsStr != "") {
+                url = url + "?" + paramsStr;
+            }
+            xhr.send(url, "", reqType, "text", heads);
+        }
+        else if (reqType == HTTPReqType.POST) {
+            xhr.send(url, "", paramsStr, "text", heads);
+        }
+    };
+    /**
+     * 参数格式化
+     * @param params
+     */
+    HttpManager.prototype.formart = function (params) {
+        var paramsStr = "";
+        for (var key in params) {
+            paramsStr += key + "=" + params[key] + "&";
+        }
+        paramsStr = paramsStr.substr(0, paramsStr.length - 1);
+        return paramsStr;
+    };
+    HttpManager.prototype.processHandler = function (data) {
+        console.log(data);
+    };
+    HttpManager.prototype.errorHandler = function (data) {
+    };
+    HttpManager.prototype.completeHandler = function (e) {
+        console.log(e);
+    };
+    HttpManager._ins = null;
+    return HttpManager;
+}());
+//# sourceMappingURL=HttpManager.js.map
+/*
+* 客户端发送器
+*/
+var ClientSender = /** @class */ (function () {
+    function ClientSender() {
+    }
+    /**********************************webSocket */
+    ClientSender.loginReq = function (account) {
+        var LoginRequest = WebSocketManager.ins.defineProtoClass("LoginRequest");
+        var message = {};
+        message.name = account;
+        message.token = GameDataManager.ins.loginToken;
+        message.nickname = "xielong";
+        var buffer = LoginRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.USER_LOGIN, Protocol.USER_LOGIN_CMD, buffer);
+    };
+    /**********************************Http */
+    /**测试登录 */
+    ClientSender.httpLoginReq = function (account, pwd, caller, callBack) {
+        var params = {};
+        params.account = account;
+        params.password = pwd;
+        HttpManager.ins.send(HTTPRequestUrl.testLoginURL, HTTPReqType.GET, params, caller, callBack);
+    };
+    /**获取服务器列表 */
+    ClientSender.httpGameServerReq = function (caller, callBack) {
+        HttpManager.ins.send(HTTPRequestUrl.gameServerURL, HTTPReqType.GET, null, caller, callBack);
+    };
+    /**进入游戏 */
+    ClientSender.httpEnterGameReq = function (sid, caller, callBack) {
+        var params = {};
+        params.sid = sid;
+        HttpManager.ins.send(HTTPRequestUrl.enterGameURL, HTTPReqType.GET, params, caller, callBack);
+    };
+    return ClientSender;
+}());
+//# sourceMappingURL=ClientSender.js.map
+/*
+* 测试xml数据
+*/
+var TestSample = /** @class */ (function () {
+    function TestSample() {
+    }
+    return TestSample;
+}());
+//# sourceMappingURL=TestSample.js.map
 /*
 * 技能Vo
 */
@@ -52641,6 +60611,16 @@ var SkillVo = /** @class */ (function () {
 }());
 //# sourceMappingURL=SkillVo.js.map
 /*
+* 服务器信息
+*/
+var ServerInfoVo = /** @class */ (function () {
+    function ServerInfoVo() {
+        this.name = "";
+    }
+    return ServerInfoVo;
+}());
+//# sourceMappingURL=ServerInfoVo.js.map
+/*
 * 角色Vo [10000,20000)英雄，[20000,30000)怪物
 */
 var RoleVo = /** @class */ (function () {
@@ -52652,13 +60632,16 @@ var RoleVo = /** @class */ (function () {
     RoleVo.prototype.initRowColPosPoint = function () {
         this.isEnemy = Number(this.id) >= 20000;
         var px, py;
+        var gridPointAry;
         if (this.isEnemy) {
-            this.gridX = MapManager.ins.getEnemyMapBalltGridPoint(this.lineupGrid)[0];
-            this.gridY = MapManager.ins.getEnemyMapBalltGridPoint(this.lineupGrid)[1];
+            gridPointAry = MapManager.ins.getEnemyMapBalltGridPoint(this.lineupGrid);
+            this.gridX = gridPointAry[0];
+            this.gridY = gridPointAry[1];
         }
         else {
-            this.gridX = MapManager.ins.getHeroMapBalltGridPoint(this.lineupGrid)[0];
-            this.gridY = MapManager.ins.getHeroMapBalltGridPoint(this.lineupGrid)[1];
+            gridPointAry = MapManager.ins.getHeroMapBalltGridPoint(this.lineupGrid);
+            this.gridX = gridPointAry[0];
+            this.gridY = gridPointAry[1];
         }
         // console.log(this.id,this.gridX,this.gridY,px,py);
         this.posPoint = MapManager.ins.squintAngleGrid.gridToViewPoint(this.gridX, this.gridY);
@@ -52680,11 +60663,10 @@ var RoleVo = /** @class */ (function () {
     };
     /**得到可用技能 ，自动释放技能*/
     RoleVo.prototype.getCanUserSkill = function () {
-        var _this = this;
         var skillID = 0;
         this.skillVos.forEach(function (skillVo) {
             if (skillVo.isCanUse) {
-                console.log(_this.name + "】使用了" + skillVo.name + "技能，伤害爆表" + skillVo.id);
+                // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表"+skillVo.id);
                 skillVo.isCanUse = false;
                 skillID = Number(skillVo.id);
             }
@@ -52695,14 +60677,23 @@ var RoleVo = /** @class */ (function () {
 }());
 //# sourceMappingURL=RoleVo.js.map
 /*
-* 玩家数据
+* 宠物品质评分配制表
 */
-var PlayerData = /** @class */ (function () {
-    function PlayerData() {
+var QualityScoreSampleVo = /** @class */ (function () {
+    function QualityScoreSampleVo() {
     }
-    return PlayerData;
+    return QualityScoreSampleVo;
 }());
-//# sourceMappingURL=PlayerData.js.map
+//# sourceMappingURL=QualityScoreSampleVo.js.map
+/*
+* 宠物品质配制表
+*/
+var QualitySampleVo = /** @class */ (function () {
+    function QualitySampleVo() {
+    }
+    return QualitySampleVo;
+}());
+//# sourceMappingURL=QualitySampleVo.js.map
 /*
 * 阵型配置
 */
@@ -52712,6 +60703,53 @@ var LineupPosVo = /** @class */ (function () {
     return LineupPosVo;
 }());
 //# sourceMappingURL=LineupPosVo.js.map
+/*
+* 宠物物种配制表
+*/
+var HeroTypeSampleVo = /** @class */ (function () {
+    function HeroTypeSampleVo() {
+    }
+    return HeroTypeSampleVo;
+}());
+//# sourceMappingURL=HeroTypeSampleVo.js.map
+/*
+* 宠物配制表
+*/
+var HeroSampleVo = /** @class */ (function () {
+    function HeroSampleVo() {
+    }
+    return HeroSampleVo;
+}());
+//# sourceMappingURL=HeroSampleVo.js.map
+/*
+* 宠物经验配制表
+*/
+var HeroLevelSampleVo = /** @class */ (function () {
+    function HeroLevelSampleVo() {
+    }
+    return HeroLevelSampleVo;
+}());
+//# sourceMappingURL=HeroLevelSampleVo.js.map
+/*
+* 战斗数据管理
+*/
+var BattleReportVo = /** @class */ (function () {
+    function BattleReportVo() {
+    }
+    return BattleReportVo;
+}());
+//# sourceMappingURL=BattleReportVo.js.map
+/*
+* 玩家数据
+*/
+var PlayerData = /** @class */ (function () {
+    function PlayerData() {
+        /**英雄总数 */
+        this.heroSum = 0;
+    }
+    return PlayerData;
+}());
+//# sourceMappingURL=PlayerData.js.map
 /*
 * 怪物数据
 */
@@ -52723,15 +60761,6 @@ var EnemyData = /** @class */ (function () {
     return EnemyData;
 }());
 //# sourceMappingURL=EnemyData.js.map
-/*
-* 战斗数据管理
-*/
-var BattleReportVo = /** @class */ (function () {
-    function BattleReportVo() {
-    }
-    return BattleReportVo;
-}());
-//# sourceMappingURL=BattleReportVo.js.map
 /*
 * name;
 */
@@ -52748,16 +60777,21 @@ var MapManager = /** @class */ (function () {
     function MapManager() {
         //地图测试数据 mapId >> mapVO
         this.mapCofing = {
-            "1": { "mapID": 1, "battleHeroGrid": [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], "battleEnemyGrid": [[3, 0], [2, 1], [3, 2], [2, 3], [3, 4]] },
-            "2": { "mapID": 2, "battleHeroGrid": [[1, 0], [0, 1], [1, 2], [0, 3], [1, 4]], "battleEnemyGrid": [[3, 0], [3, 1], [3, 2], [3, 3], [3, 4]] }
+            "1": { "mapID": 1, "name": "1", "battleHeroGrid": [[1, 0], [0, 1], [0, 2], [1, 2], [0, 3], [1, 4]], "battleEnemyGrid": [[2, 0], [2, 2], [2, 4]], "mapInitY": 600, "battleSceneH": 500, "gw": 240, "gh": 100 },
+            "2": { "mapID": 2, "name": "2", "battleHeroGrid": [[1, 0], [0, 1], [0, 2], [1, 2], [0, 3], [1, 4]], "battleEnemyGrid": [[2, 0], [2, 2], [2, 4]], "mapInitY": 560, "battleSceneH": 500, "gw": 240, "gh": 100 },
+            "10000": { "mapID": 10000, "name": "Boss挑战", "battleHeroGrid": [[1, 2], [1, 6], [0, 10], [1, 10], [1, 14], [1, 18]], "battleEnemyGrid": [[4, 2], [4, 6], [4, 10], [4, 14], [4, 18]], "mapInitY": 100, "battleSceneH": 1000, "gw": 140, "gh": 100 }
         };
         this.mapEngine = null;
+        this.farMapEngine = null;
         this.mapLoopEngine = null;
         this.nearMapLoopEngin = null;
         this.squintAngleGrid = null;
         /**地图开关 */
         this.mapScrollSwitch = true;
-        this.tx = 0;
+        this.challegenBossBg = null;
+        this.enemyMoveSwitch = false;
+        //循环地图Id
+        this.curLoopMapId = 0;
     }
     Object.defineProperty(MapManager, "ins", {
         get: function () {
@@ -52769,32 +60803,63 @@ var MapManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    MapManager.prototype.resizeSet = function () {
+        if (this.curMapConfig) {
+        }
+    };
     MapManager.prototype.enterMap = function (rootUrl, mapID, loadType, visualWidth, visualHeight, mapWidth, mapHeight, tileWidth, tileHeight) {
         if (tileWidth === void 0) { tileWidth = 0; }
         if (tileHeight === void 0) { tileHeight = 0; }
         this.curMapConfig = this.mapCofing[mapID];
-        if (this.mapEngine) {
-            this.mapEngine.dispose();
-            this.mapEngine = null;
-        }
+        GameConfig.MAP_INIT_Y = this.curMapConfig["mapInitY"];
+        GameConfig.BATTLE_SCENE_HEIGHT = this.curMapConfig["battleSceneH"];
+        GameConfig.LINEUP_GRID_WIDTH = this.curMapConfig["gw"];
+        GameConfig.LINEUP_GRID_HEIGHT = this.curMapConfig["gh"];
         //卡马克
+        // if(this.mapEngine)
+        // {
+        //     this.mapEngine.dispose();
+        //     this.mapEngine = null;
+        // }
         // this.mapEngine = new MapEngine();
         // this.mapEngine.initMap(rootUrl,mapID,loadType,visualWidth,visualHeight,mapWidth,mapHeight);
         // this.mapEngine.y = 600;
         // LayerManager.ins.addToLayer(this.mapEngine,LayerManager.TIP_LAYER,false,false,false);
-        //地图循环
-        this.mapLoopEngine = new MapLoopEngine();
-        this.mapLoopEngine.initMap("res/outside/map", 1, MapType.BACKGROUND_MAP, 6, GameConfig.STAGE_WIDTH);
-        this.mapLoopEngine.y = GameConfig.MAP_INIT_Y;
-        LayerManager.ins.addToLayer(this.mapLoopEngine, LayerManager.BG_LAYER, false, true, false);
-        this.nearMapLoopEngin = new MapLoopEngine();
-        this.nearMapLoopEngin.initMap("res/outside/map", 1, MapType.NEAR_MAP, 3, GameConfig.STAGE_WIDTH);
-        this.nearMapLoopEngin.y = this.mapLoopEngine.y + 210;
-        LayerManager.ins.addToLayer(this.nearMapLoopEngin, LayerManager.BG_NEAR_LAYER, false, true, false);
+        //boss地图
+        if (mapID >= 10000) {
+            // this.challegenBossBg = new Laya.Image("unpack/challengeboss/bg.png");
+            // LayerManager.ins.addToLayer(this.challegenBossBg,LayerManager.BG_LAYER,false,true,false);
+            // this.nearMapLoopEngin.visible = false;
+            // EventManager.ins.dispatchEvent(EventManager.CHALLENGE_BOSS,[false]);
+        }
+        else {
+            if (this.curLoopMapId != mapID) {
+                this.curLoopMapId = mapID;
+                //地图循环
+                this.farMapEngine = new MapLoopEngine();
+                this.farMapEngine.initMap("res/outside/map", mapID, MapType.FAR_MAP, 1, GameConfig.STAGE_WIDTH);
+                this.farMapEngine.y = 0;
+                LayerManager.ins.addToLayer(this.farMapEngine, LayerManager.BG_LAYER, false, true, false);
+                this.mapLoopEngine = new MapLoopEngine();
+                this.mapLoopEngine.initMap("res/outside/map", mapID, MapType.BACKGROUND_MAP, 6, GameConfig.STAGE_WIDTH);
+                this.mapLoopEngine.y = GameConfig.MAP_INIT_Y;
+                LayerManager.ins.addToLayer(this.mapLoopEngine, LayerManager.BG_LAYER, false, true, false);
+                this.nearMapLoopEngin = new MapLoopEngine();
+                this.nearMapLoopEngin.initMap("res/outside/map", mapID, MapType.NEAR_MAP, 3, GameConfig.STAGE_WIDTH);
+                this.nearMapLoopEngin.y = this.mapLoopEngine.y + 210;
+                LayerManager.ins.addToLayer(this.nearMapLoopEngin, LayerManager.BG_NEAR_LAYER, false, true, false);
+                //测试移动
+                Laya.timer.frameLoop(2, this, this.mapMoveLoop);
+            }
+        }
         this.calSquintAngleGrid();
-        //测试移动
-        Laya.timer.frameLoop(2, this, this.mapMoveLoop);
+        //声音
+        SoundsManager.ins.playMusic("res/outside/sound/bg/zhou.mp3", 1000);
     };
+    MapManager.prototype.backLoopMap = function () {
+        this.enterMap("res/map", this.curLoopMapId, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
+    };
+    // private tx:number = 0;
     MapManager.prototype.mapMoveLoop = function () {
         //卡马克滚动
         // this.moveOnScrol(this.tx,0);
@@ -52805,11 +60870,17 @@ var MapManager = /** @class */ (function () {
         // }
         //地图循环滚动
         if (this.mapScrollSwitch) {
+            if (this.farMapEngine) {
+                this.farMapEngine.onScroll();
+            }
             if (this.mapLoopEngine) {
-                this.mapLoopEngine.onScroll(4);
+                this.mapLoopEngine.onScroll();
             }
             if (this.nearMapLoopEngin) {
-                this.nearMapLoopEngin.onScroll(3);
+                this.nearMapLoopEngin.onScroll();
+            }
+            if (this.enemyMoveSwitch) {
+                RoleManager.ins.enemyMoveByMap(this.mapLoopEngine.scrollXSpeed);
             }
         }
         // console.log("地图打印："+this.tx);
@@ -52826,9 +60897,13 @@ var MapManager = /** @class */ (function () {
     };
     /**计算网格视图 */
     MapManager.prototype.calSquintAngleGrid = function () {
+        if (this.squintAngleGrid) {
+            this.squintAngleGrid.dispose();
+        }
         var mapWidth = GameConfig.STAGE_WIDTH;
         var mapHeight = GameConfig.BATTLE_SCENE_HEIGHT;
-        this.squintAngleGrid = new SquintAngleGrid(mapWidth, mapHeight);
+        this.squintAngleGrid = new SquintAngleGrid(mapWidth, mapHeight, false);
+        0;
         this.squintAngleGrid.initGrid();
     };
     MapManager.prototype.getHeroMapBalltGridPoint = function (gridNum) {
@@ -52838,6 +60913,9 @@ var MapManager = /** @class */ (function () {
     MapManager.prototype.getEnemyMapBalltGridPoint = function (gridNum) {
         var gridPointAry = this.curMapConfig["battleEnemyGrid"];
         return gridPointAry[gridNum - 1];
+    };
+    MapManager.prototype.getConfigById = function (mapId) {
+        return this.mapCofing[mapId];
     };
     MapManager._ins = null;
     return MapManager;
@@ -52858,7 +60936,7 @@ var SquintAngleGrid = /** @class */ (function () {
      * @param mapHei 地图高
      * @param mapRange 地图显示范围
      */
-    function SquintAngleGrid(mapWid, mapHei, mapRange) {
+    function SquintAngleGrid(mapWid, mapHei, isDrawGrid, mapRange) {
         //地图宽
         this.mapWid = 0;
         //地图高
@@ -52866,6 +60944,7 @@ var SquintAngleGrid = /** @class */ (function () {
         this.mapGridAry = null;
         this.mapWid = mapWid; //地图的宽
         this.mapHei = mapHei; //地图的高
+        this.isDrawGrid = isDrawGrid && isDrawGrid == true ? true : false;
         this.diamondW = GameConfig.LINEUP_GRID_WIDTH;
         this.diamondH = GameConfig.LINEUP_GRID_HEIGHT;
         // this.initGrid();
@@ -52883,7 +60962,10 @@ var SquintAngleGrid = /** @class */ (function () {
                 grid = new MapGrid(x, y);
                 grid.op = this.gridToViewPoint(x, y);
                 //绘制格子
-                // grid.drawTitle();
+                if (this.isDrawGrid) {
+                    grid.drawTitle();
+                }
+                this.mapGridAry.push(grid);
             }
         }
         this.mapGridAry.length;
@@ -52914,6 +60996,12 @@ var SquintAngleGrid = /** @class */ (function () {
         var px = gx * GameConfig.LINEUP_GRID_WIDTH + (gy & 1) * (GameConfig.LINEUP_GRID_WIDTH / 2);
         var py = gy * GameConfig.LINEUP_GRID_HEIGHT / 2;
         return new Point(px, py);
+    };
+    SquintAngleGrid.prototype.dispose = function () {
+        this.mapGridAry.forEach(function (grid) {
+            grid.clearDraw();
+        });
+        this.mapGridAry.splice(0, this.mapGridAry.length);
     };
     return SquintAngleGrid;
 }());
@@ -53029,6 +61117,11 @@ var GameDataManager = /** @class */ (function () {
     function GameDataManager() {
         this.selfPlayerData = null;
         this.enemyData = null;
+        this.bossData = null;
+        /**是否再挑战boss */
+        this.isChallengeBoss = false;
+        /**挂机章节 */
+        this.hundUpChapterData = null;
     }
     Object.defineProperty(GameDataManager, "ins", {
         get: function () {
@@ -53040,34 +61133,54 @@ var GameDataManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**保存服务器信息 */
+    GameDataManager.prototype.saveServerInfoList = function (data, lastServer) {
+        this.serverList = new Array();
+        var info;
+        var serverInfo;
+        for (var i = 0; i < data.length; i++) {
+            info = data[i];
+            serverInfo = new ServerInfoVo();
+            for (var key in info) {
+                if (info.hasOwnProperty(key)) {
+                    serverInfo[key] = info[key];
+                }
+            }
+            this.serverList.push(serverInfo);
+        }
+        /**上一次登录服务器信息 */
+        this.curServerInfo = new ServerInfoVo();
+        for (var key in lastServer) {
+            if (lastServer.hasOwnProperty(key)) {
+                this.curServerInfo[key] = lastServer[key];
+            }
+        }
+    };
+    GameDataManager.prototype.choiceServerInfo = function (index) {
+        this.curServerInfo = this.serverList[index];
+    };
+    /**保存自己玩家数据 */
+    GameDataManager.prototype.saveSelfPlayerData = function (data) {
+        this.loginAuthentication = data.authentication;
+        this.selfPlayerData = new PlayerData();
+        this.selfPlayerData.name = data.data;
+    };
     GameDataManager.prototype.initData = function () {
         //测试数据
-        this.selfPlayerData = new PlayerData();
+        if (!this.selfPlayerData) {
+            this.selfPlayerData = new PlayerData();
+        }
         this.selfPlayerData.id = 88888888;
         this.selfPlayerData.name = "SimplePlan";
         // this.selfPlayerData.lineupId = "1";
         // var lineupposVoAry:Array<LineupPosVo> = LineupManager.ins.getCofingByID(this.selfPlayerData.lineupId);
         this.selfPlayerData.roleVoAry = [];
-        var ids = ["10000", "10001", "10002", "10003", "10004"];
+        var ids = ["10000", "10001", "10005", "10002", "10003", "10004"];
         var roleVo;
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if (roleVo) {
-                if (i == 0) {
-                    roleVo.lineupGrid = 1;
-                }
-                else if (i == 1) {
-                    roleVo.lineupGrid = 2;
-                }
-                else if (i == 2) {
-                    roleVo.lineupGrid = 3;
-                }
-                else if (i == 3) {
-                    roleVo.lineupGrid = 4;
-                }
-                else if (i == 4) {
-                    roleVo.lineupGrid = 5;
-                }
+                roleVo.lineupGrid = i + 1;
                 roleVo.initRowColPosPoint();
                 this.selfPlayerData.roleVoAry.push(roleVo);
             }
@@ -53075,28 +61188,20 @@ var GameDataManager = /** @class */ (function () {
         this.selfPlayerData.roleVoAry.sort(function (a, b) {
             return a.atts > b.atts ? -1 : 1;
         });
+        this.selfPlayerData.heroSum = this.selfPlayerData.roleVoAry.length;
     };
     /**生产敌人 */
     GameDataManager.prototype.produceEnemyData = function () {
         //怪物数据
         this.enemyData = new EnemyData();
         this.enemyData.roleVoAry = [];
-        var ids = ["20001", "20000", "20002", "20003", "20004"];
+        var ids = ["20005", "20000", "20002"];
         // var ids:Array<string> = ["20001"];
         var roleVo;
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if (roleVo) {
-                if (i == 0)
-                    roleVo.lineupGrid = 1;
-                else if (i == 1)
-                    roleVo.lineupGrid = 2;
-                else if (i == 2)
-                    roleVo.lineupGrid = 3;
-                else if (i == 3)
-                    roleVo.lineupGrid = 4;
-                else if (i == 4)
-                    roleVo.lineupGrid = 5;
+                roleVo.lineupGrid = i + 1;
                 roleVo.initRowColPosPoint();
                 this.enemyData.roleVoAry.push(roleVo);
             }
@@ -53105,6 +61210,43 @@ var GameDataManager = /** @class */ (function () {
             return a.atts > b.atts ? -1 : 1;
         });
         this.enemyData.enemySum = this.enemyData.roleVoAry.length;
+    };
+    /**
+     * 生产Boss数据
+     */
+    GameDataManager.prototype.productBossData = function () {
+        //怪物数据
+        this.bossData = new EnemyData();
+        this.bossData.roleVoAry = [];
+        var ids = ["20001", "20005", "20002", "20003", "20004"];
+        var roleVo;
+        for (var i = 0; i < ids.length; i++) {
+            roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
+            if (roleVo) {
+                roleVo.lineupGrid = i + 1;
+                roleVo.initRowColPosPoint();
+                this.bossData.roleVoAry.push(roleVo);
+            }
+        }
+        this.bossData.roleVoAry.sort(function (a, b) {
+            return a.atts > b.atts ? -1 : 1;
+        });
+        this.bossData.enemySum = this.bossData.roleVoAry.length;
+    };
+    /**
+     * 矫正角色坐标
+     */
+    GameDataManager.prototype.resetRolePoint = function () {
+        if (this.selfPlayerData) {
+            this.selfPlayerData.roleVoAry.forEach(function (roleVo) {
+                roleVo.initRowColPosPoint();
+            });
+        }
+        if (this.enemyData) {
+            this.enemyData.roleVoAry.forEach(function (roleVo) {
+                roleVo.initRowColPosPoint();
+            });
+        }
     };
     GameDataManager._ins = null;
     return GameDataManager;
@@ -53171,8 +61313,16 @@ var EventManager = /** @class */ (function () {
     };
     /**敌人跑动完成 */
     EventManager.ENEMY_RUNTO_COMPLETE = "ENEMY_RUNTO_COMPLETE";
+    /**英雄跑动完成 */
+    EventManager.HERO_RUNTO_COMPLETE = "HERO_RUNTO_COMPLETE";
     /**敌人攻击跑动完成 */
     EventManager.ENEMY_ATT_COMPLETE = "ENEMY_ATT_COMPLETE";
+    /**敌人攻击跑动完成 */
+    EventManager.CHALLENGE_BOSS = "CHALLENGE_BOSS";
+    /**挑战boss准备完成 */
+    EventManager.CHALLENGE_BOSS_READY = "CHALLENGE_BOSS_READY";
+    /**服务器连接成功 */
+    EventManager.SERVER_CONNECTED = "SERVER_CONNECTED";
     EventManager._ins = null;
     return EventManager;
 }());
@@ -53184,16 +61334,18 @@ var ConfigManager = /** @class */ (function () {
     function ConfigManager() {
         /*********测试配置数据 */
         this.roleConfigAry = [
-            { "id": "10000", "name": "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10000", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 10, "attFar": 1 },
-            { "id": "10001", "name": "黄狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10001", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 3, "attFar": 0 },
-            { "id": "10002", "name": "巨石人", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 6, "attFar": 0 },
-            { "id": "10003", "name": "蓝狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 8, "attFar": 0 },
-            { "id": "10004", "name": "骷髅头", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 40, "att": 5, "atts": 3, "attFar": 1 },
-            { "id": "20000", "name": "幽灵", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10005", "attackRect": "0,50,50,0", "hp": 30, "att": 3, "atts": 1, "attFar": 0 },
-            { "id": "20001", "name": "鳄鱼龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10000", "attackRect": "0,50,50,0", "hp": 30, "att": 3, "atts": 6, "attFar": 0 },
-            { "id": "20002", "name": "骨龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 30, "att": 4, "atts": 4, "attFar": 1 },
-            { "id": "20003", "name": "骷髅射手", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 30, "att": 4, "atts": 5, "attFar": 1 },
-            { "id": "20004", "name": "斧头怪", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "att": 5, "atts": 10, "attFar": 0 }
+            { "id": "10000", "name": "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10006", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 10, "attFar": 1 },
+            { "id": "10001", "name": "黄狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10001", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 0 },
+            { "id": "10002", "name": "巨石人", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 6, "attFar": 0 },
+            { "id": "10003", "name": "蓝狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 8, "attFar": 0 },
+            { "id": "10004", "name": "骷髅头", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 1 },
+            { "id": "10005", "name": "萌仙仙", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 10, "att": 5, "atts": 10, "attFar": 0 },
+            { "id": "20000", "name": "幽灵", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10005", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 3, "atts": 1, "attFar": 0 },
+            { "id": "20001", "name": "鳄鱼龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10000", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 3, "atts": 6, "attFar": 0 },
+            { "id": "20002", "name": "骨龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 4, "atts": 4, "attFar": 1 },
+            { "id": "20003", "name": "骷髅射手", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 4, "atts": 5, "attFar": 1 },
+            { "id": "20004", "name": "斧头怪", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 5, "atts": 10, "attFar": 0 },
+            { "id": "20005", "name": "迅猛龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 5, "atts": 10, "attFar": 0 }
         ];
         this.skillConfigAry = [
             { "id": "10000", "name": "蛇皮技能", "cd": 10, "attFar": 1 },
@@ -53201,11 +61353,23 @@ var ConfigManager = /** @class */ (function () {
             { "id": "10002", "name": "暴雨针", "cd": 12, "attFar": 1 },
             { "id": "10003", "name": "啸如虎", "cd": 10, "attFar": 0 },
             { "id": "10004", "name": "徐如林", "cd": 6, "attFar": 0 },
-            { "id": "10005", "name": "破风", "cd": 16, "attFar": 0 }
+            { "id": "10005", "name": "破风", "cd": 16, "attFar": 0 },
+            { "id": "10006", "name": "绿色", "cd": 2, "attFar": 0 }
         ];
         this.roleConfigDic = null;
         this.skillConfigDic = null;
-        this.languageMap = {};
+        this.testSampleDic = null;
+        /**宠物品质配置 */
+        this.qualitySampleVoDic = null;
+        /**宠物经验配制表 */
+        this.heroLevelSampleDic = null;
+        /**宠物配制表 */
+        this.heroSampleDic = null;
+        /**宠物物种配制表 */
+        this.heroTypeSampleDic = null;
+        /**宠物品质评分配制表 */
+        this.qualityScoreSampleDic = null;
+        //测试数据
         this.roleConfigDic = new Dictionary();
         this.skillConfigDic = new Dictionary();
         this.parseSkillConfig();
@@ -53248,6 +61412,7 @@ var ConfigManager = /** @class */ (function () {
             by = rectAry[3];
             roleVo.attackRange = new Rectangle(ax, ay, bx - ax, by - ay);
             roleVo.hp = roleConfig.hp;
+            roleVo.dieAttTimes = roleConfig.dieAttTimes;
             roleVo.att = roleConfig.att;
             roleVo.atts = roleConfig.atts;
             roleVo.attFar = roleConfig.attFar;
@@ -53269,6 +61434,68 @@ var ConfigManager = /** @class */ (function () {
             _this.skillConfigDic.set(skillVo.id, skillVo);
         });
     };
+    /**解析预加载配置表 */
+    ConfigManager.prototype.parsePreLoadConfigs = function () {
+        this.parseTestSample();
+        this.parseQualitySample();
+        this.parseQualityScoreSample();
+        this.parseHeroSample();
+        this.parseHeroLevelSample();
+        this.parseHeroTypeSample();
+    };
+    ConfigManager.prototype.parseTestSample = function () {
+        if (this.testSampleDic == null) {
+            this.testSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/TestSample.xml");
+        this.xmlToObjcet(configStr, TestSample, "key", this.testSampleDic);
+        Laya.loader.clearRes("res/config/TestSample.xml");
+    };
+    /**宠物品质 */
+    ConfigManager.prototype.parseQualitySample = function () {
+        if (this.qualitySampleVoDic == null) {
+            this.qualitySampleVoDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/QualitySample.xml");
+        this.xmlToObjcet(configStr, QualitySampleVo, "key", this.qualitySampleVoDic);
+        Laya.loader.clearRes("res/config/QualitySample.xml");
+    };
+    /**宠物品质 */
+    ConfigManager.prototype.parseHeroLevelSample = function () {
+        if (this.heroLevelSampleDic == null) {
+            this.heroLevelSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/HeroLevelSample.xml");
+        this.xmlToObjcet(configStr, HeroLevelSampleVo, "key", this.heroLevelSampleDic);
+        Laya.loader.clearRes("res/config/HeroLevelSample.xml");
+    };
+    /**宠物品质 */
+    ConfigManager.prototype.parseHeroSample = function () {
+        if (this.heroSampleDic == null) {
+            this.heroSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/HeroSample.xml");
+        this.xmlToObjcet(configStr, HeroSampleVo, "key", this.heroSampleDic);
+        Laya.loader.clearRes("res/config/HeroSample.xml");
+    };
+    /**宠物品质 */
+    ConfigManager.prototype.parseHeroTypeSample = function () {
+        if (this.heroTypeSampleDic == null) {
+            this.heroTypeSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/HeroTypeSample.xml");
+        this.xmlToObjcet(configStr, HeroTypeSampleVo, "key", this.heroTypeSampleDic);
+        Laya.loader.clearRes("res/config/HeroTypeSample.xml");
+    };
+    /**宠物品质 */
+    ConfigManager.prototype.parseQualityScoreSample = function () {
+        if (this.qualityScoreSampleDic == null) {
+            this.qualityScoreSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/QualityScoreSample.xml");
+        this.xmlToObjcet(configStr, QualityScoreSampleVo, "key", this.qualityScoreSampleDic);
+        Laya.loader.clearRes("res/config/QualityScoreSample.xml");
+    };
     /**
      *得到角色配置
      * @param id
@@ -53279,52 +61506,677 @@ var ConfigManager = /** @class */ (function () {
     ConfigManager.prototype.getSkillVoByID = function (id) {
         return this.skillConfigDic.get(id);
     };
+    /**
+     * xml转为对象
+     * @param str
+     * @param DineClass
+     * @param keyPro
+     * @param dic
+     */
+    ConfigManager.prototype.xmlToObjcet = function (str, DineClass, keyPro, dic) {
+        var content = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
+        var datas = content.split("\r\n");
+        var element;
+        var tempAry;
+        var value;
+        var objs = [];
+        var obj;
+        for (var i = 0; i < datas.length; i++) {
+            if (datas[i].indexOf("<element") != -1) {
+                element = datas[i];
+                tempAry = element.split(" ");
+                obj = new DineClass();
+                for (var j = 0; j < tempAry.length; j++) {
+                    value = tempAry[j];
+                    if (value.indexOf("<element") == -1 && value.indexOf("=") == -1 && value.indexOf("/>") == -1) {
+                        j = j + 2;
+                        obj[value] = tempAry[j].split("\"")[1];
+                    }
+                }
+                // console.log(obj);
+                dic.set(obj[keyPro], obj);
+            }
+        }
+    };
     ConfigManager._ins = null;
     return ConfigManager;
 }());
 //# sourceMappingURL=ConfigManager.js.map
 /*
-* 战斗数据管理器
+* 循环假战斗引擎
 */
-var BattleDataManager = /** @class */ (function () {
-    function BattleDataManager() {
+var LoopBattleEngine = /** @class */ (function () {
+    function LoopBattleEngine() {
+        this.timeCount = 0;
+        this.battleTimeInterval = 0;
+        this.battleTurnVoSum = 0;
+        this.heroRoles = null;
+        this.enemyRoles = null;
+        this.loopBattleData = null;
+        this.init();
+    }
+    LoopBattleEngine.prototype.init = function () {
+        this.roleMgr = RoleManager.ins;
+        this.timeCount = 0;
+        this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
+        this.loopBattleData = new LoopBattleData();
+    };
+    LoopBattleEngine.prototype.runUpdate = function () {
+        // console.log("................"+this.timeCount);
+        //场景战斗开关
+        this.timeCount++;
+        if (this.timeCount == this.battleTimeInterval) {
+            this.enemyRuntoBallte();
+        }
+        this.loopBattleData.runRoleSkillCD();
+    };
+    /**
+     * 敌人跑去战斗
+     */
+    LoopBattleEngine.prototype.enemyRuntoBallte = function () {
+        MapManager.ins.enemyMoveSwitch = true;
+        GameDataManager.ins.produceEnemyData();
+        this.roleMgr.produceEnemy();
+        this.loopBattleData.initData();
+        EventManager.ins.addEvent(EventManager.ENEMY_RUNTO_COMPLETE, this, this.onEnemyRunComplete);
+    };
+    LoopBattleEngine.prototype.onEnemyRunComplete = function () {
+        EventManager.ins.removeEvent(EventManager.ENEMY_RUNTO_COMPLETE, this.onEnemyRunComplete);
+        MapManager.ins.enemyMoveSwitch = false;
+        this.startBattle();
+    };
+    /**得到参战英雄 */
+    LoopBattleEngine.prototype.getJoinBattleHeroVo = function () {
+        var tempAry = new Array();
+        this.roleMgr.heroRoles.forEach(function (hero) {
+            tempAry.push(hero);
+        });
+        tempAry.sort(function (vo1, vo2) {
+            return vo1.roleVo.gridX > vo2.roleVo.gridX ? -1 : 1;
+        });
+        tempAry = tempAry.slice(0, GameConfig.BATTLE_LOOP_HERO_SUM);
+        return tempAry;
+    };
+    /**开始战斗 */
+    LoopBattleEngine.prototype.startBattle = function () {
+        this.heroRoles = this.getJoinBattleHeroVo();
+        this.enemyRoles = this.roleMgr.enemyRoles;
+        MapManager.ins.mapScrollSwitch = false;
+        this.roleMgr.heroStand();
+        this.attack();
+    };
+    LoopBattleEngine.prototype.attack = function () {
+        var _this = this;
+        this.loopBattleData.startAtt();
+        this.battleTurnVoSum = this.loopBattleData.curBattleTurnVos.length;
+        this.loopBattleData.curBattleTurnVos.forEach(function (battleTurnVo) {
+            //根据攻击速度攻击延迟
+            Laya.timer.once(100 * battleTurnVo.attRoleVo.atts / GameConfig.BATTLE_ADDSPEED_TIMES, _this, _this.battleAtt, [battleTurnVo.attRoleVo, battleTurnVo.defRoleVo], false);
+        });
+        // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
+    };
+    /**结束战斗 */
+    LoopBattleEngine.prototype.endBattle = function () {
+        Laya.timer.clearAll(this);
+        this.heroRoles = null;
+        this.enemyRoles = null;
+        this.timeCount = 0;
+        MapManager.ins.mapScrollSwitch = true;
+        this.loopBattleData.isEnd = false;
+        this.roleMgr.clearRole();
+        this.roleMgr.initHeros();
+    };
+    /**
+     * 战斗
+     * @param attRoleVo
+     * @param defRoleVo
+     */
+    LoopBattleEngine.prototype.battleAtt = function (attRoleVo, defRoleVo) {
+        if (!attRoleVo || !defRoleVo) {
+            return;
+        }
+        var attRole;
+        var defRole;
+        var tempAry = this.heroRoles.concat(this.enemyRoles);
+        tempAry.forEach(function (roleView) {
+            if (roleView) {
+                if (roleView.roleVo.id == attRoleVo.id) {
+                    attRole = roleView;
+                }
+                else if (roleView.roleVo.id == defRoleVo.id) {
+                    defRole = roleView;
+                }
+            }
+        });
+        if (attRole && defRole) {
+            // //远攻
+            // if(this.attRole.roleVo.attFar == 1)
+            // {
+            //     this.playAttackAni();
+            // }
+            // else
+            // {//近攻
+            //     this.attRole.aniPlay(RoleAniIndex.MOVE);
+            //     var tempX:number = defRoleVo.isEnemy ? 200 : -200;
+            //     Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000,null,new Handler(this,this.playAttackAni,[attRoleVo,defRoleVo],true),0,true);
+            // }
+            this.playAttackAni(attRole, defRole);
+        }
+    };
+    /**
+     * 移动到敌方攻击
+     * @param data
+     */
+    LoopBattleEngine.prototype.playAttackAni = function (attRole, defRole) {
+        var attRoleVo = attRole.roleVo;
+        var defRoleVo = defRole.roleVo;
+        var skillID = attRoleVo.getCanUserSkill();
+        if (skillID > 0) {
+            //技能释放
+            attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
+            var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+            skill.playSkill(skillID, defRole);
+        }
+        else {
+            //远攻，近攻击
+            // if(attRoleVo.attFar == 1)
+            // {
+            //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineupComplete);
+            // }
+            // else
+            // {
+            //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
+            // }
+            attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
+        }
+        this.loopBattleData.calculationAttribute(attRoleVo, defRoleVo);
+        if (defRoleVo.isDeath) {
+            defRole.aniPlay(RoleAniIndex.DEATH, false);
+            defRole.setVisible(false);
+        }
+        else {
+            defRole.aniPlay(RoleAniIndex.INJURED, false);
+            defRole.showFloatFont(attRoleVo.att);
+        }
+        defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
+    };
+    // /**
+    //  * 攻击完移动回阵型
+    //  */
+    // private moveBackLineup():void
+    // {
+    //     var attRoleVo:RoleVo = this.attRole.roleVo;
+    //     Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000/2,null,new Handler(this,this.moveBackLineupComplete));
+    // }
+    /**
+     * 移动回阵型完成
+     */
+    LoopBattleEngine.prototype.moveBackLineupComplete = function (roleAry) {
+        var attRole = roleAry[0];
+        var defRole = roleAry[1];
+        // console.log("攻击返回",this.attRole.roleVo.name);
+        attRole.aniPlay(RoleAniIndex.STAND);
+        if (!attRole.roleVo.isDeath) {
+            defRole.aniPlay(RoleAniIndex.STAND);
+        }
+        this.battleTurnVoSum--;
+        if (this.battleTurnVoSum <= 0) {
+            this.attCompleted();
+        }
+    };
+    LoopBattleEngine.prototype.attCompleted = function () {
+        if (this.loopBattleData.isEnd) {
+            this.endBattle();
+        }
+        else {
+            this.attack();
+        }
+    };
+    return LoopBattleEngine;
+}());
+//# sourceMappingURL=LoopBattleEngine.js.map
+/*
+* 循环假战斗数据
+*/
+var LoopBattleData = /** @class */ (function () {
+    function LoopBattleData() {
         this.curAttCamp = 0;
     }
-    Object.defineProperty(BattleDataManager, "ins", {
-        get: function () {
-            if (this._ins == null) {
-                this._ins = new BattleDataManager();
-            }
-            return this._ins;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    BattleDataManager.prototype.initData = function () {
-        this.attHeroVos = GameDataManager.ins.selfPlayerData.roleVoAry;
+    LoopBattleData.prototype.initData = function () {
+        this.attHeroVos = this.getJoinBattleHeroVo();
         this.attEnemyVos = GameDataManager.ins.enemyData.roleVoAry;
+        this.attHeroVos.forEach(function (roleVo) {
+            roleVo.battleHP = roleVo.hp;
+            roleVo.battleDieAttTimes = roleVo.dieAttTimes;
+            roleVo.resetSkillCD();
+            roleVo.isDeath = false;
+            roleVo.isAtted = false;
+            roleVo.attEnemyVos = [];
+        });
+        this.attEnemyVos.forEach(function (roleVo) {
+            roleVo.battleHP = roleVo.hp;
+            roleVo.battleDieAttTimes = roleVo.dieAttTimes;
+            roleVo.resetSkillCD();
+            roleVo.isDeath = false;
+            roleVo.isAtted = false;
+            roleVo.attEnemyVos = [];
+        });
+        this.seekAttTarget(this.attHeroVos, this.attEnemyVos);
+        this.seekAttTarget(this.attEnemyVos, this.attHeroVos);
+        this.curAttCamp = BattleAttCampType.HERO;
+    };
+    /**得到参战英雄RoleVo */
+    LoopBattleData.prototype.getJoinBattleHeroVo = function () {
+        var tempAry = new Array();
+        GameDataManager.ins.selfPlayerData.roleVoAry.forEach(function (roleVo) {
+            tempAry.push(roleVo);
+        });
+        tempAry.sort(function (vo1, vo2) {
+            return vo1.gridX > vo2.gridX ? -1 : 1;
+        });
+        tempAry = tempAry.slice(0, GameConfig.BATTLE_LOOP_HERO_SUM);
+        return tempAry;
+    };
+    /**
+     * 开始战斗
+     */
+    LoopBattleData.prototype.startAtt = function () {
+        var turnAttckSum = GameConfig.BATTLE_TURN_ATTACK_SUM;
+        if (this.curAttCamp == 0) {
+        }
+        else if (this.curAttCamp == BattleAttCampType.HERO) {
+            this.curBattleTurnVos = this.getBattleTurnVos(this.attHeroVos, this.attEnemyVos);
+        }
+        else if (this.curAttCamp == BattleAttCampType.ENEMY) {
+            this.curBattleTurnVos = this.getBattleTurnVos(this.attEnemyVos, this.attHeroVos);
+        }
+    };
+    /**
+    * 得到当前攻击角色
+    * @param roleVos
+    */
+    LoopBattleData.prototype.getBattleTurnVos = function (attRoleVos, defRoleVos) {
+        var ary = [];
+        var battleTurnVo;
+        var attRoleVo;
+        for (var i = 0; i < attRoleVos.length; i++) {
+            attRoleVo = attRoleVos[i];
+            battleTurnVo = new BattleTurnVo();
+            var defRoleVo;
+            if (!attRoleVo.isDeath && !attRoleVo.isAtted) {
+                //寻找攻击具体对象
+                for (var j = 0; j < attRoleVo.attEnemyVos.length; j++) {
+                    defRoleVo = attRoleVo.attEnemyVos[j];
+                    if (defRoleVo && !defRoleVo.isDeath) {
+                        break;
+                    }
+                }
+            }
+            battleTurnVo.attRoleVo = attRoleVo;
+            battleTurnVo.defRoleVo = defRoleVo;
+            ary.push(battleTurnVo);
+        }
+        return ary;
+    };
+    /**计算属性 */
+    LoopBattleData.prototype.calculationAttribute = function (attRoleVo, defRoleVo) {
+        //血量检测
+        // this.curDefRoleVo.battleHP -= this.curAttRoleVo.att;
+        // this.curDefRoleVo.isDeath = this.curDefRoleVo.battleHP <= 0;
+        // this.curAttRoleVo.isAtted = true;
+        // this.checkBattleEnd();
+        //攻击次数检测
+        this.curBattleTurnVos.forEach(function (battleTurnVo) {
+            if (attRoleVo.id == battleTurnVo.attRoleVo.id && defRoleVo.id == battleTurnVo.defRoleVo.id) {
+                battleTurnVo.calculationAttribute();
+            }
+        });
+        this.checkBattleEnd();
+    };
+    /**
+     * 检测战斗结束
+     */
+    LoopBattleData.prototype.checkBattleEnd = function () {
+        var _this = this;
+        //检测战斗结束，玩家英雄阵营没有活的对象战斗失败，反之战斗胜利
+        //英雄检测
+        this.isEnd = true;
+        var isChangeAttStatus = true;
+        this.attHeroVos.forEach(function (roleVo) {
+            if (!roleVo.isDeath) {
+                _this.isEnd = false;
+                if (!roleVo.isAtted) {
+                    isChangeAttStatus = false;
+                }
+            }
+        });
+        if (this.isEnd) {
+            this.isWin = false;
+            // console.log("战斗结束"+this.isWin);
+            return;
+        }
+        if (isChangeAttStatus) {
+            this.attHeroVos.forEach(function (roleVo) {
+                roleVo.isAtted = false;
+            });
+        }
+        //敌人检测
+        isChangeAttStatus = true;
+        this.isEnd = true;
+        this.attEnemyVos.forEach(function (roleVo) {
+            if (!roleVo.isDeath) {
+                _this.isEnd = false;
+                if (!roleVo.isAtted) {
+                    isChangeAttStatus = false;
+                }
+            }
+        });
+        if (this.isEnd) {
+            this.isWin = true;
+            // console.log("战斗结束"+this.isWin);
+            return;
+        }
+        if (isChangeAttStatus) {
+            this.attEnemyVos.forEach(function (roleVo) {
+                roleVo.isAtted = false;
+            });
+        }
+        //改变阵营
+        if (this.curAttCamp == BattleAttCampType.HERO) {
+            this.curAttCamp = BattleAttCampType.ENEMY;
+        }
+        else if (this.curAttCamp == BattleAttCampType.ENEMY) {
+            this.curAttCamp = BattleAttCampType.HERO;
+        }
+    };
+    /**
+     * 寻找攻击目标
+     * 普通攻击:
+     *  1,找同gy，再向上向下找攻击对象
+     * 技能攻击:
+     *  1,一个目标：找同gy，再又上至下找gy
+     *  2,攻击一行gx,攻击一列gy
+     * @param attAry
+     * @param defAry
+     */
+    LoopBattleData.prototype.seekAttTarget = function (attAry, defAry) {
+        var reduceAry = [];
+        var plusAry = [];
+        var attRoleVo;
+        var defRoleVo;
+        for (var i = 0; i < attAry.length; i++) {
+            attRoleVo = attAry[i];
+            for (var j = 0; j < defAry.length; j++) {
+                defRoleVo = defAry[j];
+                var attInd = attRoleVo.gridY - defRoleVo.gridY;
+                if (attInd < 0) {
+                    reduceAry[Math.abs(attInd)] = defRoleVo;
+                }
+                else {
+                    plusAry[attInd] = defRoleVo;
+                }
+            }
+            attRoleVo.attEnemyVos = plusAry.concat(reduceAry);
+        }
+    };
+    /**
+     * 寻找攻击目标2----格子坐标规律
+     * 先攻击前排，前排击败后再攻击后排
+     * @param attAry
+     * @param defAry
+     */
+    LoopBattleData.prototype.seekAttTarget2 = function (attAry, defAry) {
+        var attRoleVo;
+        for (var i = 0; i < attAry.length; i++) {
+            attRoleVo = attAry[i];
+            for (var j = 0; j < defAry.length; j++) {
+                attRoleVo.attEnemyVos.push(defAry[j]);
+            }
+            if (attRoleVo.isEnemy) {
+                attRoleVo.attEnemyVos.sort(function (a, b) {
+                    //格子坐标规律
+                    return a.gridY % 2 == 0 ? 1 : -1;
+                });
+            }
+            else {
+                attRoleVo.attEnemyVos.sort(function (a, b) {
+                    return a.gridX > b.gridX ? 1 : -1;
+                });
+            }
+        }
+    };
+    /**
+     * 跑角色技能cd
+     */
+    LoopBattleData.prototype.runRoleSkillCD = function () {
+        if (this.attHeroVos) {
+            this.attHeroVos.forEach(function (roleVo) {
+                roleVo.runCD();
+            });
+        }
+        if (this.attEnemyVos) {
+            this.attEnemyVos.forEach(function (roleVo) {
+                roleVo.runCD();
+            });
+        }
+    };
+    return LoopBattleData;
+}());
+var BattleTurnVo = /** @class */ (function () {
+    function BattleTurnVo() {
+    }
+    BattleTurnVo.prototype.calculationAttribute = function () {
+        this.defRoleVo.battleDieAttTimes--;
+        this.defRoleVo.isDeath = this.defRoleVo.battleDieAttTimes <= 0;
+        this.defRoleVo.isAtted = true;
+    };
+    return BattleTurnVo;
+}());
+//# sourceMappingURL=LoopBattleData.js.map
+/*
+* name;
+*/
+var BossBattleEngine = /** @class */ (function () {
+    function BossBattleEngine() {
+        this.heroRoles = null;
+        this.enemyRoles = null;
+        this.bossBattleData = null;
+    }
+    BossBattleEngine.prototype.runUpdate = function () {
+        this.bossBattleData.runRoleSkillCD();
+    };
+    /**得到参战英雄 */
+    BossBattleEngine.prototype.getJoinBattleHeroVo = function (herosAry) {
+        var tempAry = new Array();
+        herosAry.forEach(function (hero) {
+            tempAry.push(hero);
+        });
+        tempAry.sort(function (vo1, vo2) {
+            return vo1.roleVo.gridX > vo2.roleVo.gridX ? -1 : 1;
+        });
+        tempAry = tempAry.slice(0, GameConfig.BATTLE_BOSS_HERO_SUM);
+        return tempAry;
+    };
+    /**开始战斗 */
+    BossBattleEngine.prototype.startBattle = function (herosAry, enemyAry) {
+        this.bossBattleData = new BossBattleData();
+        this.bossBattleData.initData();
+        this.heroRoles = this.getJoinBattleHeroVo(herosAry);
+        this.enemyRoles = enemyAry;
+        //检测所有角色是否加载完毕
+        this.roleAry = herosAry.concat(enemyAry);
+        Laya.timer.loop(100, this, this.battleIsReady);
+    };
+    BossBattleEngine.prototype.battleIsReady = function () {
+        var isRead = true;
+        this.roleAry.forEach(function (baseRole) {
+            if (!baseRole.isLoaded) {
+                isRead = false;
+            }
+        });
+        if (isRead) {
+            Laya.timer.clear(this, this.battleIsReady);
+            this.roleAry = null;
+            this.attack();
+        }
+    };
+    BossBattleEngine.prototype.attack = function () {
+        this.bossBattleData.startAtt();
+        this.battleAtt(this.bossBattleData.curAttRoleVo, this.bossBattleData.curDefRoleVo);
+        // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
+    };
+    BossBattleEngine.prototype.attCompleted = function () {
+        // this.battleDataMgr.calculationAttribute();
+        if (this.bossBattleData.isEnd) {
+            this.endBattle();
+        }
+        else {
+            this.attack();
+        }
+    };
+    /**结束战斗 */
+    BossBattleEngine.prototype.endBattle = function () {
+        Laya.timer.clearAll(this);
+        this.heroRoles = null;
+        this.enemyRoles = null;
+        this.bossBattleData.isEnd = false;
+        GameDataManager.ins.isChallengeBoss = false;
+        MapManager.ins.backLoopMap();
+        EventManager.ins.dispatchEvent(EventManager.CHALLENGE_BOSS, [true]);
+        //回到假战斗
+        BattleEngine.ins.loopBattleRun();
+    };
+    /**
+     * 战斗
+     * @param attRoleVo
+     * @param defRoleVo
+     */
+    BossBattleEngine.prototype.battleAtt = function (attRoleVo, defRoleVo) {
+        var _this = this;
+        var tempAry = this.heroRoles.concat(this.enemyRoles);
+        tempAry.forEach(function (roleView) {
+            if (roleView) {
+                if (roleView.roleVo.id == attRoleVo.id) {
+                    _this.attRole = roleView;
+                }
+                else if (roleView.roleVo.id == defRoleVo.id) {
+                    _this.defRole = roleView;
+                }
+            }
+        });
+        if (this.attRole && this.defRole) {
+            //远攻
+            if (this.attRole.roleVo.attFar == 1) {
+                this.playAttackAni();
+            }
+            else { //近攻
+                this.attRole.aniPlay(RoleAniIndex.MOVE);
+                var tempX = defRoleVo.isEnemy ? 200 : -200;
+                Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.playAttackAni, [attRoleVo, defRoleVo], true), 0, true);
+            }
+        }
+    };
+    /**
+     * 移动到敌方攻击
+     * @param data
+     */
+    BossBattleEngine.prototype.playAttackAni = function () {
+        var attRoleVo = this.attRole.roleVo;
+        var defRoleVo = this.defRole.roleVo;
+        var skillID = attRoleVo.getCanUserSkill();
+        if (skillID > 0) {
+            //技能释放
+            this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineup);
+            var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+            skill.playSkill(skillID, this.defRole);
+        }
+        else {
+            //远攻，近攻击
+            if (attRoleVo.attFar == 1) {
+                this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete);
+            }
+            else {
+                this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineup);
+            }
+        }
+        this.bossBattleData.calculationAttribute();
+        if (defRoleVo.isDeath) {
+            this.defRole.aniPlay(RoleAniIndex.DEATH, false);
+            this.defRole.setVisible(false);
+        }
+        else {
+            this.defRole.aniPlay(RoleAniIndex.INJURED, false);
+            this.defRole.showFloatFont(attRoleVo.att);
+        }
+        this.defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+    };
+    /**
+     * 攻击完移动回阵型
+     */
+    BossBattleEngine.prototype.moveBackLineup = function () {
+        var attRoleVo = this.attRole.roleVo;
+        Laya.Tween.to(this.attRole, { x: attRoleVo.posPoint.x, y: attRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / 2 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.moveBackLineupComplete, null, true), 0, true);
+    };
+    /**
+     * 移动回阵型完成
+     */
+    BossBattleEngine.prototype.moveBackLineupComplete = function () {
+        DebugViewUtil.log("攻击返回", this.attRole.roleVo.name);
+        this.attRole.aniPlay(RoleAniIndex.STAND);
+        if (!this.defRole.roleVo.isDeath) {
+            this.defRole.aniPlay(RoleAniIndex.STAND);
+        }
+        this.attCompleted();
+    };
+    return BossBattleEngine;
+}());
+//# sourceMappingURL=BossBattleEngine.js.map
+/*
+* name;
+*/
+var BossBattleData = /** @class */ (function () {
+    function BossBattleData() {
+        this.curAttCamp = 0;
+    }
+    BossBattleData.prototype.initData = function () {
+        // this.attHeroVos = GameDataManager.ins.selfPlayerData.roleVoAry;
+        this.attHeroVos = this.getJoinBattleHeroVo();
+        this.attEnemyVos = GameDataManager.ins.bossData.roleVoAry;
         this.attHeroVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
+            roleVo.isAtted = false;
             roleVo.attEnemyVos = [];
         });
         this.attEnemyVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
+            roleVo.isAtted = false;
             roleVo.attEnemyVos = [];
         });
         this.seekAttTarget2(this.attHeroVos, this.attEnemyVos);
         this.seekAttTarget2(this.attEnemyVos, this.attHeroVos);
         this.curAttCamp = BattleAttCampType.HERO;
     };
+    /**得到参战英雄RoleVo */
+    BossBattleData.prototype.getJoinBattleHeroVo = function () {
+        var tempAry = new Array();
+        GameDataManager.ins.selfPlayerData.roleVoAry.forEach(function (roleVo) {
+            tempAry.push(roleVo);
+        });
+        tempAry.sort(function (vo1, vo2) {
+            return vo1.gridX > vo2.gridX ? -1 : 1;
+        });
+        tempAry = tempAry.slice(0, GameConfig.BATTLE_BOSS_HERO_SUM);
+        return tempAry;
+    };
     /**
      * 开始战斗
      */
-    BattleDataManager.prototype.startAtt = function () {
+    BossBattleData.prototype.startAtt = function () {
         var turnAttckSum = GameConfig.BATTLE_TURN_ATTACK_SUM;
-        var attRoleVo;
         if (this.curAttCamp == 0) {
         }
         else if (this.curAttCamp == BattleAttCampType.HERO) {
@@ -53342,7 +62194,7 @@ var BattleDataManager = /** @class */ (function () {
         }
     };
     /**计算属性 */
-    BattleDataManager.prototype.calculationAttribute = function () {
+    BossBattleData.prototype.calculationAttribute = function () {
         this.curDefRoleVo.battleHP -= this.curAttRoleVo.att;
         this.curDefRoleVo.isDeath = this.curDefRoleVo.battleHP <= 0;
         this.curAttRoleVo.isAtted = true;
@@ -53355,7 +62207,7 @@ var BattleDataManager = /** @class */ (function () {
     /**
      * 检测战斗结束
      */
-    BattleDataManager.prototype.checkBattleEnd = function () {
+    BossBattleData.prototype.checkBattleEnd = function () {
         var _this = this;
         //检测战斗结束，玩家英雄阵营没有活的对象战斗失败，反之战斗胜利
         //英雄检测
@@ -53412,7 +62264,7 @@ var BattleDataManager = /** @class */ (function () {
      * 得到当前攻击角色
      * @param roleVos
      */
-    BattleDataManager.prototype.getAttRoleVo = function (roleVos) {
+    BossBattleData.prototype.getAttRoleVo = function (roleVos) {
         var roleVo;
         for (var i = 0; i < roleVos.length; i++) {
             roleVo = roleVos[i];
@@ -53432,7 +62284,7 @@ var BattleDataManager = /** @class */ (function () {
      * @param attAry
      * @param defAry
      */
-    BattleDataManager.prototype.seekAttTarget = function (attAry, defAry) {
+    BossBattleData.prototype.seekAttTarget = function (attAry, defAry) {
         var attRoleVo;
         var defRoleVo;
         for (var i = 0; i < attAry.length; i++) {
@@ -53455,7 +62307,7 @@ var BattleDataManager = /** @class */ (function () {
      * @param attAry
      * @param defAry
      */
-    BattleDataManager.prototype.seekAttTarget2 = function (attAry, defAry) {
+    BossBattleData.prototype.seekAttTarget2 = function (attAry, defAry) {
         var attRoleVo;
         for (var i = 0; i < attAry.length; i++) {
             attRoleVo = attAry[i];
@@ -53477,7 +62329,7 @@ var BattleDataManager = /** @class */ (function () {
     /**
      * 跑角色技能cd
      */
-    BattleDataManager.prototype.runRoleSkillCD = function () {
+    BossBattleData.prototype.runRoleSkillCD = function () {
         if (this.attHeroVos) {
             this.attHeroVos.forEach(function (roleVo) {
                 roleVo.runCD();
@@ -53489,17 +62341,12 @@ var BattleDataManager = /** @class */ (function () {
             });
         }
     };
-    /**
-     * 技能寻找敌人
-     * @param skillId
-     */
-    BattleDataManager.prototype.skillAttEnemys = function (skillId) {
-        var skillVo = ConfigManager.ins.getSkillVoByID(skillId);
-    };
-    BattleDataManager._ins = null;
-    return BattleDataManager;
+    /**动画加载准备完毕 */
+    BossBattleData.curLoadNum = 0;
+    BossBattleData.loadSum = 0;
+    return BossBattleData;
 }());
-//# sourceMappingURL=BattleDataManager.js.map
+//# sourceMappingURL=BossBattleData.js.map
 /*
 * 战斗引擎
 * 一，阵型，站定九宫格，分三排、三列，每排3个位置，格子定位坐标
@@ -53510,13 +62357,13 @@ var BattleDataManager = /** @class */ (function () {
 */
 var BattleEngine = /** @class */ (function () {
     function BattleEngine() {
-        this.battleDataMgr = BattleDataManager.ins;
-        this.roleMgr = RoleManager.ins;
+        this.loopBattleEngine = new LoopBattleEngine();
+        this.bossBattleEngine = new BossBattleEngine();
         //技能视图
         this.skillView = new SkillView();
         this.skillView.x = 10;
         this.skillView.y = 900;
-        LayerManager.ins.addToLayer(this.skillView, LayerManager.UI_LAYER, false, false, false);
+        LayerManager.ins.addToLayer(this.skillView, LayerManager.UI_LAYER, false, true, false);
     }
     Object.defineProperty(BattleEngine, "ins", {
         get: function () {
@@ -53528,71 +62375,78 @@ var BattleEngine = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
-    BattleEngine.prototype.onRunComplete = function (data) {
-        this.roleMgr.enemyRunCount++;
-        if (this.roleMgr.enemyRunCount >= GameDataManager.ins.enemyData.enemySum) {
-            this.roleMgr.enemyRunCount = 0;
-            EventManager.ins.removeEvent(EventManager.ENEMY_RUNTO_COMPLETE, this.onRunComplete);
-            this.startBattle();
-        }
-    };
     BattleEngine.prototype.run = function () {
-        this.timeCount = 0;
-        this.battleTimeInterval = GameConfig.BATTLE_INTERVAL_TIME;
         Laya.timer.loop(1000, this, this.runUpdate);
     };
     /**更新 */
     BattleEngine.prototype.runUpdate = function () {
-        this.timeCount++;
-        if (this.timeCount == this.battleTimeInterval) {
-            this.rutoBallte();
-        }
-        this.battleDataMgr.runRoleSkillCD();
-    };
-    /**
-     * 跑去战斗
-     */
-    BattleEngine.prototype.rutoBallte = function () {
-        GameDataManager.ins.produceEnemyData();
-        this.roleMgr.produceEnemy();
-        this.roleMgr.enemyRun();
-        this.battleDataMgr.initData();
-        EventManager.ins.addEvent(EventManager.ENEMY_RUNTO_COMPLETE, this, this.onRunComplete);
-    };
-    /**开始战斗 */
-    BattleEngine.prototype.startBattle = function () {
-        MapManager.ins.mapScrollSwitch = false;
-        this.roleMgr.heroStand();
-        this.attack();
-    };
-    BattleEngine.prototype.attack = function () {
-        this.battleDataMgr.startAtt();
-        this.skillView.init(this.battleDataMgr.curAttRoleVo.skillVos);
-        this.roleMgr.battleAtt(this.battleDataMgr.curAttRoleVo, this.battleDataMgr.curDefRoleVo);
-        EventManager.ins.addEvent(EventManager.ENEMY_ATT_COMPLETE, this, this.attCompleted);
-        // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
-    };
-    BattleEngine.prototype.attCompleted = function () {
-        EventManager.ins.removeEvent(EventManager.ENEMY_ATT_COMPLETE, this.attCompleted);
-        // this.battleDataMgr.calculationAttribute();
-        if (this.battleDataMgr.isEnd) {
-            this.endBattle();
+        if (!GameDataManager.ins.isChallengeBoss) {
+            this.loopBattleEngine.runUpdate();
         }
         else {
-            this.attack();
+            this.bossBattleEngine.runUpdate();
         }
     };
-    /**结束战斗 */
-    BattleEngine.prototype.endBattle = function () {
-        this.timeCount = 0;
-        MapManager.ins.mapScrollSwitch = true;
-        this.roleMgr.clearRole();
-        this.roleMgr.initHeros();
+    /**循环假战斗 */
+    BattleEngine.prototype.loopBattleRun = function () {
+        GameDataManager.ins.resetRolePoint();
+        this.loopBattleEngine.endBattle();
+        this.loopBattleEngine.init();
+    };
+    /**挑战boss */
+    BattleEngine.prototype.challegenBoss = function (herosAry, enemyAry) {
+        // this.runtoBallte();
+        //挑战boss
+        GameDataManager.ins.isChallengeBoss = true;
+        MapManager.ins.mapScrollSwitch = false;
+        this.bossBattleEngine.startBattle(herosAry, enemyAry);
+    };
+    /**快速结束战斗 */
+    BattleEngine.prototype.challegenBossFastEnd = function () {
+        if (this.bossBattleEngine) {
+            this.bossBattleEngine.endBattle();
+        }
     };
     BattleEngine._ins = null;
     return BattleEngine;
 }());
 //# sourceMappingURL=BattleEngine.js.map
+/*
+* 动画管理器
+*/
+var AnimationManager = /** @class */ (function () {
+    function AnimationManager() {
+    }
+    Object.defineProperty(AnimationManager, "ins", {
+        get: function () {
+            if (this._ins == null) {
+                this._ins = new AnimationManager();
+            }
+            return this._ins;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    //******************弹框动画 */
+    /**
+     * 舞台中央弹框由小到大
+     * @param view
+     * @param time
+     */
+    AnimationManager.prototype.popCenterLittleToBig = function (view, time) {
+        if (time === void 0) { time = 100; }
+        view.scaleX = 0;
+        view.scaleY = 0;
+        view.x = GameConfig.STAGE_WIDTH / 2;
+        view.y = GameConfig.STAGE_HEIGHT / 2;
+        var tx = GameConfig.STAGE_WIDTH - view.width >> 1;
+        var ty = GameConfig.STAGE_HEIGHT - view.height >> 1;
+        Laya.Tween.to(view, { scaleX: 1, scaleY: 1, x: tx, y: ty }, time);
+    };
+    AnimationManager._ins = null;
+    return AnimationManager;
+}());
+//# sourceMappingURL=AnimationManager.js.map
 /*
 * name;
 */
@@ -53602,6 +62456,7 @@ var BaseMediator = /** @class */ (function () {
         this.assetsUrl = assetsUrl;
         this.view = view;
         if (this.assetsUrl) {
+            ModuleLoadingView.ins.show();
             Laya.loader.load(this.assetsUrl, new Laya.Handler(this, this.onLoaded), new Laya.Handler(this, this.onLoadProgress));
         }
         else {
@@ -53611,9 +62466,11 @@ var BaseMediator = /** @class */ (function () {
     /**资源加载完成 */
     BaseMediator.prototype.onLoaded = function (data) {
         this.initView();
+        ModuleLoadingView.ins.setProgress(1);
     };
     /**资源加载进度 */
     BaseMediator.prototype.onLoadProgress = function (data) {
+        ModuleLoadingView.ins.setProgress(data);
     };
     BaseMediator.prototype.initView = function () {
         this.addEvents();
@@ -53621,6 +62478,24 @@ var BaseMediator = /** @class */ (function () {
     BaseMediator.prototype.addEvents = function () {
     };
     BaseMediator.prototype.removeEvents = function () {
+    };
+    BaseMediator.prototype.dispose = function () {
+        if (this.assetsUrl) {
+            if (this.assetsUrl) {
+                this.assetsUrl.forEach(function (element) {
+                    Laya.loader.clearRes(element.url);
+                });
+            }
+            else {
+                Laya.loader.clearRes(this.assetsUrl);
+            }
+            this.assetsUrl = null;
+        }
+        if (this.view) {
+            this.removeEvents();
+            this.view.removeSelf();
+        }
+        this.view = null;
     };
     return BaseMediator;
 }());
@@ -53644,33 +62519,91 @@ var GameConfig = /** @class */ (function () {
     GameConfig.MAP_INIT_Y = 600;
     /**战斗场景与场景地图偏移 */
     GameConfig.BATTLE_SCENE_OFFSET_Y = 40;
-    /**战斗场景高度 */
+    /**主场景战斗场景高度 */
     GameConfig.BATTLE_SCENE_HEIGHT = 500;
     /**战斗每轮攻击人数 */
     GameConfig.BATTLE_TURN_ATTACK_SUM = 1;
+    /**循环假战斗我方英雄参与人数 */
+    GameConfig.BATTLE_LOOP_HERO_SUM = 3;
+    /**挑战boss我方英雄参与人数 */
+    GameConfig.BATTLE_BOSS_HERO_SUM = 5;
     /**场景缓存 */
     GameConfig.SCENE_CACHE = 1;
     /**阵型配置 */
     /**阵型格子宽 */
-    GameConfig.LINEUP_GRID_WIDTH = 180;
+    GameConfig.LINEUP_GRID_WIDTH = 240;
     /**阵型格子高 */
     GameConfig.LINEUP_GRID_HEIGHT = 100;
     /**战斗配置 */
     /**战斗时间间隔(S) */
-    GameConfig.BATTLE_INTERVAL_TIME = 2;
+    GameConfig.BATTLE_INTERVAL_TIME = 1;
     /**战斗跑到阵型需要时间(s) */
     GameConfig.BATTLE_RUN_TIME = 0.5;
     /**战斗攻击需要时间(s) */
     GameConfig.BATTLE_ATT_TIME = 0.3;
+    /**战斗加速倍数*/
+    GameConfig.BATTLE_ADDSPEED_TIMES = 1;
     /**调试视图开关 */
-    GameConfig.DEBUG_VIEW_SWITCH = true;
+    GameConfig.DEBUG_VIEW_SWITCH = false;
+    /**场景战斗开关 */
+    GameConfig.SCENE_BATTLE_SWITCH = true;
     return GameConfig;
+}());
+var HTTPReqType = /** @class */ (function () {
+    function HTTPReqType() {
+    }
+    HTTPReqType.POST = "post";
+    HTTPReqType.GET = "get";
+    return HTTPReqType;
+}());
+/**协议 */
+var Protocol = /** @class */ (function () {
+    function Protocol() {
+    }
+    Protocol.USER_LOGIN = 1000;
+    Protocol.USER_LOGIN_CMD = 1;
+    return Protocol;
+}());
+/**http请求地址 */
+var HTTPRequestUrl = /** @class */ (function () {
+    function HTTPRequestUrl() {
+    }
+    /**测试登录 get*/
+    HTTPRequestUrl.testLoginURL = "http://192.168.2.126:8080/api/testLogin.do";
+    /**获取区服列表 get*/
+    HTTPRequestUrl.gameServerURL = "http://192.168.2.126:8080/api/gameserver.do";
+    /**进入游戏 get*/
+    HTTPRequestUrl.enterGameURL = "http://192.168.2.126:8080/api/entergame.do";
+    return HTTPRequestUrl;
+}());
+/**服务器状态 */
+var GameServerState = /** @class */ (function () {
+    function GameServerState() {
+    }
+    /**
+     * 正常在线
+     */
+    GameServerState.GameServer_State_ON = 0;
+    /**
+     * 火爆
+     */
+    GameServerState.GameServer_State_FIRE = 1;
+    /**
+    * 停服
+    */
+    GameServerState.GameServer_State_OFF = -1;
+    /**
+     * 停服维护
+     */
+    GameServerState.GameServer_State_Maintain = -2;
+    return GameServerState;
 }());
 /**地图类型枚举 */
 var MapType;
 (function (MapType) {
-    MapType[MapType["BACKGROUND_MAP"] = 1] = "BACKGROUND_MAP";
-    MapType[MapType["NEAR_MAP"] = 2] = "NEAR_MAP";
+    MapType[MapType["FAR_MAP"] = 1] = "FAR_MAP";
+    MapType[MapType["BACKGROUND_MAP"] = 2] = "BACKGROUND_MAP";
+    MapType[MapType["NEAR_MAP"] = 3] = "NEAR_MAP";
 })(MapType || (MapType = {}));
 /**角色动画枚举 */
 var RoleAniIndex;
@@ -53685,6 +62618,15 @@ var RoleAniIndex;
     RoleAniIndex[RoleAniIndex["SKILL3"] = 7] = "SKILL3";
     RoleAniIndex[RoleAniIndex["SKILL4"] = 8] = "SKILL4";
 })(RoleAniIndex || (RoleAniIndex = {}));
+/**新角色动画枚举 */
+var NewRoleAniIndex;
+(function (NewRoleAniIndex) {
+    NewRoleAniIndex[NewRoleAniIndex["ATTACK"] = 0] = "ATTACK";
+    NewRoleAniIndex[NewRoleAniIndex["INJURED"] = 1] = "INJURED";
+    NewRoleAniIndex[NewRoleAniIndex["DEATH"] = 2] = "DEATH";
+    NewRoleAniIndex[NewRoleAniIndex["MOVE"] = 3] = "MOVE";
+    NewRoleAniIndex[NewRoleAniIndex["STAND"] = 4] = "STAND";
+})(NewRoleAniIndex || (NewRoleAniIndex = {}));
 /**
  * 战斗攻击阵营
  */
@@ -53694,6 +62636,12 @@ var BattleAttCampType;
     BattleAttCampType[BattleAttCampType["ENEMY"] = 2] = "ENEMY";
     BattleAttCampType[BattleAttCampType["OTHER"] = 3] = "OTHER";
 })(BattleAttCampType || (BattleAttCampType = {}));
+/**游戏底部按钮索引 */
+var GameButtomTabIndex;
+(function (GameButtomTabIndex) {
+    GameButtomTabIndex[GameButtomTabIndex["MAP_BATTLE"] = 0] = "MAP_BATTLE";
+    GameButtomTabIndex[GameButtomTabIndex["LINEUP"] = 1] = "LINEUP";
+})(GameButtomTabIndex || (GameButtomTabIndex = {}));
 //# sourceMappingURL=GameConfig.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -53751,6 +62699,493 @@ var FloatFontTips = /** @class */ (function (_super) {
     return FloatFontTips;
 }(Laya.Label));
 //# sourceMappingURL=FloatFontTips.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var View = laya.ui.View;
+var Dialog = laya.ui.Dialog;
+var ui;
+(function (ui) {
+    var BattleReportViewUI = /** @class */ (function (_super) {
+        __extends(BattleReportViewUI, _super);
+        function BattleReportViewUI() {
+            return _super.call(this) || this;
+        }
+        BattleReportViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.BattleReportViewUI.uiView);
+        };
+        BattleReportViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/img_reportsbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "TextArea", "props": { "y": 57, "x": 10, "width": 731, "var": "texaArea", "height": 300 } }, { "type": "Label", "props": { "y": 15, "x": 322, "width": 85, "text": "战    报", "height": 25, "fontSize": 24, "color": "#000000", "bold": true, "align": "center" } }] };
+        return BattleReportViewUI;
+    }(View));
+    ui.BattleReportViewUI = BattleReportViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var ChallengeBossViewUI = /** @class */ (function (_super) {
+        __extends(ChallengeBossViewUI, _super);
+        function ChallengeBossViewUI() {
+            return _super.call(this) || this;
+        }
+        ChallengeBossViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.ChallengeBossViewUI.uiView);
+        };
+        ChallengeBossViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/bg.png" } }, { "type": "Button", "props": { "y": 1131, "x": 235, "width": 285, "var": "btnFast", "skin": "comp/button.png", "labelSize": 30, "label": "快速结束", "height": 110 } }] };
+        return ChallengeBossViewUI;
+    }(View));
+    ui.ChallengeBossViewUI = ChallengeBossViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var ChoiceServerViewUI = /** @class */ (function (_super) {
+        __extends(ChoiceServerViewUI, _super);
+        function ChoiceServerViewUI() {
+            return _super.call(this) || this;
+        }
+        ChoiceServerViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.ChoiceServerViewUI.uiView);
+        };
+        ChoiceServerViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "var": "bg", "skin": "comp/blank.png", "height": 1334 } }, { "type": "List", "props": { "width": 547, "var": "listServer", "spaceY": 5, "repeatY": 10, "height": 470, "centerY": 0, "centerX": 0 }, "child": [{ "type": "Box", "props": { "name": "render" }, "child": [{ "type": "Clip", "props": { "width": 522, "skin": "comp/clip_selectBox.png", "name": "clip", "height": 38, "clipY": 2 } }, { "type": "Label", "props": { "y": 2, "x": 10, "width": 247, "text": "测试服务器1", "name": "lblServName", "height": 36, "fontSize": 30, "color": "#000000" } }, { "type": "Label", "props": { "y": 2, "x": 286, "width": 166, "text": "拥挤", "name": "lblServState", "height": 36, "fontSize": 30, "color": "#d7100c" } }] }, { "type": "VScrollBar", "props": { "y": 0, "x": 526, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 423 } }] }] };
+        return ChoiceServerViewUI;
+    }(View));
+    ui.ChoiceServerViewUI = ChoiceServerViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var comp;
+    (function (comp) {
+        var IconViewUI = /** @class */ (function (_super) {
+            __extends(IconViewUI, _super);
+            function IconViewUI() {
+                return _super.call(this) || this;
+            }
+            IconViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.comp.IconViewUI.uiView);
+            };
+            IconViewUI.uiView = { "type": "View", "props": { "width": 115, "height": 115 }, "child": [{ "type": "Clip", "props": { "y": 3, "x": 3, "width": 110, "var": "clipBG", "skin": "comp/clip_qulity1.png", "height": 110, "clipY": 2 } }, { "type": "Image", "props": { "y": 10, "x": 10, "width": 95, "var": "imgIcon", "height": 96 } }] };
+            return IconViewUI;
+        }(View));
+        comp.IconViewUI = IconViewUI;
+    })(comp = ui.comp || (ui.comp = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var DebugViewUI = /** @class */ (function (_super) {
+        __extends(DebugViewUI, _super);
+        function DebugViewUI() {
+            return _super.call(this) || this;
+        }
+        DebugViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.DebugViewUI.uiView);
+        };
+        DebugViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 500, "var": "imgBg", "skin": "comp/blank.png", "height": 60 } }, { "type": "Label", "props": { "y": 28, "x": 0, "wordWrap": true, "width": 500, "var": "lblDec", "text": "label", "leading": 2, "height": 24, "fontSize": 16, "color": "#f4f1f1" } }, { "type": "Button", "props": { "y": 3, "x": 416, "width": 75, "var": "btnClear", "skin": "comp/button.png", "label": "clear", "height": 23 } }] };
+        return DebugViewUI;
+    }(View));
+    ui.DebugViewUI = DebugViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var EnterGameViewUI = /** @class */ (function (_super) {
+        __extends(EnterGameViewUI, _super);
+        function EnterGameViewUI() {
+            return _super.call(this) || this;
+        }
+        EnterGameViewUI.prototype.createChildren = function () {
+            View.regComponent("Text", laya.display.Text);
+            View.regComponent("ui.ChoiceServerViewUI", ui.ChoiceServerViewUI);
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.EnterGameViewUI.uiView);
+        };
+        EnterGameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Label", "props": { "y": 28, "x": 31, "text": "当前账号：", "fontSize": 30, "color": "#ffffff" } }, { "type": "Button", "props": { "y": 1082, "x": 269, "width": 211, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 38, "label": "进入游戏", "height": 72 } }, { "type": "Image", "props": { "y": 106, "x": 38, "width": 674, "skin": "unpack/login/logo.png", "height": 422 } }, { "type": "Button", "props": { "y": 21, "x": 593, "width": 140, "var": "btnRegster", "skin": "comp/button.png", "labelStrokeColor": "#ff0905", "labelSize": 30, "label": "切换账户", "height": 45, "alpha": 0.9 } }, { "type": "Text", "props": { "y": 28, "x": 181, "width": 401, "var": "textUser", "text": "325266_asda_10023", "height": 40, "fontSize": 30, "color": "#e3e2e2", "alpha": 0.8, "align": "center" } }, { "type": "Button", "props": { "y": 954, "x": 229, "width": 303, "var": "btnChoice", "height": 63 }, "child": [{ "type": "Line", "props": { "y": 0, "x": 0, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Line", "props": { "y": 60, "x": 0, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Circle", "props": { "y": 30, "x": 10, "radius": 10, "lineWidth": 1, "fillColor": "#f82c2c" } }, { "type": "Text", "props": { "y": 12, "x": 40, "width": 254, "var": "lblServName", "text": "一区丶齐天大圣", "height": 41, "fontSize": 30, "color": "#e3e2e2" } }] }, { "type": "ChoiceServerView", "props": { "y": 0, "x": 0, "visible": false, "var": "serverListView", "runtime": "ui.ChoiceServerViewUI" } }] };
+        return EnterGameViewUI;
+    }(View));
+    ui.EnterGameViewUI = EnterGameViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var GameViewUI = /** @class */ (function (_super) {
+        __extends(GameViewUI, _super);
+        function GameViewUI() {
+            return _super.call(this) || this;
+        }
+        GameViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.GameViewUI.uiView);
+        };
+        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "mouseThrough": true, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 45, "x": 459, "width": 216, "var": "btnOpen", "skin": "comp/button.png", "labelStrokeColor": "#f88508", "labelSize": 32, "label": "打开拳击声效", "height": 83 } }, { "type": "Tab", "props": { "y": 1242, "x": 3 }, "child": [{ "type": "Button", "props": { "y": 1, "width": 145, "var": "btnMap", "skin": "comp/button.png", "labelSize": 40, "label": "地图", "height": 88 } }, { "type": "Button", "props": { "y": 1, "x": 151, "width": 145, "var": "btnLineup", "skin": "comp/button.png", "labelSize": 40, "label": "阵型", "height": 88 } }, { "type": "Button", "props": { "y": 1, "x": 302, "width": 145, "var": "btnHero", "skin": "comp/button.png", "labelSize": 40, "label": "战宠物", "height": 88 } }, { "type": "Button", "props": { "y": 1, "x": 452, "width": 145, "var": "btnEquip", "skin": "comp/button.png", "labelSize": 40, "label": "装备", "height": 88 } }, { "type": "Button", "props": { "x": 603, "width": 145, "var": "btnHome", "skin": "comp/button.png", "labelSize": 40, "label": "家园", "height": 88 } }] }] };
+        return GameViewUI;
+    }(View));
+    ui.GameViewUI = GameViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var lineup;
+    (function (lineup) {
+        var LineupGridViewUI = /** @class */ (function (_super) {
+            __extends(LineupGridViewUI, _super);
+            function LineupGridViewUI() {
+                return _super.call(this) || this;
+            }
+            LineupGridViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.lineup.LineupGridViewUI.uiView);
+            };
+            LineupGridViewUI.uiView = { "type": "View", "props": { "width": 0, "height": 0 }, "child": [{ "type": "Clip", "props": { "y": 0, "x": 0, "width": 134, "var": "clipShadow", "skin": "lineup/clip_shadow.png", "index": 0, "height": 54, "clipY": 2 } }] };
+            return LineupGridViewUI;
+        }(View));
+        lineup.LineupGridViewUI = LineupGridViewUI;
+    })(lineup = ui.lineup || (ui.lineup = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var lineup;
+    (function (lineup) {
+        var LineupViewUI = /** @class */ (function (_super) {
+            __extends(LineupViewUI, _super);
+            function LineupViewUI() {
+                return _super.call(this) || this;
+            }
+            LineupViewUI.prototype.createChildren = function () {
+                View.regComponent("IconView", IconView);
+                View.regComponent("ui.lineup.LineupGridViewUI", ui.lineup.LineupGridViewUI);
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.lineup.LineupViewUI.uiView);
+            };
+            LineupViewUI.uiView = { "type": "View", "props": { "width": 750, "renderType": "render", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "lineup/龙与猎人-上阵.png" } }, { "type": "List", "props": { "y": 967, "x": 23, "width": 716, "var": "listIcon", "repeatY": 2, "repeatX": 6, "height": 234 }, "child": [{ "type": "VScrollBar", "props": { "y": 4, "x": 698, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 188 } }, { "type": "IconView", "props": { "y": 0, "x": 0, "runtime": "IconView", "name": "render" } }] }, { "type": "LineupGridView", "props": { "y": 580, "x": 369, "var": "grid0", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 707, "x": 472, "var": "grid1", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 830, "x": 575, "var": "grid2", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 579, "x": 28, "var": "grid3", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 706, "x": 131, "var": "grid4", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 829, "x": 234, "var": "grid5", "runtime": "ui.lineup.LineupGridViewUI" } }] };
+            return LineupViewUI;
+        }(View));
+        lineup.LineupViewUI = LineupViewUI;
+    })(lineup = ui.lineup || (ui.lineup = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var LoginViewUI = /** @class */ (function (_super) {
+        __extends(LoginViewUI, _super);
+        function LoginViewUI() {
+            return _super.call(this) || this;
+        }
+        LoginViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.LoginViewUI.uiView);
+        };
+        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/main.jpg", "height": 1334 } }, { "type": "Box", "props": { "y": 576, "x": 148, "width": 496, "height": 317 }, "child": [{ "type": "Image", "props": { "width": 496, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 361, "centerY": 0, "centerX": 0 } }, { "type": "TextInput", "props": { "y": 73, "x": 187, "width": 216, "var": "inputAccount", "text": "xielong", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 72, "x": 95, "width": 100, "text": "帐号：", "height": 38, "fontSize": 30, "color": "#000000" } }, { "type": "TextInput", "props": { "y": 141, "x": 187, "width": 216, "var": "inputPwd", "type": "password", "text": "123456", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 140, "x": 95, "width": 100, "text": "密码：", "height": 38, "fontSize": 30 } }, { "type": "Button", "props": { "y": 209, "x": 158, "width": 211, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 38, "label": "登  录", "height": 72 } }] }] };
+        return LoginViewUI;
+    }(View));
+    ui.LoginViewUI = LoginViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var main;
+    (function (main) {
+        var SkillViewUI = /** @class */ (function (_super) {
+            __extends(SkillViewUI, _super);
+            function SkillViewUI() {
+                return _super.call(this) || this;
+            }
+            SkillViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.main.SkillViewUI.uiView);
+            };
+            SkillViewUI.uiView = { "type": "View", "props": { "width": 400, "height": 40 } };
+            return SkillViewUI;
+        }(View));
+        main.SkillViewUI = SkillViewUI;
+    })(main = ui.main || (ui.main = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var MapBattleViewUI = /** @class */ (function (_super) {
+        __extends(MapBattleViewUI, _super);
+        function MapBattleViewUI() {
+            return _super.call(this) || this;
+        }
+        MapBattleViewUI.prototype.createChildren = function () {
+            View.regComponent("ui.MapWorldViewUI", ui.MapWorldViewUI);
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.MapBattleViewUI.uiView);
+        };
+        MapBattleViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 265, "x": 279, "width": 243, "var": "btnChalleangeBoss", "skin": "comp/button.png", "labelSize": 24, "label": "挑战boss", "height": 88 } }, { "type": "MapWorldView", "props": { "y": 0, "x": 0, "var": "mapWordView", "runtime": "ui.MapWorldViewUI" } }] };
+        return MapBattleViewUI;
+    }(View));
+    ui.MapBattleViewUI = MapBattleViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var MapWorldViewUI = /** @class */ (function (_super) {
+        __extends(MapWorldViewUI, _super);
+        function MapWorldViewUI() {
+            return _super.call(this) || this;
+        }
+        MapWorldViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.MapWorldViewUI.uiView);
+        };
+        MapWorldViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 566, "x": 263, "width": 243, "var": "btnEnter", "skin": "comp/button.png", "labelSize": 40, "label": "进入关卡", "height": 88 } }] };
+        return MapWorldViewUI;
+    }(View));
+    ui.MapWorldViewUI = MapWorldViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var PreLoadViewUI = /** @class */ (function (_super) {
+        __extends(PreLoadViewUI, _super);
+        function PreLoadViewUI() {
+            return _super.call(this) || this;
+        }
+        PreLoadViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.PreLoadViewUI.uiView);
+        };
+        PreLoadViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "ProgressBar", "props": { "y": 662, "x": 96, "width": 566, "var": "progressBar", "skin": "comp/progress.png", "height": 14 } }] };
+        return PreLoadViewUI;
+    }(View));
+    ui.PreLoadViewUI = PreLoadViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var SignViewUI = /** @class */ (function (_super) {
+        __extends(SignViewUI, _super);
+        function SignViewUI() {
+            return _super.call(this) || this;
+        }
+        SignViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.SignViewUI.uiView);
+        };
+        SignViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 6, "skin": "test/img_bg.png" } }, { "type": "Image", "props": { "y": 504, "x": 154, "width": 441, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 415 } }, { "type": "Button", "props": { "y": 508, "x": 566, "var": "btnClose", "skin": "comp/btn_close.png" } }, { "type": "TextInput", "props": { "y": 706, "x": 304, "var": "inputName", "skin": "comp/textinput.png" } }] };
+        return SignViewUI;
+    }(View));
+    ui.SignViewUI = SignViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var test;
+    (function (test) {
+        var TestPageUI = /** @class */ (function (_super) {
+            __extends(TestPageUI, _super);
+            function TestPageUI() {
+                return _super.call(this) || this;
+            }
+            TestPageUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.test.TestPageUI.uiView);
+            };
+            TestPageUI.uiView = { "type": "View", "props": { "width": 600, "height": 400 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 600, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 400 } }, { "type": "Button", "props": { "y": 56, "x": 41, "width": 150, "var": "btn", "skin": "comp/button.png", "sizeGrid": "4,4,4,4", "label": "点我赋值", "height": 37 } }, { "type": "Clip", "props": { "y": 56, "x": 401, "var": "clip", "skin": "comp/clip_num.png", "clipX": 10 } }, { "type": "ComboBox", "props": { "y": 143, "x": 220, "width": 200, "var": "combobox", "skin": "comp/combobox.png", "sizeGrid": "4,20,4,4", "selectedIndex": 1, "labels": "select1,select2,selecte3", "height": 23 } }, { "type": "Tab", "props": { "y": 96, "x": 220, "var": "tab", "skin": "comp/tab.png", "labels": "tab1,tab2,tab3" } }, { "type": "VScrollBar", "props": { "y": 223, "x": 259, "skin": "comp/vscroll.png", "height": 150 } }, { "type": "VSlider", "props": { "y": 223, "x": 224, "skin": "comp/vslider.png", "height": 150 } }, { "type": "List", "props": { "y": 68, "x": 452, "width": 128, "var": "list", "vScrollBarSkin": "comp/vscroll.png", "repeatX": 1, "height": 299 }, "child": [{ "type": "Box", "props": { "y": 0, "x": 0, "width": 112, "name": "render", "height": 30 }, "child": [{ "type": "Label", "props": { "y": 5, "x": 26, "width": 78, "text": "this is a list", "skin": "comp/label.png", "name": "label", "height": 20, "fontSize": 14 } }, { "type": "Clip", "props": { "y": 2, "x": 0, "skin": "comp/clip_num.png", "name": "clip", "clipX": 10 } }] }] }, { "type": "Button", "props": { "y": 4, "x": 563, "var": "btnClose", "skin": "comp/btn_close.png", "name": "close" } }, { "type": "Button", "props": { "y": 112, "x": 41, "width": 150, "var": "btn2", "skin": "comp/button.png", "sizeGrid": "4,4,4,4", "labelSize": 30, "labelBold": true, "label": "点我赋值", "height": 66 } }, { "type": "CheckBox", "props": { "y": 188, "x": 220, "var": "check", "skin": "comp/checkbox.png", "label": "checkBox1" } }, { "type": "RadioGroup", "props": { "y": 61, "x": 220, "var": "radio", "skin": "comp/radiogroup.png", "labels": "radio1,radio2,radio3" } }, { "type": "Panel", "props": { "y": 223, "x": 299, "width": 127, "vScrollBarSkin": "comp/vscroll.png", "height": 150 }, "child": [{ "type": "Image", "props": { "skin": "comp/image.png" } }] }, { "type": "CheckBox", "props": { "y": 188, "x": 326, "skin": "comp/checkbox.png", "labelColors": "#ff0000", "label": "checkBox2" } }, { "type": "Box", "props": { "y": 197, "x": 41, "var": "box" }, "child": [{ "type": "ProgressBar", "props": { "y": 70, "width": 150, "skin": "comp/progress.png", "sizeGrid": "4,4,4,4", "name": "progress", "height": 14 } }, { "type": "Label", "props": { "y": 103, "width": 137, "text": "This is a Label", "skin": "comp/label.png", "name": "label", "height": 26, "fontSize": 20 } }, { "type": "TextInput", "props": { "y": 148, "width": 150, "text": "textinput", "skin": "comp/textinput.png", "name": "input" } }, { "type": "HSlider", "props": { "width": 150, "skin": "comp/hslider.png", "name": "slider" } }, { "type": "HScrollBar", "props": { "y": 34, "width": 150, "skin": "comp/hscroll.png", "name": "scroll" } }] }] };
+            return TestPageUI;
+        }(View));
+        test.TestPageUI = TestPageUI;
+    })(test = ui.test || (ui.test = {}));
+})(ui || (ui = {}));
+//# sourceMappingURL=layaUI.max.all.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 图标
+*/
+var IconView = /** @class */ (function (_super) {
+    __extends(IconView, _super);
+    function IconView() {
+        return _super.call(this) || this;
+    }
+    IconView.prototype.setData = function (data) {
+        this.data = data;
+        this.clipBG.skin = "comp/clip_qulity" + data.quality + ".png";
+        this.imgIcon.skin = "res/outside/icons/heros/" + data.iconName + ".png";
+    };
+    IconView.prototype.dispose = function () {
+        this.removeEvents();
+        this.removeSelf();
+    };
+    IconView.prototype.addEvents = function () {
+        this.on(Laya.Event.MOUSE_DOWN, this, this.onMouseDown);
+        Laya.stage.on(Laya.Event.MOUSE_UP, this, this.onMouseUP);
+    };
+    IconView.prototype.removeEvents = function () {
+        this.off(Laya.Event.MOUSE_DOWN, this, this.onMouseDown);
+        Laya.stage.off(Laya.Event.MOUSE_UP, this, this.onMouseUP);
+    };
+    IconView.prototype.onMouseDown = function (e) {
+        this.clipBG.index = 1;
+        this.scale(1.2, 1.2);
+    };
+    IconView.prototype.onMouseUP = function (e) {
+        this.clipBG.index = 0;
+        this.scale(1, 1);
+    };
+    return IconView;
+}(ui.comp.IconViewUI));
+//# sourceMappingURL=IconView.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 模块加载条视图
+*/
+var ModuleLoadingView = /** @class */ (function (_super) {
+    __extends(ModuleLoadingView, _super);
+    function ModuleLoadingView() {
+        var _this = _super.call(this) || this;
+        _this.radius = 100;
+        _this.progressLine = 10;
+        _this.lblProgress = null;
+        _this.maskSpr = null;
+        _this.initSkin();
+        return _this;
+    }
+    Object.defineProperty(ModuleLoadingView, "ins", {
+        get: function () {
+            if (this._ins == null) {
+                this._ins = new ModuleLoadingView();
+            }
+            return this._ins;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    ModuleLoadingView.prototype.initSkin = function () {
+        this.graphics.drawCircle(0, 0, this.radius, "#ffffff");
+        if (this.maskSpr == null) {
+            this.maskSpr = new Laya.Sprite();
+            this.maskSpr.graphics.drawCircle(0, 0, this.radius - this.progressLine, "#ffffff");
+            this.addChild(this.maskSpr);
+        }
+        if (this.lblProgress == null) {
+            this.lblProgress = new Laya.Label();
+            this.lblProgress.width = 60;
+            this.lblProgress.height = 30;
+            this.lblProgress.x = -this.lblProgress.width / 2;
+            this.lblProgress.y = -this.lblProgress.height / 2;
+            this.lblProgress.fontSize = 24;
+            this.lblProgress.align = "center";
+            this.addChild(this.lblProgress);
+        }
+    };
+    ModuleLoadingView.prototype.setProgress = function (value) {
+        this.graphics.drawPie(0, 0, this.radius, 0, value * 360, "#ff0000");
+        if (this.lblProgress) {
+            this.lblProgress.text = value * 100 + "%";
+        }
+        if (value == 1) {
+            Laya.timer.once(200, this, this.hide, null, false);
+        }
+    };
+    ModuleLoadingView.prototype.show = function () {
+        LayerManager.ins.addToLayer(this, LayerManager.TIP_LAYER, true, false, true);
+    };
+    ModuleLoadingView.prototype.hide = function () {
+        LayerManager.ins.removeToLayer(this, LayerManager.TIP_LAYER, true, false);
+    };
+    ModuleLoadingView._ins = null;
+    return ModuleLoadingView;
+}(Laya.Sprite));
+//# sourceMappingURL=ModuleLoadingView.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var LayaImage = Laya.Image;
+var LayaLabel = Laya.Label;
+/*
+* 进入游戏资源加载条
+*/
+var PreLoadingView = /** @class */ (function (_super) {
+    __extends(PreLoadingView, _super);
+    function PreLoadingView() {
+        var _this = _super.call(this) || this;
+        _this.initSkin();
+        return _this;
+    }
+    Object.defineProperty(PreLoadingView, "ins", {
+        get: function () {
+            if (this._ins == null) {
+                this._ins = new PreLoadingView();
+            }
+            return this._ins;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    PreLoadingView.prototype.initSkin = function () {
+        this.imgBg = new LayaImage("res/outside/preload/bg.jpg");
+        this.x = 0;
+        this.y = 0;
+        this.addChild(this.imgBg);
+        Laya.loader.load(["res/outside/preload/progress.png", "res/outside/preload/progressBg.png"], Laya.Handler.create(this, this.resLoaded));
+    };
+    /**
+     * 加载资源
+     * @param e
+     */
+    PreLoadingView.prototype.resLoaded = function (e) {
+        this.imgProBg = new LayaImage();
+        this.imgProBg.texture = Laya.loader.getRes("res/outside/preload/progressBg.png");
+        this.imgProBg.x = GameConfig.STAGE_WIDTH - this.imgProBg.texture.width >> 1;
+        this.imgProBg.y = GameConfig.STAGE_HEIGHT - this.imgProBg.texture.height >> 1;
+        this.addChild(this.imgProBg);
+        this.imgPro = new LayaImage();
+        this.imgPro.texture = Laya.loader.getRes("res/outside/preload/progress.png");
+        this.imgPro.x = this.imgProBg.x;
+        this.imgPro.y = this.imgProBg.y + 1;
+        this.addChild(this.imgPro);
+        this.lblPro = new LayaLabel();
+        this.lblPro.x = this.imgProBg.x;
+        this.lblPro.y = this.imgProBg.y;
+        this.lblPro.width = this.imgPro.texture.width;
+        this.lblPro.height = this.imgPro.texture.height;
+        this.lblPro.fontSize = 16;
+        this.lblPro.align = "center";
+        this.lblPro.text = "";
+        this.addChild(this.lblPro);
+        this.setProgress(0);
+    };
+    PreLoadingView.prototype.setProgress = function (value) {
+        if (this.imgPro && this.lblPro) {
+            if (this.maskRect == null) {
+                this.maskRect = new Rectangle(0, 0, this.imgPro.texture.width, this.imgPro.texture.height);
+            }
+            this.maskRect.x = (1 - value) * this.imgPro.texture.width;
+            this.imgPro.scrollRect = this.maskRect;
+            this.lblPro.text = "资源加载进度（" + Math.floor(value * 100) + "%）";
+        }
+        if (value == 1) {
+            Laya.timer.once(200, this, this.hide);
+        }
+    };
+    PreLoadingView.prototype.show = function () {
+        LayerManager.ins.addToLayer(this, LayerManager.UI_LAYER, false, false, false);
+    };
+    PreLoadingView.prototype.hide = function () {
+        this.imgBg.removeSelf();
+        this.imgBg = null;
+        this.imgPro.removeSelf();
+        this.imgPro = null;
+        this.imgProBg.removeSelf();
+        this.imgProBg = null;
+        this.lblPro.removeSelf();
+        this.lblPro = null;
+        this.removeSelf();
+    };
+    PreLoadingView._ins = null;
+    return PreLoadingView;
+}(Laya.Sprite));
+//# sourceMappingURL=PreLoadingView.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53891,12 +63326,15 @@ var BattleReportMediator = /** @class */ (function (_super) {
         this.view = new ui.BattleReportViewUI();
         this.view.x = 0;
         this.view.y = 960;
-        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, false);
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, false);
         _super.prototype.initView.call(this);
     };
     BattleReportMediator.prototype.addEvents = function () {
     };
     BattleReportMediator.prototype.removeEvents = function () {
+    };
+    BattleReportMediator.prototype.setVisible = function (bool) {
+        this.view.visible = bool;
     };
     return BattleReportMediator;
 }(BaseMediator));
@@ -53911,35 +63349,186 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+/*
+* 挑战boss界面
+*/
+var ChallegenBossMediator = /** @class */ (function (_super) {
+    __extends(ChallegenBossMediator, _super);
+    function ChallegenBossMediator(assetsUrl, view) {
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.heroRoles = null;
+        _this.enemyRoles = null;
+        return _this;
+    }
+    ChallegenBossMediator.prototype.initView = function () {
+        this.view = new ui.ChallengeBossViewUI();
+        this.roleLayer = new Laya.Sprite();
+        this.view.addChild(this.roleLayer);
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
+        _super.prototype.initView.call(this);
+        this.initRoles();
+    };
+    ChallegenBossMediator.prototype.addEvents = function () {
+        this.view.btnFast.on(Laya.Event.CLICK, this, this.onBtnFast);
+    };
+    ChallegenBossMediator.prototype.removeEvents = function () {
+        this.view.btnFast.off(Laya.Event.CLICK, this, this.onBtnFast);
+    };
+    /**初始化地图数据 */
+    ChallegenBossMediator.prototype.initRoles = function () {
+        var _this = this;
+        BossBattleData.curLoadNum = 0;
+        //英雄
+        this.heroRoles = new Array();
+        var playerData = GameDataManager.ins.selfPlayerData;
+        playerData.roleVoAry.forEach(function (roleVo) {
+            roleVo.initRowColPosPoint();
+        });
+        var roleVo;
+        var hero;
+        for (var i = 0; i < playerData.roleVoAry.length; i++) {
+            roleVo = playerData.roleVoAry[i];
+            hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
+            hero.initRole(roleVo, i, 1, this.roleLayer);
+            // hero.setBlood(0);
+            hero.aniPlay(RoleAniIndex.STAND);
+            this.heroRoles.push(hero);
+        }
+        this.heroRoles.forEach(function (heroView) {
+            heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
+        });
+        //敌人
+        this.enemyRoles = new Array();
+        var bossData = GameDataManager.ins.bossData;
+        //怪物显示对象
+        var enemy;
+        for (i = 0; i < bossData.roleVoAry.length; i++) {
+            roleVo = bossData.roleVoAry[i];
+            enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
+            enemy.initRole(roleVo, i, 1, this.roleLayer);
+            enemy.aniPlay(RoleAniIndex.STAND);
+            this.enemyRoles.push(enemy);
+        }
+        this.enemyRoles.forEach(function (enemyView) {
+            enemyView.setShowIndex(_this.heroRoles.length + enemyView.roleVo.lineupGrid - 1);
+        });
+        BossBattleData.loadSum = this.heroRoles.length + this.enemyRoles.length;
+        BattleEngine.ins.challegenBoss(this.heroRoles, this.enemyRoles);
+    };
+    /**
+     * 快速结束
+     * @param e
+     */
+    ChallegenBossMediator.prototype.onBtnFast = function (e) {
+        BattleEngine.ins.challegenBossFastEnd();
+        this.dispose();
+    };
+    ChallegenBossMediator.prototype.dispose = function () {
+        /**清除角色对象 */
+        if (this.heroRoles) {
+            var lastHeros = [];
+            this.heroRoles.forEach(function (role) {
+                Laya.Tween.clearAll(role);
+                role.roleVo.isDeath = false;
+                ObjectPoolUtil.stillObject(ObjectPoolUtil.HERO_ROLE, role);
+                role.dispose();
+            });
+            this.heroRoles = null;
+        }
+        if (this.enemyRoles) {
+            this.enemyRoles.forEach(function (role) {
+                Laya.Tween.clearAll(role);
+                ObjectPoolUtil.stillObject(ObjectPoolUtil.ENEMY_ROLE, role);
+                role.dispose();
+            });
+            this.enemyRoles = null;
+        }
+        // BattleEngine.ins.endBattle();
+        LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, false);
+    };
+    return ChallegenBossMediator;
+}(BaseMediator));
+//# sourceMappingURL=ChallegenBossMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var Label = Laya.Label;
+var Box = Laya.Box;
 /**
- * name
- */
-var ChoiceMediator = /** @class */ (function (_super) {
-    __extends(ChoiceMediator, _super);
-    function ChoiceMediator(assetsUrl, view) {
+* 服务器选择列表
+*/
+var ChoiceServerMediator = /** @class */ (function (_super) {
+    __extends(ChoiceServerMediator, _super);
+    function ChoiceServerMediator(assetsUrl, view, caller, choiceCallBack) {
         if (assetsUrl === void 0) { assetsUrl = null; }
         if (view === void 0) { view = null; }
-        return _super.call(this, assetsUrl, view) || this;
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.caller = caller;
+        _this.choiceCallBack = choiceCallBack;
+        return _this;
     }
-    ChoiceMediator.prototype.initView = function () {
-        this.view = new ui.ChoiceQuFuUI();
-        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, true, false, true);
+    ChoiceServerMediator.prototype.initView = function () {
         _super.prototype.initView.call(this);
+        this.view.listServer.array = GameDataManager.ins.serverList;
     };
-    ChoiceMediator.prototype.addEvents = function () {
-        this.view.btnChoiceOK.on(Laya.Event.CLICK, this, this.onBtnChoiceOK);
+    ChoiceServerMediator.prototype.addEvents = function () {
+        this.view.listServer.selectEnable = true;
+        this.view.listServer.selectHandler = new Handler(this, this.onSelect);
+        this.view.listServer.renderHandler = new Handler(this, this.updateItem);
+        this.view.bg.on(Laya.Event.CLICK, this, this.onMouseClick);
     };
-    ChoiceMediator.prototype.removeEvents = function () {
-        this.view.btnChoiceOK.off(Laya.Event.CLICK, this, this.onBtnChoiceOK);
+    ChoiceServerMediator.prototype.removeEvents = function () {
+        this.view.listServer.selectHandler = null;
+        this.view.listServer.renderHandler = null;
+        this.view.bg.off(Laya.Event.CLICK, this, this.onMouseClick);
     };
-    ChoiceMediator.prototype.dispose = function () {
+    ChoiceServerMediator.prototype.onMouseClick = function (e) {
+        this.hide();
     };
-    ChoiceMediator.prototype.onBtnChoiceOK = function () {
-        LayerManager.ins.removeToLyaer(this.view, LayerManager.UI_LAYER, true, false);
+    ChoiceServerMediator.prototype.updateItem = function (cell, index) {
+        var tempLbl = cell.getChildByName("lblServName");
+        if (tempLbl) {
+            tempLbl.text = cell.dataSource.name;
+        }
+        tempLbl = cell.getChildByName("lblServState");
+        if (tempLbl) {
+            tempLbl.text = LG.getTXT("server.state" + cell.dataSource.state);
+        }
     };
-    return ChoiceMediator;
+    ChoiceServerMediator.prototype.onSelect = function (index) {
+        console.log("当前选择的索引：" + index);
+        var cell = this.view.listServer.getCell(index);
+        if (cell) {
+            cell.getChildByName("clip").index = 1;
+        }
+        GameDataManager.ins.choiceServerInfo(index);
+        if (this.caller && this.choiceCallBack) {
+            this.choiceCallBack.call(this.caller);
+        }
+        this.hide();
+    };
+    ChoiceServerMediator.prototype.show = function () {
+        this.view.visible = true;
+    };
+    ChoiceServerMediator.prototype.hide = function () {
+        this.view.visible = false;
+    };
+    ChoiceServerMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+    };
+    ChoiceServerMediator.prototype.onBtnChoiceOK = function () {
+        LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, false);
+    };
+    return ChoiceServerMediator;
 }(BaseMediator));
-//# sourceMappingURL=ChoiceMediator.js.map
+//# sourceMappingURL=ChoiceServerMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -53951,38 +63540,169 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 /*
-* name;
+* 进入游戏
+*/
+var EnterGameMediator = /** @class */ (function (_super) {
+    __extends(EnterGameMediator, _super);
+    function EnterGameMediator(assetsUrl, view) {
+        return _super.call(this, assetsUrl, view) || this;
+    }
+    EnterGameMediator.prototype.initView = function () {
+        this.view = new ui.EnterGameViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, true, false, true);
+        _super.prototype.initView.call(this);
+        //选择服务器列表
+        this.choiceServerMediator = new ChoiceServerMediator(null, this.view.serverListView, this, this.updateServerInfo);
+        AnimationManager.ins.popCenterLittleToBig(this.view, 300);
+        this.updateServerInfo();
+    };
+    EnterGameMediator.prototype.addEvents = function () {
+        this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
+        this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
+        WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN, new UserLoginHandler(Protocol.USER_LOGIN, this, this.onWebSocketLogined));
+    };
+    EnterGameMediator.prototype.removeEvents = function () {
+        this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
+        this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
+    };
+    EnterGameMediator.prototype.onWebSocketLogined = function (data) {
+        if (data.statusCode == 0) {
+            console.log("登录成功。。。" + data);
+            PreLoadingView.ins.show();
+            SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+            this.dispose();
+        }
+        else {
+            console.log("登录错误码", data.statusCode);
+        }
+    };
+    EnterGameMediator.prototype.updateServerInfo = function () {
+        if (GameDataManager.ins.curServerInfo) {
+            this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
+        }
+    };
+    EnterGameMediator.prototype.onBtnLogin = function (e) {
+        //单机测试
+        PreLoadingView.ins.show();
+        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        this.dispose();
+        //登录web服
+        // var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
+        // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder)
+    };
+    EnterGameMediator.prototype.webEnterGameHanlder = function (data) {
+        var jsonObj = JSON.parse(data);
+        if (jsonObj.code == 200) {
+            GameDataManager.ins.loginToken = jsonObj.token;
+            EventManager.ins.addEvent(EventManager.SERVER_CONNECTED, this, this.onServerConnected);
+            WebSocketManager.ins.connect(GameDataManager.ins.curServerInfo.ip, GameDataManager.ins.curServerInfo.port);
+        }
+        else {
+            console.log("进入服务器异常！错误码：" + jsonObj.code);
+        }
+    };
+    EnterGameMediator.prototype.onServerConnected = function () {
+        EventManager.ins.removeEvent(EventManager.SERVER_CONNECTED, this.onServerConnected);
+        ClientSender.loginReq(GameDataManager.ins.selfPlayerData.name);
+    };
+    EnterGameMediator.prototype.onBtnChoice = function () {
+        this.choiceServerMediator.show();
+    };
+    EnterGameMediator.prototype.dispose = function () {
+        this.choiceServerMediator.dispose();
+        _super.prototype.dispose.call(this);
+    };
+    return EnterGameMediator;
+}(BaseMediator));
+//# sourceMappingURL=EnterGameMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 游戏主界面代理器
 */
 var GameMediator = /** @class */ (function (_super) {
     __extends(GameMediator, _super);
     function GameMediator(assetsUrl, view) {
         var _this = _super.call(this, assetsUrl, view) || this;
-        _this.battleReportMediator = null;
+        _this.curMediator = null;
+        _this.showViewIndex = -1;
         return _this;
     }
     GameMediator.prototype.initView = function () {
-        this.view = new ui.GameViewUI();
-        LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, false, false, true);
-        _super.prototype.initView.call(this);
-        this.battleReportMediator = new BattleReportMediator("main/img_reportsbg.png");
-        //初始化游戏场景
         ObjectPoolUtil.init();
-        MapManager.ins.enterMap("res/map", 1, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
-        GameDataManager.ins.initData();
-        RoleManager.ins.initHeros();
-        BattleEngine.ins.run();
+        this.view = new ui.GameViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.TOP_LAYER, false, false, true);
+        _super.prototype.initView.call(this);
+        this.onBtnMap();
     };
     GameMediator.prototype.addEvents = function () {
         this.view.btnOpen.on(Laya.Event.CLICK, this, this.onBtnOpen);
-        this.view.btnAni.on(Laya.Event.CLICK, this, this.onPlayAni);
+        this.view.btnMap.on(Laya.Event.CLICK, this, this.onBtnMap);
+        this.view.btnLineup.on(Laya.Event.CLICK, this, this.onBtnLineup);
+        this.view.btnHero.on(Laya.Event.CLICK, this, this.onBtnHero);
+        this.view.btnEquip.on(Laya.Event.CLICK, this, this.onBtnEquip);
+        this.view.btnHome.on(Laya.Event.CLICK, this, this.onBtnHome);
     };
     GameMediator.prototype.removeEvents = function () {
         this.view.btnOpen.off(Laya.Event.CLICK, this, this.onBtnOpen);
-        this.view.btnAni.off(Laya.Event.CLICK, this, this.onPlayAni);
-    };
-    GameMediator.prototype.onPlayAni = function (e) {
+        this.view.btnMap.off(Laya.Event.CLICK, this, this.onBtnMap);
+        this.view.btnLineup.off(Laya.Event.CLICK, this, this.onBtnLineup);
+        this.view.btnHero.off(Laya.Event.CLICK, this, this.onBtnHero);
+        this.view.btnEquip.off(Laya.Event.CLICK, this, this.onBtnEquip);
+        this.view.btnHome.off(Laya.Event.CLICK, this, this.onBtnHome);
     };
     GameMediator.prototype.onBtnOpen = function (e) {
+        SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+    };
+    /**地图系统 */
+    GameMediator.prototype.onBtnMap = function (e) {
+        if (this.showViewIndex == GameButtomTabIndex.MAP_BATTLE) {
+            return;
+        }
+        if (this.curMediator) {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        this.curMediator = new MapBattleMediator();
+        this.showViewIndex = GameButtomTabIndex.MAP_BATTLE;
+    };
+    /**阵型系统 */
+    GameMediator.prototype.onBtnLineup = function (e) {
+        if (this.showViewIndex == GameButtomTabIndex.LINEUP) {
+            return;
+        }
+        if (this.curMediator) {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        var resAry = [
+            { url: "res/atlas/lineup.atlas", type: Loader.ATLAS }
+        ];
+        this.curMediator = new LineupMediator(resAry);
+        this.showViewIndex = GameButtomTabIndex.LINEUP;
+    };
+    GameMediator.prototype.onBtnHero = function (e) {
+        var floatFontTips = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
+        floatFontTips.setAttribute(24, null, "#000000");
+        floatFontTips.show("此功能暂未开放，敬请期待！", e.target.parent, e.target.x, e.target.y, 1.0, 80);
+    };
+    GameMediator.prototype.onBtnEquip = function (e) {
+        var floatFontTips = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
+        floatFontTips.setAttribute(24, null, "#000000");
+        floatFontTips.show("此功能暂未开放，敬请期待！", e.target.parent, e.target.x, e.target.y, 1.0, 80);
+    };
+    GameMediator.prototype.onBtnHome = function (e) {
+        var floatFontTips = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
+        floatFontTips.setAttribute(24, null, "#000000");
+        floatFontTips.show("此功能暂未开放，敬请期待！", e.target.parent, e.target.x, e.target.y, 1.0, 80);
     };
     GameMediator.prototype.dispose = function () {
     };
@@ -54000,7 +63720,255 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 /*
-* name;
+* 阵型格子
+*/
+var LineupGridMediator = /** @class */ (function (_super) {
+    __extends(LineupGridMediator, _super);
+    function LineupGridMediator(assetsUrl, view) {
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.skeletonAni = null;
+        _this.isLoaded = false;
+        _this.aniCount = 0;
+        return _this;
+    }
+    LineupGridMediator.prototype.initView = function () {
+        _super.prototype.initView.call(this);
+    };
+    LineupGridMediator.prototype.addEvents = function () {
+    };
+    LineupGridMediator.prototype.removeEvents = function () {
+    };
+    LineupGridMediator.prototype.getView = function () {
+        return this.view;
+    };
+    LineupGridMediator.prototype.setUpHero = function (roleID) {
+        this.roleID = roleID;
+        if (this.skeletonAni == null) {
+            this.skeletonAni = new Skeleton();
+            this.skeletonAni.scale(1, 1);
+            // this.skeletonAni.pos(this.view.clipShadow.width/2,this.view.clipShadow.height/2);
+            this.aniPlay(RoleAniIndex.STAND);
+        }
+    };
+    LineupGridMediator.prototype.revokeUpHero = function (roleID) {
+    };
+    /**
+    *
+    * @param aniID 动画id
+    */
+    LineupGridMediator.prototype.aniPlay = function (aniID, loop, caller, method) {
+        if (this.isLoaded) {
+            /**测试自己龙动作 */
+            if (this.roleID == "20005") {
+                if (aniID == RoleAniIndex.ATTACK)
+                    aniID = NewRoleAniIndex.ATTACK;
+                else if (aniID == RoleAniIndex.INJURED)
+                    aniID = NewRoleAniIndex.INJURED;
+                else if (aniID == RoleAniIndex.DEATH)
+                    aniID = NewRoleAniIndex.DEATH;
+                else if (aniID == RoleAniIndex.MOVE)
+                    aniID = NewRoleAniIndex.MOVE;
+                else if (aniID == RoleAniIndex.STAND)
+                    aniID = NewRoleAniIndex.STAND;
+            }
+            loop = loop === undefined ? true : loop;
+            aniID = aniID % this.aniCount;
+            //>= aniCount默认播放第一个动画
+            if (this.skeletonAni) {
+                this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted, [caller, method]);
+                this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
+                this.skeletonAni.play(aniID, loop);
+            }
+        }
+        else {
+            if (this.roleID) {
+                var url = "res/outside/anim/role/role" + this.roleID + "/" + this.roleID + ".sk";
+                if (this.roleID == "20005") {
+                    url = "res/outside/anim/role/role" + this.roleID + "/alien-pro.sk";
+                }
+                this.skeletonAni.load(url, Laya.Handler.create(this, this.loadCompleted, [aniID, loop, caller, method]));
+            }
+        }
+    };
+    /**播放一次动画回调 */
+    LineupGridMediator.prototype.onPlayCompleted = function (caller, method) {
+        this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.onPlayCompleted);
+        if (caller && method) {
+            // console.log(this.roleVo.name);
+            this.skeletonAni.paused();
+            method.call(caller);
+        }
+    };
+    LineupGridMediator.prototype.loadCompleted = function (aniID, loop, caller, method) {
+        if (!this.isLoaded) {
+            this.isLoaded = true;
+            this.aniCount = this.skeletonAni.getAnimNum();
+            this.aniPlay(aniID, loop, caller, method);
+        }
+    };
+    return LineupGridMediator;
+}(BaseMediator));
+//# sourceMappingURL=LineupGridMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 阵型
+*/
+var LineupMediator = /** @class */ (function (_super) {
+    __extends(LineupMediator, _super);
+    function LineupMediator(assetsUrl, view) {
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.dragTime = 0;
+        return _this;
+    }
+    LineupMediator.prototype.initView = function () {
+        this.view = new ui.lineup.LineupViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
+        _super.prototype.initView.call(this);
+        this.lineupGrids = new Array();
+        var lineupGridMediator = null;
+        for (var i = 0; i < 6; i++) {
+            lineupGridMediator = new LineupGridMediator(null, this.view["grid" + i]);
+            this.lineupGrids.push(lineupGridMediator);
+            console.log(this.view["grid" + i].visible, this.view["grid" + i].x, this.view["grid" + i].y, this.view.getChildIndex(this.view["grid" + i]));
+        }
+        // 使用但隐藏滚动条
+        // this.view.listIcon.hScrollBarSkin = "";
+        var ids = ["10000", "10001", "10002", "10003", "10004"];
+        var ary = [];
+        var qulityInd = 0;
+        var iconInd = 0;
+        var idInd = -1;
+        for (i = 0; i < 20; i++) {
+            qulityInd++;
+            iconInd++;
+            idInd++;
+            if (qulityInd > 7)
+                qulityInd = 1;
+            if (iconInd > 9)
+                iconInd = 1;
+            if (idInd > ids.length) {
+                idInd = 0;
+            }
+            ary.push({ quality: qulityInd, iconName: "icon-00" + iconInd, roleID: ids[idInd] });
+        }
+        this.view.listIcon.array = ary;
+    };
+    LineupMediator.prototype.addEvents = function () {
+        this.view.listIcon.renderHandler = new Handler(this, this.listIconRender);
+        this.view.listIcon.selectEnable = true;
+        this.view.listIcon.selectHandler = new Handler(this, this.listIconSelect);
+        this.view.listIcon.mouseHandler = new Handler(this, this.onMouseHandler);
+        this.view.on(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+        this.view.on(Laya.Event.MOUSE_UP, this, this.onViewMouseUp);
+    };
+    LineupMediator.prototype.removeEvents = function () {
+        this.view.listIcon.renderHandler = null;
+        this.view.listIcon.selectHandler = null;
+        this.view.listIcon.mouseHandler = null;
+        this.view.off(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+        this.view.off(Laya.Event.MOUSE_UP, this, this.onViewMouseUp);
+    };
+    LineupMediator.prototype.listIconRender = function (cell, index) {
+        if (cell && cell.dataSource) {
+            cell.setData(cell.dataSource);
+        }
+    };
+    LineupMediator.prototype.listIconSelect = function (index) {
+    };
+    LineupMediator.prototype.onMouseHandler = function (e, index) {
+        if (e.type == Laya.Event.MOUSE_DOWN) {
+            this.dragTime = 0;
+            Laya.timer.loop(1000, this, this.calDragIconTime, [index]);
+        }
+        else if (e.type == Laya.Event.MOUSE_UP) {
+            this.dragTime = 0;
+            Laya.timer.clear(this, this.calDragIconTime);
+        }
+    };
+    LineupMediator.prototype.calDragIconTime = function (index) {
+        this.dragTime++;
+        if (this.dragTime >= 1.5) {
+            var cell = this.view.listIcon.getCell(index);
+            if (cell) {
+                if (this.dragIcon) {
+                    this.dragIcon.dispose();
+                    this.dragIcon = null;
+                }
+                this.dragIcon = new IconView();
+                this.dragIcon.setData(cell.data);
+                this.dragIcon.x = this.view.mouseX - this.dragIcon.width / 2;
+                this.dragIcon.y = this.view.mouseY - this.dragIcon.height / 2;
+                this.view.addChild(this.dragIcon);
+            }
+            Laya.timer.clear(this, this.calDragIconTime);
+            //禁止滚动
+            var scroll = this.view.listIcon.scrollBar;
+            Laya.timer.clear(scroll, scroll.loop);
+            // scroll.off(/*laya.events.Event.CHANGE*/"change",this.view.listIcon,this.view.listIcon.onScrollBarChange);
+            // scroll.slider.off(/*laya.events.Event.CHANGE*/"change",scroll,scroll.onSliderChange);
+        }
+    };
+    LineupMediator.prototype.onViewMouseUp = function (e) {
+        if (this.dragIcon) {
+            this.dragUpLineup(this.dragIcon.data.roleID);
+            this.dragIcon.dispose();
+            this.dragIcon = null;
+            //启动滚动事件
+            var scroll = this.view.listIcon.scrollBar;
+            Laya.timer.frameLoop(1, scroll, scroll.loop);
+            // scroll.on(/*laya.events.Event.CHANGE*/"change",this.view.listIcon,this.view.listIcon.onScrollBarChange);
+            // scroll.slider.on(/*laya.events.Event.CHANGE*/"change",scroll,scroll.onSliderChange);
+        }
+    };
+    LineupMediator.prototype.onMouseMove = function (e) {
+        if (this.dragIcon) {
+            this.dragIcon.x = this.view.mouseX - this.dragIcon.width / 2;
+            this.dragIcon.y = this.view.mouseY - this.dragIcon.height / 2;
+        }
+        this.dragTime = 0;
+        Laya.timer.clear(this, this.calDragIconTime);
+    };
+    /**拖拽上阵型 */
+    LineupMediator.prototype.dragUpLineup = function (roleId) {
+        var lineupGridMediator = null;
+        var gridView = null;
+        for (var i = 0; i < this.lineupGrids.length; i++) {
+            lineupGridMediator = this.lineupGrids[i];
+            gridView = lineupGridMediator.getView();
+            if (this.view.mouseX > gridView.x && this.view.mouseX < gridView.x + gridView.clipShadow.width
+                && this.view.mouseY > gridView.y && this.view.mouseY < gridView.y + gridView.clipShadow.height) {
+                lineupGridMediator.setUpHero(roleId);
+                break;
+            }
+        }
+    };
+    LineupMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+    };
+    return LineupMediator;
+}(BaseMediator));
+//# sourceMappingURL=LineupMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 登录
 */
 var LoginMediator = /** @class */ (function (_super) {
     __extends(LoginMediator, _super);
@@ -54014,23 +63982,189 @@ var LoginMediator = /** @class */ (function (_super) {
     };
     LoginMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
-        this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
     };
     LoginMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
-        this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
-    };
-    LoginMediator.prototype.dispose = function () {
     };
     LoginMediator.prototype.onBtnLogin = function (e) {
-        SceneMananger.ins.enter(SceneMananger.GAME_SCENE);
+        //单机测试
+        var resAry = [
+            { url: "unpack/login/logo.png", type: Loader.IMAGE }
+        ];
+        var enterGameMediator = new EnterGameMediator(resAry);
+        // var account:string = this.view.inputAccount.text;
+        // var pwd:string = this.view.inputPwd.text;
+        // if(!account || account == "")
+        // {
+        //     console.log("用户名不能为空");
+        //     return;
+        // }
+        // if(!pwd || pwd == "")
+        // {
+        //     console.log("密码不能为空");
+        //     return;
+        // }
+        // ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
     };
-    LoginMediator.prototype.onBtnChoice = function () {
-        new ChoiceMediator();
+    LoginMediator.prototype.loginSuccessHanlder = function (data) {
+        var jsonObj = JSON.parse(data);
+        if (jsonObj.code == 200) {
+            GameDataManager.ins.saveSelfPlayerData(jsonObj);
+            ClientSender.httpGameServerReq(this, this.onGameServersList);
+        }
+        else {
+            console.log("登录异常！错误码:" + jsonObj.code);
+        }
+    };
+    LoginMediator.prototype.onGameServersList = function (data) {
+        var jsonObj = JSON.parse(data);
+        if (jsonObj.code == 200) {
+            GameDataManager.ins.saveServerInfoList(jsonObj.data, jsonObj.lastInGameServers);
+            var resAry = [
+                { url: "unpack/login/logo.png", type: Loader.IMAGE }
+            ];
+            var enterGameMediator = new EnterGameMediator(resAry);
+            this.dispose();
+        }
+        else {
+            console.log("获取服务器列表异常！错误码：" + jsonObj.code);
+        }
+    };
+    LoginMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
     };
     return LoginMediator;
 }(BaseMediator));
 //# sourceMappingURL=LoginMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 地图战斗
+*/
+var MapBattleMediator = /** @class */ (function (_super) {
+    __extends(MapBattleMediator, _super);
+    function MapBattleMediator(assetsUrl, view) {
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.battleReportMediator = null;
+        _this.challegenBossMediator = null;
+        /**世界地图 */
+        _this.mapWorldMediator = null;
+        return _this;
+    }
+    MapBattleMediator.prototype.initView = function () {
+        this.view = new ui.MapBattleViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
+        _super.prototype.initView.call(this);
+        if (GameDataManager.ins.hundUpChapterData == null) {
+            this.showMapWordMediator();
+        }
+        else {
+            this.view.mapWordView.removeSelf();
+            // this.enterMapBattle();
+        }
+    };
+    MapBattleMediator.prototype.addEvents = function () {
+        this.view.btnChalleangeBoss.on(Laya.Event.CLICK, this, this.onChalleangeBoss);
+        EventManager.ins.addEvent(EventManager.CHALLENGE_BOSS, this, this.challegenBossHandler);
+    };
+    MapBattleMediator.prototype.removeEvents = function () {
+        this.view.btnChalleangeBoss.off(Laya.Event.CLICK, this, this.onChalleangeBoss);
+        EventManager.ins.removeEvent(EventManager.CHALLENGE_BOSS, this.challegenBossHandler);
+    };
+    MapBattleMediator.prototype.showMapWordMediator = function () {
+        this.mapWorldMediator = new MapWorldMediator(null, this.view.mapWordView, this);
+    };
+    /**进入地图假战斗 */
+    MapBattleMediator.prototype.enterMapBattle = function () {
+        this.battleReportMediator = new BattleReportMediator();
+        //初始化游戏场景
+        MapManager.ins.enterMap("res/map", 2, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
+        GameDataManager.ins.initData();
+        RoleManager.ins.initHeros();
+        BattleEngine.ins.run();
+    };
+    MapBattleMediator.prototype.challegenBossHandler = function (data) {
+        var isEnd = data[0];
+        if (isEnd == false) {
+        }
+        else {
+            if (this.challegenBossMediator)
+                this.challegenBossMediator.dispose();
+        }
+        // RoleManager.ins.resetRolePoint();
+    };
+    /**
+     * 挑战boss
+     * @param e
+     */
+    MapBattleMediator.prototype.onChalleangeBoss = function (e) {
+        MapManager.ins.enterMap("res/map", 10000, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
+        GameDataManager.ins.productBossData();
+        var resAry = [{ url: "unpack/challengeboss/bg.png", type: Loader.IMAGE }];
+        var bossData;
+        var roleVos = GameDataManager.ins.bossData.roleVoAry.concat(GameDataManager.ins.selfPlayerData.roleVoAry);
+        roleVos.forEach(function (roleVo) {
+            //角色资源
+            resAry.push({ url: "res/outside/anim/role/role" + roleVo.id + "/" + roleVo.id + ".sk", type: /*laya.net.Loader.BUFFER*/ "arraybuffer" });
+        });
+        this.challegenBossMediator = new ChallegenBossMediator(resAry);
+    };
+    MapBattleMediator.prototype.dispose = function () {
+    };
+    return MapBattleMediator;
+}(BaseMediator));
+//# sourceMappingURL=MapBattleMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 世界地图
+*/
+var MapWorldMediator = /** @class */ (function (_super) {
+    __extends(MapWorldMediator, _super);
+    function MapWorldMediator(assetsUrl, view, caller) {
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.mapBattleMediator = caller;
+        return _this;
+    }
+    MapWorldMediator.prototype.initView = function () {
+        _super.prototype.initView.call(this);
+    };
+    MapWorldMediator.prototype.addEvents = function () {
+        this.view.btnEnter.on(Laya.Event.CLICK, this, this.onBtnEnter);
+    };
+    MapWorldMediator.prototype.removeEvents = function () {
+        this.view.btnEnter.off(Laya.Event.CLICK, this, this.onBtnEnter);
+    };
+    MapWorldMediator.prototype.onBtnEnter = function (e) {
+        GameDataManager.ins.hundUpChapterData = 1;
+        if (this.mapBattleMediator) {
+            this.mapBattleMediator.enterMapBattle();
+        }
+        this.dispose();
+    };
+    MapWorldMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        this.mapBattleMediator = null;
+    };
+    return MapWorldMediator;
+}(BaseMediator));
+//# sourceMappingURL=MapWorldMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54086,6 +64220,7 @@ var TestMediator = /** @class */ (function (_super) {
     }
     TestMediator.prototype.initView = function () {
         this.view = new ui.test.TestPageUI();
+        AnimationManager.ins.popCenterLittleToBig(this.view);
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, true, true);
         _super.prototype.initView.call(this);
     };
@@ -54095,7 +64230,7 @@ var TestMediator = /** @class */ (function (_super) {
     TestMediator.prototype.removeEvents = function () {
     };
     TestMediator.prototype.onClose = function (e) {
-        LayerManager.ins.removeToLyaer(this.view, LayerManager.UI_LAYER, true, true);
+        LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, true);
     };
     return TestMediator;
 }(BaseMediator));
@@ -54123,6 +64258,7 @@ var LayerManager = /** @class */ (function () {
         this.roleLayer = null;
         this.effectLayer = null;
         this.uiLayer = null;
+        this.topLayer = null;
         this.tipLayer = null;
     }
     Object.defineProperty(LayerManager, "ins", {
@@ -54150,6 +64286,8 @@ var LayerManager = /** @class */ (function () {
         Laya.stage.addChild(this.effectLayer);
         this.uiLayer = new MyLayer();
         Laya.stage.addChild(this.uiLayer);
+        this.topLayer = new MyLayer();
+        Laya.stage.addChild(this.topLayer);
         this.tipLayer = new MyLayer();
         Laya.stage.addChild(this.tipLayer);
     };
@@ -54166,7 +64304,7 @@ var LayerManager = /** @class */ (function () {
         layer.add(view, isMask, isMany);
     };
     /**从对应层移出显示对象 */
-    LayerManager.prototype.removeToLyaer = function (view, layerId, isMask, isMany) {
+    LayerManager.prototype.removeToLayer = function (view, layerId, isMask, isMany) {
         if (isMask === void 0) { isMask = false; }
         if (isMany === void 0) { isMany = false; }
         var layer = this.getLayer(layerId);
@@ -54188,6 +64326,8 @@ var LayerManager = /** @class */ (function () {
                 return this.effectLayer;
             case LayerManager.UI_LAYER:
                 return this.uiLayer;
+            case LayerManager.TOP_LAYER:
+                return this.topLayer;
             case LayerManager.TIP_LAYER:
                 return this.tipLayer;
         }
@@ -54206,8 +64346,10 @@ var LayerManager = /** @class */ (function () {
     LayerManager.EFFECT_LAYER = 5;
     /**UI层 */
     LayerManager.UI_LAYER = 6;
+    /**顶部层 */
+    LayerManager.TOP_LAYER = 7;
     /**tip层 */
-    LayerManager.TIP_LAYER = 7;
+    LayerManager.TIP_LAYER = 8;
     LayerManager._ins = null;
     return LayerManager;
 }());
@@ -54234,7 +64376,6 @@ var MyLayer = /** @class */ (function (_super) {
                 this.maskSprite.height = GameConfig.STAGE_HEIGHT;
                 this.maskSprite.mouseEnabled = true;
                 this.maskSprite.graphics.drawRect(0, 0, GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, "#000000");
-                console.log(this.maskSprite.width, this.maskSprite.height);
                 this.maskSprite.alpha = 0.5;
             }
             if (!this.maskSprite.parent) {
@@ -54267,12 +64408,6 @@ var MyLayer = /** @class */ (function (_super) {
                 this.maskSprite.graphics.clear();
                 this.maskSprite.removeSelf();
                 this.maskSprite = null;
-                // if(this.maskSprite.parent)
-                // {
-                //     this.maskSprite.removeChild(this.maskSprite);
-                //     this.maskSprite.mouseEnabled = false;
-                //     this.maskSprite = null;
-                // }
             }
         }
         if (isMany) {
@@ -54729,7 +64864,10 @@ var MapGrid = /** @class */ (function (_super) {
         this.x = this.op.x + diamondWF;
         this.y = this.op.y + diamondHF + GameConfig.MAP_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y;
         // console.log(this.x,this.y);
-        LayerManager.ins.addToLayer(this, LayerManager.BG_EFFECT_LAYER, false, true, false);
+        LayerManager.ins.addToLayer(this, LayerManager.TIP_LAYER, false, true, false);
+    };
+    MapGrid.prototype.clearDraw = function () {
+        this.removeSelf();
     };
     return MapGrid;
 }(Laya.Sprite));
@@ -54793,9 +64931,15 @@ var MapLoopEngine = /** @class */ (function (_super) {
             this.visualWidth = GameConfig.STAGE_WIDTH;
         }
         this.visualHeight = visualHeight;
-        var url = this.rootPath + "/11_background_" + this.mapID + ".png";
+        var url;
         if (mapType == MapType.NEAR_MAP) {
-            url = this.rootPath + "/11_prospect_" + this.mapID + ".png";
+            url = this.rootPath + "/" + mapID + "/near.png";
+        }
+        else if (mapType == MapType.FAR_MAP) {
+            url = this.rootPath + "/" + mapID + "/far.png";
+        }
+        else {
+            url = this.rootPath + "/" + mapID + "/middle.png";
         }
         Laya.loader.load(url, new Handler(this, this.loadMapCompleted), null, Loader.IMAGE);
     };
@@ -54864,6 +65008,149 @@ var MapLoopEngine = /** @class */ (function (_super) {
     return MapLoopEngine;
 }(Laya.Sprite));
 //# sourceMappingURL=MapLoopEngine.js.map
+/*
+* 数据处理Hanlder
+*/
+var SocketHanlder = /** @class */ (function () {
+    function SocketHanlder(module, caller, callback) {
+        if (callback === void 0) { callback = null; }
+        this.statusCode = 0;
+        this.module = module;
+        this.caller = caller;
+        this.callBack = callback;
+    }
+    SocketHanlder.prototype.explain = function (data) {
+        var statusCode = data.statusCode;
+        if (statusCode == 0) {
+            this.success(data);
+        }
+        else {
+            console.log("服务器返回：" + data.statusCode);
+        }
+    };
+    SocketHanlder.prototype.success = function (data) {
+        if (data) {
+            this.callBack.call(this.caller, data);
+        }
+        else {
+            this.callBack.call(this.caller);
+        }
+    };
+    return SocketHanlder;
+}());
+//# sourceMappingURL=SocketHanlder.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 用户登录
+*/
+var UserLoginHandler = /** @class */ (function (_super) {
+    __extends(UserLoginHandler, _super);
+    function UserLoginHandler(module, caller, callback) {
+        if (callback === void 0) { callback = null; }
+        return _super.call(this, module, caller, callback) || this;
+    }
+    UserLoginHandler.prototype.explain = function (data) {
+        var LoginResponse = WebSocketManager.ins.defineProtoClass("LoginResponse");
+        var message = LoginResponse.decode(data);
+        _super.prototype.explain.call(this, message);
+    };
+    /**处理数据 */
+    UserLoginHandler.prototype.success = function (message) {
+        _super.prototype.success.call(this, message);
+    };
+    return UserLoginHandler;
+}(SocketHanlder));
+//# sourceMappingURL=UserLoginHandler.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 包解析
+*/
+var PackageIn = /** @class */ (function (_super) {
+    __extends(PackageIn, _super);
+    function PackageIn() {
+        return _super.call(this) || this;
+    }
+    PackageIn.prototype.read = function (msg) {
+        if (msg === void 0) { msg = null; }
+        this.endian = Laya.Byte.BIG_ENDIAN; //设置endian；
+        this.clear();
+        this.writeArrayBuffer(msg);
+        this.pos = 0;
+        //标记和长度
+        var mark = this.getInt16();
+        var len = this.getInt32();
+        //包头
+        this.module = this.getInt32();
+        var cmd = this.getInt32();
+        var type = this.getByte();
+        var format = this.getByte();
+        //数据
+        var tempByte = this.buffer.slice(this.pos);
+        this.body = new Uint8Array(tempByte);
+    };
+    return PackageIn;
+}(Laya.Byte));
+//# sourceMappingURL=PackageIn.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 打包
+*/
+var PackageOut = /** @class */ (function (_super) {
+    __extends(PackageOut, _super);
+    function PackageOut() {
+        var _this = _super.call(this) || this;
+        _this.PACKET_MARK = 0x0;
+        _this.module = 0;
+        _this.type = 0;
+        _this.formart = 0;
+        return _this;
+    }
+    PackageOut.prototype.pack = function (module, cmd, data) {
+        this.endian = Laya.Byte.BIG_ENDIAN; //设置endian；
+        this.module = module;
+        this.cmd = cmd;
+        this.writeInt16(this.PACKET_MARK);
+        this.writeInt32(data.byteLength + 10);
+        //包头
+        this.writeInt32(this.module);
+        this.writeInt32(this.cmd);
+        this.writeByte(this.type);
+        this.writeByte(this.formart);
+        //消息体
+        if (data) {
+            this.writeArrayBuffer(data);
+        }
+    };
+    return PackageOut;
+}(Laya.Byte));
+//# sourceMappingURL=PackageOut.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -54885,22 +65172,28 @@ var BaseRole = /** @class */ (function (_super) {
         _this.skeletonAni = null;
         _this.aniCount = 0;
         _this.aniScale = 1;
-        _this.isLoaded = false;
         _this.LblName = null;
         _this.roleBloodBar = null;
+        _this.showPriority = 0;
         return _this;
     }
-    BaseRole.prototype.initRole = function (roleVo, scale) {
+    BaseRole.prototype.initRole = function (roleVo, showPriority, scale, parentDis) {
         this.roleVo = roleVo;
+        this.showPriority = showPriority;
         if (scale) {
             this.aniScale = scale;
         }
         this.isLoaded = false;
         this.skeletonAni = new Skeleton();
         this.skeletonAni.scale(this.aniScale, this.aniScale);
-        this.skeletonAni.scaleX = this.roleVo.scaleX;
+        this.skeletonAni.scaleX = this.roleVo.scaleX * this.aniScale;
         this.addChild(this.skeletonAni);
-        LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
+        if (parentDis) {
+            parentDis.addChild(this);
+        }
+        else {
+            LayerManager.ins.addToLayer(this, LayerManager.ROLE_LAYER, false, true, false);
+        }
         this.visible = true;
     };
     BaseRole.prototype.showFloatFont = function (blood) {
@@ -54914,36 +65207,59 @@ var BaseRole = /** @class */ (function (_super) {
      *
      * @param aniID 动画id
      */
-    BaseRole.prototype.aniPlay = function (aniID, loop, laterTime, caller, method) {
+    BaseRole.prototype.aniPlay = function (aniID, loop, caller, method, defRole) {
         if (this.isLoaded) {
-            loop = loop ? false : true;
+            /**测试自己龙动作 */
+            if (this.roleVo.id == "20005") {
+                if (aniID == RoleAniIndex.ATTACK)
+                    aniID = NewRoleAniIndex.ATTACK;
+                else if (aniID == RoleAniIndex.INJURED)
+                    aniID = NewRoleAniIndex.INJURED;
+                else if (aniID == RoleAniIndex.DEATH)
+                    aniID = NewRoleAniIndex.DEATH;
+                else if (aniID == RoleAniIndex.MOVE)
+                    aniID = NewRoleAniIndex.MOVE;
+                else if (aniID == RoleAniIndex.STAND)
+                    aniID = NewRoleAniIndex.STAND;
+            }
+            loop = loop === undefined ? true : loop;
             aniID = aniID % this.aniCount;
             //>= aniCount默认播放第一个动画
             if (this.skeletonAni) {
+                this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted, [defRole, caller, method]);
+                this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID, loop);
-                if (laterTime && caller && method) {
-                    Laya.timer.once(laterTime, caller, method);
-                }
-                // if(this.roleVo.name == "蓝狼"){
-                //     console.log("播放动画名字："+ this.skeletonAni.getAniNameByIndex(aniID),this.visible);
-                // }
             }
         }
         else {
-            //分帧加载
-            Laya.timer.frameOnce(2, this, this.skeletonAniLoad, [aniID, loop]);
+            Laya.timer.frameOnce(this.showPriority * 6, this, this.skeletonAniLoad, [aniID, loop, caller, method], false);
         }
     };
-    BaseRole.prototype.skeletonAniLoad = function (aniID, loop) {
-        this.skeletonAni.load("res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk", new Laya.Handler(this, this.loadCompleted, [aniID, loop]));
+    /**播放一次动画回调 */
+    BaseRole.prototype.onPlayCompleted = function (defRole, caller, method) {
+        this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.onPlayCompleted);
+        if (caller && method) {
+            // console.log(this.roleVo.name);
+            this.skeletonAni.paused();
+            method.call(caller, [this, defRole]);
+        }
     };
-    BaseRole.prototype.loadCompleted = function (ind, loop) {
+    BaseRole.prototype.skeletonAniLoad = function (aniID, loop, caller, method) {
+        //分帧加载
+        if (this.roleVo) {
+            var url = "res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk";
+            if (this.roleVo.id == "20005") {
+                url = "res/outside/anim/role/role" + this.roleVo.id + "/alien-pro.sk";
+            }
+            this.skeletonAni.load(url, Laya.Handler.create(this, this.loadCompleted, [aniID, loop, caller, method]));
+        }
+    };
+    BaseRole.prototype.loadCompleted = function (aniID, loop, caller, method) {
         if (!this.isLoaded) {
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();
-            this.aniPlay(ind, loop);
+            this.aniPlay(aniID, loop, caller, method);
             this.initComponets();
-            // console.log("播放动画名字："+this.aniCount);
         }
     };
     BaseRole.prototype.initComponets = function () {
@@ -54972,9 +65288,8 @@ var BaseRole = /** @class */ (function (_super) {
     };
     /**设置显示层级 */
     BaseRole.prototype.setShowIndex = function (ind) {
-        var layer = LayerManager.ins.getLayer(LayerManager.ROLE_LAYER);
-        if (ind >= 0 && ind < layer.numChildren) {
-            layer.setChildIndex(this, ind);
+        if (this.parent && ind >= 0) {
+            this.parent.setChildIndex(this, ind);
         }
     };
     BaseRole.prototype.run = function () {
@@ -54985,15 +65300,15 @@ var BaseRole = /** @class */ (function (_super) {
     };
     BaseRole.prototype.setVis = function (bool) {
         //延迟回调判断，复活就设置隐藏
-        if (this.roleVo.isDeath) {
+        if (this.roleVo && this.roleVo.isDeath) {
             this.visible = bool;
         }
     };
     BaseRole.prototype.dispose = function () {
-        // if(this.roleVo.isEnemy)
-        // {
+        this.parent.setChildIndex(this, 0);
         this.removeSelf();
         if (this.skeletonAni) {
+            Laya.loader.clearRes(this.skeletonAni.url);
             this.skeletonAni.destroy();
         }
         this.skeletonAni = null;
@@ -55004,8 +65319,9 @@ var BaseRole = /** @class */ (function (_super) {
             this.roleBloodBar.removeSelf();
             ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR, this.roleBloodBar);
         }
-        // this.roleVo = null;
-        // }
+        this.roleVo = null;
+    };
+    BaseRole.prototype.moveByMap = function (speed) {
     };
     return BaseRole;
 }(Laya.Sprite));
@@ -55028,20 +65344,32 @@ var Enemy = /** @class */ (function (_super) {
     function Enemy() {
         return _super.call(this) || this;
     }
-    Enemy.prototype.initRole = function (roleVo, scale) {
-        _super.prototype.initRole.call(this, roleVo, scale);
-        this.x = GameConfig.STAGE_WIDTH + GameConfig.LINEUP_GRID_WIDTH + roleVo.runWidth;
+    Enemy.prototype.initRole = function (roleVo, showPriority, scale, parentDis) {
+        _super.prototype.initRole.call(this, roleVo, showPriority, scale, parentDis);
+        // this.x = GameConfig.STAGE_WIDTH + GameConfig.LINEUP_GRID_WIDTH + roleVo.runWidth;
+        this.x = this.roleVo.posPoint.x + (parentDis ? 0 : GameConfig.STAGE_WIDTH / 2);
         this.y = this.roleVo.posPoint.y;
     };
-    Enemy.prototype.run = function () {
-        // this.aniPlay(RoleAniIndex.MOVE);
-        _super.prototype.run.call(this);
-        Laya.Tween.to(this, { x: this.roleVo.posPoint.x, complete: new Handler(this, this.onMoveComplete) }, GameConfig.BATTLE_RUN_TIME * 1000);
-    };
-    Enemy.prototype.onMoveComplete = function () {
-        console.log("敌人到达战场...");
-        EventManager.ins.dispatchEvent(EventManager.ENEMY_RUNTO_COMPLETE);
-        this.aniPlay(RoleAniIndex.STAND);
+    // public run():void
+    // {
+    //     this.aniPlay(RoleAniIndex.STAND);
+    //     // super.run();
+    //     Laya.Tween.to(this,{x:this.roleVo.posPoint.x,complete:new Handler(this,this.onMoveComplete)},GameConfig.BATTLE_RUN_TIME*1000);
+    // }
+    // private onMoveComplete():void
+    // {
+    //     console.log("敌人到达战场...");
+    //     EventManager.ins.dispatchEvent(EventManager.ENEMY_RUNTO_COMPLETE);
+    //     this.aniPlay(RoleAniIndex.STAND);
+    // }
+    /**跟随地图移动 */
+    Enemy.prototype.moveByMap = function (speed) {
+        if (this.roleVo && this.x > this.roleVo.posPoint.x) {
+            this.x -= speed;
+            if (this.x <= this.roleVo.posPoint.x) {
+                EventManager.ins.dispatchEvent(EventManager.ENEMY_RUNTO_COMPLETE);
+            }
+        }
     };
     return Enemy;
 }(BaseRole));
@@ -55064,8 +65392,8 @@ var Hero = /** @class */ (function (_super) {
     function Hero() {
         return _super.call(this) || this;
     }
-    Hero.prototype.initRole = function (roleVo, scale) {
-        _super.prototype.initRole.call(this, roleVo, scale);
+    Hero.prototype.initRole = function (roleVo, showPriority, scale, parentDis) {
+        _super.prototype.initRole.call(this, roleVo, showPriority, scale, parentDis);
         // this.skeletonAni.pos(roleVo.posPoint.x,roleVo.posPoint.y);
         this.x = roleVo.posPoint.x;
         this.y = roleVo.posPoint.y;
@@ -55106,7 +65434,7 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var Loader = Laya.Loader;
 /*
-* name;
+* 游戏场景
 */
 var GameScene = /** @class */ (function (_super) {
     __extends(GameScene, _super);
@@ -55115,7 +65443,7 @@ var GameScene = /** @class */ (function (_super) {
     }
     GameScene.prototype.enter = function () {
         // super.enter();
-        new GameMediator([{ url: "res/atlas/main.atlas", type: Loader.ATLAS }, { url: "test/img_bg.png", type: Loader.IMAGE }]);
+        new GameMediator([{ url: "res/atlas/main.atlas", type: Loader.ATLAS }]);
         // new GameMediator("res/atlas/main.atlas");
     };
     GameScene.prototype.leave = function () {
@@ -55140,12 +65468,18 @@ var __extends = (this && this.__extends) || (function () {
 var LoginScene = /** @class */ (function (_super) {
     __extends(LoginScene, _super);
     function LoginScene() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this.loginMediator = null;
+        return _this;
     }
     LoginScene.prototype.enter = function () {
-        new LoginMediator();
+        this.loginMediator = new LoginMediator();
     };
     LoginScene.prototype.leave = function () {
+        if (this.loginMediator) {
+            this.loginMediator.dispose();
+            this.loginMediator = null;
+        }
     };
     return LoginScene;
 }(BaseScene));
@@ -55161,7 +65495,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 /*
-* name;
+* 预加载场景
 */
 var PreLoadScene = /** @class */ (function (_super) {
     __extends(PreLoadScene, _super);
@@ -55169,168 +65503,34 @@ var PreLoadScene = /** @class */ (function (_super) {
         return _super.call(this) || this;
     }
     PreLoadScene.prototype.enter = function () {
+        var resAry = [
+            // {url:"res/atlas/comp.atlas",type:Loader.ATLAS,size:45,priority:2},
+            { url: "res/outside/sound/effect/fit.wav", type: Loader.SOUND, size: 20, priority: 1 },
+            { url: "res/outside/sound/bg/zhou.mp3", type: Loader.SOUND, size: 10, priority: 1 },
+            { url: ["unpack/login/logo.png", "unpack/main/main.jpg", "unpack/main/role.jpg"], type: Loader.IMAGE, size: 25, priority: 1 },
+            { url: "res/config/TestSample.xml", type: Loader.TEXT },
+            { url: "res/config/QualitySample.xml", type: Loader.TEXT },
+            { url: "res/config/HeroLevelSample.xml", type: Loader.TEXT },
+            { url: "res/config/HeroSample.xml", type: Loader.TEXT },
+            { url: "res/config/HeroTypeSample.xml", type: Loader.TEXT },
+            { url: "res/config/QualityScoreSample.xml", type: Loader.TEXT }
+        ];
+        Laya.loader.load(resAry, Handler.create(this, this.onLoaded), Handler.create(this, this.loadGameResProgress, null, false));
+    };
+    PreLoadScene.prototype.loadGameResProgress = function (value) {
+        PreLoadingView.ins.setProgress(value);
+    };
+    PreLoadScene.prototype.onLoaded = function () {
+        PreLoadingView.ins.setProgress(1);
+        ConfigManager.ins.parsePreLoadConfigs();
+        SceneMananger.ins.enter(SceneMananger.GAME_SCENE);
+        // DebugViewUtil.log("浏览器宽高",Laya.Browser.width+","+Laya.Browser.height);
     };
     PreLoadScene.prototype.leave = function () {
     };
     return PreLoadScene;
 }(BaseScene));
 //# sourceMappingURL=PreLoadScene.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-var View = laya.ui.View;
-var Dialog = laya.ui.Dialog;
-var ui;
-(function (ui) {
-    var BattleReportViewUI = /** @class */ (function (_super) {
-        __extends(BattleReportViewUI, _super);
-        function BattleReportViewUI() {
-            return _super.call(this) || this;
-        }
-        BattleReportViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.BattleReportViewUI.uiView);
-        };
-        BattleReportViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "main/img_reportsbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "TextArea", "props": { "y": 57, "x": 10, "width": 731, "var": "texaArea", "height": 300 } }, { "type": "Label", "props": { "y": 15, "x": 322, "width": 85, "text": "战    报", "height": 25, "fontSize": 24, "color": "#000000", "bold": true, "align": "center" } }] };
-        return BattleReportViewUI;
-    }(View));
-    ui.BattleReportViewUI = BattleReportViewUI;
-})(ui || (ui = {}));
-(function (ui) {
-    var ChoiceQuFuUI = /** @class */ (function (_super) {
-        __extends(ChoiceQuFuUI, _super);
-        function ChoiceQuFuUI() {
-            return _super.call(this) || this;
-        }
-        ChoiceQuFuUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.ChoiceQuFuUI.uiView);
-        };
-        ChoiceQuFuUI.uiView = { "type": "View", "props": { "width": 600, "renderType": "render", "name": "reader", "height": 400 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 600, "skin": "template/List/SimpleListBoxItemBackground.png", "height": 400 } }, { "type": "List", "props": { "y": 5, "x": 13, "width": 573, "var": "m_list", "vScrollBarSkin": "template/List/vscroll.png", "repeatY": 20, "repeatX": 1, "renderType": "render", "height": 287 }, "child": [{ "type": "Box", "props": { "name": "render" }, "child": [{ "type": "Label", "props": { "y": 20, "x": 32, "width": 445, "var": "m_label", "text": "label", "skin": "template/List/label.png", "renderType": "render", "height": 50, "fontSize": 36, "color": "#0d0d0d" } }] }] }, { "type": "Button", "props": { "y": 346, "x": 262, "width": 75, "var": "btnChoiceOK", "skin": "comp/button.png", "labelSize": 16, "labelColors": "red", "label": "确定", "height": 33 } }] };
-        return ChoiceQuFuUI;
-    }(View));
-    ui.ChoiceQuFuUI = ChoiceQuFuUI;
-})(ui || (ui = {}));
-(function (ui) {
-    var DebugViewUI = /** @class */ (function (_super) {
-        __extends(DebugViewUI, _super);
-        function DebugViewUI() {
-            return _super.call(this) || this;
-        }
-        DebugViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.DebugViewUI.uiView);
-        };
-        DebugViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 500, "var": "imgBg", "skin": "comp/blank.png", "height": 60 } }, { "type": "Label", "props": { "y": 28, "x": 0, "wordWrap": true, "width": 500, "var": "lblDec", "text": "label", "leading": 2, "height": 24, "fontSize": 16, "color": "#f4f1f1" } }, { "type": "Button", "props": { "y": 3, "x": 416, "width": 75, "var": "btnClear", "skin": "comp/button.png", "label": "clear", "height": 23 } }] };
-        return DebugViewUI;
-    }(View));
-    ui.DebugViewUI = DebugViewUI;
-})(ui || (ui = {}));
-(function (ui) {
-    var GameViewUI = /** @class */ (function (_super) {
-        __extends(GameViewUI, _super);
-        function GameViewUI() {
-            return _super.call(this) || this;
-        }
-        GameViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.GameViewUI.uiView);
-        };
-        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 12, "x": 0, "width": 750, "skin": "bg/main.jpg", "height": 1334 } }, { "type": "Button", "props": { "y": 625, "x": 267, "width": 216, "var": "btnOpen", "skin": "comp/button.png", "labelStrokeColor": "#f88508", "labelSize": 32, "label": "打开", "height": 83 } }, { "type": "Image", "props": { "y": 821, "x": 335, "skin": "main/logo.png" } }, { "type": "Button", "props": { "y": 76, "x": 59, "width": 120, "var": "btnAni", "skin": "comp/button.png", "labelSize": 24, "label": "playAni", "height": 60 } }] };
-        return GameViewUI;
-    }(View));
-    ui.GameViewUI = GameViewUI;
-})(ui || (ui = {}));
-(function (ui) {
-    var LoginViewUI = /** @class */ (function (_super) {
-        __extends(LoginViewUI, _super);
-        function LoginViewUI() {
-            return _super.call(this) || this;
-        }
-        LoginViewUI.prototype.createChildren = function () {
-            View.regComponent("Text", laya.display.Text);
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.LoginViewUI.uiView);
-        };
-        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Label", "props": { "y": 28, "x": 31, "text": "当前账号：", "fontSize": 30, "color": "#ffffff" } }, { "type": "Button", "props": { "y": 1082, "x": 269, "width": 211, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 38, "label": "进入游戏", "height": 72 } }, { "type": "Image", "props": { "y": 106, "x": 38, "width": 674, "skin": "bg/logo.png", "height": 422 } }, { "type": "Button", "props": { "y": 21, "x": 593, "width": 140, "var": "btnRegster", "skin": "comp/button.png", "labelStrokeColor": "#ff0905", "labelSize": 30, "label": "切换账户", "height": 45, "alpha": 0.9 } }, { "type": "Text", "props": { "y": 28, "x": 181, "width": 401, "var": "textUser", "text": "325266_asda_10023", "height": 40, "fontSize": 30, "color": "#e3e2e2", "alpha": 0.8, "align": "center" } }, { "type": "Tab", "props": { "y": 903.5, "x": 225.5, "var": "btnChoice" }, "child": [{ "type": "Line", "props": { "y": 4.5, "x": -0.5, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Line", "props": { "y": 74.5, "x": -0.5, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Circle", "props": { "y": 42.5, "x": 29.5, "radius": 10, "lineWidth": 1, "fillColor": "#f82c2c" } }, { "type": "Text", "props": { "y": 25.5, "x": 59.5, "width": 241, "text": "一区丶齐天大圣", "height": 41, "fontSize": 30, "color": "#e3e2e2" } }] }] };
-        return LoginViewUI;
-    }(View));
-    ui.LoginViewUI = LoginViewUI;
-})(ui || (ui = {}));
-(function (ui) {
-    var main;
-    (function (main) {
-        var SkillViewUI = /** @class */ (function (_super) {
-            __extends(SkillViewUI, _super);
-            function SkillViewUI() {
-                return _super.call(this) || this;
-            }
-            SkillViewUI.prototype.createChildren = function () {
-                _super.prototype.createChildren.call(this);
-                this.createView(ui.main.SkillViewUI.uiView);
-            };
-            SkillViewUI.uiView = { "type": "View", "props": { "width": 400, "height": 40 } };
-            return SkillViewUI;
-        }(View));
-        main.SkillViewUI = SkillViewUI;
-    })(main = ui.main || (ui.main = {}));
-})(ui || (ui = {}));
-(function (ui) {
-    var PreLoadViewUI = /** @class */ (function (_super) {
-        __extends(PreLoadViewUI, _super);
-        function PreLoadViewUI() {
-            return _super.call(this) || this;
-        }
-        PreLoadViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.PreLoadViewUI.uiView);
-        };
-        PreLoadViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "ProgressBar", "props": { "y": 662, "x": 96, "width": 566, "var": "progressBar", "skin": "comp/progress.png", "height": 14 } }] };
-        return PreLoadViewUI;
-    }(View));
-    ui.PreLoadViewUI = PreLoadViewUI;
-})(ui || (ui = {}));
-(function (ui) {
-    var SignViewUI = /** @class */ (function (_super) {
-        __extends(SignViewUI, _super);
-        function SignViewUI() {
-            return _super.call(this) || this;
-        }
-        SignViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.SignViewUI.uiView);
-        };
-        SignViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 6, "skin": "test/img_bg.png" } }, { "type": "Image", "props": { "y": 504, "x": 154, "width": 441, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 415 } }, { "type": "Button", "props": { "y": 508, "x": 566, "var": "btnClose", "skin": "comp/btn_close.png" } }, { "type": "TextInput", "props": { "y": 706, "x": 304, "var": "inputName", "skin": "comp/textinput.png" } }] };
-        return SignViewUI;
-    }(View));
-    ui.SignViewUI = SignViewUI;
-})(ui || (ui = {}));
-(function (ui) {
-    var test;
-    (function (test) {
-        var TestPageUI = /** @class */ (function (_super) {
-            __extends(TestPageUI, _super);
-            function TestPageUI() {
-                return _super.call(this) || this;
-            }
-            TestPageUI.prototype.createChildren = function () {
-                _super.prototype.createChildren.call(this);
-                this.createView(ui.test.TestPageUI.uiView);
-            };
-            TestPageUI.uiView = { "type": "View", "props": { "width": 600, "height": 400 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 600, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 400 } }, { "type": "Button", "props": { "y": 56, "x": 41, "width": 150, "var": "btn", "skin": "comp/button.png", "sizeGrid": "4,4,4,4", "label": "点我赋值", "height": 37 } }, { "type": "Clip", "props": { "y": 56, "x": 401, "var": "clip", "skin": "comp/clip_num.png", "clipX": 10 } }, { "type": "ComboBox", "props": { "y": 143, "x": 220, "width": 200, "var": "combobox", "skin": "comp/combobox.png", "sizeGrid": "4,20,4,4", "selectedIndex": 1, "labels": "select1,select2,selecte3", "height": 23 } }, { "type": "Tab", "props": { "y": 96, "x": 220, "var": "tab", "skin": "comp/tab.png", "labels": "tab1,tab2,tab3" } }, { "type": "VScrollBar", "props": { "y": 223, "x": 259, "skin": "comp/vscroll.png", "height": 150 } }, { "type": "VSlider", "props": { "y": 223, "x": 224, "skin": "comp/vslider.png", "height": 150 } }, { "type": "List", "props": { "y": 68, "x": 452, "width": 128, "var": "list", "vScrollBarSkin": "comp/vscroll.png", "repeatX": 1, "height": 299 }, "child": [{ "type": "Box", "props": { "y": 0, "x": 0, "width": 112, "name": "render", "height": 30 }, "child": [{ "type": "Label", "props": { "y": 5, "x": 26, "width": 78, "text": "this is a list", "skin": "comp/label.png", "name": "label", "height": 20, "fontSize": 14 } }, { "type": "Clip", "props": { "y": 2, "x": 0, "skin": "comp/clip_num.png", "name": "clip", "clipX": 10 } }] }] }, { "type": "Button", "props": { "y": 4, "x": 563, "var": "btnClose", "skin": "comp/btn_close.png", "name": "close" } }, { "type": "Button", "props": { "y": 112, "x": 41, "width": 150, "var": "btn2", "skin": "comp/button.png", "sizeGrid": "4,4,4,4", "labelSize": 30, "labelBold": true, "label": "点我赋值", "height": 66 } }, { "type": "CheckBox", "props": { "y": 188, "x": 220, "var": "check", "skin": "comp/checkbox.png", "label": "checkBox1" } }, { "type": "RadioGroup", "props": { "y": 61, "x": 220, "var": "radio", "skin": "comp/radiogroup.png", "labels": "radio1,radio2,radio3" } }, { "type": "Panel", "props": { "y": 223, "x": 299, "width": 127, "vScrollBarSkin": "comp/vscroll.png", "height": 150 }, "child": [{ "type": "Image", "props": { "skin": "comp/image.png" } }] }, { "type": "CheckBox", "props": { "y": 188, "x": 326, "skin": "comp/checkbox.png", "labelColors": "#ff0000", "label": "checkBox2" } }, { "type": "Box", "props": { "y": 197, "x": 41, "var": "box" }, "child": [{ "type": "ProgressBar", "props": { "y": 70, "width": 150, "skin": "comp/progress.png", "sizeGrid": "4,4,4,4", "name": "progress", "height": 14 } }, { "type": "Label", "props": { "y": 103, "width": 137, "text": "This is a Label", "skin": "comp/label.png", "name": "label", "height": 26, "fontSize": 20 } }, { "type": "TextInput", "props": { "y": 148, "width": 150, "text": "textinput", "skin": "comp/textinput.png", "name": "input" } }, { "type": "HSlider", "props": { "width": 150, "skin": "comp/hslider.png", "name": "slider" } }, { "type": "HScrollBar", "props": { "y": 34, "width": 150, "skin": "comp/hscroll.png", "name": "scroll" } }] }] };
-            return TestPageUI;
-        }(View));
-        test.TestPageUI = TestPageUI;
-    })(test = ui.test || (ui.test = {}));
-})(ui || (ui = {}));
-//# sourceMappingURL=layaUI.max.all.js.map
 var Handler = Laya.Handler;
 /*
 * 游戏入口
@@ -55341,29 +65541,32 @@ var Game = /** @class */ (function () {
     }
     Game.prototype.init = function () {
         var resAry = [
-            { url: "res/atlas/comp.atlas", type: Loader.ATLAS, size: 50, priority: 1 }
-            // {url:"res/atlas/main.atlas",type:Loader.ATLAS,size:50,priority:1}
+            { url: "res/atlas/comp.atlas", type: Loader.ATLAS },
+            { url: "unpack/main/main.jpg", type: Loader.IMAGE },
+            { url: "res/config/language.txt", type: Loader.TEXT }
         ];
-        Laya.loader.load(resAry, Handler.create(this, this.onLoaded), Handler.create(this, this.loadProgress));
-    };
-    Game.prototype.loadProgress = function (value) {
-        // setLoadingView(Math.floor(value * 100));
+        Laya.loader.load(resAry, new Laya.Handler(this, this.onLoaded), new Laya.Handler(this, this.onLoadProgress));
     };
     Game.prototype.onLoaded = function () {
         LayerManager.ins.init();
         DebugViewUtil.init();
+        LG.parse(Laya.loader.getRes("res/config/language.txt"));
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
-        DebugViewUtil.log("浏览器宽高", Laya.Browser.width + "," + Laya.Browser.height);
+    };
+    /**资源加载进度 */
+    Game.prototype.onLoadProgress = function (data) {
     };
     return Game;
 }());
 //程序入口
 Laya.MiniAdpter.init();
+Config.isAntialias = true; //绘图抗锯齿
 Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, Laya.WebGL);
 Laya.Stat.show(0, 0);
 Laya.stage.scaleMode = "showAll"; //showall跟showAll不一样。。。。
 Laya.stage.alignH = "center";
 Laya.stage.alignV = "top";
+// SoundManager.useAudioMusic = false;
 //激活资源版本控制
 Laya.ResourceVersion.enable("version.json", Handler.create(null, beginLoad));
 function beginLoad() {

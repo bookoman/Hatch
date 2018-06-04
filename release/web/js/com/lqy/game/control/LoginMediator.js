@@ -9,7 +9,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 /*
-* name;
+* 登录
 */
 var LoginMediator = /** @class */ (function (_super) {
     __extends(LoginMediator, _super);
@@ -18,44 +18,61 @@ var LoginMediator = /** @class */ (function (_super) {
     }
     LoginMediator.prototype.initView = function () {
         this.view = new ui.LoginViewUI();
-        AnimationManager.ins.popCenterLittleToBig(this.view, 300);
         LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, true, false, true);
         _super.prototype.initView.call(this);
     };
     LoginMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
-        this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
-        WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN, new UserLoginHandler(Protocol.USER_LOGIN, this, this.onLogined));
     };
     LoginMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
-        this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
     };
-    LoginMediator.prototype.onLogined = function (data) {
-        if (data.statusCode == 0) {
-            console.log("登录成功。。。" + data);
-            PreLoadingView.ins.show();
-            SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+    LoginMediator.prototype.onBtnLogin = function (e) {
+        //单机测试
+        var resAry = [
+            { url: "unpack/login/logo.png", type: Loader.IMAGE }
+        ];
+        var enterGameMediator = new EnterGameMediator(resAry);
+        // var account:string = this.view.inputAccount.text;
+        // var pwd:string = this.view.inputPwd.text;
+        // if(!account || account == "")
+        // {
+        //     console.log("用户名不能为空");
+        //     return;
+        // }
+        // if(!pwd || pwd == "")
+        // {
+        //     console.log("密码不能为空");
+        //     return;
+        // }
+        // ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
+    };
+    LoginMediator.prototype.loginSuccessHanlder = function (data) {
+        var jsonObj = JSON.parse(data);
+        if (jsonObj.code == 200) {
+            GameDataManager.ins.saveSelfPlayerData(jsonObj);
+            ClientSender.httpGameServerReq(this, this.onGameServersList);
+        }
+        else {
+            console.log("登录异常！错误码:" + jsonObj.code);
+        }
+    };
+    LoginMediator.prototype.onGameServersList = function (data) {
+        var jsonObj = JSON.parse(data);
+        if (jsonObj.code == 200) {
+            GameDataManager.ins.saveServerInfoList(jsonObj.data, jsonObj.lastInGameServers);
+            var resAry = [
+                { url: "unpack/login/logo.png", type: Loader.IMAGE }
+            ];
+            var enterGameMediator = new EnterGameMediator(resAry);
+            this.dispose();
+        }
+        else {
+            console.log("获取服务器列表异常！错误码：" + jsonObj.code);
         }
     };
     LoginMediator.prototype.dispose = function () {
-    };
-    LoginMediator.prototype.onBtnLogin = function (e) {
-        //测试
-        // PreLoadingView.ins.show();
-        // SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
-        //连接服务器
-        EventManager.ins.addEvent(EventManager.SERVER_CONNECTED, this, this.onServerConnected);
-        var serverID = this.view.inputSIP.text;
-        var port = Number(this.view.inputPort.text);
-        WebSocketManager.ins.connect(serverID, port);
-    };
-    LoginMediator.prototype.onServerConnected = function () {
-        EventManager.ins.removeEvent(EventManager.SERVER_CONNECTED, this.onServerConnected);
-        ClientSender.loginReq(this.view.inputAccount.text);
-    };
-    LoginMediator.prototype.onBtnChoice = function () {
-        new ChoiceMediator();
+        _super.prototype.dispose.call(this);
     };
     return LoginMediator;
 }(BaseMediator));

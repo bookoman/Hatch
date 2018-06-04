@@ -57,9 +57,15 @@ var MapLoopEngine = /** @class */ (function (_super) {
             this.visualWidth = GameConfig.STAGE_WIDTH;
         }
         this.visualHeight = visualHeight;
-        var url = this.rootPath + "/11_background_" + this.mapID + ".png";
+        var url;
         if (mapType == MapType.NEAR_MAP) {
-            url = this.rootPath + "/11_prospect_" + this.mapID + ".png";
+            url = this.rootPath + "/" + mapID + "/near.png";
+        }
+        else if (mapType == MapType.FAR_MAP) {
+            url = this.rootPath + "/" + mapID + "/far.png";
+        }
+        else {
+            url = this.rootPath + "/" + mapID + "/middle.png";
         }
         Laya.loader.load(url, new Handler(this, this.loadMapCompleted), null, Loader.IMAGE);
     };

@@ -1,9 +1,9 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":1,
-    "selecteID":3,
-    "props":{"width":750,"sceneColor":"#000000","height":1334},
+    "selectedBox":12,
+    "selecteID":11,
+    "props":{"width":750,"sceneColor":"#000000","mouseThrough":true,"height":1334},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -15,7 +15,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":76,"x":410,"width":216,"var":"btnOpen","skin":"comp/button.png","labelStrokeColor":"#f88508","labelSize":32,"label":"打开拳击声效","height":83},
+            "props":{"y":17,"x":706,"width":34,"var":"btnOpen","stateNum":"1","skin":"main/laba.png","sizeGrid":"-10,0,-6,-14","labelStrokeColor":"#f88508","labelSize":32,"height":31,"alpha":0.6},
             "nodeParent":1,
             "label":"Button(btnOpen)",
             "isDirectory":false,
@@ -27,16 +27,113 @@
         },
         {
             "x":15,
-            "type":"Button",
-            "props":{"y":72,"x":113,"width":243,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":88},
+            "type":"Image",
+            "props":{"y":1215,"x":0,"width":750,"skin":"unpack/main/diban.png","height":119},
             "nodeParent":1,
-            "label":"Button(btnChalleangeBoss)",
+            "label":"Image",
+            "isOpen":true,
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
-            "compId":6,
+            "compId":18,
             "child":[
                 ]
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":1320,"x":0,"width":750,"skin":"main/img_blood.png","height":14},
+            "nodeParent":1,
+            "label":"Image",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":19,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Tab",
+            "props":{"y":1214,"x":2,"width":746,"height":124},
+            "nodeParent":1,
+            "label":"Tab",
+            "isOpen":true,
+            "isDirectory":true,
+            "isAniNode":true,
+            "hasChild":true,
+            "compId":12,
+            "child":[
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":-7,"x":-1,"width":145,"var":"btnMap","stateNum":"1","skin":"main/huic.png","labelSize":40,"height":102},
+                    "nodeParent":12,
+                    "label":"Button(btnMap)",
+                    "isOpen":true,
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":7,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":-1,"x":148,"width":148,"var":"btnLineup","stateNum":"1","skin":"main/juese.png","labelSize":40,"height":100},
+                    "nodeParent":12,
+                    "label":"Button(btnLineup)",
+                    "isOpen":true,
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":8,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":-1,"x":299,"width":148,"var":"btnHero","stateNum":"1","skin":"main/tansuo.png","labelSize":40,"height":100},
+                    "nodeParent":12,
+                    "label":"Button(btnHero)",
+                    "isOpen":true,
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":9,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":-1,"x":449,"width":148,"var":"btnEquip","stateNum":"1","skin":"main/bag.png","labelSize":40,"height":100},
+                    "nodeParent":12,
+                    "label":"Button(btnEquip)",
+                    "isOpen":true,
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":10,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":-1,"x":598,"width":148,"var":"btnHome","stateNum":"1","skin":"main/zuoz.png","labelSize":40,"height":100},
+                    "nodeParent":12,
+                    "label":"Button(btnHome)",
+                    "isOpen":true,
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":11,
+                    "child":[
+                        ]
+                }]
         }],
     "animations":[
         {

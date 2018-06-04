@@ -2,72 +2,122 @@
 * 游戏主界面代理器
 */
 class GameMediator extends BaseMediator{
-    private battleReportMediator:BattleReportMediator = null;
-    private challegenBossMediator:ChallegenBossMediator;
+    private curMediator:BaseMediator = null;
+    private showViewIndex:number = -1;
     constructor(assetsUrl?:any,view?:any){
         super(assetsUrl,view);
     }
     protected initView():void
     {
-        this.view = new ui.GameViewUI();
-        LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,false,true);
-        super.initView();
-        this.battleReportMediator = new BattleReportMediator();
-        
-        //初始化游戏场景
         ObjectPoolUtil.init();
-        MapManager.ins.enterMap("res/map",2,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
-        GameDataManager.ins.initData();
-        RoleManager.ins.initHeros();
-        BattleEngine.ins.run();
 
+        this.view = new ui.GameViewUI();
+        LayerManager.ins.addToLayer(this.view,LayerManager.TOP_LAYER,false,false,true);
+        super.initView();
+        this.onBtnMap();
     }
     protected addEvents():void
     {
         this.view.btnOpen.on(Laya.Event.CLICK,this,this.onBtnOpen);
-        this.view.btnChalleangeBoss.on(Laya.Event.CLICK,this,this.onChalleangeBoss);
-        EventManager.ins.addEvent(EventManager.CHALLENGE_BOSS,this,this.challegenBossHandler);
+        this.view.btnMap.on(Laya.Event.CLICK,this,this.onBtnMap);
+        this.view.btnLineup.on(Laya.Event.CLICK,this,this.onBtnLineup);
+        this.view.btnHero.on(Laya.Event.CLICK,this,this.onBtnHero);
+        this.view.btnEquip.on(Laya.Event.CLICK,this,this.onBtnEquip);
+        this.view.btnHome.on(Laya.Event.CLICK,this,this.onBtnHome);
+        
     }
     protected removeEvents():void
     {
         this.view.btnOpen.off(Laya.Event.CLICK,this,this.onBtnOpen);
-        this.view.btnChalleangeBoss.off(Laya.Event.CLICK,this,this.onChalleangeBoss);
-        EventManager.ins.removeEvent(EventManager.CHALLENGE_BOSS,this.challegenBossHandler);
-    }
-    private challegenBossHandler(data:any):void
-    {
-        var isEnd:boolean = data[0];
-        if(isEnd == false)
-        {
-            
-        }
-        else
-        {
-            this.challegenBossMediator.dispose();
-        }
-        // RoleManager.ins.resetRolePoint();
-    }
-    /**
-     * 挑战boss
-     * @param e 
-     */
-    private onChalleangeBoss(e:Laya.Event):void
-    {
-        MapManager.ins.enterMap("res/map",10000,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
-        GameDataManager.ins.productBossData();
-        var resAry:Array<Object> = [{url:"unpack/challengeboss/bg.png",type:Loader.IMAGE}];
-        var bossData:EnemyData;
-        var roleVos:Array<RoleVo> = GameDataManager.ins.bossData.roleVoAry.concat(GameDataManager.ins.selfPlayerData.roleVoAry);
-        roleVos.forEach(roleVo => {
-            //角色资源
-            resAry.push({url:"res/outside/anim/role/role"+roleVo.id+"/"+ roleVo.id +".sk",type:/*laya.net.Loader.BUFFER*/"arraybuffer"});
-        });
-        this.challegenBossMediator = new ChallegenBossMediator(resAry);
+        this.view.btnMap.off(Laya.Event.CLICK,this,this.onBtnMap);
+        this.view.btnLineup.off(Laya.Event.CLICK,this,this.onBtnLineup);
+        this.view.btnHero.off(Laya.Event.CLICK,this,this.onBtnHero);
+        this.view.btnEquip.off(Laya.Event.CLICK,this,this.onBtnEquip);
+        this.view.btnHome.off(Laya.Event.CLICK,this,this.onBtnHome);
     }
 
     private onBtnOpen(e:Laya.Event):void
     {
         SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+    }
+    /**地图系统 */
+    private onBtnMap(e?:Laya.Event):void
+    {
+        if(this.showViewIndex == GameButtomTabIndex.MAP_BATTLE)
+        {
+            return;
+        }
+        if(this.curMediator)
+        {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+
+        this.curMediator = new MapBattleMediator();
+        this.showViewIndex = GameButtomTabIndex.MAP_BATTLE;
+    }
+    /**阵型系统 */
+    private onBtnLineup(e?:Laya.Event):void
+    {
+        if(this.showViewIndex == GameButtomTabIndex.LINEUP)
+        {
+            return;
+        }
+        if(this.curMediator)
+        {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        var resAry:Array<Object> = [
+            {url:"res/atlas/lineup.atlas",type:Loader.ATLAS}
+        ];
+        this.curMediator = new LineupMediator(resAry);
+        this.showViewIndex = GameButtomTabIndex.LINEUP;
+    }
+    /**英雄系统*/ 
+    private onBtnHero(e):void
+    {
+        if(this.showViewIndex == GameButtomTabIndex.HERO)
+        {
+            return;
+        }
+        if(this.curMediator)
+        {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        this.curMediator = new HeroMediator();
+        this.showViewIndex = GameButtomTabIndex.HERO;
+    }
+     /**战斗系统*/ 
+    private onBtnEquip(e):void
+    {
+        if(this.showViewIndex == GameButtomTabIndex.EQUIP)
+        {
+            return;
+        }
+        if(this.curMediator)
+        {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        this.curMediator = new EquipMediator();
+        this.showViewIndex = GameButtomTabIndex.EQUIP;
+    }
+    /**家园系统*/ 
+    private onBtnHome(e):void
+    {
+        if(this.showViewIndex == GameButtomTabIndex.HOME)
+        {
+            return;
+        }
+        if(this.curMediator)
+        {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        this.curMediator = new HomeMediator();
+        this.showViewIndex = GameButtomTabIndex.HOME;
     }
     
     public dispose():void

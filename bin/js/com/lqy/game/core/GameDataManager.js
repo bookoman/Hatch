@@ -8,6 +8,8 @@ var GameDataManager = /** @class */ (function () {
         this.bossData = null;
         /**是否再挑战boss */
         this.isChallengeBoss = false;
+        /**挂机章节 */
+        this.hundUpChapterData = null;
     }
     Object.defineProperty(GameDataManager, "ins", {
         get: function () {

@@ -5,8 +5,11 @@ var GameDataManager = /** @class */ (function () {
     function GameDataManager() {
         this.selfPlayerData = null;
         this.enemyData = null;
+        this.bossData = null;
         /**是否再挑战boss */
         this.isChallengeBoss = false;
+        /**挂机章节 */
+        this.hundUpChapterData = null;
     }
     Object.defineProperty(GameDataManager, "ins", {
         get: function () {
@@ -18,34 +21,54 @@ var GameDataManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**保存服务器信息 */
+    GameDataManager.prototype.saveServerInfoList = function (data, lastServer) {
+        this.serverList = new Array();
+        var info;
+        var serverInfo;
+        for (var i = 0; i < data.length; i++) {
+            info = data[i];
+            serverInfo = new ServerInfoVo();
+            for (var key in info) {
+                if (info.hasOwnProperty(key)) {
+                    serverInfo[key] = info[key];
+                }
+            }
+            this.serverList.push(serverInfo);
+        }
+        /**上一次登录服务器信息 */
+        this.curServerInfo = new ServerInfoVo();
+        for (var key in lastServer) {
+            if (lastServer.hasOwnProperty(key)) {
+                this.curServerInfo[key] = lastServer[key];
+            }
+        }
+    };
+    GameDataManager.prototype.choiceServerInfo = function (index) {
+        this.curServerInfo = this.serverList[index];
+    };
+    /**保存自己玩家数据 */
+    GameDataManager.prototype.saveSelfPlayerData = function (data) {
+        this.loginAuthentication = data.authentication;
+        this.selfPlayerData = new PlayerData();
+        this.selfPlayerData.name = data.data;
+    };
     GameDataManager.prototype.initData = function () {
         //测试数据
-        this.selfPlayerData = new PlayerData();
+        if (!this.selfPlayerData) {
+            this.selfPlayerData = new PlayerData();
+        }
         this.selfPlayerData.id = 88888888;
         this.selfPlayerData.name = "SimplePlan";
         // this.selfPlayerData.lineupId = "1";
         // var lineupposVoAry:Array<LineupPosVo> = LineupManager.ins.getCofingByID(this.selfPlayerData.lineupId);
         this.selfPlayerData.roleVoAry = [];
-        var ids = ["10000", "10001", "10002", "10003", "10004"];
+        var ids = ["10000", "10001", "10005", "10002", "10003", "10004"];
         var roleVo;
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if (roleVo) {
-                if (i == 0) {
-                    roleVo.lineupGrid = 1;
-                }
-                else if (i == 1) {
-                    roleVo.lineupGrid = 2;
-                }
-                else if (i == 2) {
-                    roleVo.lineupGrid = 3;
-                }
-                else if (i == 3) {
-                    roleVo.lineupGrid = 4;
-                }
-                else if (i == 4) {
-                    roleVo.lineupGrid = 5;
-                }
+                roleVo.lineupGrid = i + 1;
                 roleVo.initRowColPosPoint();
                 this.selfPlayerData.roleVoAry.push(roleVo);
             }
@@ -60,22 +83,13 @@ var GameDataManager = /** @class */ (function () {
         //怪物数据
         this.enemyData = new EnemyData();
         this.enemyData.roleVoAry = [];
-        var ids = ["20001", "20000", "20002", "20003", "20005"];
+        var ids = ["20005", "20000", "20002"];
         // var ids:Array<string> = ["20001"];
         var roleVo;
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if (roleVo) {
-                if (i == 0)
-                    roleVo.lineupGrid = 1;
-                else if (i == 1)
-                    roleVo.lineupGrid = 2;
-                else if (i == 2)
-                    roleVo.lineupGrid = 3;
-                else if (i == 3)
-                    roleVo.lineupGrid = 4;
-                else if (i == 4)
-                    roleVo.lineupGrid = 5;
+                roleVo.lineupGrid = i + 1;
                 roleVo.initRowColPosPoint();
                 this.enemyData.roleVoAry.push(roleVo);
             }
@@ -84,6 +98,28 @@ var GameDataManager = /** @class */ (function () {
             return a.atts > b.atts ? -1 : 1;
         });
         this.enemyData.enemySum = this.enemyData.roleVoAry.length;
+    };
+    /**
+     * 生产Boss数据
+     */
+    GameDataManager.prototype.productBossData = function () {
+        //怪物数据
+        this.bossData = new EnemyData();
+        this.bossData.roleVoAry = [];
+        var ids = ["20001", "20005", "20002", "20003", "20004"];
+        var roleVo;
+        for (var i = 0; i < ids.length; i++) {
+            roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
+            if (roleVo) {
+                roleVo.lineupGrid = i + 1;
+                roleVo.initRowColPosPoint();
+                this.bossData.roleVoAry.push(roleVo);
+            }
+        }
+        this.bossData.roleVoAry.sort(function (a, b) {
+            return a.atts > b.atts ? -1 : 1;
+        });
+        this.bossData.enemySum = this.bossData.roleVoAry.length;
     };
     /**
      * 矫正角色坐标

@@ -40,7 +40,7 @@ var WebSocketManager = /** @class */ (function () {
         packageIn.read(data);
         var socketHanlder = this.socketHanlderDic.get(packageIn.module);
         if (socketHanlder) {
-            socketHanlder.explain(packageIn.errorCode, packageIn.body);
+            socketHanlder.explain(packageIn.body);
         }
     };
     WebSocketManager.prototype.webSocketClose = function () {

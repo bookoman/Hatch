@@ -21,6 +21,7 @@ var LayerManager = /** @class */ (function () {
         this.roleLayer = null;
         this.effectLayer = null;
         this.uiLayer = null;
+        this.topLayer = null;
         this.tipLayer = null;
     }
     Object.defineProperty(LayerManager, "ins", {
@@ -48,6 +49,8 @@ var LayerManager = /** @class */ (function () {
         Laya.stage.addChild(this.effectLayer);
         this.uiLayer = new MyLayer();
         Laya.stage.addChild(this.uiLayer);
+        this.topLayer = new MyLayer();
+        Laya.stage.addChild(this.topLayer);
         this.tipLayer = new MyLayer();
         Laya.stage.addChild(this.tipLayer);
     };
@@ -86,6 +89,8 @@ var LayerManager = /** @class */ (function () {
                 return this.effectLayer;
             case LayerManager.UI_LAYER:
                 return this.uiLayer;
+            case LayerManager.TOP_LAYER:
+                return this.topLayer;
             case LayerManager.TIP_LAYER:
                 return this.tipLayer;
         }
@@ -104,8 +109,10 @@ var LayerManager = /** @class */ (function () {
     LayerManager.EFFECT_LAYER = 5;
     /**UI层 */
     LayerManager.UI_LAYER = 6;
+    /**顶部层 */
+    LayerManager.TOP_LAYER = 7;
     /**tip层 */
-    LayerManager.TIP_LAYER = 7;
+    LayerManager.TIP_LAYER = 8;
     LayerManager._ins = null;
     return LayerManager;
 }());

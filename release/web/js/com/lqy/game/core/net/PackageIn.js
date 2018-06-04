@@ -14,9 +14,7 @@ var __extends = (this && this.__extends) || (function () {
 var PackageIn = /** @class */ (function (_super) {
     __extends(PackageIn, _super);
     function PackageIn() {
-        var _this = _super.call(this) || this;
-        _this.errorCode = 0;
-        return _this;
+        return _super.call(this) || this;
     }
     PackageIn.prototype.read = function (msg) {
         if (msg === void 0) { msg = null; }

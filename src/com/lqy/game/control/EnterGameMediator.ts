@@ -21,7 +21,7 @@ class EnterGameMediator extends BaseMediator{
     {
         this.view.btnLogin.on(Laya.Event.CLICK,this,this.onBtnLogin);
         this.view.btnChoice.on(Laya.Event.CLICK,this,this.onBtnChoice);
-
+        this.view.btnRegster.on(Laya.Event.CLICK,this,this.onBtnRegster);
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN,new UserLoginHandler(Protocol.USER_LOGIN,this,this.onWebSocketLogined));
     }
 
@@ -29,6 +29,7 @@ class EnterGameMediator extends BaseMediator{
     {
         this.view.btnLogin.off(Laya.Event.CLICK,this,this.onBtnLogin);
         this.view.btnChoice.off(Laya.Event.CLICK,this,this.onBtnChoice);
+        this.view.btnRegster.off(Laya.Event.CLICK,this,this.onBtnRegster);
     }
     private onWebSocketLogined(data):void
     {
@@ -37,6 +38,7 @@ class EnterGameMediator extends BaseMediator{
             console.log("登录成功。。。"+data);    
             PreLoadingView.ins.show();
             SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+            this.dispose();
         }
         else
         {
@@ -57,11 +59,17 @@ class EnterGameMediator extends BaseMediator{
         //单机测试
         PreLoadingView.ins.show();
         SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        this.dispose();
         //登录web服
         // var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
         // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder)
 
     }
+
+    private onBtnRegster(e:Laya.Event):void{
+        var enterGameMediator:SignMediator = new SignMediator();     
+    }
+
 
     private webEnterGameHanlder(data):void
     {

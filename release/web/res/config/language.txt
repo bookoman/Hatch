@@ -1,2 +1,7 @@
 login.notice:账号不存在
 login.notice:密码错误
+
+server.state0:正常
+server.state1:火爆
+server.state-1:停服
+server.state-2:停服维护

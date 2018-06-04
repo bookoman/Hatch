@@ -46,9 +46,25 @@ class BaseMediator{
 
     public dispose():void
     {
-        Laya.loader.clearRes(this.assetsUrl);
-        this.view.removeSelf();
-        this.removeEvents();
+        if(this.assetsUrl)
+        {
+            if(this.assetsUrl as Array<any>)
+            {
+                this.assetsUrl.forEach(element => {
+                    Laya.loader.clearRes(element.url);
+                });
+            }
+            else
+            {
+                Laya.loader.clearRes(this.assetsUrl);
+            }
+            this.assetsUrl = null;
+        }
+        if(this.view)
+        {
+            this.removeEvents();
+            this.view.removeSelf();
+        }
         this.view = null;
     }
 
