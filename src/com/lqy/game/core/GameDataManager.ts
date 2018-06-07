@@ -82,7 +82,7 @@ class GameDataManager{
         // this.selfPlayerData.lineupId = "1";
         // var lineupposVoAry:Array<LineupPosVo> = LineupManager.ins.getCofingByID(this.selfPlayerData.lineupId);
         this.selfPlayerData.roleVoAry = [];
-        var ids:Array<string> = ["10000","10001","10002","10003","10006","10005"];
+        var ids:Array<string> = ["10000","10001","10002","10007","10006","10005"];
         var roleVo:RoleVo;
         for(var i = 0;i < ids.length;i++)
         {

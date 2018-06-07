@@ -25,6 +25,16 @@ class UIRole{
         this.disParent.addChild(this.skeletonAni);
         this.aniPlay(RoleAniIndex.STAND);
     }
+
+    public updateRole(roleID:string,sx?:number,sy?:number):void
+    {
+        if(this.disParent && this.skeletonAni)
+        {
+            this.roleID = roleID;
+            this.isLoaded = false;
+            this.addParent(this.disParent,this.skeletonAni.x,this.skeletonAni.y,sx,sy);
+        }
+    }
     /**销毁 */
     public dispose():void
     {

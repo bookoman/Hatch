@@ -47,6 +47,9 @@ class GameConfig{
     public static DEBUG_VIEW_SWITCH:boolean = false;
     /**场景战斗开关 */
     public static SCENE_BATTLE_SWITCH:Boolean = true;
+
+    /**单机游戏 */
+    public static SINGLE_GAME:boolean = true;
     
 }
 
@@ -90,13 +93,6 @@ class GameServerState{
      */
     public static GameServer_State_Maintain = -2;
      
-}
-/**协议模块类型 */
-class ProtocolBufModuleType
-{
-    public static LOGIN:string = "hero";
-    public static ROLE:string = "role";
-    public static HERO:string = "hero";
 }
 
 /**地图类型枚举 */

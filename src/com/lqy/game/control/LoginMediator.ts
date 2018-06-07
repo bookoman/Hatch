@@ -25,26 +25,33 @@ class LoginMediator extends BaseMediator{
 
     private onBtnLogin(e):void
     {
-        //单机测试
-        var resAry:Array<Object> = [
-            {url:"unpack/login/logo.png",type:Loader.IMAGE}
-        ];
-        var enterGameMediator:EnterGameMediator = new EnterGameMediator(resAry);
+        if(GameConfig.SINGLE_GAME)
+        {
+            //单机测试
+            var resAry:Array<Object> = [
+                {url:"unpack/login/logo.png",type:Loader.IMAGE}
+            ];
+            var enterGameMediator:EnterGameMediator = new EnterGameMediator(resAry);
+        }
+        else
+        {
+            //发送请求
+            var account:string = this.view.inputAccount.text;
+            var pwd:string = this.view.inputPwd.text;
+            if(!account || account == "")
+            {
+                console.log("用户名不能为空");
+                return;
+            }
+            if(!pwd || pwd == "")
+            {
+                console.log("密码不能为空");
+                return;
+            }
+            ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
+        }
 
-        //发送请求
-        // var account:string = this.view.inputAccount.text;
-        // var pwd:string = this.view.inputPwd.text;
-        // if(!account || account == "")
-        // {
-        //     console.log("用户名不能为空");
-        //     return;
-        // }
-        // if(!pwd || pwd == "")
-        // {
-        //     console.log("密码不能为空");
-        //     return;
-        // }
-        // ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
+        
     }
 
     private loginSuccessHanlder(data:any):void

@@ -65,9 +65,6 @@ class LineupMediator extends BaseMediator{
             {
                 if(this.curSelectGrid)
                 {
-                    // this.view.listIcon.cells.forEach(element => {
-                    //     console.log(element.data.roleID,element.select);
-                    // });
                     if(iconView.selectTick)
                     {
                         this.lineupGrids.forEach(lineupGrid => {
@@ -127,7 +124,7 @@ class LineupMediator extends BaseMediator{
 
         // 使用但隐藏滚动条
         // this.view.listIcon.hScrollBarSkin = "";
-        var ids:Array<string> = ["10000","10001","10002","10003","10004"];
+        var ids:Array<string> = ["10000","10001","10002","10007","10006"];
         var ary:Array<Object> = [];
         var qulityInd:number = 0;
         var iconInd:number = 0;

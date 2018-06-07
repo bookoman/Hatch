@@ -56,13 +56,19 @@ class EnterGameMediator extends BaseMediator{
     
     private onBtnLogin(e:Laya.Event):void
     {
-        //单机测试
-        PreLoadingView.ins.show();
-        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
-        this.dispose();
-        //登录web服
-        // var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
-        // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder);
+        if(GameConfig.SINGLE_GAME)
+        {
+            //单机测试
+            PreLoadingView.ins.show();
+            SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+            this.dispose();
+        }
+        else
+        {
+            //登录web服
+            var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
+            ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder);
+        }
 
     }
 

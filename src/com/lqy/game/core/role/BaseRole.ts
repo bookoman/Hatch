@@ -88,7 +88,7 @@ class BaseRole extends Laya.Sprite{
         if(this.isLoaded)
         {   
             /**测试自己龙动作 */
-            if(this.roleVo.id == "20005" || this.roleVo.id == "10006")
+            if(this.roleVo.id == "20005" || this.roleVo.id == "10006" || this.roleVo.id == "10007")
             {
                 if(aniID == RoleAniIndex.ATTACK)
                     aniID = NewRoleAniIndex.ATTACK;

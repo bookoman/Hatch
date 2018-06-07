@@ -53,13 +53,17 @@ var EnterGameMediator = /** @class */ (function (_super) {
         }
     };
     EnterGameMediator.prototype.onBtnLogin = function (e) {
-        //单机测试
-        PreLoadingView.ins.show();
-        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
-        this.dispose();
-        //登录web服
-        // var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
-        // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder);
+        if (GameConfig.SINGLE_GAME) {
+            //单机测试
+            PreLoadingView.ins.show();
+            SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+            this.dispose();
+        }
+        else {
+            //登录web服
+            var curServerInfo = GameDataManager.ins.curServerInfo;
+            ClientSender.httpEnterGameReq(curServerInfo.guid, this, this.webEnterGameHanlder);
+        }
     };
     EnterGameMediator.prototype.onBtnRegster = function (e) {
         var enterGameMediator = new SignMediator();

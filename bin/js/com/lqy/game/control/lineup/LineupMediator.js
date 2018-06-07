@@ -103,7 +103,7 @@ var LineupMediator = /** @class */ (function (_super) {
         }
         // 使用但隐藏滚动条
         // this.view.listIcon.hScrollBarSkin = "";
-        var ids = ["10000", "10001", "10002", "10003", "10004"];
+        var ids = ["10000", "10001", "10002", "10007", "10006"];
         var ary = [];
         var qulityInd = 0;
         var iconInd = 0;

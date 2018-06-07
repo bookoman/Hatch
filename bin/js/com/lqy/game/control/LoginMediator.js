@@ -28,25 +28,27 @@ var LoginMediator = /** @class */ (function (_super) {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
     };
     LoginMediator.prototype.onBtnLogin = function (e) {
-        //单机测试
-        var resAry = [
-            { url: "unpack/login/logo.png", type: Loader.IMAGE }
-        ];
-        var enterGameMediator = new EnterGameMediator(resAry);
-        //发送请求
-        // var account:string = this.view.inputAccount.text;
-        // var pwd:string = this.view.inputPwd.text;
-        // if(!account || account == "")
-        // {
-        //     console.log("用户名不能为空");
-        //     return;
-        // }
-        // if(!pwd || pwd == "")
-        // {
-        //     console.log("密码不能为空");
-        //     return;
-        // }
-        // ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
+        if (GameConfig.SINGLE_GAME) {
+            //单机测试
+            var resAry = [
+                { url: "unpack/login/logo.png", type: Loader.IMAGE }
+            ];
+            var enterGameMediator = new EnterGameMediator(resAry);
+        }
+        else {
+            //发送请求
+            var account = this.view.inputAccount.text;
+            var pwd = this.view.inputPwd.text;
+            if (!account || account == "") {
+                console.log("用户名不能为空");
+                return;
+            }
+            if (!pwd || pwd == "") {
+                console.log("密码不能为空");
+                return;
+            }
+            ClientSender.httpLoginReq(account, pwd, this, this.loginSuccessHanlder);
+        }
     };
     LoginMediator.prototype.loginSuccessHanlder = function (data) {
         var jsonObj = JSON.parse(data);

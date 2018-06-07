@@ -21,6 +21,13 @@ var UIRole = /** @class */ (function () {
         this.disParent.addChild(this.skeletonAni);
         this.aniPlay(RoleAniIndex.STAND);
     };
+    UIRole.prototype.updateRole = function (roleID, sx, sy) {
+        if (this.disParent && this.skeletonAni) {
+            this.roleID = roleID;
+            this.isLoaded = false;
+            this.addParent(this.disParent, this.skeletonAni.x, this.skeletonAni.y, sx, sy);
+        }
+    };
     /**销毁 */
     UIRole.prototype.dispose = function () {
         if (this.skeletonAni) {

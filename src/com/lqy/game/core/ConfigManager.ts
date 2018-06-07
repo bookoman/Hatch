@@ -11,6 +11,7 @@ class ConfigManager{
         {"id":"10004",modelId:"role10004","name":"骷髅头","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":4000,"dieAttTimes":10,"att":10,"atts":3,"attFar":1},
         {"id":"10005",modelId:"role10005","name":"萌仙仙","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":10,"att":5,"atts":10,"attFar":0},
         {"id":"10006",modelId:"baolong001","name":"暴龙","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":10,"att":5,"atts":10,"attFar":0},
+        {"id":"10007",modelId:"leilong001","name":"雷龙","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":10,"att":5,"atts":10,"attFar":0},
         {"id":"20000",modelId:"role20000","name":"幽灵","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10005","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":3,"att":3,"atts":1,"attFar":0},
         {"id":"20001",modelId:"role20001","name":"鳄鱼龙","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10000","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":3,"att":3,"atts":6,"attFar":0},
         {"id":"20002",modelId:"role20002","name":"骨龙","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10002","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":3,"att":4,"atts":4,"attFar":1},
@@ -34,7 +35,6 @@ class ConfigManager{
 
     public skillConfigDic:Dictionary = null;
 
-    public testSampleDic:Dictionary = null;
     /**宠物品质配置 */
     public qualitySampleVoDic:Dictionary = null;
     /**宠物经验配制表 */
@@ -45,6 +45,12 @@ class ConfigManager{
     public heroTypeSampleDic:Dictionary = null;
     /**宠物品质评分配制表 */
     public qualityScoreSampleDic:Dictionary = null;
+    /**地图配置 */
+    public gateMapSampleDic:Dictionary = null;
+    /**关卡配置 */
+    public gateSampleDic:Dictionary = null;
+    /**英雄技能配置 */
+    public heroSkillSampleDic:Dictionary = null;
 
     private static _ins:ConfigManager = null;
 
@@ -120,25 +126,16 @@ class ConfigManager{
     /**解析预加载配置表 */
     public parsePreLoadConfigs():void
     {
-        this.parseTestSample();
         this.parseQualitySample();
         this.parseQualityScoreSample();
         this.parseHeroSample();
         this.parseHeroLevelSample();
         this.parseHeroTypeSample();
+        this.parseGateMapSample();
+        this.parseGateSample();
+        this.parseHeroSkillSample();
     }
-
-    public parseTestSample():void
-    {
-        if(this.testSampleDic == null)
-        {
-            this.testSampleDic = new Dictionary();
-        }
-        var configStr = Laya.loader.getRes("res/config/TestSample.xml");
-        this.xmlToObjcet(configStr,TestSample,"key",this.testSampleDic);
-
-        Laya.loader.clearRes("res/config/TestSample.xml");
-    }
+    
     /**宠物品质 */
     public parseQualitySample():void
     {
@@ -198,6 +195,42 @@ class ConfigManager{
         this.xmlToObjcet(configStr,QualityScoreSampleVo,"key",this.qualityScoreSampleDic);
 
         Laya.loader.clearRes("res/config/QualityScoreSample.xml");
+    }
+    /**地图配置 */
+    public parseGateMapSample():void
+    {
+        if(this.gateMapSampleDic == null)
+        {
+            this.gateMapSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/GateMapSample.xml");
+        this.xmlToObjcet(configStr,GateMapSampleVo,"key",this.gateMapSampleDic);
+
+        Laya.loader.clearRes("res/config/GateMapSample.xml");
+    }
+    /**光卡配置 */
+    public parseGateSample():void
+    {
+        if(this.gateSampleDic == null)
+        {
+            this.gateSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/GateSample.xml");
+        this.xmlToObjcet(configStr,GateSampleVo,"key",this.gateSampleDic);
+
+        Laya.loader.clearRes("res/config/GateSample.xml");
+    }
+    /**宠物技能 */
+    public parseHeroSkillSample():void
+    {
+        if(this.heroSkillSampleDic == null)
+        {
+            this.heroSkillSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/HeroSkillSample.xml");
+        this.xmlToObjcet(configStr,HeroSkillSampleVo,"key",this.heroSkillSampleDic);
+
+        Laya.loader.clearRes("res/config/HeroSkillSample.xml");
     }
 
 

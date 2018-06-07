@@ -2,7 +2,6 @@
 * websocket管理器
 */
 class WebSocketManager{
-    private ProtoBuf:any  = Laya.Browser.window.protobuf;
     private ip:string;
     private port:number;
     private webSocket:Laya.Socket;
@@ -30,15 +29,16 @@ class WebSocketManager{
         this.webSocket.on(Laya.Event.MESSAGE,this,this.webSocketMessage);
         this.webSocket.on(Laya.Event.CLOSE,this,this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR,this,this.webSocketError);
-
-        var urls:Array<string> = ["res/outside/proto/login.proto","res/outside/proto/role.proto","res/outside/proto/hero.proto"];
-        this.ProtoBuf.load(urls,this.protoLoadComplete);
+        //加载协议
+        var protoBufUrls = ["res/outside/proto/login.proto","res/outside/proto/role.proto","res/outside/proto/hero.proto"];
+        Laya.Browser.window.protobuf.load(protoBufUrls,this.protoLoadComplete);
     }
+    
+   
     private protoLoadComplete(error,root):void
     {
         WebSocketManager.ins.protoRoot = root;
         WebSocketManager.ins.webSocket.connectByUrl("ws://"+WebSocketManager.ins.ip+":"+WebSocketManager.ins.port);
-        var test = WebSocketManager.ins.defineProtoClass("HeroInfoRequest");
     }
     private webSocketOpen():void
     {
@@ -76,7 +76,11 @@ class WebSocketManager{
         packageOut.pack(module,cmd,data);
         this.webSocket.send(packageOut.buffer);
     }
-    /**定义protobuf类 */
+    /**
+     * 定义protobuf类
+     * @param protoType 协议模块类型
+     * @param classStr 类
+     */
     public defineProtoClass(classStr:string):any
     {
         return this.protoRoot.lookup(classStr);

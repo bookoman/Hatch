@@ -29,5 +29,9 @@ class HeroMediator extends BaseMediator{
     public dispose():void
     {
         super.dispose();
+        if(this.uiRole)
+        {
+            this.uiRole.dispose();
+        }
     }
 }

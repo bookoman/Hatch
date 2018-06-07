@@ -31,6 +31,9 @@ var HeroMediator = /** @class */ (function (_super) {
     };
     HeroMediator.prototype.dispose = function () {
         _super.prototype.dispose.call(this);
+        if (this.uiRole) {
+            this.uiRole.dispose();
+        }
     };
     return HeroMediator;
 }(BaseMediator));

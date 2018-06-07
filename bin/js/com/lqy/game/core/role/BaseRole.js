@@ -78,7 +78,7 @@ var BaseRole = /** @class */ (function (_super) {
     BaseRole.prototype.aniPlay = function (aniID, loop, caller, method, defRole) {
         if (this.isLoaded) {
             /**测试自己龙动作 */
-            if (this.roleVo.id == "20005" || this.roleVo.id == "10006") {
+            if (this.roleVo.id == "20005" || this.roleVo.id == "10006" || this.roleVo.id == "10007") {
                 if (aniID == RoleAniIndex.ATTACK)
                     aniID = NewRoleAniIndex.ATTACK;
                 else if (aniID == RoleAniIndex.INJURED)

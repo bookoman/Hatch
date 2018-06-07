@@ -48,9 +48,9 @@ class RoleManager{
             if(hero == null)
             {
                 hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-                if(roleVo.id == "10006")
+                if(roleVo.id == "10006" || roleVo.id == "10007")
                 {
-                    hero.initRole(roleVo,i,0.5);
+                    hero.initRole(roleVo,i,0.8);
                 }
                 else
                 {

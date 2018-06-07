@@ -1,0 +1,90 @@
+
+leilong001.png
+size: 256,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+hou da tui
+  rotate: false
+  xy: 170, 228
+  size: 23, 21
+  orig: 23, 21
+  offset: 0, 0
+  index: -1
+hou jiao
+  rotate: false
+  xy: 2, 2
+  size: 18, 25
+  orig: 18, 25
+  offset: 0, 0
+  index: -1
+hou jiao_2
+  rotate: true
+  xy: 195, 232
+  size: 17, 25
+  orig: 17, 25
+  offset: 0, 0
+  index: -1
+hou xiao tui
+  rotate: false
+  xy: 2, 61
+  size: 20, 30
+  orig: 20, 30
+  offset: 0, 0
+  index: -1
+hou xiao tui_2
+  rotate: false
+  xy: 2, 29
+  size: 19, 30
+  orig: 19, 30
+  offset: 0, 0
+  index: -1
+qian da tui
+  rotate: false
+  xy: 143, 224
+  size: 25, 25
+  orig: 25, 25
+  offset: 0, 0
+  index: -1
+qian jiao
+  rotate: false
+  xy: 143, 170
+  size: 19, 24
+  orig: 19, 24
+  offset: 0, 0
+  index: -1
+qian jiao_2
+  rotate: false
+  xy: 49, 67
+  size: 20, 24
+  orig: 20, 24
+  offset: 0, 0
+  index: -1
+qian xiao tui
+  rotate: false
+  xy: 24, 65
+  size: 23, 26
+  orig: 23, 26
+  offset: 0, 0
+  index: -1
+qian xiao tui_2
+  rotate: false
+  xy: 143, 196
+  size: 22, 26
+  orig: 22, 26
+  offset: 0, 0
+  index: -1
+shen ti
+  rotate: false
+  xy: 2, 93
+  size: 139, 156
+  orig: 139, 156
+  offset: 0, 0
+  index: -1
+tou kui
+  rotate: false
+  xy: 71, 75
+  size: 21, 16
+  orig: 21, 16
+  offset: 0, 0
+  index: -1

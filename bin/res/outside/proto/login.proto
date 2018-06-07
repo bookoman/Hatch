@@ -1,6 +1,7 @@
 option java_package = "com.lqy.gameserver.protocs";
 option java_outer_classname = "LoginProtoc";
 
+import "role.proto";
 
 enum LoginModuleProtocl {
 	ModuleID = 1000;       // 登录模块号	
@@ -20,4 +21,5 @@ message LoginRequest {
 //返回登录结果 [C_Login]
 message LoginResponse {
 	required int32 statusCode = 1; 				// 状态码：0：成功
+	optional RoleProtobuffer role = 2;		    // Role 信息实体
 }

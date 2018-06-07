@@ -3,7 +3,6 @@
 */
 var WebSocketManager = /** @class */ (function () {
     function WebSocketManager() {
-        this.ProtoBuf = Laya.Browser.window.protobuf;
         this.socketHanlderDic = new Laya.Dictionary();
     }
     Object.defineProperty(WebSocketManager, "ins", {
@@ -24,13 +23,13 @@ var WebSocketManager = /** @class */ (function () {
         this.webSocket.on(Laya.Event.MESSAGE, this, this.webSocketMessage);
         this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
-        var urls = ["res/outside/proto/login.proto", "res/outside/proto/role.proto", "res/outside/proto/hero.proto"];
-        this.ProtoBuf.load(urls, this.protoLoadComplete);
+        //加载协议
+        var protoBufUrls = ["res/outside/proto/login.proto", "res/outside/proto/role.proto", "res/outside/proto/hero.proto"];
+        Laya.Browser.window.protobuf.load(protoBufUrls, this.protoLoadComplete);
     };
     WebSocketManager.prototype.protoLoadComplete = function (error, root) {
         WebSocketManager.ins.protoRoot = root;
         WebSocketManager.ins.webSocket.connectByUrl("ws://" + WebSocketManager.ins.ip + ":" + WebSocketManager.ins.port);
-        var test = WebSocketManager.ins.defineProtoClass("HeroInfoRequest");
     };
     WebSocketManager.prototype.webSocketOpen = function () {
         console.log("websocket open...");
@@ -61,7 +60,11 @@ var WebSocketManager = /** @class */ (function () {
         packageOut.pack(module, cmd, data);
         this.webSocket.send(packageOut.buffer);
     };
-    /**定义protobuf类 */
+    /**
+     * 定义protobuf类
+     * @param protoType 协议模块类型
+     * @param classStr 类
+     */
     WebSocketManager.prototype.defineProtoClass = function (classStr) {
         return this.protoRoot.lookup(classStr);
     };

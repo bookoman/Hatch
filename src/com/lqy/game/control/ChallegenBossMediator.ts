@@ -45,7 +45,10 @@ class ChallegenBossMediator extends BaseMediator{
         {
             roleVo = playerData.roleVoAry[i];
             hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-            hero.initRole(roleVo,i,1,this.roleLayer);
+            if(roleVo.id == "10006" || roleVo.id == "10007")
+                hero.initRole(roleVo,i,0.8,this.roleLayer);
+            else
+                hero.initRole(roleVo,i,1,this.roleLayer);
             // hero.setBlood(0);
             hero.aniPlay(RoleAniIndex.STAND);
             this.heroRoles.push(hero);
