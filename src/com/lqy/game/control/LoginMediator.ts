@@ -31,7 +31,7 @@ class LoginMediator extends BaseMediator{
         ];
         var enterGameMediator:EnterGameMediator = new EnterGameMediator(resAry);
 
-
+        //发送请求
         // var account:string = this.view.inputAccount.text;
         // var pwd:string = this.view.inputPwd.text;
         // if(!account || account == "")
@@ -44,7 +44,6 @@ class LoginMediator extends BaseMediator{
         //     console.log("密码不能为空");
         //     return;
         // }
-
         // ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
     }
 

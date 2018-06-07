@@ -89,8 +89,14 @@ class GameServerState{
      * 停服维护
      */
     public static GameServer_State_Maintain = -2;
-
      
+}
+/**协议模块类型 */
+class ProtocolBufModuleType
+{
+    public static LOGIN:string = "hero";
+    public static ROLE:string = "role";
+    public static HERO:string = "hero";
 }
 
 /**地图类型枚举 */

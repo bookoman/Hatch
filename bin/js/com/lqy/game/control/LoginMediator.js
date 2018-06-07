@@ -33,6 +33,7 @@ var LoginMediator = /** @class */ (function (_super) {
             { url: "unpack/login/logo.png", type: Loader.IMAGE }
         ];
         var enterGameMediator = new EnterGameMediator(resAry);
+        //发送请求
         // var account:string = this.view.inputAccount.text;
         // var pwd:string = this.view.inputPwd.text;
         // if(!account || account == "")

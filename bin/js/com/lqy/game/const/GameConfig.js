@@ -96,6 +96,15 @@ var GameServerState = /** @class */ (function () {
     GameServerState.GameServer_State_Maintain = -2;
     return GameServerState;
 }());
+/**协议模块类型 */
+var ProtocolBufModuleType = /** @class */ (function () {
+    function ProtocolBufModuleType() {
+    }
+    ProtocolBufModuleType.LOGIN = "hero";
+    ProtocolBufModuleType.ROLE = "role";
+    ProtocolBufModuleType.HERO = "hero";
+    return ProtocolBufModuleType;
+}());
 /**地图类型枚举 */
 var MapType;
 (function (MapType) {

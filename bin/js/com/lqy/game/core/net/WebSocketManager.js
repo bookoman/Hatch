@@ -24,11 +24,13 @@ var WebSocketManager = /** @class */ (function () {
         this.webSocket.on(Laya.Event.MESSAGE, this, this.webSocketMessage);
         this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
-        this.ProtoBuf.load("res/outside/proto/login.proto", this.protoLoadComplete);
+        var urls = ["res/outside/proto/login.proto", "res/outside/proto/role.proto", "res/outside/proto/hero.proto"];
+        this.ProtoBuf.load(urls, this.protoLoadComplete);
     };
     WebSocketManager.prototype.protoLoadComplete = function (error, root) {
         WebSocketManager.ins.protoRoot = root;
         WebSocketManager.ins.webSocket.connectByUrl("ws://" + WebSocketManager.ins.ip + ":" + WebSocketManager.ins.port);
+        var test = WebSocketManager.ins.defineProtoClass("HeroInfoRequest");
     };
     WebSocketManager.prototype.webSocketOpen = function () {
         console.log("websocket open...");

@@ -31,12 +31,14 @@ class WebSocketManager{
         this.webSocket.on(Laya.Event.CLOSE,this,this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR,this,this.webSocketError);
 
-        this.ProtoBuf.load("res/outside/proto/login.proto",this.protoLoadComplete);
+        var urls:Array<string> = ["res/outside/proto/login.proto","res/outside/proto/role.proto","res/outside/proto/hero.proto"];
+        this.ProtoBuf.load(urls,this.protoLoadComplete);
     }
     private protoLoadComplete(error,root):void
     {
         WebSocketManager.ins.protoRoot = root;
         WebSocketManager.ins.webSocket.connectByUrl("ws://"+WebSocketManager.ins.ip+":"+WebSocketManager.ins.port);
+        var test = WebSocketManager.ins.defineProtoClass("HeroInfoRequest");
     }
     private webSocketOpen():void
     {

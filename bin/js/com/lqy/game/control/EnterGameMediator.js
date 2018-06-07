@@ -59,7 +59,7 @@ var EnterGameMediator = /** @class */ (function (_super) {
         this.dispose();
         //登录web服
         // var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
-        // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder)
+        // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder);
     };
     EnterGameMediator.prototype.onBtnRegster = function (e) {
         var enterGameMediator = new SignMediator();
