@@ -5,6 +5,7 @@ var ClientSender = /** @class */ (function () {
     function ClientSender() {
     }
     /**********************************webSocket */
+    /**登录请求 */
     ClientSender.loginReq = function (account) {
         var LoginRequest = WebSocketManager.ins.defineProtoClass("LoginRequest");
         var message = {};
@@ -13,6 +14,14 @@ var ClientSender = /** @class */ (function () {
         message.nickname = "xielong";
         var buffer = LoginRequest.encode(message).finish();
         WebSocketManager.ins.sendMsg(Protocol.USER_LOGIN, Protocol.USER_LOGIN_CMD, buffer);
+    };
+    /**获取英雄信息 */
+    ClientSender.getHeroInfoReq = function (statusCode) {
+        var HeroInfoRequest = WebSocketManager.ins.defineProtoClass("HeroInfoRequest");
+        var message = {};
+        message.statusCode = statusCode;
+        var buffer = HeroInfoRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.HERO, Protocol.HERO_GET_INFOS, buffer);
     };
     /**********************************Http */
     /**测试登录 */

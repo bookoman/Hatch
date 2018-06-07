@@ -22,7 +22,8 @@ class EnterGameMediator extends BaseMediator{
         this.view.btnLogin.on(Laya.Event.CLICK,this,this.onBtnLogin);
         this.view.btnChoice.on(Laya.Event.CLICK,this,this.onBtnChoice);
         this.view.btnRegster.on(Laya.Event.CLICK,this,this.onBtnRegster);
-        WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN,new UserLoginHandler(Protocol.USER_LOGIN,this,this.onWebSocketLogined));
+        WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,new UserLoginHandler(this,this.onWebSocketLogined));
+        WebSocketManager.ins.registerHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,new GetHeroInfosHanlder(this,this.getHeroInfosHandler));
     }
 
     protected removeEvents():void
@@ -30,21 +31,22 @@ class EnterGameMediator extends BaseMediator{
         this.view.btnLogin.off(Laya.Event.CLICK,this,this.onBtnLogin);
         this.view.btnChoice.off(Laya.Event.CLICK,this,this.onBtnChoice);
         this.view.btnRegster.off(Laya.Event.CLICK,this,this.onBtnRegster);
+        WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,this);
+        WebSocketManager.ins.unregisterHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,this);
     }
+
     private onWebSocketLogined(data):void
     {
-        if(data.statusCode == 0)
-        {
-            console.log("登录成功。。。"+data);    
-            PreLoadingView.ins.show();
-            SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
-            this.dispose();
-        }
-        else
-        {
-            console.log("登录错误码",data.statusCode);
-        }
+        console.log("登录成功。。。"+data);    
+        ClientSender.getHeroInfoReq(1);
         
+    }
+    /**得到宠物信息 */
+    private getHeroInfosHandler():void
+    {
+        PreLoadingView.ins.show();
+        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        this.dispose();
     }
     public updateServerInfo():void
     {

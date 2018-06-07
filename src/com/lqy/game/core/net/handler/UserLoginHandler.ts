@@ -2,8 +2,8 @@
 * 用户登录
 */
 class UserLoginHandler extends SocketHanlder{
-    constructor(module:number,caller:any,callback:Function = null){
-        super(module,caller,callback);
+    constructor(caller:any,callback:Function = null){
+        super(caller,callback);
     }
     public explain(data):void
     {

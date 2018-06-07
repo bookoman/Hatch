@@ -1,7 +1,7 @@
 /*
 * 宠物配制表
 */
-class HeroSampleVo{
+class HeroSampleConfig{
     public key:string;
     public icon:string;
     public modeId:string;

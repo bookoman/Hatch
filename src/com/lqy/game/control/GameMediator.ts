@@ -17,6 +17,7 @@ class GameMediator extends BaseMediator{
         super.initView();
         this.onBtnMap();
         
+        
     }
     protected addEvents():void
     {
@@ -27,6 +28,7 @@ class GameMediator extends BaseMediator{
         this.view.btnEquip.on(Laya.Event.CLICK,this,this.onBtnEquip);
         this.view.btnHome.on(Laya.Event.CLICK,this,this.onBtnHome);
 
+        
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = new Handler(this,this.onListAniScaleRender);
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = new Handler(this,this.onListMouseHandler);
         // EventManager.ins.addEvent(EventManager.TEST_LIST_SCRALE_RENDER,this,this.listScraleInit);
@@ -41,9 +43,14 @@ class GameMediator extends BaseMediator{
         this.view.btnEquip.off(Laya.Event.CLICK,this,this.onBtnEquip);
         this.view.btnHome.off(Laya.Event.CLICK,this,this.onBtnHome);
 
+        
+
+        
+
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = null;
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = null;
     }
+    
 
     // private listScraleInit():void
     // {

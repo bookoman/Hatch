@@ -23,6 +23,14 @@ var GameDataManager = /** @class */ (function () {
     });
     /**保存服务器信息 */
     GameDataManager.prototype.saveServerInfoList = function (data, lastServer) {
+        /**上一次登录服务器信息 */
+        this.curServerInfo = new ServerInfoVo();
+        for (var key in lastServer) {
+            if (lastServer.hasOwnProperty(key)) {
+                this.curServerInfo[key] = lastServer[key];
+            }
+        }
+        //服务器列表
         this.serverList = new Array();
         var info;
         var serverInfo;
@@ -34,14 +42,11 @@ var GameDataManager = /** @class */ (function () {
                     serverInfo[key] = info[key];
                 }
             }
-            this.serverList.push(serverInfo);
-        }
-        /**上一次登录服务器信息 */
-        this.curServerInfo = new ServerInfoVo();
-        for (var key in lastServer) {
-            if (lastServer.hasOwnProperty(key)) {
-                this.curServerInfo[key] = lastServer[key];
+            //默认选中第一个正常状态的服务器
+            if (!this.curServerInfo.ip && serverInfo.state == GameServerState.GameServer_State_ON) {
+                this.curServerInfo = serverInfo;
             }
+            this.serverList.push(serverInfo);
         }
     };
     GameDataManager.prototype.choiceServerInfo = function (index) {

@@ -51,11 +51,12 @@ class WebSocketManager{
         console.log("websocket msg...");
         var packageIn:PackageIn = new PackageIn();
         packageIn.read(data);
-        var socketHanlder:SocketHanlder = this.socketHanlderDic.get(packageIn.module);
-        if(socketHanlder)
-        {
+        var key:string = packageIn.module+"_"+ packageIn.cmd;
+        var handlers = this.socketHanlderDic.get(key);
+        handlers.forEach(socketHanlder => {
             socketHanlder.explain(packageIn.body);
-        }
+        });
+        
     }
     private webSocketClose():void
     {
@@ -87,26 +88,40 @@ class WebSocketManager{
     }
 
     /**注册 */
-    public registerHandler(protocol:number,handler:SocketHanlder):void
+    public registerHandler(protocol:number,cmd:number,handler:SocketHanlder):void
     {
-        var handlers:Array<SocketHanlder> = this.socketHanlderDic.get(protocol);
+        var key:string = protocol+"_"+cmd;
+        var handlers:Array<SocketHanlder> = this.socketHanlderDic.get(key);
         if(!handlers)
         {
-            handlers = new Array();
-            this.socketHanlderDic.set(protocol,handler);
+            handlers = [];
+            handlers.push(handler);
+            this.socketHanlderDic.set(key,handlers);
         }
-        handlers.push(handler);
+        else
+        {
+            handlers.push(handler);
+        }
     }
     /**删除 */
-    public unregisterHandler(protocol:number,handler:SocketHanlder):void
+    public unregisterHandler(protocol:number,cmd:number,caller:any):void
     {
-        var handlers:Array<SocketHanlder> = this.socketHanlderDic.get(protocol);
+        var key:string = protocol+"_"+cmd;
+        var handlers:Array<SocketHanlder> = this.socketHanlderDic.get(key);
         if(handlers)
         {
-            handlers.splice(handlers.indexOf(handler),1);
+            var handler;
+            for(var i = handlers.length - 1;i >= 0 ;i--)
+            {
+                handler = handlers[i];
+                if(handler.caller === caller)
+                {
+                    handlers.splice(i,1);
+                }
+            }
             if(handlers.length == 0)
             {
-                this.socketHanlderDic.remove(protocol);
+                this.socketHanlderDic.remove(key);
             }
         }
     }

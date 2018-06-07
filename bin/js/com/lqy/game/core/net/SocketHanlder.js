@@ -2,10 +2,9 @@
 * 数据处理Hanlder
 */
 var SocketHanlder = /** @class */ (function () {
-    function SocketHanlder(module, caller, callback) {
+    function SocketHanlder(caller, callback) {
         if (callback === void 0) { callback = null; }
         this.statusCode = 0;
-        this.module = module;
         this.caller = caller;
         this.callBack = callback;
     }

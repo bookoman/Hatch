@@ -34,6 +34,14 @@ class GameDataManager{
     /**保存服务器信息 */
     public saveServerInfoList(data:any,lastServer:any):void
     {
+        /**上一次登录服务器信息 */
+        this.curServerInfo = new ServerInfoVo();
+        for (var key in lastServer) {
+            if (lastServer.hasOwnProperty(key)) {
+                this.curServerInfo[key] = lastServer[key];
+            }
+        }
+        //服务器列表
         this.serverList = new Array();
         var info:any;
         var serverInfo:ServerInfoVo;
@@ -46,15 +54,14 @@ class GameDataManager{
                     serverInfo[key] = info[key];
                 }
             }
+            //默认选中第一个正常状态的服务器
+            if(!this.curServerInfo.ip && serverInfo.state == GameServerState.GameServer_State_ON)
+            {
+                this.curServerInfo = serverInfo;
+            }
             this.serverList.push(serverInfo);
         }
-        /**上一次登录服务器信息 */
-        this.curServerInfo = new ServerInfoVo();
-        for (var key in lastServer) {
-            if (lastServer.hasOwnProperty(key)) {
-                this.curServerInfo[key] = lastServer[key];
-            }
-        }
+        
     }
     
     public choiceServerInfo(index:number):void

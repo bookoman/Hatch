@@ -46,7 +46,7 @@ var GameConfig = /** @class */ (function () {
     /**场景战斗开关 */
     GameConfig.SCENE_BATTLE_SWITCH = true;
     /**单机游戏 */
-    GameConfig.SINGLE_GAME = false;
+    GameConfig.SINGLE_GAME = true;
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {
@@ -60,8 +60,16 @@ var HTTPReqType = /** @class */ (function () {
 var Protocol = /** @class */ (function () {
     function Protocol() {
     }
+    /**登录模块 */
     Protocol.USER_LOGIN = 1000;
+    /**登录 */
     Protocol.USER_LOGIN_CMD = 1;
+    /**英雄模块 */
+    Protocol.HERO = 1001;
+    /**获取英雄信息 */
+    Protocol.HERO_GET_INFOS = 1;
+    /**更新阵型 */
+    Protocol.HERO_UPDATE_FORMATION = 2;
     return Protocol;
 }());
 /**http请求地址 */

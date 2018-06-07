@@ -31,7 +31,6 @@ class BaseRole extends Laya.Sprite{
     // }
     public initRole(roleVo:RoleVo,showPriority:number,scale?:number,parentDis?:Laya.Sprite):void
     {
-
         this.clipShadow = new Laya.Clip("main/clip_shadow.png");
         this.clipShadow.height = 43;
         this.clipShadow.x = -this.clipShadow.width / 2;

@@ -4,6 +4,7 @@
 class PackageIn extends Laya.Byte{
     
     public module:number;
+    public cmd:number;
     public body;
     constructor(){
         super();
@@ -19,7 +20,7 @@ class PackageIn extends Laya.Byte{
         var len = this.getInt32();
         //包头
         this.module = this.getInt32();
-        var cmd = this.getInt32();
+        this.cmd = this.getInt32();
         var type = this.getByte();
         var format = this.getByte();
         //数据

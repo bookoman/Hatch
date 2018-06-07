@@ -1,7 +1,7 @@
 /*
 * 关卡地图配置表
 */
-class GateSampleVo{
+class GateSampleConfig{
     public key:string;
     public gateName:string;
     public nextGateKey:string;

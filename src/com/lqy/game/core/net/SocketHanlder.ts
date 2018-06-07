@@ -3,11 +3,9 @@
 */
 class SocketHanlder{
     public statusCode:number = 0;
-    public module:number;
-    private caller:any;
+    public caller:any;
     private callBack:Function;
-    constructor(module:number,caller:any,callback:Function = null){
-        this.module = module;
+    constructor(caller:any,callback:Function = null){
         this.caller = caller;
         this.callBack = callback;
     }

@@ -2,11 +2,13 @@
 * 客户端发送器
 */
 class ClientSender{
+
     constructor(){
 
     }
 
     /**********************************webSocket */
+    /**登录请求 */
     public static loginReq(account:string):void
     {
         var LoginRequest:any = WebSocketManager.ins.defineProtoClass("LoginRequest");
@@ -17,6 +19,17 @@ class ClientSender{
         var buffer = LoginRequest.encode(message).finish();
         WebSocketManager.ins.sendMsg(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,buffer);
     }
+    /**获取英雄信息 */
+    public static getHeroInfoReq(statusCode:number):void
+    {
+        var HeroInfoRequest:any = WebSocketManager.ins.defineProtoClass("HeroInfoRequest");
+        var message:any = {};
+        message.statusCode = statusCode;
+        var buffer = HeroInfoRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.HERO,Protocol.HERO_GET_INFOS,buffer);
+    }
+
+
 
     /**********************************Http */
     /**测试登录 */

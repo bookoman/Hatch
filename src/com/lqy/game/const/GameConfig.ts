@@ -49,7 +49,7 @@ class GameConfig{
     public static SCENE_BATTLE_SWITCH:Boolean = true;
 
     /**单机游戏 */
-    public static SINGLE_GAME:boolean = false;
+    public static SINGLE_GAME:boolean = true;
     
 }
 
@@ -60,8 +60,17 @@ class HTTPReqType{
 
 /**协议 */
 class Protocol{
+    /**登录模块 */
     public static USER_LOGIN:number = 1000;
+    /**登录 */
     public static USER_LOGIN_CMD:number = 1;
+
+    /**英雄模块 */
+    public static HERO:number = 1001;
+    /**获取英雄信息 */
+    public static HERO_GET_INFOS:number = 1;
+    /**更新阵型 */
+    public static HERO_UPDATE_FORMATION:number = 2;
 }
 /**http请求地址 */
 class HTTPRequestUrl{
