@@ -16,6 +16,9 @@ class EventManager{
     /**服务器连接成功 */
     public static SERVER_CONNECTED:string = "SERVER_CONNECTED";
 
+    public static TEST_CHANGE_ROLE_SCALE:string = "TEST_CHANGE_ROLE_SCALE";
+    public static TEST_LIST_SCRALE_RENDER:string = "TEST_LIST_SCRALE_RENDER";
+
     /**事件管理器 */
     public eventObj:Dictionary = null;
     constructor(){

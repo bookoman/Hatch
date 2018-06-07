@@ -3,7 +3,7 @@
 */
 class IconView extends ui.comp.IconViewUI{
     public data:any;
-    
+    public selectTick:boolean = false;
     constructor(){
         super();
     }
@@ -12,8 +12,26 @@ class IconView extends ui.comp.IconViewUI{
         this.data = data;
         this.clipBG.skin = "comp/clip_qulity"+data.quality+".png";
         this.imgIcon.skin = "res/outside/icons/heros/"+data.iconName +".png";
+        if(data.select)
+        {
+            this.setSelect(true);
+            data.select = false;
+        }
     }
-
+     /**设置选中 */
+    public setSelect(bool?:boolean):void
+    {
+        if(bool === undefined)
+        {
+            this.selectTick = !this.selectTick;
+        }
+        else
+        {
+            this.selectTick = bool;
+        }
+        this.imgTick.visible = this.selectTick;
+        
+    }
     public dispose():void
     {
         this.removeEvents();

@@ -63,20 +63,25 @@ var GameDataManager = /** @class */ (function () {
         // this.selfPlayerData.lineupId = "1";
         // var lineupposVoAry:Array<LineupPosVo> = LineupManager.ins.getCofingByID(this.selfPlayerData.lineupId);
         this.selfPlayerData.roleVoAry = [];
-        var ids = ["10000", "10001", "10005", "10002", "10003", "10004"];
+        var ids = ["10000", "10001", "10002", "10003", "10006", "10005"];
         var roleVo;
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if (roleVo) {
                 roleVo.lineupGrid = i + 1;
-                roleVo.initRowColPosPoint();
                 this.selfPlayerData.roleVoAry.push(roleVo);
             }
         }
+        this.selfPlayerData.heroSum = this.selfPlayerData.roleVoAry.length;
+    };
+    /**计算角色再地图上坐标 */
+    GameDataManager.prototype.calMapRowColPosPoint = function () {
         this.selfPlayerData.roleVoAry.sort(function (a, b) {
             return a.atts > b.atts ? -1 : 1;
         });
-        this.selfPlayerData.heroSum = this.selfPlayerData.roleVoAry.length;
+        this.selfPlayerData.roleVoAry.forEach(function (roleVo) {
+            roleVo.initRowColPosPoint();
+        });
     };
     /**生产敌人 */
     GameDataManager.prototype.produceEnemyData = function () {

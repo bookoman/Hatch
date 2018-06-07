@@ -4,6 +4,7 @@
 class RoleVo{
     /**配置属性 */
     public id:string;
+    public modelId:string;
     public name:string;
     public runWidth:number;
     public runHeight:number;

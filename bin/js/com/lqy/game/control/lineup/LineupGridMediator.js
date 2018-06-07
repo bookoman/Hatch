@@ -13,45 +13,80 @@ var __extends = (this && this.__extends) || (function () {
 */
 var LineupGridMediator = /** @class */ (function (_super) {
     __extends(LineupGridMediator, _super);
-    function LineupGridMediator(assetsUrl, view) {
+    function LineupGridMediator(assetsUrl, view, caller, clickCall, mapGridPoint) {
         var _this = _super.call(this, assetsUrl, view) || this;
         _this.skeletonAni = null;
         _this.isLoaded = false;
         _this.aniCount = 0;
+        _this.caller = caller;
+        _this.clickCall = clickCall;
+        _this.mapGridPoint = mapGridPoint;
         return _this;
     }
     LineupGridMediator.prototype.initView = function () {
         _super.prototype.initView.call(this);
     };
     LineupGridMediator.prototype.addEvents = function () {
-        this.view.on(Laya.Event.CLICK, this, this.onSkeletonAniClick);
+        this.view.on(Laya.Event.CLICK, this, this.onViewClick);
     };
     LineupGridMediator.prototype.removeEvents = function () {
-        this.view.off(Laya.Event.CLICK, this, this.onSkeletonAniClick);
+        this.view.off(Laya.Event.CLICK, this, this.onViewClick);
     };
     LineupGridMediator.prototype.getView = function () {
         return this.view;
     };
-    LineupGridMediator.prototype.setUpHero = function (roleID) {
+    LineupGridMediator.prototype.setUpHero = function (roleID, iconView) {
         if (roleID == this.roleID) {
             return;
         }
+        if (this.iconView) {
+            this.iconView.setSelect(false);
+        }
         this.roleID = roleID;
+        this.iconView = iconView;
+        this.isLoaded = false;
         if (this.skeletonAni == null) {
             this.skeletonAni = new Skeleton();
             this.skeletonAni.scale(-1, 1);
             this.skeletonAni.pos(this.view.clipShadow.width / 2, this.view.clipShadow.height / 2);
-            this.view.addChild(this.skeletonAni);
         }
-        this.isLoaded = false;
+        this.view.addChild(this.skeletonAni);
         this.aniPlay(RoleAniIndex.STAND);
     };
-    LineupGridMediator.prototype.revokeUpHero = function (roleID) {
+    LineupGridMediator.prototype.revokeUpHero = function () {
+        this.roleID = null;
+        if (this.skeletonAni && this.skeletonAni.parent) {
+            this.skeletonAni.parent.removeChild(this.skeletonAni);
+        }
+        if (this.iconView) {
+            this.iconView.setSelect(false);
+            this.iconView = null;
+        }
     };
-    LineupGridMediator.prototype.onSkeletonAniClick = function (e) {
-        this.aniPlay(RoleAniIndex.ATTACK, true, this, function () {
-            this.aniPlay(RoleAniIndex.STAND, true);
-        });
+    /**设置阴影选中 */
+    LineupGridMediator.prototype.setClipShadowIndex = function (index) {
+        this.view.clipShadow.index = index;
+    };
+    LineupGridMediator.prototype.setLineupIDLable = function (lineupID) {
+        this.view.lblLineupID.text = lineupID;
+    };
+    LineupGridMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        if (this.skeletonAni) {
+            if (this.skeletonAni.parent) {
+                this.skeletonAni.parent.removeChild(this.skeletonAni);
+            }
+            this.skeletonAni.destroy();
+            this.skeletonAni = null;
+        }
+        this.caller = null;
+        this.clickCall = null;
+        this.iconView = null;
+    };
+    LineupGridMediator.prototype.onViewClick = function (e) {
+        if (this.caller && this.clickCall) {
+            this.clickCall.call(this.caller, this);
+        }
     };
     /**
     *
@@ -83,10 +118,8 @@ var LineupGridMediator = /** @class */ (function (_super) {
         }
         else {
             if (this.roleID) {
-                var url = "res/outside/anim/role/role" + this.roleID + "/" + this.roleID + ".sk";
-                if (this.roleID == "20005") {
-                    url = "res/outside/anim/role/role" + this.roleID + "/alien-pro.sk";
-                }
+                var roleVo = ConfigManager.ins.getRoleVoByID(this.roleID);
+                var url = "res/outside/anim/role/" + roleVo.modelId + "/" + roleVo.modelId + ".sk";
                 this.skeletonAni.load(url, Laya.Handler.create(this, this.loadCompleted, [aniID, loop, caller, method]));
             }
         }

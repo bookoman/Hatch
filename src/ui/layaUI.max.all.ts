@@ -54,8 +54,9 @@ module ui.comp {
     export class IconViewUI extends View {
 		public clipBG:Laya.Clip;
 		public imgIcon:Laya.Image;
+		public imgTick:Laya.Image;
 
-        public static  uiView:any ={"type":"View","props":{"width":115,"height":115},"child":[{"type":"Clip","props":{"y":3,"x":3,"width":110,"var":"clipBG","skin":"comp/clip_qulity1.png","height":110,"clipY":2}},{"type":"Image","props":{"y":10,"x":10,"width":95,"var":"imgIcon","height":96}}]};
+        public static  uiView:any ={"type":"View","props":{"width":115,"height":115},"child":[{"type":"Clip","props":{"y":3,"x":3,"width":110,"var":"clipBG","skin":"comp/clip_qulity1.png","height":110,"clipY":2}},{"type":"Image","props":{"y":10,"x":10,"width":95,"var":"imgIcon","height":96}},{"type":"Image","props":{"y":27,"x":14,"visible":false,"var":"imgTick","skin":"comp/img_tick.png"}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -109,20 +110,68 @@ module ui {
 }
 
 module ui {
-    export class GameViewUI extends View {
-		public btnOpen:Laya.Button;
-		public btnMap:Laya.Button;
-		public btnLineup:Laya.Button;
-		public btnHero:Laya.Button;
-		public btnEquip:Laya.Button;
-		public btnHome:Laya.Button;
+    export class EquipViewUI extends View {
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"mouseThrough":true,"height":1334},"child":[{"type":"Button","props":{"y":17,"x":706,"width":34,"var":"btnOpen","stateNum":1,"skin":"main/laba.png","sizeGrid":"-10,0,-6,-14","labelStrokeColor":"#f88508","labelSize":32,"height":31,"alpha":0.6}},{"type":"Image","props":{"y":1215,"x":0,"width":750,"skin":"unpack/main/diban.png","height":119}},{"type":"Image","props":{"y":1320,"x":0,"width":750,"skin":"main/img_blood.png","height":14}},{"type":"Tab","props":{"y":1214,"x":2,"width":746,"height":124},"child":[{"type":"Button","props":{"y":-7,"x":-1,"width":145,"var":"btnMap","stateNum":1,"skin":"main/huic.png","labelSize":40,"height":102}},{"type":"Button","props":{"y":-1,"x":148,"width":148,"var":"btnLineup","stateNum":1,"skin":"main/juese.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":299,"width":148,"var":"btnHero","stateNum":1,"skin":"main/tansuo.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":449,"width":148,"var":"btnEquip","stateNum":1,"skin":"main/bag.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":598,"width":148,"var":"btnHome","stateNum":1,"skin":"main/zuoz.png","labelSize":40,"height":100}}]}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"unpack/main/龙与猎人-角色.png","height":1334}}]};
         constructor(){ super()}
         createChildren():void {
         
             super.createChildren();
+            this.createView(ui.EquipViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
+    export class GameViewUI extends View {
+		public btnOpen:Laya.Button;
+		public btnMap:Laya.Button;
+		public btnHero:Laya.Button;
+		public btnLineup:Laya.Button;
+		public btnEquip:Laya.Button;
+		public btnHome:Laya.Button;
+		public viewAniScale:ui.test.TestAniScaleViewUI;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"mouseThrough":true,"height":1334},"child":[{"type":"Button","props":{"y":17,"x":706,"width":34,"var":"btnOpen","stateNum":1,"skin":"main/laba.png","sizeGrid":"-10,0,-6,-14","labelStrokeColor":"#f88508","labelSize":32,"height":31,"alpha":0.6}},{"type":"Image","props":{"y":1215,"x":0,"width":750,"skin":"unpack/main/diban.png","height":119}},{"type":"Image","props":{"y":1320,"x":0,"width":750,"skin":"main/img_blood.png","height":14}},{"type":"Tab","props":{"y":1214,"x":2,"width":746,"height":124},"child":[{"type":"Button","props":{"y":-7,"x":-1,"width":145,"var":"btnMap","stateNum":1,"skin":"main/huic.png","labelSize":40,"height":102}},{"type":"Button","props":{"y":0,"x":294,"width":148,"var":"btnHero","stateNum":1,"skin":"main/juese.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":145,"width":148,"var":"btnLineup","stateNum":1,"skin":"main/tansuo.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":449,"width":148,"var":"btnEquip","stateNum":1,"skin":"main/bag.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":598,"width":148,"var":"btnHome","stateNum":1,"skin":"main/zuoz.png","labelSize":40,"height":100}}]},{"type":"TestAniScaleView","props":{"y":1,"x":253,"visible":false,"var":"viewAniScale","runtime":"ui.test.TestAniScaleViewUI"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        			View.regComponent("ui.test.TestAniScaleViewUI",ui.test.TestAniScaleViewUI);
+
+            super.createChildren();
             this.createView(ui.GameViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
+    export class HeroViewUI extends View {
+		public clipShadow:Laya.Clip;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/main/roleBg.png"}},{"type":"Clip","props":{"y":357,"x":149,"width":134,"var":"clipShadow","skin":"main/clip_shadow.png","index":0,"height":43,"clipY":2}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.HeroViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
+    export class HomeViewUI extends View {
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"lineup/龙与猎人-上阵.png"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.HomeViewUI.uiView);
 
         }
 
@@ -132,8 +181,9 @@ module ui {
 module ui.lineup {
     export class LineupGridViewUI extends View {
 		public clipShadow:Laya.Clip;
+		public lblLineupID:Laya.Label;
 
-        public static  uiView:any ={"type":"View","props":{},"child":[{"type":"Clip","props":{"y":0,"x":0,"width":134,"var":"clipShadow","skin":"lineup/clip_shadow.png","index":0,"height":54,"clipY":2}}]};
+        public static  uiView:any ={"type":"View","props":{},"child":[{"type":"Clip","props":{"y":0,"x":0,"width":134,"var":"clipShadow","skin":"main/clip_shadow.png","index":0,"height":54,"clipY":2}},{"type":"Label","props":{"y":54,"x":34,"width":64,"var":"lblLineupID","height":32,"fontSize":30,"color":"#000000","align":"center"}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -153,9 +203,8 @@ module ui.lineup {
 		public grid2:ui.lineup.LineupGridViewUI;
 		public grid3:ui.lineup.LineupGridViewUI;
 		public grid4:ui.lineup.LineupGridViewUI;
-		public grid5:ui.lineup.LineupGridViewUI;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"renderType":"render","height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"lineup/龙与猎人-上阵.png"}},{"type":"List","props":{"y":967,"x":23,"width":716,"var":"listIcon","repeatY":2,"repeatX":6,"height":234},"child":[{"type":"VScrollBar","props":{"y":4,"x":698,"width":17,"skin":"comp/vscroll.png","name":"scrollBar","height":188}},{"type":"IconView","props":{"y":0,"x":0,"runtime":"IconView","name":"render"}}]},{"type":"LineupGridView","props":{"y":581,"x":367,"var":"grid0","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":708,"x":470,"var":"grid1","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":831,"x":573,"var":"grid2","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":580,"x":26,"var":"grid3","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":707,"x":129,"var":"grid4","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":830,"x":232,"var":"grid5","runtime":"ui.lineup.LineupGridViewUI"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"renderType":"render","height":1334},"child":[{"type":"Image","props":{"y":897,"x":0,"width":744,"skin":"unpack/main/diban.png","height":320}},{"type":"Image","props":{"y":434,"x":2,"width":744,"skin":"unpack/main/diban.png","height":477}},{"type":"List","props":{"y":967,"x":23,"width":716,"var":"listIcon","repeatY":2,"repeatX":6,"height":234},"child":[{"type":"VScrollBar","props":{"y":4,"x":698,"width":17,"skin":"comp/vscroll.png","name":"scrollBar","height":188}},{"type":"IconView","props":{"y":0,"x":0,"runtime":"IconView","name":"render"}}]},{"type":"LineupGridView","props":{"y":575,"x":343,"var":"grid0","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":702,"x":448,"var":"grid1","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":825,"x":554,"var":"grid2","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":652,"x":86,"var":"grid3","runtime":"ui.lineup.LineupGridViewUI"}},{"type":"LineupGridView","props":{"y":802,"x":166,"var":"grid4","runtime":"ui.lineup.LineupGridViewUI"}}]};
         constructor(){ super()}
         createChildren():void {
         			View.regComponent("IconView",IconView);
@@ -222,13 +271,28 @@ module ui {
 		public btnChalleangeBoss:Laya.Button;
 		public mapWordView:ui.MapWorldViewUI;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Button","props":{"y":265,"x":253,"width":243,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":88}},{"type":"MapWorldView","props":{"y":0,"x":0,"var":"mapWordView","runtime":"ui.MapWorldViewUI"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Button","props":{"y":837,"x":496,"width":243,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":88}},{"type":"MapWorldView","props":{"y":0,"x":0,"var":"mapWordView","runtime":"ui.MapWorldViewUI"}}]};
         constructor(){ super()}
         createChildren():void {
         			View.regComponent("ui.MapWorldViewUI",ui.MapWorldViewUI);
 
             super.createChildren();
             this.createView(ui.MapBattleViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
+    export class MapViewUI extends View {
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"lineup/龙与猎人-上阵.png"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.MapViewUI.uiView);
 
         }
 
@@ -280,6 +344,22 @@ module ui {
         
             super.createChildren();
             this.createView(ui.SignViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.test {
+    export class TestAniScaleViewUI extends View {
+		public listAniScale:Laya.List;
+
+        public static  uiView:any ={"type":"View","props":{"width":0,"height":0},"child":[{"type":"List","props":{"y":0,"x":0,"width":495,"var":"listAniScale","repeatY":6,"height":342},"child":[{"type":"Box","props":{"y":0,"x":-2,"width":370,"name":"render","height":57},"child":[{"type":"Image","props":{"y":0,"x":0,"width":366,"skin":"unpack/main/diban.png","height":57}},{"type":"Label","props":{"y":21,"x":99,"width":69,"text":"scale:","height":33,"fontSize":24}},{"type":"TextInput","props":{"y":16,"x":184,"width":49,"text":"0.5","skin":"comp/textinput.png","name":"inputScale","height":32,"fontSize":24}},{"type":"Button","props":{"y":13,"x":263,"width":91,"skin":"comp/button.png","name":"btnTest","labelSize":24,"label":"测试","height":38}},{"type":"Label","props":{"y":18,"x":2,"width":94,"name":"lblRoleName","height":33,"fontSize":24,"color":"#f11814"}}]},{"type":"VScrollBar","props":{"y":12,"x":367,"width":17,"skin":"comp/vscroll.png","name":"scrollBar","height":312}}]}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.test.TestAniScaleViewUI.uiView);
 
         }
 

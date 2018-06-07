@@ -21,6 +21,7 @@ var GameMediator = /** @class */ (function (_super) {
     }
     GameMediator.prototype.initView = function () {
         ObjectPoolUtil.init();
+        GameDataManager.ins.initData();
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.TOP_LAYER, false, false, true);
         _super.prototype.initView.call(this);
@@ -33,6 +34,9 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnHero.on(Laya.Event.CLICK, this, this.onBtnHero);
         this.view.btnEquip.on(Laya.Event.CLICK, this, this.onBtnEquip);
         this.view.btnHome.on(Laya.Event.CLICK, this, this.onBtnHome);
+        // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = new Handler(this,this.onListAniScaleRender);
+        // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = new Handler(this,this.onListMouseHandler);
+        // EventManager.ins.addEvent(EventManager.TEST_LIST_SCRALE_RENDER,this,this.listScraleInit);
     };
     GameMediator.prototype.removeEvents = function () {
         this.view.btnOpen.off(Laya.Event.CLICK, this, this.onBtnOpen);
@@ -41,6 +45,35 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnHero.off(Laya.Event.CLICK, this, this.onBtnHero);
         this.view.btnEquip.off(Laya.Event.CLICK, this, this.onBtnEquip);
         this.view.btnHome.off(Laya.Event.CLICK, this, this.onBtnHome);
+        // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = null;
+        // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = null;
+    };
+    // private listScraleInit():void
+    // {
+    //     this.view.viewAniScale.visible = true;
+    //     this.view.viewAniScale.alpha = 0.5;
+    //     var ary = GameDataManager.ins.selfPlayerData.roleVoAry.concat(GameDataManager.ins.bossData.roleVoAry);
+    //     (this.view.viewAniScale.listAniScale as Laya.List).array = ary;
+    // }
+    GameMediator.prototype.onListAniScaleRender = function (cell, index) {
+        if (cell && cell.dataSource) {
+            cell.getChildByName("lblRoleName").text = cell.dataSource.name;
+            cell.scaleX = 1;
+            // console.log(cell.scaleX,cell.scaleY,cell.rotation);
+        }
+    };
+    GameMediator.prototype.onListMouseHandler = function (e, index) {
+        if (e.type == Laya.Event.CLICK) {
+            var cell = this.view.viewAniScale.listAniScale.getCell(index);
+            var btn = cell.getChildByName("btnTest");
+            switch (e.target) {
+                case btn:
+                    var roleID = cell.dataSource.id;
+                    var s = Number(cell.getChildByName("inputScale").text);
+                    EventManager.ins.dispatchEvent(EventManager.TEST_CHANGE_ROLE_SCALE, [roleID, s]);
+                    break;
+            }
+        }
     };
     GameMediator.prototype.onBtnOpen = function (e) {
         SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
@@ -81,7 +114,10 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
-        this.curMediator = new HeroMediator();
+        var resAry = [
+            { url: "res/atlas/hero.atlas", type: Loader.ATLAS }
+        ];
+        this.curMediator = new HeroMediator(resAry);
         this.showViewIndex = GameButtomTabIndex.HERO;
     };
     /**战斗系统*/

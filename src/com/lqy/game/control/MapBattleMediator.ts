@@ -50,7 +50,7 @@ class MapBattleMediator extends BaseMediator{
         
         //初始化游戏场景
         MapManager.ins.enterMap("res/map",2,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
-        GameDataManager.ins.initData();
+        
         RoleManager.ins.initHeros();
         BattleEngine.ins.run();
     }
@@ -82,7 +82,7 @@ class MapBattleMediator extends BaseMediator{
         var roleVos:Array<RoleVo> = GameDataManager.ins.bossData.roleVoAry.concat(GameDataManager.ins.selfPlayerData.roleVoAry);
         roleVos.forEach(roleVo => {
             //角色资源
-            resAry.push({url:"res/outside/anim/role/role"+roleVo.id+"/"+ roleVo.id +".sk",type:/*laya.net.Loader.BUFFER*/"arraybuffer"});
+            resAry.push({url:"res/outside/anim/role/"+roleVo.modelId+"/"+ roleVo.modelId +".sk",type:/*laya.net.Loader.BUFFER*/"arraybuffer"});
         });
         this.challegenBossMediator = new ChallegenBossMediator(resAry);
     }

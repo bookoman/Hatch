@@ -1,8 +1,8 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":4,
-    "selecteID":2,
+    "selectedBox":1,
+    "selecteID":3,
     "props":{"width":750,"sceneColor":"#000000","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -15,7 +15,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":265,"x":253,"width":243,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":88},
+            "props":{"y":837,"x":496,"width":243,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":88},
             "nodeParent":1,
             "label":"Button(btnChalleangeBoss)",
             "isDirectory":false,

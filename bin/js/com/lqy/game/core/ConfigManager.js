@@ -5,18 +5,19 @@ var ConfigManager = /** @class */ (function () {
     function ConfigManager() {
         /*********测试配置数据 */
         this.roleConfigAry = [
-            { "id": "10000", "name": "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10006", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 10, "attFar": 1 },
-            { "id": "10001", "name": "黄狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10001", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 0 },
-            { "id": "10002", "name": "巨石人", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 6, "attFar": 0 },
-            { "id": "10003", "name": "蓝狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 8, "attFar": 0 },
-            { "id": "10004", "name": "骷髅头", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 1 },
-            { "id": "10005", "name": "萌仙仙", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 10, "att": 5, "atts": 10, "attFar": 0 },
-            { "id": "20000", "name": "幽灵", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10005", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 3, "atts": 1, "attFar": 0 },
-            { "id": "20001", "name": "鳄鱼龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10000", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 3, "atts": 6, "attFar": 0 },
-            { "id": "20002", "name": "骨龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 4, "atts": 4, "attFar": 1 },
-            { "id": "20003", "name": "骷髅射手", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 4, "atts": 5, "attFar": 1 },
-            { "id": "20004", "name": "斧头怪", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 5, "atts": 10, "attFar": 0 },
-            { "id": "20005", "name": "迅猛龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 5, "atts": 10, "attFar": 0 }
+            { "id": "10000", modelId: "role10000", name: "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10006", "attackRect": "0,50,50,0", "hp": 4000, "dieAttTimes": 10, "att": 10, "atts": 10, "attFar": 1 },
+            { "id": "10001", modelId: "role10001", "name": "黄狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10001", "attackRect": "0,50,50,0", "hp": 4000, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 0 },
+            { "id": "10002", modelId: "role10002", "name": "巨石人", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 4000, "dieAttTimes": 10, "att": 10, "atts": 6, "attFar": 0 },
+            { "id": "10003", modelId: "role10003", "name": "蓝狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 4000, "dieAttTimes": 10, "att": 10, "atts": 8, "attFar": 0 },
+            { "id": "10004", modelId: "role10004", "name": "骷髅头", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 4000, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 1 },
+            { "id": "10005", modelId: "role10005", "name": "萌仙仙", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 10, "att": 5, "atts": 10, "attFar": 0 },
+            { "id": "10006", modelId: "baolong001", "name": "暴龙", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 10, "att": 5, "atts": 10, "attFar": 0 },
+            { "id": "20000", modelId: "role20000", "name": "幽灵", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10005", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 3, "atts": 1, "attFar": 0 },
+            { "id": "20001", modelId: "role20001", "name": "鳄鱼龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10000", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 3, "atts": 6, "attFar": 0 },
+            { "id": "20002", modelId: "role20002", "name": "骨龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 4, "atts": 4, "attFar": 1 },
+            { "id": "20003", modelId: "role20003", "name": "骷髅射手", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 4, "atts": 5, "attFar": 1 },
+            { "id": "20004", modelId: "role20004", "name": "斧头怪", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 5, "atts": 10, "attFar": 0 },
+            { "id": "20005", modelId: "alien-pro", "name": "迅猛龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 5, "atts": 10, "attFar": 0 }
         ];
         this.skillConfigAry = [
             { "id": "10000", "name": "蛇皮技能", "cd": 10, "attFar": 1 },
@@ -67,6 +68,7 @@ var ConfigManager = /** @class */ (function () {
         this.roleConfigAry.forEach(function (roleConfig) {
             roleVo = new RoleVo();
             roleVo.id = roleConfig.id;
+            roleVo.modelId = roleConfig.modelId;
             roleVo.name = roleConfig.name;
             roleVo.skillVos = [];
             var skillAry = roleConfig.skillIDs == "" ? [] : roleConfig.skillIDs.split(",");

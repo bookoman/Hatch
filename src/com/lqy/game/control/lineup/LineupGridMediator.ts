@@ -6,8 +6,15 @@ class LineupGridMediator extends BaseMediator{
     private isLoaded:boolean = false;
     private aniCount:number = 0;
     public roleID:string;
-    constructor(assetsUrl?:any,view?:any){
+    private caller:any;
+    private clickCall:Function;
+    private iconView:IconView;
+    private mapGridPoint:Object;
+    constructor(assetsUrl?:any,view?:any,caller?:any,clickCall?:Function,mapGridPoint?:Object){
         super(assetsUrl,view);
+        this.caller = caller;
+        this.clickCall = clickCall;
+        this.mapGridPoint = mapGridPoint;
     }
     protected initView():void
     {
@@ -15,50 +22,93 @@ class LineupGridMediator extends BaseMediator{
     }
     protected addEvents():void
     {
-        this.view.on(Laya.Event.CLICK,this,this.onSkeletonAniClick);
+        this.view.on(Laya.Event.CLICK,this,this.onViewClick);
     }
     protected removeEvents():void
     {
-        this.view.off(Laya.Event.CLICK,this,this.onSkeletonAniClick);
+        this.view.off(Laya.Event.CLICK,this,this.onViewClick);
     }
+    
     public getView():ui.lineup.LineupGridViewUI
     {
         return this.view;
     }
-    public setUpHero(roleID:string):void
+    public setUpHero(roleID:string,iconView?:IconView):void
     {
         if(roleID == this.roleID)
         {
             return;
         }
+        if(this.iconView)
+        {
+            this.iconView.setSelect(false);
+        }
         this.roleID = roleID;
+        this.iconView = iconView;
+        this.isLoaded = false;
         if(this.skeletonAni == null)
         {
             this.skeletonAni = new Skeleton();
             this.skeletonAni.scale(-1,1);
             this.skeletonAni.pos(this.view.clipShadow.width/2,this.view.clipShadow.height/2);
-            this.view.addChild(this.skeletonAni);
         }
-        this.isLoaded = false;
+        this.view.addChild(this.skeletonAni);
         this.aniPlay(RoleAniIndex.STAND);
     }
 
-
-    public revokeUpHero(roleID:string):void
+    public revokeUpHero():void
     {
-
+        this.roleID = null;
+        if(this.skeletonAni && this.skeletonAni.parent)
+        {
+            this.skeletonAni.parent.removeChild(this.skeletonAni);
+        }
+        if(this.iconView)
+        {
+            this.iconView.setSelect(false);
+            this.iconView = null;
+        }
     }
-    private onSkeletonAniClick(e):void
+    /**设置阴影选中 */
+    public setClipShadowIndex(index:number):void
     {
-        this.aniPlay(RoleAniIndex.ATTACK,true,this,function():void{
-            this.aniPlay(RoleAniIndex.STAND,true);
-        });
+        this.view.clipShadow.index = index;
     }
+    public setLineupIDLable(lineupID:number):void
+    {
+        this.view.lblLineupID.text = lineupID;
+    }
+
+    public dispose():void
+    {
+        super.dispose();
+        if(this.skeletonAni)
+        {
+            if(this.skeletonAni.parent)
+            {
+                this.skeletonAni.parent.removeChild(this.skeletonAni);
+            }
+            this.skeletonAni.destroy();
+            this.skeletonAni = null;
+        }
+        this.caller = null;
+        this.clickCall = null;
+        this.iconView = null;
+    }
+   
+    private onViewClick(e):void
+    {
+        if(this.caller && this.clickCall)
+        {
+            this.clickCall.call(this.caller,this);
+        }
+    }
+    
      /**
      * 
      * @param aniID 动画id
      */
-    public aniPlay(aniID:number,loop?:boolean,caller?:any,method?:Function)
+    private aniPlay(aniID:number,loop?:boolean,caller?:any,method?:Function)
     {
         if(this.isLoaded)
         {   
@@ -93,11 +143,8 @@ class LineupGridMediator extends BaseMediator{
         {
             if(this.roleID)
             {
-                var url:string = "res/outside/anim/role/role"+this.roleID+"/"+ this.roleID +".sk";
-                if(this.roleID == "20005")
-                {
-                    url = "res/outside/anim/role/role"+this.roleID+"/alien-pro.sk";
-                }
+                var roleVo:RoleVo = ConfigManager.ins.getRoleVoByID(this.roleID);
+                var url:string = "res/outside/anim/role/"+roleVo.modelId+"/"+ roleVo.modelId +".sk";
                 this.skeletonAni.load(url,Laya.Handler.create(this,this.loadCompleted,[aniID,loop,caller,method]));
             }
         }
@@ -123,5 +170,7 @@ class LineupGridMediator extends BaseMediator{
             this.aniPlay(aniID,loop,caller,method);
         }
     }
+
+    
 
 }

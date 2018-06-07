@@ -4,9 +4,9 @@
 class MapManager{
     //地图测试数据 mapId >> mapVO
     private mapCofing:Object = {
-        "1":{"mapID":1,"name":"1","battleHeroGrid":[[1,0],[0,1],[0,2],[1,2],[0,3],[1,4]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"mapInitY":600,"battleSceneH":500,"gw":240,"gh":100},
-        "2":{"mapID":2,"name":"2","battleHeroGrid":[[1,0],[0,1],[0,2],[1,2],[0,3],[1,4]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"mapInitY":560,"battleSceneH":500,"gw":240,"gh":100},
-        "10000":{"mapID":10000,"name":"Boss挑战","battleHeroGrid":[[1,2],[1,6],[0,10],[1,10],[1,14],[1,18]],"battleEnemyGrid":[[4,2],[4,6],[4,10],[4,14],[4,18]],"mapInitY":100,"battleSceneH":1000,"gw":140,"gh":100}
+        "1":{"mapID":1,"name":"1","battleHeroGrid":[[1,0],[1,2],[1,4],[0,1],[0,3],[0,2]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"mapInitY":600,"battleSceneH":500,"gw":240,"gh":100},
+        "2":{"mapID":2,"name":"2","battleHeroGrid":[[1,0],[1,2],[1,4],[0,1],[0,3],[0,2]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"mapInitY":560,"battleSceneH":500,"gw":240,"gh":100},
+        "10000":{"mapID":10000,"name":"Boss挑战","battleHeroGrid":[[1,2],[1,6],[1,10],[1,14],[1,18],[0,10]],"battleEnemyGrid":[[5,2],[5,6],[5,10],[5,14],[5,18]],"mapInitY":100,"battleSceneH":1000,"gw":100,"gh":100}
     }
     constructor(){
         
@@ -92,6 +92,8 @@ class MapManager{
             
         }
         this.calSquintAngleGrid();
+        
+        GameDataManager.ins.calMapRowColPosPoint();
         //声音
         SoundsManager.ins.playMusic("res/outside/sound/bg/zhou.mp3",1000);
     }
@@ -153,7 +155,7 @@ class MapManager{
         }
         var mapWidth:number = GameConfig.STAGE_WIDTH;
         var mapHeight:number = GameConfig.BATTLE_SCENE_HEIGHT;
-        this.squintAngleGrid = new SquintAngleGrid(mapWidth,mapHeight,false);0
+        this.squintAngleGrid = new SquintAngleGrid(mapWidth,mapHeight,false);
         this.squintAngleGrid.initGrid();
         
     }

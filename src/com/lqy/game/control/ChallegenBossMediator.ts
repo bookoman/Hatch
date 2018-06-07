@@ -16,6 +16,9 @@ class ChallegenBossMediator extends BaseMediator{
         LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,true,true);
         super.initView();
         this.initRoles();
+
+
+        // EventManager.ins.dispatchEvent(EventManager.TEST_LIST_SCRALE_RENDER);
     }
     protected addEvents():void
     {
@@ -47,9 +50,18 @@ class ChallegenBossMediator extends BaseMediator{
             hero.aniPlay(RoleAniIndex.STAND);
             this.heroRoles.push(hero);
         }
-        this.heroRoles.forEach(heroView =>{
-            heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
-        });
+        // this.heroRoles.forEach(heroView =>{
+        //     heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
+        // });
+        //显示层级排序
+        this.heroRoles.sort(function(hero1,hero2):number{
+            return hero1.roleVo.gridY > hero2.roleVo.gridY ? 1 : -1;
+        })
+        
+        for(i = 0;i < this.heroRoles.length;i++)
+        {
+            this.heroRoles[i].setShowIndex(i);
+        }
         //敌人
         this.enemyRoles = new Array();
         var bossData:EnemyData = GameDataManager.ins.bossData;    
@@ -63,9 +75,15 @@ class ChallegenBossMediator extends BaseMediator{
             enemy.aniPlay(RoleAniIndex.STAND);
             this.enemyRoles.push(enemy);
         }
-        this.enemyRoles.forEach(enemyView =>{
-            enemyView.setShowIndex(this.heroRoles.length + enemyView.roleVo.lineupGrid-1);
-        });
+         //显示层级排序
+        this.enemyRoles.sort(function(enemy1,enemy2):number{
+            return enemy1.roleVo.gridY > enemy2.roleVo.gridY ? 1 : -1;
+        })
+        
+        for(i = 0;i < this.enemyRoles.length;i++)
+        {
+            this.enemyRoles[i].setShowIndex(this.heroRoles.length + i); 
+        }
         BossBattleData.loadSum = this.heroRoles.length + this.enemyRoles.length;
         BattleEngine.ins.challegenBoss(this.heroRoles,this.enemyRoles);
     }

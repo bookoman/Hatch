@@ -48,16 +48,28 @@ class RoleManager{
             if(hero == null)
             {
                 hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-                hero.initRole(roleVo,i,1);
+                if(roleVo.id == "10006")
+                {
+                    hero.initRole(roleVo,i,0.5);
+                }
+                else
+                {
+                    hero.initRole(roleVo,i,1);
+                }
                 this.heroRoles.push(hero);
             }
             hero.aniPlay(RoleAniIndex.MOVE);
            
         }
-
-        this.heroRoles.forEach(heroView =>{
-            heroView.setShowIndex(heroView.roleVo.lineupGrid-1);
-        });
+        //显示层级排序
+        this.heroRoles.sort(function(hero1,hero2):number{
+            return hero1.roleVo.gridY > hero2.roleVo.gridY ? 1 : -1;
+        })
+        
+        for(i = 0;i < this.heroRoles.length;i++)
+        {
+            this.heroRoles[i].setShowIndex(i);
+        }
         
     }
     /**
@@ -87,9 +99,16 @@ class RoleManager{
             this.enemyRoles.push(enemy);
             enemy.aniPlay(RoleAniIndex.STAND);
         }
-        this.enemyRoles.forEach(enemyView =>{
-            enemyView.setShowIndex(this.heroRoles.length + enemyView.roleVo.lineupGrid-1);
-        });
+        //显示层级排序
+        this.enemyRoles.sort(function(enemy1,enemy2):number{
+            return enemy1.roleVo.gridY > enemy2.roleVo.gridY ? 1 : -1;
+        })
+        
+        for(i = 0;i < this.enemyRoles.length;i++)
+        {
+            this.enemyRoles[i].setShowIndex(this.heroRoles.length + i); 
+        }
+       
     }
     
     /**

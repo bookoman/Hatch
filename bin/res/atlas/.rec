@@ -7,13 +7,13 @@ P B03390E5 btn_close.png
 P 1F3929EA button.png
 P 6CC6DF97 checkbox.png
 P FB94CCF2 clip_num.png
-P 4DC520FF clip_qulity1.png
-P 469762AB clip_qulity2.png
-P 4AFEFEFE clip_qulity3.png
-P 0090D92A clip_qulity4.png
-P A00A1A79 clip_qulity5.png
-P 17A84CBF clip_qulity6.png
-P 1B63A50B clip_qulity7.png
+P 42A48524 clip_qulity1.png
+P 4400070B clip_qulity2.png
+P 26929EB5 clip_qulity3.png
+P B63497FE clip_qulity4.png
+P ECF92ACB clip_qulity5.png
+P AFEDDD70 clip_qulity6.png
+P 318D6271 clip_qulity7.png
 P F7B6B7D7 clip_selectBox.png
 P 755271AE clip_tree_arrow.png
 P 859FD34C clip_tree_folder.png
@@ -26,6 +26,7 @@ P E466EB1C hslider$bar.png
 P C4BECA54 hslider.png
 P 5EDC128C html.png
 P ACFFCCCF image.png
+P A3066B81 img_tick.png
 P 5EDC128C label.png
 P 5EDC128C linkbutton.png
 P 9E4DD730 progress$bar.png
@@ -41,14 +42,21 @@ P B9680947 vscroll$up.png
 P 7E990267 vscroll.png
 P E466EB1C vslider$bar.png
 P 2BFF7046 vslider.png
+D hero
 D lineup
-P 1D327B3B clip_shadow.png
-R BAF1B7E6 龙与猎人-上阵.png
+R 3DD25BC7 龙与猎人-上阵.png
 D main
+P B1FA8D86 bag.png
+P 9963CB52 clip_shadow.png
+P B533CE1E huic.png
 P 1C298A94 img_blood.png
 P C6B7D49F img_bloodbg.png
 P 3C936667 img_tzdb.png
+P D7F208FB juese.png
+P 42A3FE33 laba.png
 P 00C58ACB logo.png
+P 9CCB3152 tansuo.png
+P E23808C2 zuoz.png
 D unpack
 D worldmap
 D unpack/challengeboss
@@ -56,6 +64,8 @@ R 7ED07C71 bg.png
 D unpack/login
 R AEF7B252 logo.png
 D unpack/main
+R 6D978B09 diban.png
 R 93F650EB img_reportsbg.png
 R ABF2AEF3 main.jpg
 R 43507D1A role.jpg
+R DED7EA0A roleBg.png

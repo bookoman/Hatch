@@ -49,7 +49,6 @@ var MapBattleMediator = /** @class */ (function (_super) {
         this.battleReportMediator = new BattleReportMediator();
         //初始化游戏场景
         MapManager.ins.enterMap("res/map", 2, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
-        GameDataManager.ins.initData();
         RoleManager.ins.initHeros();
         BattleEngine.ins.run();
     };
@@ -75,7 +74,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
         var roleVos = GameDataManager.ins.bossData.roleVoAry.concat(GameDataManager.ins.selfPlayerData.roleVoAry);
         roleVos.forEach(function (roleVo) {
             //角色资源
-            resAry.push({ url: "res/outside/anim/role/role" + roleVo.id + "/" + roleVo.id + ".sk", type: /*laya.net.Loader.BUFFER*/ "arraybuffer" });
+            resAry.push({ url: "res/outside/anim/role/" + roleVo.modelId + "/" + roleVo.modelId + ".sk", type: /*laya.net.Loader.BUFFER*/ "arraybuffer" });
         });
         this.challegenBossMediator = new ChallegenBossMediator(resAry);
     };

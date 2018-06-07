@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":3,
+    "selecteID":4,
     "props":{"width":115,"sceneColor":"#000000","height":115},
     "nodeParent":-1,
     "label":"View",
@@ -36,6 +36,19 @@
             "isAniNode":true,
             "hasChild":false,
             "compId":3,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":27,"x":14,"visible":false,"var":"imgTick","skin":"comp/img_tick.png"},
+            "nodeParent":1,
+            "label":"Image(imgTick)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":4,
             "child":[
                 ]
         }],

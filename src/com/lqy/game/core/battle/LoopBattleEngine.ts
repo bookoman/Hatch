@@ -155,7 +155,7 @@ class LoopBattleEngine{
         var skillID:number = attRoleVo.getCanUserSkill();
         if(skillID > 0)
         {
-            //技能释放                
+            //技能释放               
             var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
             skill.playSkill(skillID,defRole);
         }
@@ -170,8 +170,8 @@ class LoopBattleEngine{
             // {
             //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
             // }
-            attRole.aniPlay(RoleAniIndex.ATTACK,true,this,this.moveBackLineupComplete,defRole);
         }
+        attRole.aniPlay(RoleAniIndex.ATTACK,true,this,this.moveBackLineupComplete,defRole);
         this.loopBattleData.calculationAttribute(attRoleVo,defRoleVo);
         if(defRoleVo.isDeath)
         {

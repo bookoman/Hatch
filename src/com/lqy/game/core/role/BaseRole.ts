@@ -11,11 +11,35 @@ class BaseRole extends Laya.Sprite{
     private LblName:Laya.Label = null;
     private roleBloodBar:RoleBloodBar = null;
     private showPriority:number = 0;
+    private clipShadow:Laya.Clip;
     constructor(){
         super();
+        // EventManager.ins.addEvent(EventManager.TEST_CHANGE_ROLE_SCALE,this,this.testScale);
     }
+    // private testScale(ary):void
+    // {
+    //     var roleID = ary[0];
+    //     var sca = ary[1];
+    //     if(this.roleVo && this.roleVo.id == roleID)
+    //     {
+    //         var s:number = this.roleVo.isEnemy ? 1 : -1;
+    //         this.skeletonAni.scaleX = s * sca;
+    //         this.skeletonAni.scaleY = sca;
+    //         var bound = this.skeletonAni.getBounds(); // 加载完毕之后才能拿到有效的bounds
+    //         console.log(this.roleVo.name,bound.width,bound.height);
+    //     }
+    // }
     public initRole(roleVo:RoleVo,showPriority:number,scale?:number,parentDis?:Laya.Sprite):void
     {
+
+        this.clipShadow = new Laya.Clip("main/clip_shadow.png");
+        this.clipShadow.height = 43;
+        this.clipShadow.x = -this.clipShadow.width / 2;
+        this.clipShadow.y = -this.clipShadow.height / 2;
+        this.clipShadow.clipY = 2;
+        this.clipShadow.alpha = 0.3;
+        this.addChild(this.clipShadow)
+
         this.roleVo = roleVo;
         this.showPriority = showPriority;
         if(scale)
@@ -27,6 +51,10 @@ class BaseRole extends Laya.Sprite{
         this.skeletonAni.scale(this.aniScale,this.aniScale);
         this.skeletonAni.scaleX = this.roleVo.scaleX * this.aniScale;
         this.addChild(this.skeletonAni);
+
+        
+
+
         if(parentDis)
         {
             parentDis.addChild(this);
@@ -36,6 +64,8 @@ class BaseRole extends Laya.Sprite{
             LayerManager.ins.addToLayer(this,LayerManager.ROLE_LAYER,false,true,false);
         }
         this.visible = true;
+
+        
         
     }
     
@@ -58,7 +88,7 @@ class BaseRole extends Laya.Sprite{
         if(this.isLoaded)
         {   
             /**测试自己龙动作 */
-            if(this.roleVo.id == "20005")
+            if(this.roleVo.id == "20005" || this.roleVo.id == "10006")
             {
                 if(aniID == RoleAniIndex.ATTACK)
                     aniID = NewRoleAniIndex.ATTACK;
@@ -106,17 +136,16 @@ class BaseRole extends Laya.Sprite{
         //分帧加载
         if(this.roleVo)
         {
-            var url:string = "res/outside/anim/role/role"+this.roleVo.id+"/"+ this.roleVo.id +".sk";
-            if(this.roleVo.id == "20005")
-            {
-                url = "res/outside/anim/role/role"+this.roleVo.id+"/alien-pro.sk";
-            }
+            var url:string = "res/outside/anim/role/"+this.roleVo.modelId+"/"+ this.roleVo.modelId +".sk";
+            // url = "res/outside/anim/role/baolong001/baolong001.sk";
             this.skeletonAni.load(url,Laya.Handler.create(this,this.loadCompleted,[aniID,loop,caller,method]));
         }
     }
     
     private loadCompleted(aniID,loop,caller,method) {
         
+        // var bound = this.skeletonAni.getBounds(); // 加载完毕之后才能拿到有效的bounds
+        // console.log(this.roleVo.id,bound.width,bound.height);
         if(!this.isLoaded)
         {
             this.isLoaded = true;

@@ -41,14 +41,23 @@ var RoleManager = /** @class */ (function () {
             });
             if (hero == null) {
                 hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-                hero.initRole(roleVo, i, 1);
+                if (roleVo.id == "10006") {
+                    hero.initRole(roleVo, i, 0.5);
+                }
+                else {
+                    hero.initRole(roleVo, i, 1);
+                }
                 this.heroRoles.push(hero);
             }
             hero.aniPlay(RoleAniIndex.MOVE);
         }
-        this.heroRoles.forEach(function (heroView) {
-            heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
+        //显示层级排序
+        this.heroRoles.sort(function (hero1, hero2) {
+            return hero1.roleVo.gridY > hero2.roleVo.gridY ? 1 : -1;
         });
+        for (i = 0; i < this.heroRoles.length; i++) {
+            this.heroRoles[i].setShowIndex(i);
+        }
     };
     /**
      * 重置角色坐标
@@ -60,7 +69,6 @@ var RoleManager = /** @class */ (function () {
     };
     /**生产敌人 */
     RoleManager.prototype.produceEnemy = function () {
-        var _this = this;
         //怪物数据
         var enemyData = GameDataManager.ins.enemyData;
         this.enemyRoles = new Array();
@@ -74,9 +82,13 @@ var RoleManager = /** @class */ (function () {
             this.enemyRoles.push(enemy);
             enemy.aniPlay(RoleAniIndex.STAND);
         }
-        this.enemyRoles.forEach(function (enemyView) {
-            enemyView.setShowIndex(_this.heroRoles.length + enemyView.roleVo.lineupGrid - 1);
+        //显示层级排序
+        this.enemyRoles.sort(function (enemy1, enemy2) {
+            return enemy1.roleVo.gridY > enemy2.roleVo.gridY ? 1 : -1;
         });
+        for (i = 0; i < this.enemyRoles.length; i++) {
+            this.enemyRoles[i].setShowIndex(this.heroRoles.length + i);
+        }
     };
     /**
      * 英雄移动
