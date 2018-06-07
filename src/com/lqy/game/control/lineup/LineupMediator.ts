@@ -109,7 +109,7 @@ class LineupMediator extends BaseMediator{
         for(var i = 0;i < 5; i++)
         {
             lineupID = i + 1;
-            lineupGridMediator = new LineupGridMediator(null,this.view["grid"+i],this,this.onLineupGridClick,this.mapGridPoints[i]);
+            lineupGridMediator = new LineupGridMediator(null,this.view["grid"+i],this,this.onLineupGridClick);
             lineupGridMediator.setLineupIDLable(lineupID);
             for(var j = 0;j < upRoleVos.length;j++)
             {

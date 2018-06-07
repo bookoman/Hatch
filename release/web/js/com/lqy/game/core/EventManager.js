@@ -69,6 +69,8 @@ var EventManager = /** @class */ (function () {
     EventManager.CHALLENGE_BOSS_READY = "CHALLENGE_BOSS_READY";
     /**服务器连接成功 */
     EventManager.SERVER_CONNECTED = "SERVER_CONNECTED";
+    EventManager.TEST_CHANGE_ROLE_SCALE = "TEST_CHANGE_ROLE_SCALE";
+    EventManager.TEST_LIST_SCRALE_RENDER = "TEST_LIST_SCRALE_RENDER";
     EventManager._ins = null;
     return EventManager;
 }());

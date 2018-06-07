@@ -28,11 +28,13 @@ var EnterGameMediator = /** @class */ (function (_super) {
     EnterGameMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
+        this.view.btnRegster.on(Laya.Event.CLICK, this, this.onBtnRegster);
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN, new UserLoginHandler(Protocol.USER_LOGIN, this, this.onWebSocketLogined));
     };
     EnterGameMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
+        this.view.btnRegster.off(Laya.Event.CLICK, this, this.onBtnRegster);
     };
     EnterGameMediator.prototype.onWebSocketLogined = function (data) {
         if (data.statusCode == 0) {
@@ -51,13 +53,20 @@ var EnterGameMediator = /** @class */ (function (_super) {
         }
     };
     EnterGameMediator.prototype.onBtnLogin = function (e) {
-        //单机测试
-        PreLoadingView.ins.show();
-        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
-        this.dispose();
-        //登录web服
-        // var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
-        // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder)
+        if (GameConfig.SINGLE_GAME) {
+            //单机测试
+            PreLoadingView.ins.show();
+            SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+            this.dispose();
+        }
+        else {
+            //登录web服
+            var curServerInfo = GameDataManager.ins.curServerInfo;
+            ClientSender.httpEnterGameReq(curServerInfo.guid, this, this.webEnterGameHanlder);
+        }
+    };
+    EnterGameMediator.prototype.onBtnRegster = function (e) {
+        var enterGameMediator = new SignMediator();
     };
     EnterGameMediator.prototype.webEnterGameHanlder = function (data) {
         var jsonObj = JSON.parse(data);

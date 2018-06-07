@@ -14,12 +14,28 @@ var __extends = (this && this.__extends) || (function () {
 var IconView = /** @class */ (function (_super) {
     __extends(IconView, _super);
     function IconView() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this.selectTick = false;
+        return _this;
     }
     IconView.prototype.setData = function (data) {
         this.data = data;
         this.clipBG.skin = "comp/clip_qulity" + data.quality + ".png";
         this.imgIcon.skin = "res/outside/icons/heros/" + data.iconName + ".png";
+        if (data.select) {
+            this.setSelect(true);
+            data.select = false;
+        }
+    };
+    /**设置选中 */
+    IconView.prototype.setSelect = function (bool) {
+        if (bool === undefined) {
+            this.selectTick = !this.selectTick;
+        }
+        else {
+            this.selectTick = bool;
+        }
+        this.imgTick.visible = this.selectTick;
     };
     IconView.prototype.dispose = function () {
         this.removeEvents();

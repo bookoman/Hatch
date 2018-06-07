@@ -54,9 +54,6 @@ var LineupMediator = /** @class */ (function (_super) {
             var iconView = this.view.listIcon.getCell(index);
             if (iconView) {
                 if (this.curSelectGrid) {
-                    // this.view.listIcon.cells.forEach(element => {
-                    //     console.log(element.data.roleID,element.select);
-                    // });
                     if (iconView.selectTick) {
                         this.lineupGrids.forEach(function (lineupGrid) {
                             if (lineupGrid.roleID == iconView.data.roleID) {
@@ -91,7 +88,7 @@ var LineupMediator = /** @class */ (function (_super) {
         var lineupID;
         for (var i = 0; i < 5; i++) {
             lineupID = i + 1;
-            lineupGridMediator = new LineupGridMediator(null, this.view["grid" + i], this, this.onLineupGridClick, this.mapGridPoints[i]);
+            lineupGridMediator = new LineupGridMediator(null, this.view["grid" + i], this, this.onLineupGridClick);
             lineupGridMediator.setLineupIDLable(lineupID);
             for (var j = 0; j < upRoleVos.length; j++) {
                 if (upRoleVos[j].lineupGrid == lineupID) {

@@ -21,7 +21,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.BattleReportViewUI.uiView);
         };
-        BattleReportViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/img_reportsbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "TextArea", "props": { "y": 57, "x": 10, "width": 731, "var": "texaArea", "height": 300 } }, { "type": "Label", "props": { "y": 15, "x": 322, "width": 85, "text": "战    报", "height": 25, "fontSize": 24, "color": "#000000", "bold": true, "align": "center" } }] };
+        BattleReportViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 375 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/img_reportsbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "TextArea", "props": { "y": 57, "x": 10, "width": 731, "var": "texaArea", "height": 300 } }, { "type": "Label", "props": { "y": 15, "x": 322, "width": 85, "text": "战    报", "height": 25, "fontSize": 24, "color": "#000000", "bold": true, "align": "center" } }] };
         return BattleReportViewUI;
     }(View));
     ui.BattleReportViewUI = BattleReportViewUI;
@@ -36,7 +36,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.ChallengeBossViewUI.uiView);
         };
-        ChallengeBossViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/bg.png" } }, { "type": "Button", "props": { "y": 1131, "x": 235, "width": 285, "var": "btnFast", "skin": "comp/button.png", "labelSize": 30, "label": "快速结束", "height": 110 } }] };
+        ChallengeBossViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/bg.png" } }, { "type": "Button", "props": { "y": 1111, "x": 277, "width": 195, "var": "btnFast", "skin": "comp/button.png", "labelSize": 30, "label": "快速结束", "height": 71 } }] };
         return ChallengeBossViewUI;
     }(View));
     ui.ChallengeBossViewUI = ChallengeBossViewUI;
@@ -68,7 +68,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.comp.IconViewUI.uiView);
             };
-            IconViewUI.uiView = { "type": "View", "props": { "width": 115, "height": 115 }, "child": [{ "type": "Clip", "props": { "y": 3, "x": 3, "width": 110, "var": "clipBG", "skin": "comp/clip_qulity1.png", "height": 110, "clipY": 2 } }, { "type": "Image", "props": { "y": 10, "x": 10, "width": 95, "var": "imgIcon", "height": 96 } }] };
+            IconViewUI.uiView = { "type": "View", "props": { "width": 115, "height": 115 }, "child": [{ "type": "Clip", "props": { "y": 3, "x": 3, "width": 110, "var": "clipBG", "skin": "comp/clip_qulity1.png", "height": 110, "clipY": 2 } }, { "type": "Image", "props": { "y": 10, "x": 10, "width": 95, "var": "imgIcon", "height": 96 } }, { "type": "Image", "props": { "y": 27, "x": 14, "visible": false, "var": "imgTick", "skin": "comp/img_tick.png" } }] };
             return IconViewUI;
         }(View));
         comp.IconViewUI = IconViewUI;
@@ -84,7 +84,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.DebugViewUI.uiView);
         };
-        DebugViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 500, "var": "imgBg", "skin": "comp/blank.png", "height": 60 } }, { "type": "Label", "props": { "y": 28, "x": 0, "wordWrap": true, "width": 500, "var": "lblDec", "text": "label", "leading": 2, "height": 24, "fontSize": 16, "color": "#f4f1f1" } }, { "type": "Button", "props": { "y": 3, "x": 416, "width": 75, "var": "btnClear", "skin": "comp/button.png", "label": "clear", "height": 23 } }] };
+        DebugViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 500, "var": "imgBg", "skin": "comp/blank.png", "height": 60 } }, { "type": "Label", "props": { "y": 42, "x": 85, "wordWrap": true, "width": 500, "var": "lblDec", "text": "label", "leading": 2, "height": 24, "fontSize": 16, "color": "#f4f1f1" } }, { "type": "Button", "props": { "y": 3, "x": 362, "width": 75, "var": "btnClear", "skin": "comp/button.png", "label": "clear", "height": 23 } }] };
         return DebugViewUI;
     }(View));
     ui.DebugViewUI = DebugViewUI;
@@ -107,19 +107,65 @@ var ui;
     ui.EnterGameViewUI = EnterGameViewUI;
 })(ui || (ui = {}));
 (function (ui) {
+    var EquipViewUI = /** @class */ (function (_super) {
+        __extends(EquipViewUI, _super);
+        function EquipViewUI() {
+            return _super.call(this) || this;
+        }
+        EquipViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.EquipViewUI.uiView);
+        };
+        EquipViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/龙与猎人-角色.png", "height": 1334 } }] };
+        return EquipViewUI;
+    }(View));
+    ui.EquipViewUI = EquipViewUI;
+})(ui || (ui = {}));
+(function (ui) {
     var GameViewUI = /** @class */ (function (_super) {
         __extends(GameViewUI, _super);
         function GameViewUI() {
             return _super.call(this) || this;
         }
         GameViewUI.prototype.createChildren = function () {
+            View.regComponent("ui.test.TestAniScaleViewUI", ui.test.TestAniScaleViewUI);
             _super.prototype.createChildren.call(this);
             this.createView(ui.GameViewUI.uiView);
         };
-        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "mouseThrough": true, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 45, "x": 459, "width": 216, "var": "btnOpen", "skin": "comp/button.png", "labelStrokeColor": "#f88508", "labelSize": 32, "label": "打开拳击声效", "height": 83 } }, { "type": "Tab", "props": { "y": 1242, "x": 3 }, "child": [{ "type": "Button", "props": { "y": 1, "width": 145, "var": "btnMap", "skin": "comp/button.png", "labelSize": 40, "label": "地图", "height": 88 } }, { "type": "Button", "props": { "y": 1, "x": 151, "width": 145, "var": "btnLineup", "skin": "comp/button.png", "labelSize": 40, "label": "阵型", "height": 88 } }, { "type": "Button", "props": { "y": 1, "x": 302, "width": 145, "var": "btnHero", "skin": "comp/button.png", "labelSize": 40, "label": "战宠物", "height": 88 } }, { "type": "Button", "props": { "y": 1, "x": 452, "width": 145, "var": "btnEquip", "skin": "comp/button.png", "labelSize": 40, "label": "装备", "height": 88 } }, { "type": "Button", "props": { "x": 603, "width": 145, "var": "btnHome", "skin": "comp/button.png", "labelSize": 40, "label": "家园", "height": 88 } }] }] };
+        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "mouseThrough": true, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 17, "x": 706, "width": 34, "var": "btnOpen", "stateNum": 1, "skin": "main/laba.png", "sizeGrid": "-10,0,-6,-14", "labelStrokeColor": "#f88508", "labelSize": 32, "height": 31, "alpha": 0.6 } }, { "type": "Image", "props": { "y": 1215, "x": 0, "width": 750, "skin": "unpack/main/diban.png", "height": 119 } }, { "type": "Image", "props": { "y": 1320, "x": 0, "width": 750, "skin": "main/img_blood.png", "height": 14 } }, { "type": "Tab", "props": { "y": 1214, "x": 2, "width": 746, "height": 124 }, "child": [{ "type": "Button", "props": { "y": -7, "x": -1, "width": 145, "var": "btnMap", "stateNum": 1, "skin": "main/huic.png", "labelSize": 40, "height": 102 } }, { "type": "Button", "props": { "y": 0, "x": 294, "width": 148, "var": "btnHero", "stateNum": 1, "skin": "main/juese.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 145, "width": 148, "var": "btnLineup", "stateNum": 1, "skin": "main/tansuo.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 449, "width": 148, "var": "btnEquip", "stateNum": 1, "skin": "main/bag.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 598, "width": 148, "var": "btnHome", "stateNum": 1, "skin": "main/zuoz.png", "labelSize": 40, "height": 100 } }] }, { "type": "TestAniScaleView", "props": { "y": 1, "x": 253, "visible": false, "var": "viewAniScale", "runtime": "ui.test.TestAniScaleViewUI" } }] };
         return GameViewUI;
     }(View));
     ui.GameViewUI = GameViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var HeroViewUI = /** @class */ (function (_super) {
+        __extends(HeroViewUI, _super);
+        function HeroViewUI() {
+            return _super.call(this) || this;
+        }
+        HeroViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.HeroViewUI.uiView);
+        };
+        HeroViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/main/roleBg.png" } }, { "type": "Clip", "props": { "y": 357, "x": 149, "width": 134, "var": "clipShadow", "skin": "main/clip_shadow.png", "index": 0, "height": 43, "clipY": 2 } }] };
+        return HeroViewUI;
+    }(View));
+    ui.HeroViewUI = HeroViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var HomeViewUI = /** @class */ (function (_super) {
+        __extends(HomeViewUI, _super);
+        function HomeViewUI() {
+            return _super.call(this) || this;
+        }
+        HomeViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.HomeViewUI.uiView);
+        };
+        HomeViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/龙与猎人-上阵.png" } }] };
+        return HomeViewUI;
+    }(View));
+    ui.HomeViewUI = HomeViewUI;
 })(ui || (ui = {}));
 (function (ui) {
     var lineup;
@@ -133,7 +179,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.lineup.LineupGridViewUI.uiView);
             };
-            LineupGridViewUI.uiView = { "type": "View", "props": { "width": 0, "height": 0 }, "child": [{ "type": "Clip", "props": { "y": 0, "x": 0, "width": 134, "var": "clipShadow", "skin": "lineup/clip_shadow.png", "index": 0, "height": 54, "clipY": 2 } }] };
+            LineupGridViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Clip", "props": { "y": 0, "x": 0, "width": 134, "var": "clipShadow", "skin": "main/clip_shadow.png", "index": 0, "height": 54, "clipY": 2 } }, { "type": "Label", "props": { "y": 54, "x": 34, "width": 64, "var": "lblLineupID", "height": 32, "fontSize": 30, "color": "#000000", "align": "center" } }] };
             return LineupGridViewUI;
         }(View));
         lineup.LineupGridViewUI = LineupGridViewUI;
@@ -153,7 +199,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.lineup.LineupViewUI.uiView);
             };
-            LineupViewUI.uiView = { "type": "View", "props": { "width": 750, "renderType": "render", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "lineup/龙与猎人-上阵.png" } }, { "type": "List", "props": { "y": 967, "x": 23, "width": 716, "var": "listIcon", "repeatY": 2, "repeatX": 6, "height": 234 }, "child": [{ "type": "VScrollBar", "props": { "y": 4, "x": 698, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 188 } }, { "type": "IconView", "props": { "y": 0, "x": 0, "runtime": "IconView", "name": "render" } }] }, { "type": "LineupGridView", "props": { "y": 580, "x": 369, "var": "grid0", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 707, "x": 472, "var": "grid1", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 830, "x": 575, "var": "grid2", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 579, "x": 28, "var": "grid3", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 706, "x": 131, "var": "grid4", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 829, "x": 234, "var": "grid5", "runtime": "ui.lineup.LineupGridViewUI" } }] };
+            LineupViewUI.uiView = { "type": "View", "props": { "width": 750, "renderType": "render", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/bg.png" } }, { "type": "List", "props": { "y": 967, "x": 23, "width": 716, "var": "listIcon", "repeatY": 2, "repeatX": 6, "height": 234 }, "child": [{ "type": "VScrollBar", "props": { "y": 4, "x": 698, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 188 } }, { "type": "IconView", "props": { "y": 0, "x": 0, "runtime": "IconView", "name": "render" } }] }, { "type": "LineupGridView", "props": { "y": 525, "x": 351, "var": "grid0", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 652, "x": 456, "var": "grid1", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 775, "x": 562, "var": "grid2", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 602, "x": 94, "var": "grid3", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 752, "x": 174, "var": "grid4", "runtime": "ui.lineup.LineupGridViewUI" } }] };
             return LineupViewUI;
         }(View));
         lineup.LineupViewUI = LineupViewUI;
@@ -169,7 +215,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.LoginViewUI.uiView);
         };
-        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/main.jpg", "height": 1334 } }, { "type": "Box", "props": { "y": 576, "x": 148, "width": 496, "height": 317 }, "child": [{ "type": "Image", "props": { "width": 496, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 361, "centerY": 0, "centerX": 0 } }, { "type": "TextInput", "props": { "y": 73, "x": 187, "width": 216, "var": "inputAccount", "text": "xielong", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 72, "x": 95, "width": 100, "text": "帐号：", "height": 38, "fontSize": 30, "color": "#000000" } }, { "type": "TextInput", "props": { "y": 141, "x": 187, "width": 216, "var": "inputPwd", "type": "password", "text": "123456", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 140, "x": 95, "width": 100, "text": "密码：", "height": 38, "fontSize": 30 } }, { "type": "Button", "props": { "y": 209, "x": 158, "width": 211, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 38, "label": "登  录", "height": 72 } }] }] };
+        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/main.jpg", "height": 1334 } }, { "type": "Box", "props": { "y": 576, "x": 127, "width": 496, "height": 317 }, "child": [{ "type": "Image", "props": { "width": 496, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 361, "centerY": 0, "centerX": 0 } }, { "type": "TextInput", "props": { "y": 73, "x": 187, "width": 216, "var": "inputAccount", "text": "xielong", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 72, "x": 95, "width": 100, "text": "帐号：", "height": 38, "fontSize": 30, "color": "#000000" } }, { "type": "TextInput", "props": { "y": 141, "x": 187, "width": 216, "var": "inputPwd", "type": "password", "text": "123456", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 140, "x": 95, "width": 100, "text": "密码：", "height": 38, "fontSize": 30 } }, { "type": "Button", "props": { "y": 209, "x": 158, "width": 211, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 38, "label": "登  录", "height": 72 } }] }] };
         return LoginViewUI;
     }(View));
     ui.LoginViewUI = LoginViewUI;
@@ -203,10 +249,25 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.MapBattleViewUI.uiView);
         };
-        MapBattleViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 265, "x": 279, "width": 243, "var": "btnChalleangeBoss", "skin": "comp/button.png", "labelSize": 24, "label": "挑战boss", "height": 88 } }, { "type": "MapWorldView", "props": { "y": 0, "x": 0, "var": "mapWordView", "runtime": "ui.MapWorldViewUI" } }] };
+        MapBattleViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 837, "x": 496, "width": 243, "var": "btnChalleangeBoss", "skin": "comp/button.png", "labelSize": 24, "label": "挑战boss", "height": 88 } }, { "type": "MapWorldView", "props": { "y": 0, "x": 0, "var": "mapWordView", "runtime": "ui.MapWorldViewUI" } }] };
         return MapBattleViewUI;
     }(View));
     ui.MapBattleViewUI = MapBattleViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var MapViewUI = /** @class */ (function (_super) {
+        __extends(MapViewUI, _super);
+        function MapViewUI() {
+            return _super.call(this) || this;
+        }
+        MapViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.MapViewUI.uiView);
+        };
+        MapViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/龙与猎人-上阵.png" } }] };
+        return MapViewUI;
+    }(View));
+    ui.MapViewUI = MapViewUI;
 })(ui || (ui = {}));
 (function (ui) {
     var MapWorldViewUI = /** @class */ (function (_super) {
@@ -218,7 +279,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.MapWorldViewUI.uiView);
         };
-        MapWorldViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 566, "x": 263, "width": 243, "var": "btnEnter", "skin": "comp/button.png", "labelSize": 40, "label": "进入关卡", "height": 88 } }] };
+        MapWorldViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 566, "x": 253, "width": 243, "var": "btnEnter", "skin": "comp/button.png", "labelSize": 40, "label": "进入关卡", "height": 88 } }] };
         return MapWorldViewUI;
     }(View));
     ui.MapWorldViewUI = MapWorldViewUI;
@@ -233,7 +294,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.PreLoadViewUI.uiView);
         };
-        PreLoadViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "ProgressBar", "props": { "y": 662, "x": 96, "width": 566, "var": "progressBar", "skin": "comp/progress.png", "height": 14 } }] };
+        PreLoadViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "ProgressBar", "props": { "y": 662, "x": 92, "width": 566, "var": "progressBar", "skin": "comp/progress.png", "height": 14 } }] };
         return PreLoadViewUI;
     }(View));
     ui.PreLoadViewUI = PreLoadViewUI;
@@ -248,10 +309,28 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.SignViewUI.uiView);
         };
-        SignViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 6, "skin": "test/img_bg.png" } }, { "type": "Image", "props": { "y": 504, "x": 154, "width": 441, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 415 } }, { "type": "Button", "props": { "y": 508, "x": 566, "var": "btnClose", "skin": "comp/btn_close.png" } }, { "type": "TextInput", "props": { "y": 706, "x": 304, "var": "inputName", "skin": "comp/textinput.png" } }] };
+        SignViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 504, "x": 154, "width": 441, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 415 } }, { "type": "Button", "props": { "y": 508, "x": 566, "var": "btnClose", "skin": "comp/btn_close.png" } }, { "type": "Label", "props": { "y": 505, "x": 353, "text": "注册", "strokeColor": "#000000", "fontSize": 22 } }, { "type": "TextInput", "props": { "y": 590, "x": 330, "width": 225, "var": "inputName", "strokeColor": "#190101", "stroke": 0, "skin": "comp/textinput.png", "height": 43 } }, { "type": "TextInput", "props": { "y": 661, "x": 330, "width": 225, "strokeColor": "#190101", "stroke": 0, "skin": "comp/textinput.png", "height": 43 } }, { "type": "Button", "props": { "y": 830, "x": 257, "width": 100, "var": "btnRecharge", "skin": "comp/button.png", "labelSize": 20, "label": "注册", "height": 32 } }, { "type": "Button", "props": { "y": 830, "x": 414, "width": 100, "var": "btnRechargeExit", "skin": "comp/button.png", "labelSize": 20, "label": "取消", "height": 32 } }, { "type": "Label", "props": { "y": 595, "x": 216, "text": "帐号", "fontSize": 32 } }, { "type": "Label", "props": { "y": 666, "x": 216, "text": "密码", "fontSize": 32 } }, { "type": "TextInput", "props": { "y": 731, "x": 330, "width": 225, "strokeColor": "#190101", "stroke": 0, "skin": "comp/textinput.png", "height": 43 } }, { "type": "Label", "props": { "y": 736, "x": 216, "text": "密码", "fontSize": 32 } }] };
         return SignViewUI;
     }(View));
     ui.SignViewUI = SignViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var test;
+    (function (test) {
+        var TestAniScaleViewUI = /** @class */ (function (_super) {
+            __extends(TestAniScaleViewUI, _super);
+            function TestAniScaleViewUI() {
+                return _super.call(this) || this;
+            }
+            TestAniScaleViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.test.TestAniScaleViewUI.uiView);
+            };
+            TestAniScaleViewUI.uiView = { "type": "View", "props": { "width": 0, "height": 0 }, "child": [{ "type": "List", "props": { "y": 0, "x": 0, "width": 495, "var": "listAniScale", "repeatY": 6, "height": 342 }, "child": [{ "type": "Box", "props": { "y": 0, "x": -2, "width": 370, "name": "render", "height": 57 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 366, "skin": "unpack/main/diban.png", "height": 57 } }, { "type": "Label", "props": { "y": 21, "x": 99, "width": 69, "text": "scale:", "height": 33, "fontSize": 24 } }, { "type": "TextInput", "props": { "y": 16, "x": 184, "width": 49, "text": "0.5", "skin": "comp/textinput.png", "name": "inputScale", "height": 32, "fontSize": 24 } }, { "type": "Button", "props": { "y": 13, "x": 263, "width": 91, "skin": "comp/button.png", "name": "btnTest", "labelSize": 24, "label": "测试", "height": 38 } }, { "type": "Label", "props": { "y": 18, "x": 2, "width": 94, "name": "lblRoleName", "height": 33, "fontSize": 24, "color": "#f11814" } }] }, { "type": "VScrollBar", "props": { "y": 12, "x": 367, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 312 } }] }] };
+            return TestAniScaleViewUI;
+        }(View));
+        test.TestAniScaleViewUI = TestAniScaleViewUI;
+    })(test = ui.test || (ui.test = {}));
 })(ui || (ui = {}));
 (function (ui) {
     var test;

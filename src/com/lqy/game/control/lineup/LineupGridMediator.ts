@@ -7,12 +7,10 @@ class LineupGridMediator extends BaseMediator{
     private caller:any;
     private clickCall:Function;
     private iconView:IconView;
-    private mapGridPoint:Object;
-    constructor(assetsUrl?:any,view?:any,caller?:any,clickCall?:Function,mapGridPoint?:Object){
+    constructor(assetsUrl?:any,view?:any,caller?:any,clickCall?:Function){
         super(assetsUrl,view);
         this.caller = caller;
         this.clickCall = clickCall;
-        this.mapGridPoint = mapGridPoint;
     }
     protected initView():void
     {

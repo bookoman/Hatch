@@ -162,7 +162,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.HomeViewUI.uiView);
         };
-        HomeViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "lineup/龙与猎人-上阵.png" } }] };
+        HomeViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/龙与猎人-上阵.png" } }] };
         return HomeViewUI;
     }(View));
     ui.HomeViewUI = HomeViewUI;
@@ -199,26 +199,11 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.lineup.LineupViewUI.uiView);
             };
-            LineupViewUI.uiView = { "type": "View", "props": { "width": 750, "renderType": "render", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 897, "x": 0, "width": 744, "skin": "unpack/main/diban.png", "height": 320 } }, { "type": "Image", "props": { "y": 434, "x": 2, "width": 744, "skin": "unpack/main/diban.png", "height": 477 } }, { "type": "List", "props": { "y": 967, "x": 23, "width": 716, "var": "listIcon", "repeatY": 2, "repeatX": 6, "height": 234 }, "child": [{ "type": "VScrollBar", "props": { "y": 4, "x": 698, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 188 } }, { "type": "IconView", "props": { "y": 0, "x": 0, "runtime": "IconView", "name": "render" } }] }, { "type": "LineupGridView", "props": { "y": 575, "x": 343, "var": "grid0", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 702, "x": 448, "var": "grid1", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 825, "x": 554, "var": "grid2", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 652, "x": 86, "var": "grid3", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 802, "x": 166, "var": "grid4", "runtime": "ui.lineup.LineupGridViewUI" } }] };
+            LineupViewUI.uiView = { "type": "View", "props": { "width": 750, "renderType": "render", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/bg.png" } }, { "type": "List", "props": { "y": 967, "x": 23, "width": 716, "var": "listIcon", "repeatY": 2, "repeatX": 6, "height": 234 }, "child": [{ "type": "VScrollBar", "props": { "y": 4, "x": 698, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 188 } }, { "type": "IconView", "props": { "y": 0, "x": 0, "runtime": "IconView", "name": "render" } }] }, { "type": "LineupGridView", "props": { "y": 525, "x": 351, "var": "grid0", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 652, "x": 456, "var": "grid1", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 775, "x": 562, "var": "grid2", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 602, "x": 94, "var": "grid3", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 752, "x": 174, "var": "grid4", "runtime": "ui.lineup.LineupGridViewUI" } }] };
             return LineupViewUI;
         }(View));
         lineup.LineupViewUI = LineupViewUI;
     })(lineup = ui.lineup || (ui.lineup = {}));
-})(ui || (ui = {}));
-(function (ui) {
-    var LineupViewUI = /** @class */ (function (_super) {
-        __extends(LineupViewUI, _super);
-        function LineupViewUI() {
-            return _super.call(this) || this;
-        }
-        LineupViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.LineupViewUI.uiView);
-        };
-        LineupViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "lineup/龙与猎人-上阵.png" } }] };
-        return LineupViewUI;
-    }(View));
-    ui.LineupViewUI = LineupViewUI;
 })(ui || (ui = {}));
 (function (ui) {
     var LoginViewUI = /** @class */ (function (_super) {
@@ -279,7 +264,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.MapViewUI.uiView);
         };
-        MapViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "lineup/龙与猎人-上阵.png" } }] };
+        MapViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/龙与猎人-上阵.png" } }] };
         return MapViewUI;
     }(View));
     ui.MapViewUI = MapViewUI;

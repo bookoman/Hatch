@@ -46,7 +46,7 @@ var GameConfig = /** @class */ (function () {
     /**场景战斗开关 */
     GameConfig.SCENE_BATTLE_SWITCH = true;
     /**单机游戏 */
-    GameConfig.SINGLE_GAME = true;
+    GameConfig.SINGLE_GAME = false;
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {

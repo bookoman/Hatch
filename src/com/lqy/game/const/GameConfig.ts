@@ -49,7 +49,7 @@ class GameConfig{
     public static SCENE_BATTLE_SWITCH:Boolean = true;
 
     /**单机游戏 */
-    public static SINGLE_GAME:boolean = true;
+    public static SINGLE_GAME:boolean = false;
     
 }
 

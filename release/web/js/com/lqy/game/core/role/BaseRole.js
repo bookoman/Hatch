@@ -23,8 +23,29 @@ var BaseRole = /** @class */ (function (_super) {
         _this.roleBloodBar = null;
         _this.showPriority = 0;
         return _this;
+        // EventManager.ins.addEvent(EventManager.TEST_CHANGE_ROLE_SCALE,this,this.testScale);
     }
+    // private testScale(ary):void
+    // {
+    //     var roleID = ary[0];
+    //     var sca = ary[1];
+    //     if(this.roleVo && this.roleVo.id == roleID)
+    //     {
+    //         var s:number = this.roleVo.isEnemy ? 1 : -1;
+    //         this.skeletonAni.scaleX = s * sca;
+    //         this.skeletonAni.scaleY = sca;
+    //         var bound = this.skeletonAni.getBounds(); // 加载完毕之后才能拿到有效的bounds
+    //         console.log(this.roleVo.name,bound.width,bound.height);
+    //     }
+    // }
     BaseRole.prototype.initRole = function (roleVo, showPriority, scale, parentDis) {
+        this.clipShadow = new Laya.Clip("main/clip_shadow.png");
+        this.clipShadow.height = 43;
+        this.clipShadow.x = -this.clipShadow.width / 2;
+        this.clipShadow.y = -this.clipShadow.height / 2;
+        this.clipShadow.clipY = 2;
+        this.clipShadow.alpha = 0.3;
+        this.addChild(this.clipShadow);
         this.roleVo = roleVo;
         this.showPriority = showPriority;
         if (scale) {
@@ -57,7 +78,7 @@ var BaseRole = /** @class */ (function (_super) {
     BaseRole.prototype.aniPlay = function (aniID, loop, caller, method, defRole) {
         if (this.isLoaded) {
             /**测试自己龙动作 */
-            if (this.roleVo.id == "20005") {
+            if (this.roleVo.id == "20005" || this.roleVo.id == "10006" || this.roleVo.id == "10007") {
                 if (aniID == RoleAniIndex.ATTACK)
                     aniID = NewRoleAniIndex.ATTACK;
                 else if (aniID == RoleAniIndex.INJURED)
@@ -94,14 +115,14 @@ var BaseRole = /** @class */ (function (_super) {
     BaseRole.prototype.skeletonAniLoad = function (aniID, loop, caller, method) {
         //分帧加载
         if (this.roleVo) {
-            var url = "res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk";
-            if (this.roleVo.id == "20005") {
-                url = "res/outside/anim/role/role" + this.roleVo.id + "/alien-pro.sk";
-            }
+            var url = "res/outside/anim/role/" + this.roleVo.modelId + "/" + this.roleVo.modelId + ".sk";
+            // url = "res/outside/anim/role/baolong001/baolong001.sk";
             this.skeletonAni.load(url, Laya.Handler.create(this, this.loadCompleted, [aniID, loop, caller, method]));
         }
     };
     BaseRole.prototype.loadCompleted = function (aniID, loop, caller, method) {
+        // var bound = this.skeletonAni.getBounds(); // 加载完毕之后才能拿到有效的bounds
+        // console.log(this.roleVo.id,bound.width,bound.height);
         if (!this.isLoaded) {
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();

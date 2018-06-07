@@ -23,12 +23,22 @@ var SignMediator = /** @class */ (function (_super) {
     };
     SignMediator.prototype.addEvents = function () {
         this.view.btnClose.on(Laya.Event.CLICK, this, this.onBtnClose);
+        this.view.btnRecharge.on(Laya.Event.CLICK, this, this.onBtnRecharge);
+        this.view.btnRechargeExit.on(Laya.Event.CLICK, this, this.onBtnRechargeExit);
     };
     SignMediator.prototype.removeEvents = function () {
         this.view.btnOpen.off(Laya.Event.CLICK, this, this.onBtnClose);
+        this.view.btnRecharge.off(Laya.Event.CLICK, this, this.onBtnRecharge);
+        this.view.btnRechargeExit.off(Laya.Event.CLICK, this, this.onBtnRechargeExit);
     };
     SignMediator.prototype.onBtnClose = function (e) {
-        console.log("输入框：" + this.view.inputName.text);
+        console.log("功能暂时关闭" + this.view.inputName.text);
+    };
+    SignMediator.prototype.onBtnRecharge = function (e) {
+        console.log("功能暂时关闭" + this.view.inputName.text);
+    };
+    SignMediator.prototype.onBtnRechargeExit = function (e) {
+        console.log("功能暂时关闭" + this.view.inputName.text);
     };
     return SignMediator;
 }(BaseMediator));

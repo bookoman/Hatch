@@ -60229,14 +60229,23 @@ var RoleManager = /** @class */ (function () {
             });
             if (hero == null) {
                 hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-                hero.initRole(roleVo, i, 1);
+                if (roleVo.id == "10006" || roleVo.id == "10007") {
+                    hero.initRole(roleVo, i, 0.8);
+                }
+                else {
+                    hero.initRole(roleVo, i, 1);
+                }
                 this.heroRoles.push(hero);
             }
             hero.aniPlay(RoleAniIndex.MOVE);
         }
-        this.heroRoles.forEach(function (heroView) {
-            heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
+        //显示层级排序
+        this.heroRoles.sort(function (hero1, hero2) {
+            return hero1.roleVo.gridY > hero2.roleVo.gridY ? 1 : -1;
         });
+        for (i = 0; i < this.heroRoles.length; i++) {
+            this.heroRoles[i].setShowIndex(i);
+        }
     };
     /**
      * 重置角色坐标
@@ -60248,7 +60257,6 @@ var RoleManager = /** @class */ (function () {
     };
     /**生产敌人 */
     RoleManager.prototype.produceEnemy = function () {
-        var _this = this;
         //怪物数据
         var enemyData = GameDataManager.ins.enemyData;
         this.enemyRoles = new Array();
@@ -60262,9 +60270,13 @@ var RoleManager = /** @class */ (function () {
             this.enemyRoles.push(enemy);
             enemy.aniPlay(RoleAniIndex.STAND);
         }
-        this.enemyRoles.forEach(function (enemyView) {
-            enemyView.setShowIndex(_this.heroRoles.length + enemyView.roleVo.lineupGrid - 1);
+        //显示层级排序
+        this.enemyRoles.sort(function (enemy1, enemy2) {
+            return enemy1.roleVo.gridY > enemy2.roleVo.gridY ? 1 : -1;
         });
+        for (i = 0; i < this.enemyRoles.length; i++) {
+            this.enemyRoles[i].setShowIndex(this.heroRoles.length + i);
+        }
     };
     /**
      * 英雄移动
@@ -60333,6 +60345,102 @@ var RoleManager = /** @class */ (function () {
 }());
 //# sourceMappingURL=RoleManager.js.map
 /*
+* UI界面角色模型
+*/
+var UIRole = /** @class */ (function () {
+    function UIRole(roleID) {
+        this.skeletonAni = null;
+        this.isLoaded = false;
+        this.aniCount = 0;
+        this.roleID = roleID;
+        this.isLoaded = false;
+        this.skeletonAni = new Skeleton();
+    }
+    UIRole.prototype.addParent = function (parent, rx, ry, sx, sy) {
+        this.disParent = parent;
+        if (sx === undefined)
+            sx = -1;
+        if (sy === undefined)
+            sy = 1;
+        this.skeletonAni.scale(sx, sy);
+        this.skeletonAni.pos(rx, ry);
+        this.disParent.addChild(this.skeletonAni);
+        this.aniPlay(RoleAniIndex.STAND);
+    };
+    UIRole.prototype.updateRole = function (roleID, sx, sy) {
+        if (this.disParent && this.skeletonAni) {
+            this.roleID = roleID;
+            this.isLoaded = false;
+            this.addParent(this.disParent, this.skeletonAni.x, this.skeletonAni.y, sx, sy);
+        }
+    };
+    /**销毁 */
+    UIRole.prototype.dispose = function () {
+        if (this.skeletonAni) {
+            if (this.skeletonAni.parent) {
+                this.skeletonAni.parent.removeChild(this.skeletonAni);
+            }
+            this.skeletonAni.destroy();
+            this.skeletonAni = null;
+        }
+        this.disParent = null;
+    };
+    /**
+    *
+    * @param aniID 动画id
+    */
+    UIRole.prototype.aniPlay = function (aniID, loop, caller, method) {
+        if (this.isLoaded) {
+            /**测试自己龙动作 */
+            if (this.roleID == "10006") {
+                if (aniID == RoleAniIndex.ATTACK)
+                    aniID = NewRoleAniIndex.ATTACK;
+                else if (aniID == RoleAniIndex.INJURED)
+                    aniID = NewRoleAniIndex.INJURED;
+                else if (aniID == RoleAniIndex.DEATH)
+                    aniID = NewRoleAniIndex.DEATH;
+                else if (aniID == RoleAniIndex.MOVE)
+                    aniID = NewRoleAniIndex.MOVE;
+                else if (aniID == RoleAniIndex.STAND)
+                    aniID = NewRoleAniIndex.STAND;
+            }
+            loop = loop === undefined ? true : loop;
+            aniID = aniID % this.aniCount;
+            //>= aniCount默认播放第一个动画
+            if (this.skeletonAni) {
+                this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted, [caller, method]);
+                this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
+                this.skeletonAni.play(aniID, loop);
+            }
+        }
+        else {
+            if (this.roleID) {
+                var roleVo = ConfigManager.ins.getRoleVoByID(this.roleID);
+                var url = "res/outside/anim/role/" + roleVo.modelId + "/" + roleVo.modelId + ".sk";
+                this.skeletonAni.load(url, Laya.Handler.create(this, this.loadCompleted, [aniID, loop, caller, method]));
+            }
+        }
+    };
+    /**播放一次动画回调 */
+    UIRole.prototype.onPlayCompleted = function (caller, method) {
+        this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.onPlayCompleted);
+        if (caller && method) {
+            // console.log(this.roleVo.name);
+            this.skeletonAni.paused();
+            method.call(caller);
+        }
+    };
+    UIRole.prototype.loadCompleted = function (aniID, loop, caller, method) {
+        if (!this.isLoaded) {
+            this.isLoaded = true;
+            this.aniCount = this.skeletonAni.getAnimNum();
+            this.aniPlay(aniID, loop, caller, method);
+        }
+    };
+    return UIRole;
+}());
+//# sourceMappingURL=UIRole.js.map
+/*
 * 技能
 */
 var Skill = /** @class */ (function () {
@@ -60381,7 +60489,6 @@ var Skill = /** @class */ (function () {
 */
 var WebSocketManager = /** @class */ (function () {
     function WebSocketManager() {
-        this.ProtoBuf = Laya.Browser.window.protobuf;
         this.socketHanlderDic = new Laya.Dictionary();
     }
     Object.defineProperty(WebSocketManager, "ins", {
@@ -60402,7 +60509,9 @@ var WebSocketManager = /** @class */ (function () {
         this.webSocket.on(Laya.Event.MESSAGE, this, this.webSocketMessage);
         this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
-        this.ProtoBuf.load("res/outside/proto/login.proto", this.protoLoadComplete);
+        //加载协议
+        var protoBufUrls = ["res/outside/proto/login.proto", "res/outside/proto/role.proto", "res/outside/proto/hero.proto"];
+        Laya.Browser.window.protobuf.load(protoBufUrls, this.protoLoadComplete);
     };
     WebSocketManager.prototype.protoLoadComplete = function (error, root) {
         WebSocketManager.ins.protoRoot = root;
@@ -60437,7 +60546,11 @@ var WebSocketManager = /** @class */ (function () {
         packageOut.pack(module, cmd, data);
         this.webSocket.send(packageOut.buffer);
     };
-    /**定义protobuf类 */
+    /**
+     * 定义protobuf类
+     * @param protoType 协议模块类型
+     * @param classStr 类
+     */
     WebSocketManager.prototype.defineProtoClass = function (classStr) {
         return this.protoRoot.lookup(classStr);
     };
@@ -60611,16 +60724,6 @@ var SkillVo = /** @class */ (function () {
 }());
 //# sourceMappingURL=SkillVo.js.map
 /*
-* 服务器信息
-*/
-var ServerInfoVo = /** @class */ (function () {
-    function ServerInfoVo() {
-        this.name = "";
-    }
-    return ServerInfoVo;
-}());
-//# sourceMappingURL=ServerInfoVo.js.map
-/*
 * 角色Vo [10000,20000)英雄，[20000,30000)怪物
 */
 var RoleVo = /** @class */ (function () {
@@ -60677,6 +60780,34 @@ var RoleVo = /** @class */ (function () {
 }());
 //# sourceMappingURL=RoleVo.js.map
 /*
+* 阵型配置
+*/
+var LineupPosVo = /** @class */ (function () {
+    function LineupPosVo() {
+    }
+    return LineupPosVo;
+}());
+//# sourceMappingURL=LineupPosVo.js.map
+/*
+* 战斗数据管理
+*/
+var BattleReportVo = /** @class */ (function () {
+    function BattleReportVo() {
+    }
+    return BattleReportVo;
+}());
+//# sourceMappingURL=BattleReportVo.js.map
+/*
+* 服务器信息
+*/
+var ServerInfoVo = /** @class */ (function () {
+    function ServerInfoVo() {
+        this.name = "";
+    }
+    return ServerInfoVo;
+}());
+//# sourceMappingURL=ServerInfoVo.js.map
+/*
 * 宠物品质评分配制表
 */
 var QualityScoreSampleVo = /** @class */ (function () {
@@ -60695,15 +60826,6 @@ var QualitySampleVo = /** @class */ (function () {
 }());
 //# sourceMappingURL=QualitySampleVo.js.map
 /*
-* 阵型配置
-*/
-var LineupPosVo = /** @class */ (function () {
-    function LineupPosVo() {
-    }
-    return LineupPosVo;
-}());
-//# sourceMappingURL=LineupPosVo.js.map
-/*
 * 宠物物种配制表
 */
 var HeroTypeSampleVo = /** @class */ (function () {
@@ -60712,6 +60834,15 @@ var HeroTypeSampleVo = /** @class */ (function () {
     return HeroTypeSampleVo;
 }());
 //# sourceMappingURL=HeroTypeSampleVo.js.map
+/*
+* 宠物技能配制表
+*/
+var HeroSkillSampleVo = /** @class */ (function () {
+    function HeroSkillSampleVo() {
+    }
+    return HeroSkillSampleVo;
+}());
+//# sourceMappingURL=HeroSkillSampleVo.js.map
 /*
 * 宠物配制表
 */
@@ -60731,14 +60862,23 @@ var HeroLevelSampleVo = /** @class */ (function () {
 }());
 //# sourceMappingURL=HeroLevelSampleVo.js.map
 /*
-* 战斗数据管理
+* 关卡地图配置表
 */
-var BattleReportVo = /** @class */ (function () {
-    function BattleReportVo() {
+var GateSampleVo = /** @class */ (function () {
+    function GateSampleVo() {
     }
-    return BattleReportVo;
+    return GateSampleVo;
 }());
-//# sourceMappingURL=BattleReportVo.js.map
+//# sourceMappingURL=GateSampleVo.js.map
+/*
+* 关卡地图配制表;
+*/
+var GateMapSampleVo = /** @class */ (function () {
+    function GateMapSampleVo() {
+    }
+    return GateMapSampleVo;
+}());
+//# sourceMappingURL=GateMapSampleVo.js.map
 /*
 * 玩家数据
 */
@@ -60777,9 +60917,9 @@ var MapManager = /** @class */ (function () {
     function MapManager() {
         //地图测试数据 mapId >> mapVO
         this.mapCofing = {
-            "1": { "mapID": 1, "name": "1", "battleHeroGrid": [[1, 0], [0, 1], [0, 2], [1, 2], [0, 3], [1, 4]], "battleEnemyGrid": [[2, 0], [2, 2], [2, 4]], "mapInitY": 600, "battleSceneH": 500, "gw": 240, "gh": 100 },
-            "2": { "mapID": 2, "name": "2", "battleHeroGrid": [[1, 0], [0, 1], [0, 2], [1, 2], [0, 3], [1, 4]], "battleEnemyGrid": [[2, 0], [2, 2], [2, 4]], "mapInitY": 560, "battleSceneH": 500, "gw": 240, "gh": 100 },
-            "10000": { "mapID": 10000, "name": "Boss挑战", "battleHeroGrid": [[1, 2], [1, 6], [0, 10], [1, 10], [1, 14], [1, 18]], "battleEnemyGrid": [[4, 2], [4, 6], [4, 10], [4, 14], [4, 18]], "mapInitY": 100, "battleSceneH": 1000, "gw": 140, "gh": 100 }
+            "1": { "mapID": 1, "name": "1", "battleHeroGrid": [[1, 0], [1, 2], [1, 4], [0, 1], [0, 3], [0, 2]], "battleEnemyGrid": [[2, 0], [2, 2], [2, 4]], "mapInitY": 600, "battleSceneH": 500, "gw": 240, "gh": 100 },
+            "2": { "mapID": 2, "name": "2", "battleHeroGrid": [[1, 0], [1, 2], [1, 4], [0, 1], [0, 3], [0, 2]], "battleEnemyGrid": [[2, 0], [2, 2], [2, 4]], "mapInitY": 560, "battleSceneH": 500, "gw": 240, "gh": 100 },
+            "10000": { "mapID": 10000, "name": "Boss挑战", "battleHeroGrid": [[1, 2], [1, 6], [1, 10], [1, 14], [1, 18], [0, 10]], "battleEnemyGrid": [[5, 2], [5, 6], [5, 10], [5, 14], [5, 18]], "mapInitY": 100, "battleSceneH": 1000, "gw": 100, "gh": 100 }
         };
         this.mapEngine = null;
         this.farMapEngine = null;
@@ -60853,6 +60993,7 @@ var MapManager = /** @class */ (function () {
             }
         }
         this.calSquintAngleGrid();
+        GameDataManager.ins.calMapRowColPosPoint();
         //声音
         SoundsManager.ins.playMusic("res/outside/sound/bg/zhou.mp3", 1000);
     };
@@ -60903,7 +61044,6 @@ var MapManager = /** @class */ (function () {
         var mapWidth = GameConfig.STAGE_WIDTH;
         var mapHeight = GameConfig.BATTLE_SCENE_HEIGHT;
         this.squintAngleGrid = new SquintAngleGrid(mapWidth, mapHeight, false);
-        0;
         this.squintAngleGrid.initGrid();
     };
     MapManager.prototype.getHeroMapBalltGridPoint = function (gridNum) {
@@ -61175,20 +61315,25 @@ var GameDataManager = /** @class */ (function () {
         // this.selfPlayerData.lineupId = "1";
         // var lineupposVoAry:Array<LineupPosVo> = LineupManager.ins.getCofingByID(this.selfPlayerData.lineupId);
         this.selfPlayerData.roleVoAry = [];
-        var ids = ["10000", "10001", "10005", "10002", "10003", "10004"];
+        var ids = ["10000", "10001", "10002", "10007", "10006", "10005"];
         var roleVo;
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if (roleVo) {
                 roleVo.lineupGrid = i + 1;
-                roleVo.initRowColPosPoint();
                 this.selfPlayerData.roleVoAry.push(roleVo);
             }
         }
+        this.selfPlayerData.heroSum = this.selfPlayerData.roleVoAry.length;
+    };
+    /**计算角色再地图上坐标 */
+    GameDataManager.prototype.calMapRowColPosPoint = function () {
         this.selfPlayerData.roleVoAry.sort(function (a, b) {
             return a.atts > b.atts ? -1 : 1;
         });
-        this.selfPlayerData.heroSum = this.selfPlayerData.roleVoAry.length;
+        this.selfPlayerData.roleVoAry.forEach(function (roleVo) {
+            roleVo.initRowColPosPoint();
+        });
     };
     /**生产敌人 */
     GameDataManager.prototype.produceEnemyData = function () {
@@ -61323,6 +61468,8 @@ var EventManager = /** @class */ (function () {
     EventManager.CHALLENGE_BOSS_READY = "CHALLENGE_BOSS_READY";
     /**服务器连接成功 */
     EventManager.SERVER_CONNECTED = "SERVER_CONNECTED";
+    EventManager.TEST_CHANGE_ROLE_SCALE = "TEST_CHANGE_ROLE_SCALE";
+    EventManager.TEST_LIST_SCRALE_RENDER = "TEST_LIST_SCRALE_RENDER";
     EventManager._ins = null;
     return EventManager;
 }());
@@ -61334,18 +61481,20 @@ var ConfigManager = /** @class */ (function () {
     function ConfigManager() {
         /*********测试配置数据 */
         this.roleConfigAry = [
-            { "id": "10000", "name": "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10006", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 10, "attFar": 1 },
-            { "id": "10001", "name": "黄狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10001", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 0 },
-            { "id": "10002", "name": "巨石人", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 6, "attFar": 0 },
-            { "id": "10003", "name": "蓝狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 8, "attFar": 0 },
-            { "id": "10004", "name": "骷髅头", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 1 },
-            { "id": "10005", "name": "萌仙仙", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 10, "att": 5, "atts": 10, "attFar": 0 },
-            { "id": "20000", "name": "幽灵", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10005", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 3, "atts": 1, "attFar": 0 },
-            { "id": "20001", "name": "鳄鱼龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10000", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 3, "atts": 6, "attFar": 0 },
-            { "id": "20002", "name": "骨龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 4, "atts": 4, "attFar": 1 },
-            { "id": "20003", "name": "骷髅射手", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 4, "atts": 5, "attFar": 1 },
-            { "id": "20004", "name": "斧头怪", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 5, "atts": 10, "attFar": 0 },
-            { "id": "20005", "name": "迅猛龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 30, "dieAttTimes": 3, "att": 5, "atts": 10, "attFar": 0 }
+            { "id": "10000", modelId: "role10000", name: "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10006", "attackRect": "0,50,50,0", "hp": 4000, "dieAttTimes": 10, "att": 10, "atts": 10, "attFar": 1 },
+            { "id": "10001", modelId: "role10001", "name": "黄狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10001", "attackRect": "0,50,50,0", "hp": 4000, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 0 },
+            { "id": "10002", modelId: "role10002", "name": "巨石人", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 4000, "dieAttTimes": 10, "att": 10, "atts": 6, "attFar": 0 },
+            { "id": "10003", modelId: "role10003", "name": "蓝狼", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 4000, "dieAttTimes": 10, "att": 10, "atts": 8, "attFar": 0 },
+            { "id": "10004", modelId: "role10004", "name": "骷髅头", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 4000, "dieAttTimes": 10, "att": 10, "atts": 3, "attFar": 1 },
+            { "id": "10005", modelId: "role10005", "name": "萌仙仙", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 10, "att": 5, "atts": 10, "attFar": 0 },
+            { "id": "10006", modelId: "baolong001", "name": "暴龙", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 10, "att": 5, "atts": 10, "attFar": 0 },
+            { "id": "10007", modelId: "leilong001", "name": "雷龙", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 10, "att": 5, "atts": 10, "attFar": 0 },
+            { "id": "20000", modelId: "role20000", "name": "幽灵", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10005", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 3, "atts": 1, "attFar": 0 },
+            { "id": "20001", modelId: "role20001", "name": "鳄鱼龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10000", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 3, "atts": 6, "attFar": 0 },
+            { "id": "20002", modelId: "role20002", "name": "骨龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10002", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 4, "atts": 4, "attFar": 1 },
+            { "id": "20003", modelId: "role20003", "name": "骷髅射手", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10003", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 4, "atts": 5, "attFar": 1 },
+            { "id": "20004", modelId: "role20004", "name": "斧头怪", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 5, "atts": 10, "attFar": 0 },
+            { "id": "20005", modelId: "alien-pro", "name": "迅猛龙", "scaleX": 1, "runWidth": 60, "runHeight": 100, "skillIDs": "10004", "attackRect": "0,50,50,0", "hp": 3000, "dieAttTimes": 3, "att": 5, "atts": 10, "attFar": 0 }
         ];
         this.skillConfigAry = [
             { "id": "10000", "name": "蛇皮技能", "cd": 10, "attFar": 1 },
@@ -61358,7 +61507,6 @@ var ConfigManager = /** @class */ (function () {
         ];
         this.roleConfigDic = null;
         this.skillConfigDic = null;
-        this.testSampleDic = null;
         /**宠物品质配置 */
         this.qualitySampleVoDic = null;
         /**宠物经验配制表 */
@@ -61369,6 +61517,12 @@ var ConfigManager = /** @class */ (function () {
         this.heroTypeSampleDic = null;
         /**宠物品质评分配制表 */
         this.qualityScoreSampleDic = null;
+        /**地图配置 */
+        this.gateMapSampleDic = null;
+        /**关卡配置 */
+        this.gateSampleDic = null;
+        /**英雄技能配置 */
+        this.heroSkillSampleDic = null;
         //测试数据
         this.roleConfigDic = new Dictionary();
         this.skillConfigDic = new Dictionary();
@@ -61396,6 +61550,7 @@ var ConfigManager = /** @class */ (function () {
         this.roleConfigAry.forEach(function (roleConfig) {
             roleVo = new RoleVo();
             roleVo.id = roleConfig.id;
+            roleVo.modelId = roleConfig.modelId;
             roleVo.name = roleConfig.name;
             roleVo.skillVos = [];
             var skillAry = roleConfig.skillIDs == "" ? [] : roleConfig.skillIDs.split(",");
@@ -61436,20 +61591,14 @@ var ConfigManager = /** @class */ (function () {
     };
     /**解析预加载配置表 */
     ConfigManager.prototype.parsePreLoadConfigs = function () {
-        this.parseTestSample();
         this.parseQualitySample();
         this.parseQualityScoreSample();
         this.parseHeroSample();
         this.parseHeroLevelSample();
         this.parseHeroTypeSample();
-    };
-    ConfigManager.prototype.parseTestSample = function () {
-        if (this.testSampleDic == null) {
-            this.testSampleDic = new Dictionary();
-        }
-        var configStr = Laya.loader.getRes("res/config/TestSample.xml");
-        this.xmlToObjcet(configStr, TestSample, "key", this.testSampleDic);
-        Laya.loader.clearRes("res/config/TestSample.xml");
+        this.parseGateMapSample();
+        this.parseGateSample();
+        this.parseHeroSkillSample();
     };
     /**宠物品质 */
     ConfigManager.prototype.parseQualitySample = function () {
@@ -61495,6 +61644,33 @@ var ConfigManager = /** @class */ (function () {
         var configStr = Laya.loader.getRes("res/config/QualityScoreSample.xml");
         this.xmlToObjcet(configStr, QualityScoreSampleVo, "key", this.qualityScoreSampleDic);
         Laya.loader.clearRes("res/config/QualityScoreSample.xml");
+    };
+    /**地图配置 */
+    ConfigManager.prototype.parseGateMapSample = function () {
+        if (this.gateMapSampleDic == null) {
+            this.gateMapSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/GateMapSample.xml");
+        this.xmlToObjcet(configStr, GateMapSampleVo, "key", this.gateMapSampleDic);
+        Laya.loader.clearRes("res/config/GateMapSample.xml");
+    };
+    /**光卡配置 */
+    ConfigManager.prototype.parseGateSample = function () {
+        if (this.gateSampleDic == null) {
+            this.gateSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/GateSample.xml");
+        this.xmlToObjcet(configStr, GateSampleVo, "key", this.gateSampleDic);
+        Laya.loader.clearRes("res/config/GateSample.xml");
+    };
+    /**宠物技能 */
+    ConfigManager.prototype.parseHeroSkillSample = function () {
+        if (this.heroSkillSampleDic == null) {
+            this.heroSkillSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/HeroSkillSample.xml");
+        this.xmlToObjcet(configStr, HeroSkillSampleVo, "key", this.heroSkillSampleDic);
+        Laya.loader.clearRes("res/config/HeroSkillSample.xml");
     };
     /**
      *得到角色配置
@@ -61672,8 +61848,7 @@ var LoopBattleEngine = /** @class */ (function () {
         var defRoleVo = defRole.roleVo;
         var skillID = attRoleVo.getCanUserSkill();
         if (skillID > 0) {
-            //技能释放
-            attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
+            //技能释放               
             var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
             skill.playSkill(skillID, defRole);
         }
@@ -61687,8 +61862,8 @@ var LoopBattleEngine = /** @class */ (function () {
             // {
             //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
             // }
-            attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
         }
+        attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
         this.loopBattleData.calculationAttribute(attRoleVo, defRoleVo);
         if (defRoleVo.isDeath) {
             defRole.aniPlay(RoleAniIndex.DEATH, false);
@@ -62068,11 +62243,13 @@ var BossBattleEngine = /** @class */ (function () {
             //远攻
             if (this.attRole.roleVo.attFar == 1) {
                 this.playAttackAni();
+                SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
             }
-            else { //近攻
+            else { //近攻               
                 this.attRole.aniPlay(RoleAniIndex.MOVE);
                 var tempX = defRoleVo.isEnemy ? 200 : -200;
                 Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.playAttackAni, [attRoleVo, defRoleVo], true), 0, true);
+                SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
             }
         }
     };
@@ -62547,6 +62724,8 @@ var GameConfig = /** @class */ (function () {
     GameConfig.DEBUG_VIEW_SWITCH = false;
     /**场景战斗开关 */
     GameConfig.SCENE_BATTLE_SWITCH = true;
+    /**单机游戏 */
+    GameConfig.SINGLE_GAME = false;
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {
@@ -62641,6 +62820,9 @@ var GameButtomTabIndex;
 (function (GameButtomTabIndex) {
     GameButtomTabIndex[GameButtomTabIndex["MAP_BATTLE"] = 0] = "MAP_BATTLE";
     GameButtomTabIndex[GameButtomTabIndex["LINEUP"] = 1] = "LINEUP";
+    GameButtomTabIndex[GameButtomTabIndex["HERO"] = 2] = "HERO";
+    GameButtomTabIndex[GameButtomTabIndex["EQUIP"] = 3] = "EQUIP";
+    GameButtomTabIndex[GameButtomTabIndex["HOME"] = 4] = "HOME";
 })(GameButtomTabIndex || (GameButtomTabIndex = {}));
 //# sourceMappingURL=GameConfig.js.map
 var __extends = (this && this.__extends) || (function () {
@@ -62722,7 +62904,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.BattleReportViewUI.uiView);
         };
-        BattleReportViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/img_reportsbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "TextArea", "props": { "y": 57, "x": 10, "width": 731, "var": "texaArea", "height": 300 } }, { "type": "Label", "props": { "y": 15, "x": 322, "width": 85, "text": "战    报", "height": 25, "fontSize": 24, "color": "#000000", "bold": true, "align": "center" } }] };
+        BattleReportViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 375 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/img_reportsbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "TextArea", "props": { "y": 57, "x": 10, "width": 731, "var": "texaArea", "height": 300 } }, { "type": "Label", "props": { "y": 15, "x": 322, "width": 85, "text": "战    报", "height": 25, "fontSize": 24, "color": "#000000", "bold": true, "align": "center" } }] };
         return BattleReportViewUI;
     }(View));
     ui.BattleReportViewUI = BattleReportViewUI;
@@ -62737,7 +62919,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.ChallengeBossViewUI.uiView);
         };
-        ChallengeBossViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/bg.png" } }, { "type": "Button", "props": { "y": 1131, "x": 235, "width": 285, "var": "btnFast", "skin": "comp/button.png", "labelSize": 30, "label": "快速结束", "height": 110 } }] };
+        ChallengeBossViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/bg.png" } }, { "type": "Button", "props": { "y": 1111, "x": 277, "width": 195, "var": "btnFast", "skin": "comp/button.png", "labelSize": 30, "label": "快速结束", "height": 71 } }] };
         return ChallengeBossViewUI;
     }(View));
     ui.ChallengeBossViewUI = ChallengeBossViewUI;
@@ -62769,7 +62951,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.comp.IconViewUI.uiView);
             };
-            IconViewUI.uiView = { "type": "View", "props": { "width": 115, "height": 115 }, "child": [{ "type": "Clip", "props": { "y": 3, "x": 3, "width": 110, "var": "clipBG", "skin": "comp/clip_qulity1.png", "height": 110, "clipY": 2 } }, { "type": "Image", "props": { "y": 10, "x": 10, "width": 95, "var": "imgIcon", "height": 96 } }] };
+            IconViewUI.uiView = { "type": "View", "props": { "width": 115, "height": 115 }, "child": [{ "type": "Clip", "props": { "y": 3, "x": 3, "width": 110, "var": "clipBG", "skin": "comp/clip_qulity1.png", "height": 110, "clipY": 2 } }, { "type": "Image", "props": { "y": 10, "x": 10, "width": 95, "var": "imgIcon", "height": 96 } }, { "type": "Image", "props": { "y": 27, "x": 14, "visible": false, "var": "imgTick", "skin": "comp/img_tick.png" } }] };
             return IconViewUI;
         }(View));
         comp.IconViewUI = IconViewUI;
@@ -62785,7 +62967,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.DebugViewUI.uiView);
         };
-        DebugViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 500, "var": "imgBg", "skin": "comp/blank.png", "height": 60 } }, { "type": "Label", "props": { "y": 28, "x": 0, "wordWrap": true, "width": 500, "var": "lblDec", "text": "label", "leading": 2, "height": 24, "fontSize": 16, "color": "#f4f1f1" } }, { "type": "Button", "props": { "y": 3, "x": 416, "width": 75, "var": "btnClear", "skin": "comp/button.png", "label": "clear", "height": 23 } }] };
+        DebugViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 500, "var": "imgBg", "skin": "comp/blank.png", "height": 60 } }, { "type": "Label", "props": { "y": 42, "x": 85, "wordWrap": true, "width": 500, "var": "lblDec", "text": "label", "leading": 2, "height": 24, "fontSize": 16, "color": "#f4f1f1" } }, { "type": "Button", "props": { "y": 3, "x": 362, "width": 75, "var": "btnClear", "skin": "comp/button.png", "label": "clear", "height": 23 } }] };
         return DebugViewUI;
     }(View));
     ui.DebugViewUI = DebugViewUI;
@@ -62808,19 +62990,65 @@ var ui;
     ui.EnterGameViewUI = EnterGameViewUI;
 })(ui || (ui = {}));
 (function (ui) {
+    var EquipViewUI = /** @class */ (function (_super) {
+        __extends(EquipViewUI, _super);
+        function EquipViewUI() {
+            return _super.call(this) || this;
+        }
+        EquipViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.EquipViewUI.uiView);
+        };
+        EquipViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/龙与猎人-角色.png", "height": 1334 } }] };
+        return EquipViewUI;
+    }(View));
+    ui.EquipViewUI = EquipViewUI;
+})(ui || (ui = {}));
+(function (ui) {
     var GameViewUI = /** @class */ (function (_super) {
         __extends(GameViewUI, _super);
         function GameViewUI() {
             return _super.call(this) || this;
         }
         GameViewUI.prototype.createChildren = function () {
+            View.regComponent("ui.test.TestAniScaleViewUI", ui.test.TestAniScaleViewUI);
             _super.prototype.createChildren.call(this);
             this.createView(ui.GameViewUI.uiView);
         };
-        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "mouseThrough": true, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 45, "x": 459, "width": 216, "var": "btnOpen", "skin": "comp/button.png", "labelStrokeColor": "#f88508", "labelSize": 32, "label": "打开拳击声效", "height": 83 } }, { "type": "Tab", "props": { "y": 1242, "x": 3 }, "child": [{ "type": "Button", "props": { "y": 1, "width": 145, "var": "btnMap", "skin": "comp/button.png", "labelSize": 40, "label": "地图", "height": 88 } }, { "type": "Button", "props": { "y": 1, "x": 151, "width": 145, "var": "btnLineup", "skin": "comp/button.png", "labelSize": 40, "label": "阵型", "height": 88 } }, { "type": "Button", "props": { "y": 1, "x": 302, "width": 145, "var": "btnHero", "skin": "comp/button.png", "labelSize": 40, "label": "战宠物", "height": 88 } }, { "type": "Button", "props": { "y": 1, "x": 452, "width": 145, "var": "btnEquip", "skin": "comp/button.png", "labelSize": 40, "label": "装备", "height": 88 } }, { "type": "Button", "props": { "x": 603, "width": 145, "var": "btnHome", "skin": "comp/button.png", "labelSize": 40, "label": "家园", "height": 88 } }] }] };
+        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "mouseThrough": true, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 17, "x": 706, "width": 34, "var": "btnOpen", "stateNum": 1, "skin": "main/laba.png", "sizeGrid": "-10,0,-6,-14", "labelStrokeColor": "#f88508", "labelSize": 32, "height": 31, "alpha": 0.6 } }, { "type": "Image", "props": { "y": 1215, "x": 0, "width": 750, "skin": "unpack/main/diban.png", "height": 119 } }, { "type": "Image", "props": { "y": 1320, "x": 0, "width": 750, "skin": "main/img_blood.png", "height": 14 } }, { "type": "Tab", "props": { "y": 1214, "x": 2, "width": 746, "height": 124 }, "child": [{ "type": "Button", "props": { "y": -7, "x": -1, "width": 145, "var": "btnMap", "stateNum": 1, "skin": "main/huic.png", "labelSize": 40, "height": 102 } }, { "type": "Button", "props": { "y": 0, "x": 294, "width": 148, "var": "btnHero", "stateNum": 1, "skin": "main/juese.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 145, "width": 148, "var": "btnLineup", "stateNum": 1, "skin": "main/tansuo.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 449, "width": 148, "var": "btnEquip", "stateNum": 1, "skin": "main/bag.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 598, "width": 148, "var": "btnHome", "stateNum": 1, "skin": "main/zuoz.png", "labelSize": 40, "height": 100 } }] }, { "type": "TestAniScaleView", "props": { "y": 1, "x": 253, "visible": false, "var": "viewAniScale", "runtime": "ui.test.TestAniScaleViewUI" } }] };
         return GameViewUI;
     }(View));
     ui.GameViewUI = GameViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var HeroViewUI = /** @class */ (function (_super) {
+        __extends(HeroViewUI, _super);
+        function HeroViewUI() {
+            return _super.call(this) || this;
+        }
+        HeroViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.HeroViewUI.uiView);
+        };
+        HeroViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/main/roleBg.png" } }, { "type": "Clip", "props": { "y": 357, "x": 149, "width": 134, "var": "clipShadow", "skin": "main/clip_shadow.png", "index": 0, "height": 43, "clipY": 2 } }] };
+        return HeroViewUI;
+    }(View));
+    ui.HeroViewUI = HeroViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var HomeViewUI = /** @class */ (function (_super) {
+        __extends(HomeViewUI, _super);
+        function HomeViewUI() {
+            return _super.call(this) || this;
+        }
+        HomeViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.HomeViewUI.uiView);
+        };
+        HomeViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/龙与猎人-上阵.png" } }] };
+        return HomeViewUI;
+    }(View));
+    ui.HomeViewUI = HomeViewUI;
 })(ui || (ui = {}));
 (function (ui) {
     var lineup;
@@ -62834,7 +63062,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.lineup.LineupGridViewUI.uiView);
             };
-            LineupGridViewUI.uiView = { "type": "View", "props": { "width": 0, "height": 0 }, "child": [{ "type": "Clip", "props": { "y": 0, "x": 0, "width": 134, "var": "clipShadow", "skin": "lineup/clip_shadow.png", "index": 0, "height": 54, "clipY": 2 } }] };
+            LineupGridViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Clip", "props": { "y": 0, "x": 0, "width": 134, "var": "clipShadow", "skin": "main/clip_shadow.png", "index": 0, "height": 54, "clipY": 2 } }, { "type": "Label", "props": { "y": 54, "x": 34, "width": 64, "var": "lblLineupID", "height": 32, "fontSize": 30, "color": "#000000", "align": "center" } }] };
             return LineupGridViewUI;
         }(View));
         lineup.LineupGridViewUI = LineupGridViewUI;
@@ -62854,7 +63082,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.lineup.LineupViewUI.uiView);
             };
-            LineupViewUI.uiView = { "type": "View", "props": { "width": 750, "renderType": "render", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "lineup/龙与猎人-上阵.png" } }, { "type": "List", "props": { "y": 967, "x": 23, "width": 716, "var": "listIcon", "repeatY": 2, "repeatX": 6, "height": 234 }, "child": [{ "type": "VScrollBar", "props": { "y": 4, "x": 698, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 188 } }, { "type": "IconView", "props": { "y": 0, "x": 0, "runtime": "IconView", "name": "render" } }] }, { "type": "LineupGridView", "props": { "y": 580, "x": 369, "var": "grid0", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 707, "x": 472, "var": "grid1", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 830, "x": 575, "var": "grid2", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 579, "x": 28, "var": "grid3", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 706, "x": 131, "var": "grid4", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 829, "x": 234, "var": "grid5", "runtime": "ui.lineup.LineupGridViewUI" } }] };
+            LineupViewUI.uiView = { "type": "View", "props": { "width": 750, "renderType": "render", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/bg.png" } }, { "type": "List", "props": { "y": 967, "x": 23, "width": 716, "var": "listIcon", "repeatY": 2, "repeatX": 6, "height": 234 }, "child": [{ "type": "VScrollBar", "props": { "y": 4, "x": 698, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 188 } }, { "type": "IconView", "props": { "y": 0, "x": 0, "runtime": "IconView", "name": "render" } }] }, { "type": "LineupGridView", "props": { "y": 525, "x": 351, "var": "grid0", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 652, "x": 456, "var": "grid1", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 775, "x": 562, "var": "grid2", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 602, "x": 94, "var": "grid3", "runtime": "ui.lineup.LineupGridViewUI" } }, { "type": "LineupGridView", "props": { "y": 752, "x": 174, "var": "grid4", "runtime": "ui.lineup.LineupGridViewUI" } }] };
             return LineupViewUI;
         }(View));
         lineup.LineupViewUI = LineupViewUI;
@@ -62870,7 +63098,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.LoginViewUI.uiView);
         };
-        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/main.jpg", "height": 1334 } }, { "type": "Box", "props": { "y": 576, "x": 148, "width": 496, "height": 317 }, "child": [{ "type": "Image", "props": { "width": 496, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 361, "centerY": 0, "centerX": 0 } }, { "type": "TextInput", "props": { "y": 73, "x": 187, "width": 216, "var": "inputAccount", "text": "xielong", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 72, "x": 95, "width": 100, "text": "帐号：", "height": 38, "fontSize": 30, "color": "#000000" } }, { "type": "TextInput", "props": { "y": 141, "x": 187, "width": 216, "var": "inputPwd", "type": "password", "text": "123456", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 140, "x": 95, "width": 100, "text": "密码：", "height": 38, "fontSize": 30 } }, { "type": "Button", "props": { "y": 209, "x": 158, "width": 211, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 38, "label": "登  录", "height": 72 } }] }] };
+        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/main.jpg", "height": 1334 } }, { "type": "Box", "props": { "y": 576, "x": 127, "width": 496, "height": 317 }, "child": [{ "type": "Image", "props": { "width": 496, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 361, "centerY": 0, "centerX": 0 } }, { "type": "TextInput", "props": { "y": 73, "x": 187, "width": 216, "var": "inputAccount", "text": "xielong", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 72, "x": 95, "width": 100, "text": "帐号：", "height": 38, "fontSize": 30, "color": "#000000" } }, { "type": "TextInput", "props": { "y": 141, "x": 187, "width": 216, "var": "inputPwd", "type": "password", "text": "123456", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 140, "x": 95, "width": 100, "text": "密码：", "height": 38, "fontSize": 30 } }, { "type": "Button", "props": { "y": 209, "x": 158, "width": 211, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 38, "label": "登  录", "height": 72 } }] }] };
         return LoginViewUI;
     }(View));
     ui.LoginViewUI = LoginViewUI;
@@ -62904,10 +63132,25 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.MapBattleViewUI.uiView);
         };
-        MapBattleViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 265, "x": 279, "width": 243, "var": "btnChalleangeBoss", "skin": "comp/button.png", "labelSize": 24, "label": "挑战boss", "height": 88 } }, { "type": "MapWorldView", "props": { "y": 0, "x": 0, "var": "mapWordView", "runtime": "ui.MapWorldViewUI" } }] };
+        MapBattleViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 837, "x": 496, "width": 243, "var": "btnChalleangeBoss", "skin": "comp/button.png", "labelSize": 24, "label": "挑战boss", "height": 88 } }, { "type": "MapWorldView", "props": { "y": 0, "x": 0, "var": "mapWordView", "runtime": "ui.MapWorldViewUI" } }] };
         return MapBattleViewUI;
     }(View));
     ui.MapBattleViewUI = MapBattleViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var MapViewUI = /** @class */ (function (_super) {
+        __extends(MapViewUI, _super);
+        function MapViewUI() {
+            return _super.call(this) || this;
+        }
+        MapViewUI.prototype.createChildren = function () {
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.MapViewUI.uiView);
+        };
+        MapViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/龙与猎人-上阵.png" } }] };
+        return MapViewUI;
+    }(View));
+    ui.MapViewUI = MapViewUI;
 })(ui || (ui = {}));
 (function (ui) {
     var MapWorldViewUI = /** @class */ (function (_super) {
@@ -62919,7 +63162,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.MapWorldViewUI.uiView);
         };
-        MapWorldViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 566, "x": 263, "width": 243, "var": "btnEnter", "skin": "comp/button.png", "labelSize": 40, "label": "进入关卡", "height": 88 } }] };
+        MapWorldViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 566, "x": 253, "width": 243, "var": "btnEnter", "skin": "comp/button.png", "labelSize": 40, "label": "进入关卡", "height": 88 } }] };
         return MapWorldViewUI;
     }(View));
     ui.MapWorldViewUI = MapWorldViewUI;
@@ -62934,7 +63177,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.PreLoadViewUI.uiView);
         };
-        PreLoadViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "ProgressBar", "props": { "y": 662, "x": 96, "width": 566, "var": "progressBar", "skin": "comp/progress.png", "height": 14 } }] };
+        PreLoadViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "ProgressBar", "props": { "y": 662, "x": 92, "width": 566, "var": "progressBar", "skin": "comp/progress.png", "height": 14 } }] };
         return PreLoadViewUI;
     }(View));
     ui.PreLoadViewUI = PreLoadViewUI;
@@ -62949,10 +63192,28 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.SignViewUI.uiView);
         };
-        SignViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 6, "skin": "test/img_bg.png" } }, { "type": "Image", "props": { "y": 504, "x": 154, "width": 441, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 415 } }, { "type": "Button", "props": { "y": 508, "x": 566, "var": "btnClose", "skin": "comp/btn_close.png" } }, { "type": "TextInput", "props": { "y": 706, "x": 304, "var": "inputName", "skin": "comp/textinput.png" } }] };
+        SignViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 504, "x": 154, "width": 441, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 415 } }, { "type": "Button", "props": { "y": 508, "x": 566, "var": "btnClose", "skin": "comp/btn_close.png" } }, { "type": "Label", "props": { "y": 505, "x": 353, "text": "注册", "strokeColor": "#000000", "fontSize": 22 } }, { "type": "TextInput", "props": { "y": 590, "x": 330, "width": 225, "var": "inputName", "strokeColor": "#190101", "stroke": 0, "skin": "comp/textinput.png", "height": 43 } }, { "type": "TextInput", "props": { "y": 661, "x": 330, "width": 225, "strokeColor": "#190101", "stroke": 0, "skin": "comp/textinput.png", "height": 43 } }, { "type": "Button", "props": { "y": 830, "x": 257, "width": 100, "var": "btnRecharge", "skin": "comp/button.png", "labelSize": 20, "label": "注册", "height": 32 } }, { "type": "Button", "props": { "y": 830, "x": 414, "width": 100, "var": "btnRechargeExit", "skin": "comp/button.png", "labelSize": 20, "label": "取消", "height": 32 } }, { "type": "Label", "props": { "y": 595, "x": 216, "text": "帐号", "fontSize": 32 } }, { "type": "Label", "props": { "y": 666, "x": 216, "text": "密码", "fontSize": 32 } }, { "type": "TextInput", "props": { "y": 731, "x": 330, "width": 225, "strokeColor": "#190101", "stroke": 0, "skin": "comp/textinput.png", "height": 43 } }, { "type": "Label", "props": { "y": 736, "x": 216, "text": "密码", "fontSize": 32 } }] };
         return SignViewUI;
     }(View));
     ui.SignViewUI = SignViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var test;
+    (function (test) {
+        var TestAniScaleViewUI = /** @class */ (function (_super) {
+            __extends(TestAniScaleViewUI, _super);
+            function TestAniScaleViewUI() {
+                return _super.call(this) || this;
+            }
+            TestAniScaleViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.test.TestAniScaleViewUI.uiView);
+            };
+            TestAniScaleViewUI.uiView = { "type": "View", "props": { "width": 0, "height": 0 }, "child": [{ "type": "List", "props": { "y": 0, "x": 0, "width": 495, "var": "listAniScale", "repeatY": 6, "height": 342 }, "child": [{ "type": "Box", "props": { "y": 0, "x": -2, "width": 370, "name": "render", "height": 57 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 366, "skin": "unpack/main/diban.png", "height": 57 } }, { "type": "Label", "props": { "y": 21, "x": 99, "width": 69, "text": "scale:", "height": 33, "fontSize": 24 } }, { "type": "TextInput", "props": { "y": 16, "x": 184, "width": 49, "text": "0.5", "skin": "comp/textinput.png", "name": "inputScale", "height": 32, "fontSize": 24 } }, { "type": "Button", "props": { "y": 13, "x": 263, "width": 91, "skin": "comp/button.png", "name": "btnTest", "labelSize": 24, "label": "测试", "height": 38 } }, { "type": "Label", "props": { "y": 18, "x": 2, "width": 94, "name": "lblRoleName", "height": 33, "fontSize": 24, "color": "#f11814" } }] }, { "type": "VScrollBar", "props": { "y": 12, "x": 367, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 312 } }] }] };
+            return TestAniScaleViewUI;
+        }(View));
+        test.TestAniScaleViewUI = TestAniScaleViewUI;
+    })(test = ui.test || (ui.test = {}));
 })(ui || (ui = {}));
 (function (ui) {
     var test;
@@ -62989,12 +63250,28 @@ var __extends = (this && this.__extends) || (function () {
 var IconView = /** @class */ (function (_super) {
     __extends(IconView, _super);
     function IconView() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this.selectTick = false;
+        return _this;
     }
     IconView.prototype.setData = function (data) {
         this.data = data;
         this.clipBG.skin = "comp/clip_qulity" + data.quality + ".png";
         this.imgIcon.skin = "res/outside/icons/heros/" + data.iconName + ".png";
+        if (data.select) {
+            this.setSelect(true);
+            data.select = false;
+        }
+    };
+    /**设置选中 */
+    IconView.prototype.setSelect = function (bool) {
+        if (bool === undefined) {
+            this.selectTick = !this.selectTick;
+        }
+        else {
+            this.selectTick = bool;
+        }
+        this.imgTick.visible = this.selectTick;
     };
     IconView.prototype.dispose = function () {
         this.removeEvents();
@@ -63367,6 +63644,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
         _super.prototype.initView.call(this);
         this.initRoles();
+        // EventManager.ins.dispatchEvent(EventManager.TEST_LIST_SCRALE_RENDER);
     };
     ChallegenBossMediator.prototype.addEvents = function () {
         this.view.btnFast.on(Laya.Event.CLICK, this, this.onBtnFast);
@@ -63376,7 +63654,6 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
     };
     /**初始化地图数据 */
     ChallegenBossMediator.prototype.initRoles = function () {
-        var _this = this;
         BossBattleData.curLoadNum = 0;
         //英雄
         this.heroRoles = new Array();
@@ -63389,14 +63666,24 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         for (var i = 0; i < playerData.roleVoAry.length; i++) {
             roleVo = playerData.roleVoAry[i];
             hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-            hero.initRole(roleVo, i, 1, this.roleLayer);
+            if (roleVo.id == "10006" || roleVo.id == "10007")
+                hero.initRole(roleVo, i, 0.8, this.roleLayer);
+            else
+                hero.initRole(roleVo, i, 1, this.roleLayer);
             // hero.setBlood(0);
             hero.aniPlay(RoleAniIndex.STAND);
             this.heroRoles.push(hero);
         }
-        this.heroRoles.forEach(function (heroView) {
-            heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
+        // this.heroRoles.forEach(heroView =>{
+        //     heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
+        // });
+        //显示层级排序
+        this.heroRoles.sort(function (hero1, hero2) {
+            return hero1.roleVo.gridY > hero2.roleVo.gridY ? 1 : -1;
         });
+        for (i = 0; i < this.heroRoles.length; i++) {
+            this.heroRoles[i].setShowIndex(i);
+        }
         //敌人
         this.enemyRoles = new Array();
         var bossData = GameDataManager.ins.bossData;
@@ -63409,9 +63696,13 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
             enemy.aniPlay(RoleAniIndex.STAND);
             this.enemyRoles.push(enemy);
         }
-        this.enemyRoles.forEach(function (enemyView) {
-            enemyView.setShowIndex(_this.heroRoles.length + enemyView.roleVo.lineupGrid - 1);
+        //显示层级排序
+        this.enemyRoles.sort(function (enemy1, enemy2) {
+            return enemy1.roleVo.gridY > enemy2.roleVo.gridY ? 1 : -1;
         });
+        for (i = 0; i < this.enemyRoles.length; i++) {
+            this.enemyRoles[i].setShowIndex(this.heroRoles.length + i);
+        }
         BossBattleData.loadSum = this.heroRoles.length + this.enemyRoles.length;
         BattleEngine.ins.challegenBoss(this.heroRoles, this.enemyRoles);
     };
@@ -63559,11 +63850,13 @@ var EnterGameMediator = /** @class */ (function (_super) {
     EnterGameMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
+        this.view.btnRegster.on(Laya.Event.CLICK, this, this.onBtnRegster);
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN, new UserLoginHandler(Protocol.USER_LOGIN, this, this.onWebSocketLogined));
     };
     EnterGameMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
+        this.view.btnRegster.off(Laya.Event.CLICK, this, this.onBtnRegster);
     };
     EnterGameMediator.prototype.onWebSocketLogined = function (data) {
         if (data.statusCode == 0) {
@@ -63582,13 +63875,20 @@ var EnterGameMediator = /** @class */ (function (_super) {
         }
     };
     EnterGameMediator.prototype.onBtnLogin = function (e) {
-        //单机测试
-        PreLoadingView.ins.show();
-        SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
-        this.dispose();
-        //登录web服
-        // var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
-        // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder)
+        if (GameConfig.SINGLE_GAME) {
+            //单机测试
+            PreLoadingView.ins.show();
+            SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+            this.dispose();
+        }
+        else {
+            //登录web服
+            var curServerInfo = GameDataManager.ins.curServerInfo;
+            ClientSender.httpEnterGameReq(curServerInfo.guid, this, this.webEnterGameHanlder);
+        }
+    };
+    EnterGameMediator.prototype.onBtnRegster = function (e) {
+        var enterGameMediator = new SignMediator();
     };
     EnterGameMediator.prototype.webEnterGameHanlder = function (data) {
         var jsonObj = JSON.parse(data);
@@ -63626,6 +63926,38 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 /*
+* 阵型
+*/
+var EquipMediator = /** @class */ (function (_super) {
+    __extends(EquipMediator, _super);
+    function EquipMediator(assetsUrl, view) {
+        return _super.call(this, assetsUrl, view) || this;
+    }
+    EquipMediator.prototype.initView = function () {
+        this.view = new ui.EquipViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
+    };
+    EquipMediator.prototype.addEvents = function () {
+    };
+    EquipMediator.prototype.removeEvents = function () {
+    };
+    EquipMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+    };
+    return EquipMediator;
+}(BaseMediator));
+//# sourceMappingURL=EquipMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
 * 游戏主界面代理器
 */
 var GameMediator = /** @class */ (function (_super) {
@@ -63638,6 +63970,7 @@ var GameMediator = /** @class */ (function (_super) {
     }
     GameMediator.prototype.initView = function () {
         ObjectPoolUtil.init();
+        GameDataManager.ins.initData();
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.TOP_LAYER, false, false, true);
         _super.prototype.initView.call(this);
@@ -63650,6 +63983,9 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnHero.on(Laya.Event.CLICK, this, this.onBtnHero);
         this.view.btnEquip.on(Laya.Event.CLICK, this, this.onBtnEquip);
         this.view.btnHome.on(Laya.Event.CLICK, this, this.onBtnHome);
+        // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = new Handler(this,this.onListAniScaleRender);
+        // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = new Handler(this,this.onListMouseHandler);
+        // EventManager.ins.addEvent(EventManager.TEST_LIST_SCRALE_RENDER,this,this.listScraleInit);
     };
     GameMediator.prototype.removeEvents = function () {
         this.view.btnOpen.off(Laya.Event.CLICK, this, this.onBtnOpen);
@@ -63658,6 +63994,35 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnHero.off(Laya.Event.CLICK, this, this.onBtnHero);
         this.view.btnEquip.off(Laya.Event.CLICK, this, this.onBtnEquip);
         this.view.btnHome.off(Laya.Event.CLICK, this, this.onBtnHome);
+        // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = null;
+        // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = null;
+    };
+    // private listScraleInit():void
+    // {
+    //     this.view.viewAniScale.visible = true;
+    //     this.view.viewAniScale.alpha = 0.5;
+    //     var ary = GameDataManager.ins.selfPlayerData.roleVoAry.concat(GameDataManager.ins.bossData.roleVoAry);
+    //     (this.view.viewAniScale.listAniScale as Laya.List).array = ary;
+    // }
+    GameMediator.prototype.onListAniScaleRender = function (cell, index) {
+        if (cell && cell.dataSource) {
+            cell.getChildByName("lblRoleName").text = cell.dataSource.name;
+            cell.scaleX = 1;
+            // console.log(cell.scaleX,cell.scaleY,cell.rotation);
+        }
+    };
+    GameMediator.prototype.onListMouseHandler = function (e, index) {
+        if (e.type == Laya.Event.CLICK) {
+            var cell = this.view.viewAniScale.listAniScale.getCell(index);
+            var btn = cell.getChildByName("btnTest");
+            switch (e.target) {
+                case btn:
+                    var roleID = cell.dataSource.id;
+                    var s = Number(cell.getChildByName("inputScale").text);
+                    EventManager.ins.dispatchEvent(EventManager.TEST_CHANGE_ROLE_SCALE, [roleID, s]);
+                    break;
+            }
+        }
     };
     GameMediator.prototype.onBtnOpen = function (e) {
         SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
@@ -63689,20 +64054,44 @@ var GameMediator = /** @class */ (function (_super) {
         this.curMediator = new LineupMediator(resAry);
         this.showViewIndex = GameButtomTabIndex.LINEUP;
     };
+    /**英雄系统*/
     GameMediator.prototype.onBtnHero = function (e) {
-        var floatFontTips = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
-        floatFontTips.setAttribute(24, null, "#000000");
-        floatFontTips.show("此功能暂未开放，敬请期待！", e.target.parent, e.target.x, e.target.y, 1.0, 80);
+        if (this.showViewIndex == GameButtomTabIndex.HERO) {
+            return;
+        }
+        if (this.curMediator) {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        var resAry = [
+            { url: "res/atlas/hero.atlas", type: Loader.ATLAS }
+        ];
+        this.curMediator = new HeroMediator(resAry);
+        this.showViewIndex = GameButtomTabIndex.HERO;
     };
+    /**战斗系统*/
     GameMediator.prototype.onBtnEquip = function (e) {
-        var floatFontTips = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
-        floatFontTips.setAttribute(24, null, "#000000");
-        floatFontTips.show("此功能暂未开放，敬请期待！", e.target.parent, e.target.x, e.target.y, 1.0, 80);
+        if (this.showViewIndex == GameButtomTabIndex.EQUIP) {
+            return;
+        }
+        if (this.curMediator) {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        this.curMediator = new EquipMediator();
+        this.showViewIndex = GameButtomTabIndex.EQUIP;
     };
+    /**家园系统*/
     GameMediator.prototype.onBtnHome = function (e) {
-        var floatFontTips = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
-        floatFontTips.setAttribute(24, null, "#000000");
-        floatFontTips.show("此功能暂未开放，敬请期待！", e.target.parent, e.target.x, e.target.y, 1.0, 80);
+        if (this.showViewIndex == GameButtomTabIndex.HOME) {
+            return;
+        }
+        if (this.curMediator) {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        this.curMediator = new HomeMediator();
+        this.showViewIndex = GameButtomTabIndex.HOME;
     };
     GameMediator.prototype.dispose = function () {
     };
@@ -63720,43 +64109,226 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 /*
+* 阵型
+*/
+var HeroMediator = /** @class */ (function (_super) {
+    __extends(HeroMediator, _super);
+    function HeroMediator(assetsUrl, view) {
+        return _super.call(this, assetsUrl, view) || this;
+    }
+    HeroMediator.prototype.initView = function () {
+        this.view = new ui.HeroViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
+        _super.prototype.initView.call(this);
+        this.uiRole = new UIRole("10006");
+        var rx = this.view.clipShadow.x + this.view.clipShadow.width / 2;
+        var ry = this.view.clipShadow.y + this.view.clipShadow.height / 2;
+        this.uiRole.addParent(this.view, rx, ry, -0.8, 0.8);
+    };
+    HeroMediator.prototype.addEvents = function () {
+    };
+    HeroMediator.prototype.removeEvents = function () {
+    };
+    HeroMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        if (this.uiRole) {
+            this.uiRole.dispose();
+        }
+    };
+    return HeroMediator;
+}(BaseMediator));
+//# sourceMappingURL=HeroMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 阵型
+*/
+var HomeMediator = /** @class */ (function (_super) {
+    __extends(HomeMediator, _super);
+    function HomeMediator(assetsUrl, view) {
+        return _super.call(this, assetsUrl, view) || this;
+    }
+    HomeMediator.prototype.initView = function () {
+        this.view = new ui.HomeViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
+    };
+    HomeMediator.prototype.addEvents = function () {
+    };
+    HomeMediator.prototype.removeEvents = function () {
+    };
+    HomeMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+    };
+    return HomeMediator;
+}(BaseMediator));
+//# sourceMappingURL=HomeMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
 * 阵型格子
 */
 var LineupGridMediator = /** @class */ (function (_super) {
     __extends(LineupGridMediator, _super);
-    function LineupGridMediator(assetsUrl, view) {
+    function LineupGridMediator(assetsUrl, view, caller, clickCall) {
         var _this = _super.call(this, assetsUrl, view) || this;
-        _this.skeletonAni = null;
-        _this.isLoaded = false;
-        _this.aniCount = 0;
+        _this.caller = caller;
+        _this.clickCall = clickCall;
         return _this;
     }
     LineupGridMediator.prototype.initView = function () {
         _super.prototype.initView.call(this);
     };
     LineupGridMediator.prototype.addEvents = function () {
+        this.view.on(Laya.Event.CLICK, this, this.onViewClick);
     };
     LineupGridMediator.prototype.removeEvents = function () {
+        this.view.off(Laya.Event.CLICK, this, this.onViewClick);
     };
     LineupGridMediator.prototype.getView = function () {
         return this.view;
     };
-    LineupGridMediator.prototype.setUpHero = function (roleID) {
+    LineupGridMediator.prototype.setUpHero = function (roleID, iconView) {
+        if (roleID == this.roleID) {
+            return;
+        }
+        if (this.iconView) {
+            this.iconView.setSelect(false);
+        }
+        this.roleID = roleID;
+        this.iconView = iconView;
+        if (this.uiRole == null) {
+            this.uiRole = new UIRole(this.roleID);
+            this.uiRole.addParent(this.view, this.view.clipShadow.width / 2, this.view.clipShadow.height / 2);
+        }
+        else {
+            this.uiRole.updateRole(this.roleID);
+        }
+    };
+    LineupGridMediator.prototype.revokeUpHero = function () {
+        this.roleID = null;
+        if (this.uiRole) {
+            this.uiRole.dispose();
+            this.uiRole = null;
+        }
+        if (this.iconView) {
+            this.iconView.setSelect(false);
+            this.iconView = null;
+        }
+    };
+    /**设置阴影选中 */
+    LineupGridMediator.prototype.setClipShadowIndex = function (index) {
+        this.view.clipShadow.index = index;
+    };
+    LineupGridMediator.prototype.setLineupIDLable = function (lineupID) {
+        this.view.lblLineupID.text = lineupID;
+    };
+    LineupGridMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+        if (this.uiRole) {
+            this.uiRole.dispose();
+            this.uiRole = null;
+        }
+        this.caller = null;
+        this.clickCall = null;
+        this.iconView = null;
+    };
+    LineupGridMediator.prototype.onViewClick = function (e) {
+        if (this.caller && this.clickCall) {
+            this.clickCall.call(this.caller, this);
+        }
+    };
+    return LineupGridMediator;
+}(BaseMediator));
+//# sourceMappingURL=LineupGridMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 阵型格子备份
+*/
+var LineupGridMediatorBackups = /** @class */ (function (_super) {
+    __extends(LineupGridMediatorBackups, _super);
+    function LineupGridMediatorBackups(assetsUrl, view, caller, clickCall) {
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.skeletonAni = null;
+        _this.isLoaded = false;
+        _this.aniCount = 0;
+        _this.caller = caller;
+        _this.clickCall = clickCall;
+        return _this;
+    }
+    LineupGridMediatorBackups.prototype.initView = function () {
+        _super.prototype.initView.call(this);
+    };
+    LineupGridMediatorBackups.prototype.addEvents = function () {
+        // this.view.on(Laya.Event.CLICK,this,this.onSkeletonAniClick);
+        this.view.on(Laya.Event.CLICK, this, this.onViewClick);
+    };
+    LineupGridMediatorBackups.prototype.removeEvents = function () {
+        // this.view.off(Laya.Event.CLICK,this,this.onSkeletonAniClick);
+        this.view.off(Laya.Event.CLICK, this, this.onViewClick);
+    };
+    LineupGridMediatorBackups.prototype.getView = function () {
+        return this.view;
+    };
+    LineupGridMediatorBackups.prototype.setUpHero = function (roleID) {
+        if (roleID == this.roleID) {
+            return;
+        }
         this.roleID = roleID;
         if (this.skeletonAni == null) {
             this.skeletonAni = new Skeleton();
-            this.skeletonAni.scale(1, 1);
-            // this.skeletonAni.pos(this.view.clipShadow.width/2,this.view.clipShadow.height/2);
-            this.aniPlay(RoleAniIndex.STAND);
+            this.skeletonAni.scale(-1, 1);
+            this.skeletonAni.pos(this.view.clipShadow.width / 2, this.view.clipShadow.height / 2);
+            this.view.addChild(this.skeletonAni);
+        }
+        this.isLoaded = false;
+        this.aniPlay(RoleAniIndex.STAND);
+    };
+    LineupGridMediatorBackups.prototype.revokeUpHero = function (roleID) {
+    };
+    LineupGridMediatorBackups.prototype.setClipShadowIndex = function (index) {
+        this.view.clipShadow.index = index;
+    };
+    LineupGridMediatorBackups.prototype.onViewClick = function (e) {
+        if (this.caller && this.clickCall) {
+            this.clickCall.call(this.caller, this);
         }
     };
-    LineupGridMediator.prototype.revokeUpHero = function (roleID) {
-    };
+    // private onSkeletonAniClick(e):void
+    // {
+    //     this.aniPlay(RoleAniIndex.ATTACK,true,this,function():void{
+    //         this.aniPlay(RoleAniIndex.STAND,true);
+    //     });
+    // }
     /**
     *
     * @param aniID 动画id
     */
-    LineupGridMediator.prototype.aniPlay = function (aniID, loop, caller, method) {
+    LineupGridMediatorBackups.prototype.aniPlay = function (aniID, loop, caller, method) {
         if (this.isLoaded) {
             /**测试自己龙动作 */
             if (this.roleID == "20005") {
@@ -63791,7 +64363,7 @@ var LineupGridMediator = /** @class */ (function (_super) {
         }
     };
     /**播放一次动画回调 */
-    LineupGridMediator.prototype.onPlayCompleted = function (caller, method) {
+    LineupGridMediatorBackups.prototype.onPlayCompleted = function (caller, method) {
         this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.onPlayCompleted);
         if (caller && method) {
             // console.log(this.roleVo.name);
@@ -63799,16 +64371,16 @@ var LineupGridMediator = /** @class */ (function (_super) {
             method.call(caller);
         }
     };
-    LineupGridMediator.prototype.loadCompleted = function (aniID, loop, caller, method) {
+    LineupGridMediatorBackups.prototype.loadCompleted = function (aniID, loop, caller, method) {
         if (!this.isLoaded) {
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();
             this.aniPlay(aniID, loop, caller, method);
         }
     };
-    return LineupGridMediator;
+    return LineupGridMediatorBackups;
 }(BaseMediator));
-//# sourceMappingURL=LineupGridMediator.js.map
+//# sourceMappingURL=LineupGridMediatorBackups.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -63826,10 +64398,146 @@ var LineupMediator = /** @class */ (function (_super) {
     __extends(LineupMediator, _super);
     function LineupMediator(assetsUrl, view) {
         var _this = _super.call(this, assetsUrl, view) || this;
-        _this.dragTime = 0;
+        _this.mapGridPoints = [{ x: 1, y: 0 }, { x: 1, y: 2 }, { x: 1, y: 4 }, { x: 0, y: 1 }, { x: 0, y: 3 }];
         return _this;
     }
     LineupMediator.prototype.initView = function () {
+        this.view = new ui.lineup.LineupViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
+        _super.prototype.initView.call(this);
+        this.initLineup();
+    };
+    LineupMediator.prototype.addEvents = function () {
+        this.view.listIcon.renderHandler = new Handler(this, this.listIconRender);
+        this.view.listIcon.selectEnable = true;
+        this.view.listIcon.selectHandler = new Handler(this, this.listIconSelect);
+        this.view.listIcon.mouseHandler = new Handler(this, this.onMouseHandler);
+    };
+    LineupMediator.prototype.removeEvents = function () {
+        this.view.listIcon.renderHandler = null;
+        this.view.listIcon.selectHandler = null;
+        this.view.listIcon.mouseHandler = null;
+    };
+    LineupMediator.prototype.listIconRender = function (cell, index) {
+        if (cell && cell.dataSource) {
+            cell.setData(cell.dataSource);
+        }
+    };
+    LineupMediator.prototype.onLineupGridClick = function (lineupGrid) {
+        this.curSelectGrid = lineupGrid;
+        this.lineupGrids.forEach(function (lineupGrid) {
+            lineupGrid.setClipShadowIndex(0);
+        });
+        this.curSelectGrid.setClipShadowIndex(1);
+    };
+    LineupMediator.prototype.listIconSelect = function (index) {
+    };
+    LineupMediator.prototype.onMouseHandler = function (e, index) {
+        if (e.type == Laya.Event.CLICK) {
+            var iconView = this.view.listIcon.getCell(index);
+            if (iconView) {
+                if (this.curSelectGrid) {
+                    if (iconView.selectTick) {
+                        this.lineupGrids.forEach(function (lineupGrid) {
+                            if (lineupGrid.roleID == iconView.data.roleID) {
+                                iconView.setSelect(false);
+                                lineupGrid.revokeUpHero();
+                            }
+                        });
+                    }
+                    else {
+                        iconView.setSelect(true);
+                        this.curSelectGrid.setUpHero(iconView.data.roleID, iconView);
+                    }
+                }
+                else {
+                    this.lineupGrids.forEach(function (lineupGrid) {
+                        if (lineupGrid.roleID == iconView.data.roleID) {
+                            lineupGrid.revokeUpHero();
+                            iconView.setSelect(false);
+                        }
+                    });
+                }
+            }
+        }
+        else if (e.type == Laya.Event.MOUSE_UP) {
+        }
+    };
+    LineupMediator.prototype.initLineup = function () {
+        var upRoleVos = GameDataManager.ins.selfPlayerData.roleVoAry;
+        this.lineupGrids = new Array();
+        var lineupGridMediator = null;
+        var mapGridPoint;
+        var lineupID;
+        for (var i = 0; i < 5; i++) {
+            lineupID = i + 1;
+            lineupGridMediator = new LineupGridMediator(null, this.view["grid" + i], this, this.onLineupGridClick);
+            lineupGridMediator.setLineupIDLable(lineupID);
+            for (var j = 0; j < upRoleVos.length; j++) {
+                if (upRoleVos[j].lineupGrid == lineupID) {
+                    lineupGridMediator.setUpHero(upRoleVos[j].id);
+                    break;
+                }
+            }
+            this.lineupGrids.push(lineupGridMediator);
+        }
+        // 使用但隐藏滚动条
+        // this.view.listIcon.hScrollBarSkin = "";
+        var ids = ["10000", "10001", "10002", "10007", "10006"];
+        var ary = [];
+        var qulityInd = 0;
+        var iconInd = 0;
+        var isSelect = false;
+        for (i = 0; i < ids.length; i++) {
+            qulityInd++;
+            iconInd++;
+            if (qulityInd > 7)
+                qulityInd = 1;
+            if (iconInd > 9)
+                iconInd = 1;
+            for (j = 0; j < upRoleVos.length; j++) {
+                if (upRoleVos[j].id == ids[i]) {
+                    isSelect = true;
+                    break;
+                }
+            }
+            ary.push({ quality: qulityInd, iconName: "icon-00" + iconInd, roleID: ids[i], select: isSelect });
+        }
+        this.view.listIcon.array = ary;
+    };
+    LineupMediator.prototype.dispose = function () {
+        this.lineupGrids.forEach(function (element) {
+            element.dispose();
+            element = null;
+        });
+        this.lineupGrids = null;
+        _super.prototype.dispose.call(this);
+    };
+    return LineupMediator;
+}(BaseMediator));
+//# sourceMappingURL=LineupMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 阵型备份
+*/
+var LineupMediatorBackups = /** @class */ (function (_super) {
+    __extends(LineupMediatorBackups, _super);
+    function LineupMediatorBackups(assetsUrl, view) {
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.dragTime = 0;
+        _this.lastMoveY = 0;
+        return _this;
+    }
+    LineupMediatorBackups.prototype.initView = function () {
         this.view = new ui.lineup.LineupViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         _super.prototype.initView.call(this);
@@ -63838,7 +64546,6 @@ var LineupMediator = /** @class */ (function (_super) {
         for (var i = 0; i < 6; i++) {
             lineupGridMediator = new LineupGridMediator(null, this.view["grid" + i]);
             this.lineupGrids.push(lineupGridMediator);
-            console.log(this.view["grid" + i].visible, this.view["grid" + i].x, this.view["grid" + i].y, this.view.getChildIndex(this.view["grid" + i]));
         }
         // 使用但隐藏滚动条
         // this.view.listIcon.hScrollBarSkin = "";
@@ -63862,7 +64569,7 @@ var LineupMediator = /** @class */ (function (_super) {
         }
         this.view.listIcon.array = ary;
     };
-    LineupMediator.prototype.addEvents = function () {
+    LineupMediatorBackups.prototype.addEvents = function () {
         this.view.listIcon.renderHandler = new Handler(this, this.listIconRender);
         this.view.listIcon.selectEnable = true;
         this.view.listIcon.selectHandler = new Handler(this, this.listIconSelect);
@@ -63870,23 +64577,24 @@ var LineupMediator = /** @class */ (function (_super) {
         this.view.on(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
         this.view.on(Laya.Event.MOUSE_UP, this, this.onViewMouseUp);
     };
-    LineupMediator.prototype.removeEvents = function () {
+    LineupMediatorBackups.prototype.removeEvents = function () {
         this.view.listIcon.renderHandler = null;
         this.view.listIcon.selectHandler = null;
         this.view.listIcon.mouseHandler = null;
         this.view.off(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
         this.view.off(Laya.Event.MOUSE_UP, this, this.onViewMouseUp);
     };
-    LineupMediator.prototype.listIconRender = function (cell, index) {
+    LineupMediatorBackups.prototype.listIconRender = function (cell, index) {
         if (cell && cell.dataSource) {
             cell.setData(cell.dataSource);
         }
     };
-    LineupMediator.prototype.listIconSelect = function (index) {
+    LineupMediatorBackups.prototype.listIconSelect = function (index) {
     };
-    LineupMediator.prototype.onMouseHandler = function (e, index) {
+    LineupMediatorBackups.prototype.onMouseHandler = function (e, index) {
         if (e.type == Laya.Event.MOUSE_DOWN) {
             this.dragTime = 0;
+            this.lastMoveY = this.view.mouseY;
             Laya.timer.loop(1000, this, this.calDragIconTime, [index]);
         }
         else if (e.type == Laya.Event.MOUSE_UP) {
@@ -63894,9 +64602,9 @@ var LineupMediator = /** @class */ (function (_super) {
             Laya.timer.clear(this, this.calDragIconTime);
         }
     };
-    LineupMediator.prototype.calDragIconTime = function (index) {
+    LineupMediatorBackups.prototype.calDragIconTime = function (index) {
         this.dragTime++;
-        if (this.dragTime >= 1.5) {
+        if (this.dragTime >= 1) {
             var cell = this.view.listIcon.getCell(index);
             if (cell) {
                 if (this.dragIcon) {
@@ -63917,7 +64625,7 @@ var LineupMediator = /** @class */ (function (_super) {
             // scroll.slider.off(/*laya.events.Event.CHANGE*/"change",scroll,scroll.onSliderChange);
         }
     };
-    LineupMediator.prototype.onViewMouseUp = function (e) {
+    LineupMediatorBackups.prototype.onViewMouseUp = function (e) {
         if (this.dragIcon) {
             this.dragUpLineup(this.dragIcon.data.roleID);
             this.dragIcon.dispose();
@@ -63929,34 +64637,39 @@ var LineupMediator = /** @class */ (function (_super) {
             // scroll.slider.on(/*laya.events.Event.CHANGE*/"change",scroll,scroll.onSliderChange);
         }
     };
-    LineupMediator.prototype.onMouseMove = function (e) {
+    LineupMediatorBackups.prototype.onMouseMove = function (e) {
         if (this.dragIcon) {
             this.dragIcon.x = this.view.mouseX - this.dragIcon.width / 2;
             this.dragIcon.y = this.view.mouseY - this.dragIcon.height / 2;
         }
-        this.dragTime = 0;
-        Laya.timer.clear(this, this.calDragIconTime);
+        //判断Y移动距离大于固定值才移除计时time
+        if (this.lastMoveY != this.view.mouseY && Math.abs(this.view.mouseY - this.lastMoveY) > 20) {
+            DebugViewUtil.log("移除：", this.lastMoveY + "," + this.view.mouseY);
+            this.lastMoveY = this.view.mouseY;
+            this.dragTime = 0;
+            Laya.timer.clear(this, this.calDragIconTime);
+        }
     };
     /**拖拽上阵型 */
-    LineupMediator.prototype.dragUpLineup = function (roleId) {
+    LineupMediatorBackups.prototype.dragUpLineup = function (roleId) {
         var lineupGridMediator = null;
         var gridView = null;
         for (var i = 0; i < this.lineupGrids.length; i++) {
             lineupGridMediator = this.lineupGrids[i];
             gridView = lineupGridMediator.getView();
             if (this.view.mouseX > gridView.x && this.view.mouseX < gridView.x + gridView.clipShadow.width
-                && this.view.mouseY > gridView.y && this.view.mouseY < gridView.y + gridView.clipShadow.height) {
+                && this.view.mouseY > gridView.y - 40 && this.view.mouseY < gridView.y + gridView.clipShadow.height) {
                 lineupGridMediator.setUpHero(roleId);
                 break;
             }
         }
     };
-    LineupMediator.prototype.dispose = function () {
+    LineupMediatorBackups.prototype.dispose = function () {
         _super.prototype.dispose.call(this);
     };
-    return LineupMediator;
+    return LineupMediatorBackups;
 }(BaseMediator));
-//# sourceMappingURL=LineupMediator.js.map
+//# sourceMappingURL=LineupMediatorBackups.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -63987,24 +64700,27 @@ var LoginMediator = /** @class */ (function (_super) {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
     };
     LoginMediator.prototype.onBtnLogin = function (e) {
-        //单机测试
-        var resAry = [
-            { url: "unpack/login/logo.png", type: Loader.IMAGE }
-        ];
-        var enterGameMediator = new EnterGameMediator(resAry);
-        // var account:string = this.view.inputAccount.text;
-        // var pwd:string = this.view.inputPwd.text;
-        // if(!account || account == "")
-        // {
-        //     console.log("用户名不能为空");
-        //     return;
-        // }
-        // if(!pwd || pwd == "")
-        // {
-        //     console.log("密码不能为空");
-        //     return;
-        // }
-        // ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
+        if (GameConfig.SINGLE_GAME) {
+            //单机测试
+            var resAry = [
+                { url: "unpack/login/logo.png", type: Loader.IMAGE }
+            ];
+            var enterGameMediator = new EnterGameMediator(resAry);
+        }
+        else {
+            //发送请求
+            var account = this.view.inputAccount.text;
+            var pwd = this.view.inputPwd.text;
+            if (!account || account == "") {
+                console.log("用户名不能为空");
+                return;
+            }
+            if (!pwd || pwd == "") {
+                console.log("密码不能为空");
+                return;
+            }
+            ClientSender.httpLoginReq(account, pwd, this, this.loginSuccessHanlder);
+        }
     };
     LoginMediator.prototype.loginSuccessHanlder = function (data) {
         var jsonObj = JSON.parse(data);
@@ -64087,7 +64803,6 @@ var MapBattleMediator = /** @class */ (function (_super) {
         this.battleReportMediator = new BattleReportMediator();
         //初始化游戏场景
         MapManager.ins.enterMap("res/map", 2, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
-        GameDataManager.ins.initData();
         RoleManager.ins.initHeros();
         BattleEngine.ins.run();
     };
@@ -64113,7 +64828,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
         var roleVos = GameDataManager.ins.bossData.roleVoAry.concat(GameDataManager.ins.selfPlayerData.roleVoAry);
         roleVos.forEach(function (roleVo) {
             //角色资源
-            resAry.push({ url: "res/outside/anim/role/role" + roleVo.id + "/" + roleVo.id + ".sk", type: /*laya.net.Loader.BUFFER*/ "arraybuffer" });
+            resAry.push({ url: "res/outside/anim/role/" + roleVo.modelId + "/" + roleVo.modelId + ".sk", type: /*laya.net.Loader.BUFFER*/ "arraybuffer" });
         });
         this.challegenBossMediator = new ChallegenBossMediator(resAry);
     };
@@ -64190,12 +64905,22 @@ var SignMediator = /** @class */ (function (_super) {
     };
     SignMediator.prototype.addEvents = function () {
         this.view.btnClose.on(Laya.Event.CLICK, this, this.onBtnClose);
+        this.view.btnRecharge.on(Laya.Event.CLICK, this, this.onBtnRecharge);
+        this.view.btnRechargeExit.on(Laya.Event.CLICK, this, this.onBtnRechargeExit);
     };
     SignMediator.prototype.removeEvents = function () {
         this.view.btnOpen.off(Laya.Event.CLICK, this, this.onBtnClose);
+        this.view.btnRecharge.off(Laya.Event.CLICK, this, this.onBtnRecharge);
+        this.view.btnRechargeExit.off(Laya.Event.CLICK, this, this.onBtnRechargeExit);
     };
     SignMediator.prototype.onBtnClose = function (e) {
-        console.log("输入框：" + this.view.inputName.text);
+        console.log("功能暂时关闭" + this.view.inputName.text);
+    };
+    SignMediator.prototype.onBtnRecharge = function (e) {
+        console.log("功能暂时关闭" + this.view.inputName.text);
+    };
+    SignMediator.prototype.onBtnRechargeExit = function (e) {
+        console.log("功能暂时关闭" + this.view.inputName.text);
     };
     return SignMediator;
 }(BaseMediator));
@@ -65176,8 +65901,29 @@ var BaseRole = /** @class */ (function (_super) {
         _this.roleBloodBar = null;
         _this.showPriority = 0;
         return _this;
+        // EventManager.ins.addEvent(EventManager.TEST_CHANGE_ROLE_SCALE,this,this.testScale);
     }
+    // private testScale(ary):void
+    // {
+    //     var roleID = ary[0];
+    //     var sca = ary[1];
+    //     if(this.roleVo && this.roleVo.id == roleID)
+    //     {
+    //         var s:number = this.roleVo.isEnemy ? 1 : -1;
+    //         this.skeletonAni.scaleX = s * sca;
+    //         this.skeletonAni.scaleY = sca;
+    //         var bound = this.skeletonAni.getBounds(); // 加载完毕之后才能拿到有效的bounds
+    //         console.log(this.roleVo.name,bound.width,bound.height);
+    //     }
+    // }
     BaseRole.prototype.initRole = function (roleVo, showPriority, scale, parentDis) {
+        this.clipShadow = new Laya.Clip("main/clip_shadow.png");
+        this.clipShadow.height = 43;
+        this.clipShadow.x = -this.clipShadow.width / 2;
+        this.clipShadow.y = -this.clipShadow.height / 2;
+        this.clipShadow.clipY = 2;
+        this.clipShadow.alpha = 0.3;
+        this.addChild(this.clipShadow);
         this.roleVo = roleVo;
         this.showPriority = showPriority;
         if (scale) {
@@ -65210,7 +65956,7 @@ var BaseRole = /** @class */ (function (_super) {
     BaseRole.prototype.aniPlay = function (aniID, loop, caller, method, defRole) {
         if (this.isLoaded) {
             /**测试自己龙动作 */
-            if (this.roleVo.id == "20005") {
+            if (this.roleVo.id == "20005" || this.roleVo.id == "10006" || this.roleVo.id == "10007") {
                 if (aniID == RoleAniIndex.ATTACK)
                     aniID = NewRoleAniIndex.ATTACK;
                 else if (aniID == RoleAniIndex.INJURED)
@@ -65247,14 +65993,14 @@ var BaseRole = /** @class */ (function (_super) {
     BaseRole.prototype.skeletonAniLoad = function (aniID, loop, caller, method) {
         //分帧加载
         if (this.roleVo) {
-            var url = "res/outside/anim/role/role" + this.roleVo.id + "/" + this.roleVo.id + ".sk";
-            if (this.roleVo.id == "20005") {
-                url = "res/outside/anim/role/role" + this.roleVo.id + "/alien-pro.sk";
-            }
+            var url = "res/outside/anim/role/" + this.roleVo.modelId + "/" + this.roleVo.modelId + ".sk";
+            // url = "res/outside/anim/role/baolong001/baolong001.sk";
             this.skeletonAni.load(url, Laya.Handler.create(this, this.loadCompleted, [aniID, loop, caller, method]));
         }
     };
     BaseRole.prototype.loadCompleted = function (aniID, loop, caller, method) {
+        // var bound = this.skeletonAni.getBounds(); // 加载完毕之后才能拿到有效的bounds
+        // console.log(this.roleVo.id,bound.width,bound.height);
         if (!this.isLoaded) {
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();
@@ -65508,7 +66254,9 @@ var PreLoadScene = /** @class */ (function (_super) {
             { url: "res/outside/sound/effect/fit.wav", type: Loader.SOUND, size: 20, priority: 1 },
             { url: "res/outside/sound/bg/zhou.mp3", type: Loader.SOUND, size: 10, priority: 1 },
             { url: ["unpack/login/logo.png", "unpack/main/main.jpg", "unpack/main/role.jpg"], type: Loader.IMAGE, size: 25, priority: 1 },
-            { url: "res/config/TestSample.xml", type: Loader.TEXT },
+            { url: "res/config/GateMapSample.xml", type: Loader.TEXT },
+            { url: "res/config/GateSample.xml", type: Loader.TEXT },
+            { url: "res/config/HeroSkillSample.xml", type: Loader.TEXT },
             { url: "res/config/QualitySample.xml", type: Loader.TEXT },
             { url: "res/config/HeroLevelSample.xml", type: Loader.TEXT },
             { url: "res/config/HeroSample.xml", type: Loader.TEXT },

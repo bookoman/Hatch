@@ -45,6 +45,8 @@ var GameConfig = /** @class */ (function () {
     GameConfig.DEBUG_VIEW_SWITCH = false;
     /**场景战斗开关 */
     GameConfig.SCENE_BATTLE_SWITCH = true;
+    /**单机游戏 */
+    GameConfig.SINGLE_GAME = false;
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {
@@ -139,5 +141,8 @@ var GameButtomTabIndex;
 (function (GameButtomTabIndex) {
     GameButtomTabIndex[GameButtomTabIndex["MAP_BATTLE"] = 0] = "MAP_BATTLE";
     GameButtomTabIndex[GameButtomTabIndex["LINEUP"] = 1] = "LINEUP";
+    GameButtomTabIndex[GameButtomTabIndex["HERO"] = 2] = "HERO";
+    GameButtomTabIndex[GameButtomTabIndex["EQUIP"] = 3] = "EQUIP";
+    GameButtomTabIndex[GameButtomTabIndex["HOME"] = 4] = "HOME";
 })(GameButtomTabIndex || (GameButtomTabIndex = {}));
 //# sourceMappingURL=GameConfig.js.map

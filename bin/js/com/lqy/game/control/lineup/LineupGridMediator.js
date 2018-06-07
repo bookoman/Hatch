@@ -13,11 +13,10 @@ var __extends = (this && this.__extends) || (function () {
 */
 var LineupGridMediator = /** @class */ (function (_super) {
     __extends(LineupGridMediator, _super);
-    function LineupGridMediator(assetsUrl, view, caller, clickCall, mapGridPoint) {
+    function LineupGridMediator(assetsUrl, view, caller, clickCall) {
         var _this = _super.call(this, assetsUrl, view) || this;
         _this.caller = caller;
         _this.clickCall = clickCall;
-        _this.mapGridPoint = mapGridPoint;
         return _this;
     }
     LineupGridMediator.prototype.initView = function () {
