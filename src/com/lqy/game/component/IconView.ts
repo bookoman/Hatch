@@ -2,14 +2,17 @@
 * 图标
 */
 class IconView extends ui.comp.IconViewUI{
-    public data:any;
+    public heroId:string;
+    public lineupId:number;
     public selectTick:boolean = false;
     constructor(){
         super();
     }
     public setData(data:any):void
     {
-        this.data = data;
+        this.heroId = data.heroId;
+        this.lineupId = data.lineupId;
+
         this.clipBG.skin = "comp/clip_qulity"+data.quality+".png";
         this.imgIcon.skin = "res/outside/icons/heros/"+data.iconName +".png";
         if(data.select)

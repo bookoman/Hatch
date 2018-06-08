@@ -10,8 +10,9 @@ class GameDataManager{
     public serverList:Array<ServerInfoVo>;
     /**当前服务器信息 */
     public curServerInfo:ServerInfoVo;
-
+    
     public selfPlayerData:PlayerData = null;
+
     public enemyData:EnemyData = null;
     public bossData:EnemyData = null;
     /**是否再挑战boss */
@@ -75,6 +76,36 @@ class GameDataManager{
         this.selfPlayerData = new PlayerData();
         this.selfPlayerData.name = data.data;
     }
+    /**根据heroId得到heroVo */
+    public getHeroVoByHeroId(heroId:string):HeroVo
+    {
+        var heroVo:HeroVo = this.selfPlayerData.heroVoDic.get(heroId);
+        return heroVo;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**假战斗数据 */
 
     public initData():void
     {
@@ -96,7 +127,7 @@ class GameDataManager{
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if(roleVo)
             {
-                roleVo.lineupGrid = i + 1;
+                roleVo.lineupGrid = i;
                 this.selfPlayerData.roleVoAry.push(roleVo);
             }
         }
@@ -129,7 +160,7 @@ class GameDataManager{
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if(roleVo)
             {
-                roleVo.lineupGrid = i + 1;
+                roleVo.lineupGrid = i;
                 roleVo.initRowColPosPoint();
                 this.enemyData.roleVoAry.push(roleVo);
             }
@@ -156,7 +187,7 @@ class GameDataManager{
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if(roleVo)
             {
-                roleVo.lineupGrid = i + 1;
+                roleVo.lineupGrid = i;
                 roleVo.initRowColPosPoint();
                 this.bossData.roleVoAry.push(roleVo);
             }

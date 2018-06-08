@@ -2,8 +2,8 @@
 * 阵型
 */
 class LineupMediator extends BaseMediator{
-    private mapGridPoints:Array<Object> = [{x:1,y:0},{x:1,y:2},{x:1,y:4},{x:0,y:1},{x:0,y:3}];
     private dragIcon:IconView;
+    private selectIconView:IconView;
     private curSelectGrid:LineupGridMediator;
     private lineupGrids:Array<LineupGridMediator>;
     constructor(assetsUrl?:any,view?:any){
@@ -15,6 +15,15 @@ class LineupMediator extends BaseMediator{
         LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,false,true);
         super.initView();
 
+        this.lineupGrids = [];
+        var lineupGridMediator:LineupGridMediator = null;
+        for(var i = 0;i < 5; i++)
+        {
+            lineupGridMediator = new LineupGridMediator(null,this.view["grid"+i],this,this.onLineupGridClick);
+            lineupGridMediator.lineupId = i;
+            this.lineupGrids.push(lineupGridMediator);
+        }
+
         this.initLineup();
         
     }
@@ -25,14 +34,33 @@ class LineupMediator extends BaseMediator{
         this.view.listIcon.selectHandler = new Handler(this, this.listIconSelect);
         this.view.listIcon.mouseHandler = new Handler(this,this.onMouseHandler);
         
+        WebSocketManager.ins.registerHandler(Protocol.HERO,Protocol.HERO_UPDATE_FORMATION,new HeroUpdateLineupHanlder(this,this.heroUpdateLineupHandler));
     }
     protected removeEvents():void
     {
         this.view.listIcon.renderHandler = null;
         this.view.listIcon.selectHandler = null;
         this.view.listIcon.mouseHandler = null;
+        WebSocketManager.ins.unregisterHandler(Protocol.HERO,Protocol.HERO_UPDATE_FORMATION,this);
     }
-    
+    /**更新阵型服务器返回 */
+    private heroUpdateLineupHandler(data):void
+    {
+        if(data.flag)
+        {
+            this.selectIconView.setSelect(true);
+            this.curSelectGrid.setUpHero(this.selectIconView.heroId,this.selectIconView);
+        }
+        else
+        {
+            this.lineupGrids.forEach(lineupGrid => {
+                if(lineupGrid.heroId == this.selectIconView.heroId){
+                    this.selectIconView.setSelect(false);
+                    lineupGrid.revokeUpHero();
+                }
+            });
+        }
+    }
     private listIconRender(cell:IconView,index:number):void
     {
         if(cell && cell.dataSource)
@@ -60,35 +88,35 @@ class LineupMediator extends BaseMediator{
     {
         if(e.type == Laya.Event.CLICK)
         {
-            var iconView:IconView = this.view.listIcon.getCell(index);
-            if(iconView)
+            
+            this.selectIconView = this.view.listIcon.getCell(index);
+            if(this.selectIconView)
             {
+                var lineupId:number;
+                var isUp:boolean;
                 if(this.curSelectGrid)
                 {
-                    if(iconView.selectTick)
+                    
+                    if(this.selectIconView.selectTick)
                     {
-                        this.lineupGrids.forEach(lineupGrid => {
-                            if(lineupGrid.roleID == iconView.data.roleID){
-                                iconView.setSelect(false);
-                                lineupGrid.revokeUpHero();
-                            }
-                        });
+                        lineupId = this.selectIconView.lineupId;
+                        isUp = false;
                     }
                     else
                     {
-                        iconView.setSelect(true);
-                        this.curSelectGrid.setUpHero(iconView.data.roleID,iconView);
+                        lineupId = this.curSelectGrid.lineupId;
+                        isUp = true;
                     }
+                    ClientSender.heroLinuepUpdateReq(lineupId,this.selectIconView.heroId,isUp); 
                 }
                 else
                 {
-                    this.lineupGrids.forEach(lineupGrid => {
-                        if(lineupGrid.roleID == iconView.data.roleID){
-                            lineupGrid.revokeUpHero();
-                            iconView.setSelect(false);
-                        }
-                    });
-                    
+                    if(this.selectIconView.selectTick)
+                    {
+                        lineupId = this.selectIconView.lineupId;
+                        isUp = false;
+                        ClientSender.heroLinuepUpdateReq(lineupId,this.selectIconView.heroId,isUp);   
+                    }
                 }
             }
         }
@@ -100,53 +128,46 @@ class LineupMediator extends BaseMediator{
 
     private initLineup():void
     {
-        var upRoleVos:Array<RoleVo> = GameDataManager.ins.selfPlayerData.roleVoAry;
 
-        this.lineupGrids = new Array();
+        var lineupDic:Dictionary = GameDataManager.ins.selfPlayerData.heroLineupDic;
         var lineupGridMediator:LineupGridMediator = null;
-        var mapGridPoint:Object;
-        var lineupID:number;
-        for(var i = 0;i < 5; i++)
-        {
-            lineupID = i + 1;
-            lineupGridMediator = new LineupGridMediator(null,this.view["grid"+i],this,this.onLineupGridClick);
-            lineupGridMediator.setLineupIDLable(lineupID);
-            for(var j = 0;j < upRoleVos.length;j++)
+        var heroId:string;
+        lineupDic.keys.forEach(lineupId => {
+            heroId = lineupDic.get(lineupId);
+            if(heroId && heroId != "")
             {
-                if(upRoleVos[j].lineupGrid == lineupID)
-                {
-                    lineupGridMediator.setUpHero(upRoleVos[j].id);
-                    break;
-                }
+                lineupGridMediator = this.lineupGrids[lineupId];
+                lineupGridMediator.lineupId = Number(lineupId);
+                lineupGridMediator.setUpHero(heroId);
             }
-            this.lineupGrids.push(lineupGridMediator);
-        }
-
+        });
+        
+        
         // 使用但隐藏滚动条
         // this.view.listIcon.hScrollBarSkin = "";
-        var ids:Array<string> = ["10000","10001","10002","10007","10006"];
+        var backpackHeroVos:Array<HeroVo> = GameDataManager.ins.selfPlayerData.heroVoDic.values;
+        var heroVo:HeroVo;
         var ary:Array<Object> = [];
-        var qulityInd:number = 0;
-        var iconInd:number = 0;
-        var isSelect:boolean = false;
-        
-        for(i = 0;i < ids.length;i++)
+        var qulityInd:number;
+        var icon:string;
+        var isSelect:boolean;
+        for(var i = 0;i < backpackHeroVos.length;i++)
         {
-            qulityInd++;
-            iconInd++;
-            if(qulityInd > 7)
-                qulityInd = 1;
-            if(iconInd > 9)
-                iconInd = 1;
-            for(j = 0;j < upRoleVos.length;j++)
+            isSelect = false;
+            heroVo = backpackHeroVos[i];
+            qulityInd = ConfigManager.ins.getHeroQualityInd(heroVo.qualityKey);
+            icon = ConfigManager.ins.getHeroSampleConfig(heroVo.heroKey).icon;
+            var lId:number;
+            for(var j = 0;j < lineupDic.values.length;j++)
             {
-                if(upRoleVos[j].id == ids[i])
+                if(heroVo.heroId == lineupDic.values[j])
                 {
                     isSelect = true;
+                    lId = lineupDic.keys[j];
                     break;
                 }
             }
-            ary.push({quality:qulityInd,iconName:"icon-00"+iconInd,roleID:ids[i],select:isSelect});
+            ary.push({quality:qulityInd,iconName:icon,heroId:heroVo.heroId,lineupId:lId,select:isSelect});
         }
         
         this.view.listIcon.array = ary;

@@ -22,8 +22,8 @@ var RoleManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**初始化角色 */
     RoleManager.prototype.initHeros = function () {
-        // this.clearRole();
         if (this.heroRoles == null) {
             this.heroRoles = new Array();
         }

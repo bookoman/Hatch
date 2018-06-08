@@ -23,10 +23,9 @@ class RoleManager{
         return this._ins;
     }
 
-
+    /**初始化角色 */
     public initHeros():void
     {
-        // this.clearRole();
         if(this.heroRoles == null)
         {
             this.heroRoles = new Array();

@@ -3,12 +3,17 @@
 <!-- xml config data name GateMapSample -->
 <!-- Tools provided by the author tank -->
 <!-- Email:it_luo@126.com -->
-<!-- Tool AutoCreate  2018-6-7 9:35:33 -->
+<!-- Tool AutoCreate  2018-6-8 10:25:06 -->
 
 <?xml version='1.0' encoding='utf-8'?>
 <root>
-		<element key = "GM_1000" mapName = "平原" nextMapKey = "GM_1001" mapId = "1000" gateKey = "G_1_1" />
-		<element key = "GM_1001" mapName = "沼泽" nextMapKey = "" mapId = "1001" gateKey = "G_2_1" />
+		<element key = "GM_1000" mapName = "边陲之地" nextMapKey = "GM_1001" mapId = "M_1001" gateKey = "G_1_1" />
+		<element key = "GM_1001" mapName = "龙眠山脉" nextMapKey = "GM_1002" mapId = "M_1002" gateKey = "" />
+		<element key = "GM_1002" mapName = "琥珀峡谷" nextMapKey = "GM_1003" mapId = "M_1003" gateKey = "" />
+		<element key = "GM_1003" mapName = "灰石丘陵" nextMapKey = "GM_1004" mapId = "M_1004" gateKey = "" />
+		<element key = "GM_1004" mapName = "莽荒之地" nextMapKey = "GM_1005" mapId = "M_1005" gateKey = "" />
+		<element key = "GM_1005" mapName = "迷雾沼泽" nextMapKey = "GM_1006" mapId = "M_1006" gateKey = "" />
+		<element key = "GM_1006" mapName = "极寒之地" nextMapKey = "GM_1007" mapId = "M_1007" gateKey = "" />
 		<element key = "HT_10001" mapName = "C" nextMapKey = "900" mapId = "275" gateKey = "302.5" />
 		<element key = "HT_10001" mapName = "B" nextMapKey = "800" mapId = "302.5" gateKey = "332.75" />
 		<element key = "HT_10001" mapName = "A" nextMapKey = "700" mapId = "332.75" gateKey = "366.02500000000003" />

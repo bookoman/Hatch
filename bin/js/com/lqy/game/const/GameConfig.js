@@ -45,8 +45,11 @@ var GameConfig = /** @class */ (function () {
     GameConfig.DEBUG_VIEW_SWITCH = false;
     /**场景战斗开关 */
     GameConfig.SCENE_BATTLE_SWITCH = true;
+    //**************************默认数据 */
+    /**没有资源时，英雄默认资源模型ID */
+    GameConfig.HERO_DEFAULT_ANI_MODELID = "baolong001";
     /**单机游戏 */
-    GameConfig.SINGLE_GAME = true;
+    GameConfig.SINGLE_GAME = false;
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {

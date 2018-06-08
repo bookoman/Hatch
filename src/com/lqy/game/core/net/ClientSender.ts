@@ -28,6 +28,17 @@ class ClientSender{
         var buffer = HeroInfoRequest.encode(message).finish();
         WebSocketManager.ins.sendMsg(Protocol.HERO,Protocol.HERO_GET_INFOS,buffer);
     }
+    /**英雄上、下、更新阵型 */
+    public static heroLinuepUpdateReq(lineupId:number,heroId:string,isUp:boolean):void
+    {
+        var UpdateFormationRequest:any = WebSocketManager.ins.defineProtoClass("UpdateFormationRequest");
+        var message:any = {};
+        message.siteIdx = lineupId;
+        message.heroId = heroId;
+        message.flag = isUp;
+        var buffer = UpdateFormationRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.HERO,Protocol.HERO_UPDATE_FORMATION,buffer);
+    }
 
 
 

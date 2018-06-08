@@ -58,6 +58,12 @@ var GameDataManager = /** @class */ (function () {
         this.selfPlayerData = new PlayerData();
         this.selfPlayerData.name = data.data;
     };
+    /**根据heroId得到heroVo */
+    GameDataManager.prototype.getHeroVoByHeroId = function (heroId) {
+        var heroVo = this.selfPlayerData.heroVoDic.get(heroId);
+        return heroVo;
+    };
+    /**假战斗数据 */
     GameDataManager.prototype.initData = function () {
         //测试数据
         if (!this.selfPlayerData) {
@@ -73,7 +79,7 @@ var GameDataManager = /** @class */ (function () {
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if (roleVo) {
-                roleVo.lineupGrid = i + 1;
+                roleVo.lineupGrid = i;
                 this.selfPlayerData.roleVoAry.push(roleVo);
             }
         }
@@ -99,7 +105,7 @@ var GameDataManager = /** @class */ (function () {
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if (roleVo) {
-                roleVo.lineupGrid = i + 1;
+                roleVo.lineupGrid = i;
                 roleVo.initRowColPosPoint();
                 this.enemyData.roleVoAry.push(roleVo);
             }
@@ -121,7 +127,7 @@ var GameDataManager = /** @class */ (function () {
         for (var i = 0; i < ids.length; i++) {
             roleVo = ConfigManager.ins.getRoleVoByID(ids[i]);
             if (roleVo) {
-                roleVo.lineupGrid = i + 1;
+                roleVo.lineupGrid = i;
                 roleVo.initRowColPosPoint();
                 this.bossData.roleVoAry.push(roleVo);
             }

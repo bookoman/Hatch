@@ -20,10 +20,10 @@ var HeroMediator = /** @class */ (function (_super) {
         this.view = new ui.HeroViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         _super.prototype.initView.call(this);
-        this.uiRole = new UIRole("10006");
-        var rx = this.view.clipShadow.x + this.view.clipShadow.width / 2;
-        var ry = this.view.clipShadow.y + this.view.clipShadow.height / 2;
-        this.uiRole.addParent(this.view, rx, ry, -0.8, 0.8);
+        // this.uiRole = new UIRole("10006");
+        // var rx:number = this.view.clipShadow.x + this.view.clipShadow.width / 2;
+        // var ry:number = this.view.clipShadow.y + this.view.clipShadow.height / 2;
+        // this.uiRole.addParent(this.view,rx,ry,-0.8,0.8);
     };
     HeroMediator.prototype.addEvents = function () {
     };

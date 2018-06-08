@@ -5,13 +5,20 @@ class UIRole{
     private skeletonAni:Skeleton = null;
     private isLoaded:boolean = false;
     private aniCount:number = 0;
-    public roleID:string;
+    public heroKey:string;
     private disParent;
-    constructor(roleID:string){
-        this.roleID = roleID;
-        this.isLoaded = false;
 
+    private aniId:number;
+    private loop:boolean;
+    private caller:any;
+    private method:Function;
+    private aniUrl:string;
+
+    constructor(heroKey:string){
+        this.heroKey = heroKey;
+        this.isLoaded = false;
         this.skeletonAni = new Skeleton();
+        
     }
     public addParent(parent,rx:number,ry:number,sx?:number,sy?:number):void
     {
@@ -23,14 +30,14 @@ class UIRole{
         this.skeletonAni.scale(sx,sy);
         this.skeletonAni.pos(rx,ry);
         this.disParent.addChild(this.skeletonAni);
-        this.aniPlay(RoleAniIndex.STAND);
+        this.aniPlay(NewRoleAniIndex.STAND);
     }
 
-    public updateRole(roleID:string,sx?:number,sy?:number):void
+    public updateRole(heroKey:string,sx?:number,sy?:number):void
     {
         if(this.disParent && this.skeletonAni)
         {
-            this.roleID = roleID;
+            this.heroKey = heroKey;
             this.isLoaded = false;
             this.addParent(this.disParent,this.skeletonAni.x,this.skeletonAni.y,sx,sy);
         }
@@ -38,6 +45,7 @@ class UIRole{
     /**销毁 */
     public dispose():void
     {
+        
         if(this.skeletonAni)
         {
             if(this.skeletonAni.parent)
@@ -56,30 +64,35 @@ class UIRole{
      */
     private aniPlay(aniID:number,loop?:boolean,caller?:any,method?:Function)
     {
+        this.aniId = aniID;
+        this.loop = loop;
+        this.caller = caller;
+        this.method = method;
+
         if(this.isLoaded)
         {   
             /**测试自己龙动作 */
-            if(this.roleID == "10006")
-            {
-                if(aniID == RoleAniIndex.ATTACK)
-                    aniID = NewRoleAniIndex.ATTACK;
-                else if(aniID == RoleAniIndex.INJURED)
-                    aniID = NewRoleAniIndex.INJURED;
-                else if(aniID == RoleAniIndex.DEATH)
-                    aniID = NewRoleAniIndex.DEATH;
-                else if(aniID == RoleAniIndex.MOVE)
-                    aniID = NewRoleAniIndex.MOVE;
-                else if(aniID == RoleAniIndex.STAND)
-                    aniID = NewRoleAniIndex.STAND;
-            }
+            // if(this.roleID == "10006")
+            // {
+            //     if(aniID == RoleAniIndex.ATTACK)
+            //         aniID = NewRoleAniIndex.ATTACK;
+            //     else if(aniID == RoleAniIndex.INJURED)
+            //         aniID = NewRoleAniIndex.INJURED;
+            //     else if(aniID == RoleAniIndex.DEATH)
+            //         aniID = NewRoleAniIndex.DEATH;
+            //     else if(aniID == RoleAniIndex.MOVE)
+            //         aniID = NewRoleAniIndex.MOVE;
+            //     else if(aniID == RoleAniIndex.STAND)
+            //         aniID = NewRoleAniIndex.STAND;
+            // }
             loop = loop === undefined ? true : loop; 
             aniID = aniID % this.aniCount;
-
+            // console.log(aniID);
              //>= aniCount默认播放第一个动画
             if(this.skeletonAni)
             {
                 
-                this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted,[caller,method]);
+                this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted);
                 this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID,loop);
             }
@@ -87,33 +100,44 @@ class UIRole{
         }
         else
         {
-            if(this.roleID)
+            if(this.heroKey)
             {
-                var roleVo:RoleVo = ConfigManager.ins.getRoleVoByID(this.roleID);
-                var url:string = "res/outside/anim/role/"+roleVo.modelId+"/"+ roleVo.modelId +".sk";
-                this.skeletonAni.load(url,Laya.Handler.create(this,this.loadCompleted,[aniID,loop,caller,method]));
+                
+                Laya.loader.on(/*laya.events.Event.ERROR*/"error",this,this.skeletonLoadError);
+                var config:HeroSampleConfig = ConfigManager.ins.getHeroSampleConfig(this.heroKey);
+                this.aniUrl = "res/outside/anim/role/"+config.modelId+"/"+ config.modelId +".sk";
+                this.skeletonAni.load(this.aniUrl,Laya.Handler.create(this,this.loadCompleted));
             }
         }
     }
     /**播放一次动画回调 */
-    private onPlayCompleted(caller,method):void
+    private onPlayCompleted():void
     {
         this.skeletonAni.player.off(Laya.Event.COMPLETE,this,this.onPlayCompleted);
-        if(caller && method)
+        if(this.caller && this.method)
         {
             // console.log(this.roleVo.name);
             this.skeletonAni.paused();
-            method.call(caller);
+            this.method.call(this.caller);
         }
     }
 
-    private loadCompleted(aniID,loop,caller,method) {
+    private loadCompleted() {
         
-        if(!this.isLoaded)
+        if(!this.isLoaded && this.skeletonAni.templet)
         {
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();
-            this.aniPlay(aniID,loop,caller,method);
+            this.aniPlay(this.aniId,this.loop,this.caller,this.method);
+        }
+    }
+    private skeletonLoadError(url):void
+    {
+        if(url == this.aniUrl)
+        {
+            Laya.loader.off(/*laya.events.Event.ERROR*/"error",this,this.skeletonLoadError);
+            url = "res/outside/anim/role/"+GameConfig.HERO_DEFAULT_ANI_MODELID+"/"+ GameConfig.HERO_DEFAULT_ANI_MODELID +".sk";
+            this.skeletonAni.load(url,Laya.Handler.create(this,this.loadCompleted));
         }
     }
 }

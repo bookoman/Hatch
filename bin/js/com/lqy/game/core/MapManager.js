@@ -136,11 +136,11 @@ var MapManager = /** @class */ (function () {
     };
     MapManager.prototype.getHeroMapBalltGridPoint = function (gridNum) {
         var gridPointAry = this.curMapConfig["battleHeroGrid"];
-        return gridPointAry[gridNum - 1];
+        return gridPointAry[gridNum];
     };
     MapManager.prototype.getEnemyMapBalltGridPoint = function (gridNum) {
         var gridPointAry = this.curMapConfig["battleEnemyGrid"];
-        return gridPointAry[gridNum - 1];
+        return gridPointAry[gridNum];
     };
     MapManager.prototype.getConfigById = function (mapId) {
         return this.mapCofing[mapId];

@@ -2,8 +2,9 @@
 * 阵型格子
 */
 class LineupGridMediator extends BaseMediator{
+    public heroId:string;
+    public lineupId:number;
     private uiRole:UIRole;
-    public roleID:string;
     private caller:any;
     private clickCall:Function;
     private iconView:IconView;
@@ -29,9 +30,9 @@ class LineupGridMediator extends BaseMediator{
     {
         return this.view;
     }
-    public setUpHero(roleID:string,iconView?:IconView):void
+    public setUpHero(heroId:string,iconView?:IconView):void
     {
-        if(roleID == this.roleID)
+        if(heroId == this.heroId)
         {
             return;
         }
@@ -39,22 +40,23 @@ class LineupGridMediator extends BaseMediator{
         {
             this.iconView.setSelect(false);
         }
-        this.roleID = roleID;
+        this.heroId = heroId;
         this.iconView = iconView;
+        var heroVo:HeroVo = GameDataManager.ins.getHeroVoByHeroId(this.heroId);
         if(this.uiRole == null)
         {
-            this.uiRole = new UIRole(this.roleID);
+            this.uiRole = new UIRole(heroVo.heroKey);
             this.uiRole.addParent(this.view,this.view.clipShadow.width/2,this.view.clipShadow.height/2);
         }
         else
         {
-            this.uiRole.updateRole(this.roleID);
+            this.uiRole.updateRole(heroVo.heroKey);
         }
     }
 
     public revokeUpHero():void
     {
-        this.roleID = null;
+        this.heroId = null;
         if(this.uiRole)
         {
             this.uiRole.dispose();

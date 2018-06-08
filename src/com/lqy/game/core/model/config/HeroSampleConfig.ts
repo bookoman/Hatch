@@ -4,7 +4,7 @@
 class HeroSampleConfig{
     public key:string;
     public icon:string;
-    public modeId:string;
+    public modelId:string;
     public name:string;
     public heroTypeKey:string;
     public professionTypeKey:string;

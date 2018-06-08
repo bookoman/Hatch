@@ -12,6 +12,13 @@ class BaseRole extends Laya.Sprite{
     private roleBloodBar:RoleBloodBar = null;
     private showPriority:number = 0;
     private clipShadow:Laya.Clip;
+
+    private aniId:number;
+    private loop:boolean;
+    private caller:any;
+    private method:Function;
+    private defRole:BaseRole;
+    private aniUrl:string;
     constructor(){
         super();
         // EventManager.ins.addEvent(EventManager.TEST_CHANGE_ROLE_SCALE,this,this.testScale);
@@ -84,6 +91,12 @@ class BaseRole extends Laya.Sprite{
      */
     public aniPlay(aniID:number,loop?:boolean,caller?:any,method?:Function,defRole?:BaseRole)
     {
+        this.aniId = aniID;
+        this.loop = loop;
+        this.caller = caller;
+        this.method = method;
+        this.defRole = defRole;
+
         if(this.isLoaded)
         {   
             /**测试自己龙动作 */
@@ -106,8 +119,9 @@ class BaseRole extends Laya.Sprite{
              //>= aniCount默认播放第一个动画
             if(this.skeletonAni)
             {
-                
-                this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted,[defRole,caller,method]);
+                Laya.loader.on(/*laya.events.Event.ERROR*/"error",this,this.skeletonLoadError);
+                // this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted,[defRole,caller,method]);
+                this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted);
                 this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID,loop);
             }
@@ -115,33 +129,68 @@ class BaseRole extends Laya.Sprite{
         }
         else
         {
-            Laya.timer.frameOnce(this.showPriority * 6,this,this.skeletonAniLoad,[aniID,loop,caller,method],false);
+            // Laya.timer.frameOnce(this.showPriority * 6,this,this.skeletonAniLoad,[aniID,loop,caller,method],false);
+            Laya.timer.frameOnce(this.showPriority * 6,this,this.skeletonAniLoad,null,false);
         }
     }
     /**播放一次动画回调 */
-    private onPlayCompleted(defRole:BaseRole,caller,method):void
+    // private onPlayCompleted(defRole:BaseRole,caller,method):void
+    // {
+    //     this.skeletonAni.player.off(Laya.Event.COMPLETE,this,this.onPlayCompleted);
+    //     if(caller && method)
+    //     {
+    //         // console.log(this.roleVo.name);
+    //         this.skeletonAni.paused();
+    //         method.call(caller,[this,defRole]);
+    //     }
+    // }
+    // private skeletonAniLoad(aniID,loop,caller,method):void
+    // {
+    //     //分帧加载
+    //     if(this.roleVo)
+    //     {
+    //         var url:string = "res/outside/anim/role/"+this.roleVo.modelId+"/"+ this.roleVo.modelId +".sk";
+    //         // url = "res/outside/anim/role/baolong001/baolong001.sk";
+    //         this.skeletonAni.load(url,Laya.Handler.create(this,this.loadCompleted,[aniID,loop,caller,method]));
+    //     }
+    // }
+    // private loadCompleted(aniID,loop,caller,method) {
+        
+    //     // var bound = this.skeletonAni.getBounds(); // 加载完毕之后才能拿到有效的bounds
+    //     // console.log(this.roleVo.id,bound.width,bound.height);
+    //     if(!this.isLoaded)
+    //     {
+    //         this.isLoaded = true;
+    //         this.aniCount = this.skeletonAni.getAnimNum();
+    //         this.aniPlay(aniID,loop,caller,method);
+    //         this.initComponets();
+            
+    //     }
+    // }
+    /**播放一次动画回调 */
+    private onPlayCompleted():void
     {
         this.skeletonAni.player.off(Laya.Event.COMPLETE,this,this.onPlayCompleted);
-        if(caller && method)
+        if(this.caller && this.method)
         {
             // console.log(this.roleVo.name);
             this.skeletonAni.paused();
-            method.call(caller,[this,defRole]);
+            this.method.call(this.caller,[this,this.defRole]);
         }
     }
 
-    private skeletonAniLoad(aniID,loop,caller,method):void
+    private skeletonAniLoad():void
     {
         //分帧加载
         if(this.roleVo)
         {
-            var url:string = "res/outside/anim/role/"+this.roleVo.modelId+"/"+ this.roleVo.modelId +".sk";
+            this.aniUrl = "res/outside/anim/role/"+this.roleVo.modelId+"/"+ this.roleVo.modelId +".sk";
             // url = "res/outside/anim/role/baolong001/baolong001.sk";
-            this.skeletonAni.load(url,Laya.Handler.create(this,this.loadCompleted,[aniID,loop,caller,method]));
+            this.skeletonAni.load(this.aniUrl,Laya.Handler.create(this,this.loadCompleted));
         }
     }
     
-    private loadCompleted(aniID,loop,caller,method) {
+    private loadCompleted() {
         
         // var bound = this.skeletonAni.getBounds(); // 加载完毕之后才能拿到有效的bounds
         // console.log(this.roleVo.id,bound.width,bound.height);
@@ -149,7 +198,7 @@ class BaseRole extends Laya.Sprite{
         {
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();
-            this.aniPlay(aniID,loop,caller,method);
+            this.aniPlay(this.aniId,this.loop,this.caller,this.method);
             this.initComponets();
             
         }
@@ -230,6 +279,16 @@ class BaseRole extends Laya.Sprite{
     public moveByMap(speed:number):void
     {
 
+    }
+
+    private skeletonLoadError(url):void
+    {
+        if(url == this.aniUrl)
+        {
+            Laya.loader.off(/*laya.events.Event.ERROR*/"error",this,this.skeletonLoadError);
+            url = "res/outside/anim/role/"+GameConfig.HERO_DEFAULT_ANI_MODELID+"/"+ GameConfig.HERO_DEFAULT_ANI_MODELID +".sk";
+            this.skeletonAni.load(url,Laya.Handler.create(this,this.loadCompleted));
+        }
     }
 
 }

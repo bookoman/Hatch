@@ -4,20 +4,20 @@
 class ConfigManager{
     /*********测试配置数据 */
     private roleConfigAry:Array<any> = [
-        {"id":"10000",modelId:"role10000",name:"石头怪","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10006","attackRect":"0,50,50,0","hp":4000,"dieAttTimes":10,"att":10,"atts":10,"attFar":1},
-        {"id":"10001",modelId:"role10001","name":"黄狼","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10001","attackRect":"0,50,50,0","hp":4000,"dieAttTimes":10,"att":10,"atts":3,"attFar":0},
-        {"id":"10002",modelId:"role10002","name":"巨石人","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10002","attackRect":"0,50,50,0","hp":4000,"dieAttTimes":10,"att":10,"atts":6,"attFar":0},
-        {"id":"10003",modelId:"role10003","name":"蓝狼","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10003","attackRect":"0,50,50,0","hp":4000,"dieAttTimes":10,"att":10,"atts":8,"attFar":0},
-        {"id":"10004",modelId:"role10004","name":"骷髅头","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":4000,"dieAttTimes":10,"att":10,"atts":3,"attFar":1},
-        {"id":"10005",modelId:"role10005","name":"萌仙仙","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":10,"att":5,"atts":10,"attFar":0},
-        {"id":"10006",modelId:"baolong001","name":"暴龙","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":10,"att":5,"atts":10,"attFar":0},
-        {"id":"10007",modelId:"leilong001","name":"雷龙","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":10,"att":5,"atts":10,"attFar":0},
-        {"id":"20000",modelId:"role20000","name":"幽灵","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10005","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":3,"att":3,"atts":1,"attFar":0},
-        {"id":"20001",modelId:"role20001","name":"鳄鱼龙","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10000","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":3,"att":3,"atts":6,"attFar":0},
-        {"id":"20002",modelId:"role20002","name":"骨龙","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10002","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":3,"att":4,"atts":4,"attFar":1},
-        {"id":"20003",modelId:"role20003","name":"骷髅射手","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10003","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":3,"att":4,"atts":5,"attFar":1},
-        {"id":"20004",modelId:"role20004","name":"斧头怪","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":3,"att":5,"atts":10,"attFar":0},
-        {"id":"20005",modelId:"xunmenglong001","name":"迅猛龙","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":3000,"dieAttTimes":3,"att":5,"atts":10,"attFar":0}
+        {"id":"10000",modelId:"role10000",name:"石头怪","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10006","attackRect":"0,50,50,0","hp":40,"dieAttTimes":10,"att":10,"atts":10,"attFar":1},
+        {"id":"10001",modelId:"role10001","name":"黄狼","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10001","attackRect":"0,50,50,0","hp":40,"dieAttTimes":10,"att":10,"atts":3,"attFar":0},
+        {"id":"10002",modelId:"role10002","name":"巨石人","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10002","attackRect":"0,50,50,0","hp":40,"dieAttTimes":10,"att":10,"atts":6,"attFar":0},
+        {"id":"10003",modelId:"role10003","name":"蓝狼","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10003","attackRect":"0,50,50,0","hp":40,"dieAttTimes":10,"att":10,"atts":8,"attFar":0},
+        {"id":"10004",modelId:"role10004","name":"骷髅头","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":40,"dieAttTimes":10,"att":10,"atts":3,"attFar":1},
+        {"id":"10005",modelId:"role10005","name":"萌仙仙","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":30,"dieAttTimes":10,"att":5,"atts":10,"attFar":0},
+        {"id":"10006",modelId:"baolong001","name":"暴龙","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":30,"dieAttTimes":10,"att":5,"atts":10,"attFar":0},
+        {"id":"10007",modelId:"leilong001","name":"雷龙","scaleX":-1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":30,"dieAttTimes":10,"att":5,"atts":10,"attFar":0},
+        {"id":"20000",modelId:"role20000","name":"幽灵","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10005","attackRect":"0,50,50,0","hp":30,"dieAttTimes":3,"att":3,"atts":1,"attFar":0},
+        {"id":"20001",modelId:"role20001","name":"鳄鱼龙","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10000","attackRect":"0,50,50,0","hp":30,"dieAttTimes":3,"att":3,"atts":6,"attFar":0},
+        {"id":"20002",modelId:"role20002","name":"骨龙","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10002","attackRect":"0,50,50,0","hp":30,"dieAttTimes":3,"att":4,"atts":4,"attFar":1},
+        {"id":"20003",modelId:"role20003","name":"骷髅射手","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10003","attackRect":"0,50,50,0","hp":30,"dieAttTimes":3,"att":4,"atts":5,"attFar":1},
+        {"id":"20004",modelId:"role20004","name":"斧头怪","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":30,"dieAttTimes":3,"att":5,"atts":10,"attFar":0},
+        {"id":"20005",modelId:"xunmenglong001","name":"迅猛龙","scaleX":1,"runWidth":60,"runHeight":100,"skillIDs":"10004","attackRect":"0,50,50,0","hp":30,"dieAttTimes":3,"att":5,"atts":10,"attFar":0}
     ];
 
     private skillConfigAry:Array<any> = [
@@ -35,22 +35,28 @@ class ConfigManager{
 
     public skillConfigDic:Dictionary = null;
 
+
+    /**宠物所有品质名字数组 */
+    private heroQulityNames:Array<string> = ["D","C","B","A","S","SS","SSS","EX"];
+
     /**宠物品质配置 */
-    public qualitySampleVoDic:Dictionary = null;
+    private qualitySampleVoDic:Dictionary = null;
     /**宠物经验配制表 */
-    public heroLevelSampleDic:Dictionary = null;
+    private heroLevelSampleDic:Dictionary = null;
     /**宠物配制表 */
-    public heroSampleDic:Dictionary = null;
+    private heroSampleDic:Dictionary = null;
     /**宠物物种配制表 */
-    public heroTypeSampleDic:Dictionary = null;
+    private heroTypeSampleDic:Dictionary = null;
     /**宠物品质评分配制表 */
-    public qualityScoreSampleDic:Dictionary = null;
+    private qualityScoreSampleDic:Dictionary = null;
     /**地图配置 */
-    public gateMapSampleDic:Dictionary = null;
+    private gateMapSampleDic:Dictionary = null;
     /**关卡配置 */
-    public gateSampleDic:Dictionary = null;
+    private gateSampleDic:Dictionary = null;
     /**英雄技能配置 */
-    public heroSkillSampleDic:Dictionary = null;
+    private heroSkillSampleDic:Dictionary = null;
+    /**怪物配置 */
+    private masterHeroSampleDic:Dictionary = null;
 
     private static _ins:ConfigManager = null;
 
@@ -232,6 +238,18 @@ class ConfigManager{
 
         Laya.loader.clearRes("res/config/HeroSkillSample.xml");
     }
+    /**怪物配置 */
+    public parseMasterHeroSample():void
+    {
+        if(this.masterHeroSampleDic == null)
+        {
+            this.masterHeroSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/MasterHeroSample.xml");
+        this.xmlToObjcet(configStr,MasterHeroSampleConfig,"key",this.masterHeroSampleDic);
+
+        Laya.loader.clearRes("res/config/MasterHeroSample.xml");
+    }
 
 
     /**
@@ -247,6 +265,71 @@ class ConfigManager{
     {
         return this.skillConfigDic.get(id);
     }
+
+    //*********************************************新配置取得 */
+    /**根据key得到品质配置 */
+    public getQualitySampleConfig(key:string):QualitySampleConfig
+    {
+        return this.qualitySampleVoDic.get(key);
+    }
+    /**根据qulityKey得到品质索引 */
+    public getHeroQualityInd(key:string):number
+    {
+        var qualitySampleConfig:QualitySampleConfig = this.qualitySampleVoDic.get(key);
+        for(var i = 0;i < this.heroQulityNames.length;i++)
+        {
+            if(qualitySampleConfig.qsName == this.heroQulityNames[i])
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    /**根据key得到英雄等级配置 */
+    public getHeroLevelSampleConfig(key:string):HeroLevelSampleConfig
+    {
+        return this.heroLevelSampleDic.get(key);
+    }
+    /**根据key得到地图配置 */
+    public getMapSampleConfig(key:string):GateMapSampleConfig
+    {
+        return this.gateMapSampleDic.get(key);
+    }
+    /**根据key得到刮卡配置 */
+    public getGateSampleConfig(key:string):GateSampleConfig
+    {
+        return this.gateSampleDic.get(key);
+    }
+    /**根据key得到宠物配置 */
+    public getHeroSampleConfig(key:string):HeroSampleConfig
+    {
+        return this.heroSampleDic.get(key);
+    }
+    /**根据key得到宠物技能配置*/
+    public getHeroSkillSampleConfig(key:string):HeroSkillSampleConfig
+    {
+        return this.heroSkillSampleDic.get(key);
+    }
+    /**根据key得到宠物类型配置 */
+    public getHeroTypeSampleConfig(key:string):HeroTypeSampleConfig
+    {
+        return this.heroTypeSampleDic.get(key);
+    }
+    /**根据key得到怪物配置 */
+    public getMasterHeroSampleConfig(key:string):MasterHeroSampleConfig
+    {
+        return this.masterHeroSampleDic.get(key);
+    }
+
+
+
+
+
+
+
+
+
 
     /**
      * xml转为对象

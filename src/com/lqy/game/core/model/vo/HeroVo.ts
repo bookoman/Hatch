@@ -1,7 +1,7 @@
 /*
 * 宠物数据
 */
-class HeroVo{
+class HeroVo extends BaseRoleVo{
     public heroId:string;
     public level:number;
     public exp:number;
@@ -20,9 +20,11 @@ class HeroVo{
     /**是否交配 */
     public coitus:boolean;
     public maxExp:number;
-    constructor(){
 
+    constructor(){
+        super(false);
     }
+    
 }
 
 /**生成属性 */
@@ -47,4 +49,8 @@ class HeroAttr{
     public hurtRate:number;
     public tenacityRate:number;
     public injuryRate:number;
+
+    constructor(){
+
+    }
 }

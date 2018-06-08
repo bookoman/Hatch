@@ -163,13 +163,13 @@ class MapManager{
     public getHeroMapBalltGridPoint(gridNum:number):Array<any>
     {
         var gridPointAry:Array<any> = this.curMapConfig["battleHeroGrid"];
-        return gridPointAry[gridNum - 1];
+        return gridPointAry[gridNum];
     }
 
     public getEnemyMapBalltGridPoint(gridNum:number):Array<any>
     {
         var gridPointAry:Array<any> = this.curMapConfig["battleEnemyGrid"];
-        return gridPointAry[gridNum - 1];
+        return gridPointAry[gridNum];
     }
 
     public getConfigById(mapId:string):Object

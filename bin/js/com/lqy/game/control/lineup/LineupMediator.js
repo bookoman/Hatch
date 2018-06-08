@@ -14,14 +14,19 @@ var __extends = (this && this.__extends) || (function () {
 var LineupMediator = /** @class */ (function (_super) {
     __extends(LineupMediator, _super);
     function LineupMediator(assetsUrl, view) {
-        var _this = _super.call(this, assetsUrl, view) || this;
-        _this.mapGridPoints = [{ x: 1, y: 0 }, { x: 1, y: 2 }, { x: 1, y: 4 }, { x: 0, y: 1 }, { x: 0, y: 3 }];
-        return _this;
+        return _super.call(this, assetsUrl, view) || this;
     }
     LineupMediator.prototype.initView = function () {
         this.view = new ui.lineup.LineupViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         _super.prototype.initView.call(this);
+        this.lineupGrids = [];
+        var lineupGridMediator = null;
+        for (var i = 0; i < 5; i++) {
+            lineupGridMediator = new LineupGridMediator(null, this.view["grid" + i], this, this.onLineupGridClick);
+            lineupGridMediator.lineupId = i;
+            this.lineupGrids.push(lineupGridMediator);
+        }
         this.initLineup();
     };
     LineupMediator.prototype.addEvents = function () {
@@ -29,11 +34,29 @@ var LineupMediator = /** @class */ (function (_super) {
         this.view.listIcon.selectEnable = true;
         this.view.listIcon.selectHandler = new Handler(this, this.listIconSelect);
         this.view.listIcon.mouseHandler = new Handler(this, this.onMouseHandler);
+        WebSocketManager.ins.registerHandler(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, new HeroUpdateLineupHanlder(this, this.heroUpdateLineupHandler));
     };
     LineupMediator.prototype.removeEvents = function () {
         this.view.listIcon.renderHandler = null;
         this.view.listIcon.selectHandler = null;
         this.view.listIcon.mouseHandler = null;
+        WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, this);
+    };
+    /**更新阵型服务器返回 */
+    LineupMediator.prototype.heroUpdateLineupHandler = function (data) {
+        var _this = this;
+        if (data.flag) {
+            this.selectIconView.setSelect(true);
+            this.curSelectGrid.setUpHero(this.selectIconView.heroId, this.selectIconView);
+        }
+        else {
+            this.lineupGrids.forEach(function (lineupGrid) {
+                if (lineupGrid.heroId == _this.selectIconView.heroId) {
+                    _this.selectIconView.setSelect(false);
+                    lineupGrid.revokeUpHero();
+                }
+            });
+        }
     };
     LineupMediator.prototype.listIconRender = function (cell, index) {
         if (cell && cell.dataSource) {
@@ -51,29 +74,27 @@ var LineupMediator = /** @class */ (function (_super) {
     };
     LineupMediator.prototype.onMouseHandler = function (e, index) {
         if (e.type == Laya.Event.CLICK) {
-            var iconView = this.view.listIcon.getCell(index);
-            if (iconView) {
+            this.selectIconView = this.view.listIcon.getCell(index);
+            if (this.selectIconView) {
+                var lineupId;
+                var isUp;
                 if (this.curSelectGrid) {
-                    if (iconView.selectTick) {
-                        this.lineupGrids.forEach(function (lineupGrid) {
-                            if (lineupGrid.roleID == iconView.data.roleID) {
-                                iconView.setSelect(false);
-                                lineupGrid.revokeUpHero();
-                            }
-                        });
+                    if (this.selectIconView.selectTick) {
+                        lineupId = this.selectIconView.lineupId;
+                        isUp = false;
                     }
                     else {
-                        iconView.setSelect(true);
-                        this.curSelectGrid.setUpHero(iconView.data.roleID, iconView);
+                        lineupId = this.curSelectGrid.lineupId;
+                        isUp = true;
                     }
+                    ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
                 }
                 else {
-                    this.lineupGrids.forEach(function (lineupGrid) {
-                        if (lineupGrid.roleID == iconView.data.roleID) {
-                            lineupGrid.revokeUpHero();
-                            iconView.setSelect(false);
-                        }
-                    });
+                    if (this.selectIconView.selectTick) {
+                        lineupId = this.selectIconView.lineupId;
+                        isUp = false;
+                        ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
+                    }
                 }
             }
         }
@@ -81,44 +102,40 @@ var LineupMediator = /** @class */ (function (_super) {
         }
     };
     LineupMediator.prototype.initLineup = function () {
-        var upRoleVos = GameDataManager.ins.selfPlayerData.roleVoAry;
-        this.lineupGrids = new Array();
+        var _this = this;
+        var lineupDic = GameDataManager.ins.selfPlayerData.heroLineupDic;
         var lineupGridMediator = null;
-        var mapGridPoint;
-        var lineupID;
-        for (var i = 0; i < 5; i++) {
-            lineupID = i + 1;
-            lineupGridMediator = new LineupGridMediator(null, this.view["grid" + i], this, this.onLineupGridClick);
-            lineupGridMediator.setLineupIDLable(lineupID);
-            for (var j = 0; j < upRoleVos.length; j++) {
-                if (upRoleVos[j].lineupGrid == lineupID) {
-                    lineupGridMediator.setUpHero(upRoleVos[j].id);
-                    break;
-                }
+        var heroId;
+        lineupDic.keys.forEach(function (lineupId) {
+            heroId = lineupDic.get(lineupId);
+            if (heroId && heroId != "") {
+                lineupGridMediator = _this.lineupGrids[lineupId];
+                lineupGridMediator.lineupId = Number(lineupId);
+                lineupGridMediator.setUpHero(heroId);
             }
-            this.lineupGrids.push(lineupGridMediator);
-        }
+        });
         // 使用但隐藏滚动条
         // this.view.listIcon.hScrollBarSkin = "";
-        var ids = ["10000", "10001", "10002", "10007", "10006"];
+        var backpackHeroVos = GameDataManager.ins.selfPlayerData.heroVoDic.values;
+        var heroVo;
         var ary = [];
-        var qulityInd = 0;
-        var iconInd = 0;
-        var isSelect = false;
-        for (i = 0; i < ids.length; i++) {
-            qulityInd++;
-            iconInd++;
-            if (qulityInd > 7)
-                qulityInd = 1;
-            if (iconInd > 9)
-                iconInd = 1;
-            for (j = 0; j < upRoleVos.length; j++) {
-                if (upRoleVos[j].id == ids[i]) {
+        var qulityInd;
+        var icon;
+        var isSelect;
+        for (var i = 0; i < backpackHeroVos.length; i++) {
+            isSelect = false;
+            heroVo = backpackHeroVos[i];
+            qulityInd = ConfigManager.ins.getHeroQualityInd(heroVo.qualityKey);
+            icon = ConfigManager.ins.getHeroSampleConfig(heroVo.heroKey).icon;
+            var lId;
+            for (var j = 0; j < lineupDic.values.length; j++) {
+                if (heroVo.heroId == lineupDic.values[j]) {
                     isSelect = true;
+                    lId = lineupDic.keys[j];
                     break;
                 }
             }
-            ary.push({ quality: qulityInd, iconName: "icon-00" + iconInd, roleID: ids[i], select: isSelect });
+            ary.push({ quality: qulityInd, iconName: icon, heroId: heroVo.heroId, lineupId: lId, select: isSelect });
         }
         this.view.listIcon.array = ary;
     };

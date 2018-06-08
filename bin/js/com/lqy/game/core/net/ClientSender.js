@@ -23,6 +23,16 @@ var ClientSender = /** @class */ (function () {
         var buffer = HeroInfoRequest.encode(message).finish();
         WebSocketManager.ins.sendMsg(Protocol.HERO, Protocol.HERO_GET_INFOS, buffer);
     };
+    /**英雄上、下、更新阵型 */
+    ClientSender.heroLinuepUpdateReq = function (lineupId, heroId, isUp) {
+        var UpdateFormationRequest = WebSocketManager.ins.defineProtoClass("UpdateFormationRequest");
+        var message = {};
+        message.siteIdx = lineupId;
+        message.heroId = heroId;
+        message.flag = isUp;
+        var buffer = UpdateFormationRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, buffer);
+    };
     /**********************************Http */
     /**测试登录 */
     ClientSender.httpLoginReq = function (account, pwd, caller, callBack) {

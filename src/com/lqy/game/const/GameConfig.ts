@@ -48,8 +48,12 @@ class GameConfig{
     /**场景战斗开关 */
     public static SCENE_BATTLE_SWITCH:Boolean = true;
 
+    //**************************默认数据 */
+    /**没有资源时，英雄默认资源模型ID */
+    public static HERO_DEFAULT_ANI_MODELID:string = "baolong001";
+
     /**单机游戏 */
-    public static SINGLE_GAME:boolean = true;
+    public static SINGLE_GAME:boolean = false;
     
 }
 

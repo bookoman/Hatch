@@ -19,7 +19,8 @@ var IconView = /** @class */ (function (_super) {
         return _this;
     }
     IconView.prototype.setData = function (data) {
-        this.data = data;
+        this.heroId = data.heroId;
+        this.lineupId = data.lineupId;
         this.clipBG.skin = "comp/clip_qulity" + data.quality + ".png";
         this.imgIcon.skin = "res/outside/icons/heros/" + data.iconName + ".png";
         if (data.select) {
