@@ -14,7 +14,7 @@ var SocketHanlder = /** @class */ (function () {
             this.success(data);
         }
         else {
-            console.log("服务器返回：" + data.statusCode);
+            console.log("服务器返回：", data.statusCode);
         }
     };
     SocketHanlder.prototype.success = function (data) {

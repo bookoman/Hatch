@@ -3,10 +3,14 @@
 */
 var BaseRoleVo = /** @class */ (function () {
     function BaseRoleVo(isEnemy) {
+        this.attFar = 0;
+        this.hp = 0;
         /**是否死亡 */
         this.isDeath = true;
         this.isEnemy = isEnemy;
     }
+    BaseRoleVo.prototype.initBaseData = function () {
+    };
     /**初始化阵型数据 */
     BaseRoleVo.prototype.initRowColPosPoint = function () {
         var px, py;
@@ -42,13 +46,14 @@ var BaseRoleVo = /** @class */ (function () {
     /**得到可用技能 ，自动释放技能*/
     BaseRoleVo.prototype.getCanUserSkill = function () {
         var skillID = 0;
-        this.skillVos.forEach(function (skillVo) {
-            if (skillVo.isCanUse) {
-                // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表"+skillVo.id);
-                skillVo.isCanUse = false;
-                skillID = Number(skillVo.id);
-            }
-        });
+        // this.skillVos.forEach(skillVo => {
+        //     if(skillVo.isCanUse)
+        //     {
+        //         // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表"+skillVo.id);
+        //         skillVo.isCanUse = false;
+        //         skillID =  Number(skillVo.id);
+        //     }
+        // });
         return skillID;
     };
     return BaseRoleVo;

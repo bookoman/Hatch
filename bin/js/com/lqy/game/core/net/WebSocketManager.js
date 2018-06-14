@@ -24,7 +24,8 @@ var WebSocketManager = /** @class */ (function () {
         this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
         //加载协议
-        var protoBufUrls = ["res/outside/proto/login.proto", "res/outside/proto/role.proto", "res/outside/proto/hero.proto"];
+        var protoBufUrls = ["res/outside/proto/login.proto", "res/outside/proto/role.proto", "res/outside/proto/hero.proto",
+            "res/outside/proto/gate.proto"];
         Laya.Browser.window.protobuf.load(protoBufUrls, this.protoLoadComplete);
     };
     WebSocketManager.prototype.protoLoadComplete = function (error, root) {
@@ -36,9 +37,9 @@ var WebSocketManager = /** @class */ (function () {
         EventManager.ins.dispatchEvent(EventManager.SERVER_CONNECTED);
     };
     WebSocketManager.prototype.webSocketMessage = function (data) {
-        console.log("websocket msg...");
         var packageIn = new PackageIn();
         packageIn.read(data);
+        console.log("websocket msg...", packageIn.module, packageIn.cmd);
         var key = packageIn.module + "_" + packageIn.cmd;
         var handlers = this.socketHanlderDic.get(key);
         handlers.forEach(function (socketHanlder) {

@@ -30,7 +30,7 @@ class LoopBattleEngine{
         {
             this.enemyRuntoBallte();
         }
-        this.loopBattleData.runRoleSkillCD();
+        // this.loopBattleData.runRoleSkillCD();
     }
     
     /**
@@ -58,7 +58,7 @@ class LoopBattleEngine{
             tempAry.push(hero);
         });
         tempAry.sort(function(vo1:BaseRole,vo2:BaseRole):number{
-            return vo1.roleVo.gridX > vo2.roleVo.gridX ? -1 : 1;
+            return vo1.baseRoleVo.gridX > vo2.baseRoleVo.gridX ? -1 : 1;
         })
         tempAry = tempAry.slice(0,GameConfig.BATTLE_LOOP_HERO_SUM);
         return tempAry;
@@ -80,7 +80,7 @@ class LoopBattleEngine{
         this.battleTurnVoSum = this.loopBattleData.curBattleTurnVos.length;
         this.loopBattleData.curBattleTurnVos.forEach(battleTurnVo => {
             //根据攻击速度攻击延迟
-            Laya.timer.once(100 * battleTurnVo.attRoleVo.atts / GameConfig.BATTLE_ADDSPEED_TIMES,this,this.battleAtt,[battleTurnVo.attRoleVo,battleTurnVo.defRoleVo],false);
+            Laya.timer.once(1 * battleTurnVo.attRoleVo.atkSpeed / GameConfig.BATTLE_ADDSPEED_TIMES,this,this.battleAtt,[battleTurnVo.attRoleVo,battleTurnVo.defRoleVo],false);
         });
         // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
     }
@@ -106,7 +106,7 @@ class LoopBattleEngine{
      * @param attRoleVo 
      * @param defRoleVo 
      */
-    public battleAtt(attRoleVo:RoleVo,defRoleVo:RoleVo):void
+    public battleAtt(attRoleVo:BaseRoleVo,defRoleVo:BaseRoleVo):void
     {
         if(!attRoleVo || !defRoleVo)
         {
@@ -118,11 +118,11 @@ class LoopBattleEngine{
         tempAry.forEach(roleView => {
             if(roleView)
             {
-                if(roleView.roleVo.id == attRoleVo.id)
+                if(roleView.baseRoleVo.roleId == attRoleVo.roleId)
                 {
                     attRole = roleView;
                 }
-                else if(roleView.roleVo.id == defRoleVo.id)
+                else if(roleView.baseRoleVo.roleId == defRoleVo.roleId)
                 {
                     defRole = roleView;
                 }
@@ -150,8 +150,8 @@ class LoopBattleEngine{
      */
     private playAttackAni(attRole:BaseRole,defRole:BaseRole):void
     {
-        var attRoleVo:RoleVo = attRole.roleVo;
-        var defRoleVo:RoleVo = defRole.roleVo;
+        var attRoleVo:BaseRoleVo = attRole.baseRoleVo;
+        var defRoleVo:BaseRoleVo = defRole.baseRoleVo;
         var skillID:number = attRoleVo.getCanUserSkill();
         if(skillID > 0)
         {
@@ -181,7 +181,7 @@ class LoopBattleEngine{
         else
         {
             defRole.aniPlay(RoleAniIndex.INJURED,false);
-            defRole.showFloatFont(attRoleVo.att);
+            defRole.showFloatFont(attRoleVo.atk);
         }
         defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
     }
@@ -202,7 +202,7 @@ class LoopBattleEngine{
         var defRole:BaseRole = roleAry[1];
         // console.log("攻击返回",this.attRole.roleVo.name);
         attRole.aniPlay(RoleAniIndex.STAND);
-        if(!attRole.roleVo.isDeath)
+        if(!attRole.baseRoleVo.isDeath)
         {
             defRole.aniPlay(RoleAniIndex.STAND);
         }

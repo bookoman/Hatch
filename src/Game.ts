@@ -23,6 +23,7 @@ class Game{
         DebugViewUtil.init();
         LG.parse(Laya.loader.getRes("res/config/language.txt"));
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
+
     }
     
     /**资源加载进度 */

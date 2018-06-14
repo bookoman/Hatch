@@ -127,6 +127,7 @@ var ConfigManager = /** @class */ (function () {
         this.parseGateMapSample();
         this.parseGateSample();
         this.parseHeroSkillSample();
+        this.parseMasterHeroSample();
     };
     /**宠物品质 */
     ConfigManager.prototype.parseQualitySample = function () {
@@ -180,9 +181,12 @@ var ConfigManager = /** @class */ (function () {
         }
         var configStr = Laya.loader.getRes("res/config/GateMapSample.xml");
         this.xmlToObjcet(configStr, GateMapSampleConfig, "key", this.gateMapSampleDic);
+        this.gateMapSampleDic.keys.forEach(function (key) {
+            GameConfig.GATE_MAP_KEYS.push(key);
+        });
         Laya.loader.clearRes("res/config/GateMapSample.xml");
     };
-    /**光卡配置 */
+    /**关卡配置 */
     ConfigManager.prototype.parseGateSample = function () {
         if (this.gateSampleDic == null) {
             this.gateSampleDic = new Dictionary();
@@ -218,6 +222,18 @@ var ConfigManager = /** @class */ (function () {
     };
     ConfigManager.prototype.getSkillVoByID = function (id) {
         return this.skillConfigDic.get(id);
+    };
+    /**得到对应地图块所有关卡 */
+    ConfigManager.prototype.getGateConfigsByMapKey = function (mapKey) {
+        var ary = [];
+        var config;
+        for (var i = 0; i < this.gateSampleDic.values.length; i++) {
+            config = this.gateSampleDic.values[i];
+            if (mapKey == config.mapId) {
+                ary.push(config);
+            }
+        }
+        return ary;
     };
     //*********************************************新配置取得 */
     /**根据key得到品质配置 */
@@ -286,7 +302,11 @@ var ConfigManager = /** @class */ (function () {
                     value = tempAry[j];
                     if (value.indexOf("<element") == -1 && value.indexOf("=") == -1 && value.indexOf("/>") == -1) {
                         j = j + 2;
-                        obj[value] = tempAry[j].split("\"")[1];
+                        var attrValue = tempAry[j].split("\"")[1];
+                        if (!attrValue)
+                            attrValue = tempAry[j];
+                        obj[value] = attrValue;
+                        // console.log(value,"=",obj[value]);
                     }
                 }
                 // console.log(obj);

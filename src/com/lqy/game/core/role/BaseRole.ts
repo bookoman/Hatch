@@ -4,7 +4,7 @@ import Skeleton = Laya.Skeleton;
 */
 class BaseRole extends Laya.Sprite{
     protected skeletonAni:Skeleton = null;
-    public roleVo:RoleVo;
+    public baseRoleVo:BaseRoleVo;
     public isLoaded:boolean;
     private aniCount:number = 0;
     private aniScale:number = 1;
@@ -36,7 +36,7 @@ class BaseRole extends Laya.Sprite{
     //         console.log(this.roleVo.name,bound.width,bound.height);
     //     }
     // }
-    public initRole(roleVo:RoleVo,showPriority:number,scale?:number,parentDis?:Laya.Sprite):void
+    public initRole(baseRoleVo:BaseRoleVo,showPriority:number,scale?:number,parentDis?:Laya.Sprite):void
     {
         this.clipShadow = new Laya.Clip("main/clip_shadow.png");
         this.clipShadow.height = 43;
@@ -46,7 +46,7 @@ class BaseRole extends Laya.Sprite{
         this.clipShadow.alpha = 0.3;
         this.addChild(this.clipShadow)
 
-        this.roleVo = roleVo;
+        this.baseRoleVo = baseRoleVo;
         this.showPriority = showPriority;
         if(scale)
         {
@@ -55,11 +55,8 @@ class BaseRole extends Laya.Sprite{
         this.isLoaded = false;
         this.skeletonAni = new Skeleton();
         this.skeletonAni.scale(this.aniScale,this.aniScale);
-        this.skeletonAni.scaleX = this.roleVo.scaleX * this.aniScale;
+        this.skeletonAni.scaleX = this.baseRoleVo.scale * this.aniScale;
         this.addChild(this.skeletonAni);
-
-        
-
 
         if(parentDis)
         {
@@ -100,19 +97,19 @@ class BaseRole extends Laya.Sprite{
         if(this.isLoaded)
         {   
             /**测试自己龙动作 */
-            if(this.roleVo.id == "20005" || this.roleVo.id == "10006" || this.roleVo.id == "10007")
-            {
-                if(aniID == RoleAniIndex.ATTACK)
-                    aniID = NewRoleAniIndex.ATTACK;
-                else if(aniID == RoleAniIndex.INJURED)
-                    aniID = NewRoleAniIndex.INJURED;
-                else if(aniID == RoleAniIndex.DEATH)
-                    aniID = NewRoleAniIndex.DEATH;
-                else if(aniID == RoleAniIndex.MOVE)
-                    aniID = NewRoleAniIndex.MOVE;
-                else if(aniID == RoleAniIndex.STAND)
-                    aniID = NewRoleAniIndex.STAND;
-            }
+            // if(this.roleVo.id == "20005" || this.roleVo.id == "10006" || this.roleVo.id == "10007")
+            // {
+            //     if(aniID == RoleAniIndex.ATTACK)
+            //         aniID = NewRoleAniIndex.ATTACK;
+            //     else if(aniID == RoleAniIndex.INJURED)
+            //         aniID = NewRoleAniIndex.INJURED;
+            //     else if(aniID == RoleAniIndex.DEATH)
+            //         aniID = NewRoleAniIndex.DEATH;
+            //     else if(aniID == RoleAniIndex.MOVE)
+            //         aniID = NewRoleAniIndex.MOVE;
+            //     else if(aniID == RoleAniIndex.STAND)
+            //         aniID = NewRoleAniIndex.STAND;
+            // }
             loop = loop === undefined ? true : loop; 
             aniID = aniID % this.aniCount;
 
@@ -182,10 +179,10 @@ class BaseRole extends Laya.Sprite{
     private skeletonAniLoad():void
     {
         //分帧加载
-        if(this.roleVo)
+        if(this.baseRoleVo)
         {
-            this.aniUrl = "res/outside/anim/role/"+this.roleVo.modelId+"/"+ this.roleVo.modelId +".sk";
-            // url = "res/outside/anim/role/baolong001/baolong001.sk";
+            this.aniUrl = "res/outside/anim/role/"+this.baseRoleVo.modelId+"/"+ this.baseRoleVo.modelId +".sk";
+            this.aniUrl = "res/outside/anim/role/xunmenglong001/xunmenglong001.sk";
             this.skeletonAni.load(this.aniUrl,Laya.Handler.create(this,this.loadCompleted));
         }
     }
@@ -220,7 +217,7 @@ class BaseRole extends Laya.Sprite{
         this.LblName.fontSize = 24;
         this.LblName.color = "#00FF99";
         this.LblName.align = "center";
-        this.LblName.text = this.roleVo.name;
+        this.LblName.text = this.baseRoleVo.name;
         this.addChild(this.LblName);
     }
     public setBlood(value:number):void
@@ -249,7 +246,7 @@ class BaseRole extends Laya.Sprite{
     private setVis(bool):void
     {
         //延迟回调判断，复活就设置隐藏
-        if(this.roleVo && this.roleVo.isDeath)
+        if(this.baseRoleVo && this.baseRoleVo.isDeath)
         {
             this.visible = bool;
         }
@@ -274,7 +271,7 @@ class BaseRole extends Laya.Sprite{
             this.roleBloodBar.removeSelf();
             ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR,this.roleBloodBar);
         }
-        this.roleVo = null;
+        this.baseRoleVo = null;
     }
     public moveByMap(speed:number):void
     {

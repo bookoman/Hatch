@@ -10,16 +10,28 @@ var UIRole = /** @class */ (function () {
         this.isLoaded = false;
         this.skeletonAni = new Skeleton();
     }
-    UIRole.prototype.addParent = function (parent, rx, ry, sx, sy) {
+    UIRole.prototype.addParent = function (parent, rx, ry, sx, sy, showShadow) {
         this.disParent = parent;
-        if (sx === undefined)
-            sx = -1;
-        if (sy === undefined)
-            sy = 1;
+        var config = ConfigManager.ins.getHeroSampleConfig(this.heroKey);
+        if (sx === undefined) {
+            sx = -config.modelSize;
+        }
+        if (sy === undefined) {
+            sy = config.modelSize;
+        }
+        if (showShadow === undefined)
+            showShadow = false;
+        this.imgShadow = new Laya.Image("comp/img_shadow.png");
+        this.imgShadow.scale(sx, sy);
+        this.imgShadow.x = rx - this.imgShadow.width * sx / 2;
+        this.imgShadow.y = ry - this.imgShadow.height * sy / 2;
+        this.imgShadow.alpha = 0.3;
+        this.imgShadow.visible = showShadow;
+        parent.addChild(this.imgShadow);
         this.skeletonAni.scale(sx, sy);
         this.skeletonAni.pos(rx, ry);
         this.disParent.addChild(this.skeletonAni);
-        this.aniPlay(NewRoleAniIndex.STAND);
+        this.aniPlay(RoleAniIndex.STAND);
     };
     UIRole.prototype.updateRole = function (heroKey, sx, sy) {
         if (this.disParent && this.skeletonAni) {
@@ -96,6 +108,11 @@ var UIRole = /** @class */ (function () {
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();
             this.aniPlay(this.aniId, this.loop, this.caller, this.method);
+            // var rect = this.skeletonAni.getSelfBounds();
+            // this.imgShadow.width = rect.width / 4;
+            // this.imgShadow.height = this.imgShadow.height * this.skeletonAni.scaleY;
+            // this.imgShadow.x = this.skeletonAni.x - this.imgShadow.width / 2;
+            // this.imgShadow.y = this.skeletonAni.y - this.imgShadow.height / 2;
         }
     };
     UIRole.prototype.skeletonLoadError = function (url) {

@@ -30,7 +30,8 @@ class WebSocketManager{
         this.webSocket.on(Laya.Event.CLOSE,this,this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR,this,this.webSocketError);
         //加载协议
-        var protoBufUrls = ["res/outside/proto/login.proto","res/outside/proto/role.proto","res/outside/proto/hero.proto"];
+        var protoBufUrls = ["res/outside/proto/login.proto","res/outside/proto/role.proto","res/outside/proto/hero.proto",
+        "res/outside/proto/gate.proto"];
         Laya.Browser.window.protobuf.load(protoBufUrls,this.protoLoadComplete);
     }
     
@@ -48,9 +49,9 @@ class WebSocketManager{
     
     private webSocketMessage(data):void
     {
-        console.log("websocket msg...");
         var packageIn:PackageIn = new PackageIn();
         packageIn.read(data);
+        console.log("websocket msg...",packageIn.module,packageIn.cmd);
         var key:string = packageIn.module+"_"+ packageIn.cmd;
         var handlers = this.socketHanlderDic.get(key);
         handlers.forEach(socketHanlder => {

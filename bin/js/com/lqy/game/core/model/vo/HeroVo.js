@@ -16,6 +16,17 @@ var HeroVo = /** @class */ (function (_super) {
     function HeroVo() {
         return _super.call(this, false) || this;
     }
+    HeroVo.prototype.initBaseData = function () {
+        this.roleId = this.heroId;
+        this.scale = -1;
+        this.key = this.heroKey;
+        var config = ConfigManager.ins.getHeroSampleConfig(this.heroKey);
+        this.modelId = config.modelId;
+        this.name = config.name;
+        this.dieAttTimes = 1000;
+        this.atk = this.atk;
+        this.atkSpeed = this.speed;
+    };
     return HeroVo;
 }(BaseRoleVo));
 /**生成属性 */

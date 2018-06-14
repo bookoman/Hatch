@@ -3,10 +3,15 @@ D challengeboss
 D comp
 P D12221A9 bg.png
 P 9401CC40 blank.png
+P 26626531 btn_base.png
 P B03390E5 btn_close.png
+P 9B2EC815 btn_evolve.png
+P CDDC322D btn_resetskill.png
+P 27B6DFDC btn_skill.png
 P 1F3929EA button.png
 P 6CC6DF97 checkbox.png
 P FB94CCF2 clip_num.png
+P 42A48524 clip_qulity0.png
 P 42A48524 clip_qulity1.png
 P 4400070B clip_qulity2.png
 P 26929EB5 clip_qulity3.png
@@ -26,6 +31,7 @@ P E466EB1C hslider$bar.png
 P C4BECA54 hslider.png
 P 5EDC128C html.png
 P ACFFCCCF image.png
+P B804ADB3 img_shadow.png
 P A3066B81 img_tick.png
 P 5EDC128C label.png
 P 5EDC128C linkbutton.png
@@ -33,6 +39,9 @@ P 9E4DD730 progress$bar.png
 P 3FD78E12 progress.png
 P BF898D6A radio.png
 P BF898D6A radiogroup.png
+P 3985DB7C skill_bg003.png
+R C05B7C8F skill_bk.png
+R EFE4742A skill_ht.png
 P 8CFD9D35 tab.png
 P BDA71F88 textarea.png
 P BDA71F88 textinput.png
@@ -43,25 +52,54 @@ P 7E990267 vscroll.png
 P E466EB1C vslider$bar.png
 P 2BFF7046 vslider.png
 D hero
-D lineup
 D main
-P B1FA8D86 bag.png
-P 9963CB52 clip_shadow.png
+P A7FC63D9 bag.png
+R 6D978B09 bg_dibian.png
+P 20196FC1 clip_shadow.png
 P B533CE1E huic.png
+P E6BEF92D huic_1.png
 P 1C298A94 img_blood.png
 P C6B7D49F img_bloodbg.png
 P 3C936667 img_tzdb.png
 P D7F208FB juese.png
+P C131F4E2 juese_1.png
 P 42A3FE33 laba.png
 P 00C58ACB logo.png
+P 3ED4975B skill_bg01.png
+R C7A9AB28 skill_bg02.png
 P 9CCB3152 tansuo.png
 P E23808C2 zuoz.png
 D unpack
 D worldmap
+P F287933A btn_chanllege.png
+P 8C4E7234 btn_swap.png
+P DCD33BBA img_hundup.png
+P 9310F17A img_lbl0.png
+P D80D1185 img_lbl1.png
+P 812ACEF4 img_lbl2.png
+P DB95AD14 img_lbl3.png
+P BC27023C img_lbl4.png
+P 39A4AABB img_lbl5.png
+P C7F0F903 img_lbl6.png
+P 712B0160 img_map.png
+P 6EB1262C img_notice.png
+P B268763D img_reward.png
+D hero/icon
+P 077E0592 icon-001.png
+P 4FC42E68 icon-002.png
+P 92EFAA2D icon-003.png
+P 068E7722 icon-004.png
+P 82256F2A icon-005.png
+P 6413CB0A icon-006.png
+P C37820CA icon-007.png
+P BDF6A9E9 icon-008.png
+P 86DC8C1C icon-009.png
+P F30CC7E9 icon-010.png
 D unpack/challengeboss
 R BC8B24AE bg.png
 D unpack/lineup
-R 3DD25BC7 bg.png
+R 1E93072A bg.png
+R 0FCDCA25 juese_bg.png
 D unpack/login
 R AEF7B252 logo.png
 D unpack/main
@@ -70,3 +108,15 @@ R 93F650EB img_reportsbg.png
 R ABF2AEF3 main.jpg
 R 43507D1A role.jpg
 R DED7EA0A roleBg.png
+D unpack/worldmap
+R 8BC2DFBB bg.png
+R C79DB7B3 img_gatebg.png
+R 2FCB7124 img_listbg.png
+R 966903F6 img_listgraybg.png
+R 131A7BAD p1.png
+R FB05F29C p2.png
+R C4C2AB1F p3.png
+R 66060124 p4.png
+R B420CDF7 p5.png
+R A8B7EA2C p6.png
+R 09186987 p7.png

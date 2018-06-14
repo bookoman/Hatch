@@ -24,6 +24,20 @@ class HeroVo extends BaseRoleVo{
     constructor(){
         super(false);
     }
+
+    public initBaseData():void
+    {
+        this.roleId = this.heroId;
+        this.scale = -1;
+        this.key = this.heroKey;
+        var config:HeroSampleConfig = ConfigManager.ins.getHeroSampleConfig(this.heroKey);
+        this.modelId = config.modelId;
+        this.name = config.name;
+        this.dieAttTimes = 1000;
+
+        this.atk = this.atk;
+        this.atkSpeed = this.speed;
+    }
     
 }
 

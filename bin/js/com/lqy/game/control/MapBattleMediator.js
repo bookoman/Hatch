@@ -22,7 +22,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
         return _this;
     }
     MapBattleMediator.prototype.initView = function () {
-        this.view = new ui.MapBattleViewUI();
+        this.view = new ui.map.MapBattleViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         _super.prototype.initView.call(this);
         if (GameDataManager.ins.hundUpChapterData == null) {

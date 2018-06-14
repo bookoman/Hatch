@@ -30,21 +30,15 @@ var EnterGameMediator = /** @class */ (function (_super) {
         this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
         this.view.btnRegster.on(Laya.Event.CLICK, this, this.onBtnRegster);
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN, Protocol.USER_LOGIN_CMD, new UserLoginHandler(this, this.onWebSocketLogined));
-        WebSocketManager.ins.registerHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, new GetHeroInfosHanlder(this, this.getHeroInfosHandler));
     };
     EnterGameMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
         this.view.btnRegster.off(Laya.Event.CLICK, this, this.onBtnRegster);
         WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN, Protocol.USER_LOGIN_CMD, this);
-        WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, this);
     };
     EnterGameMediator.prototype.onWebSocketLogined = function (data) {
         console.log("登录成功。。。" + data);
-        ClientSender.getHeroInfoReq(1);
-    };
-    /**得到宠物信息 */
-    EnterGameMediator.prototype.getHeroInfosHandler = function () {
         PreLoadingView.ins.show();
         SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
         this.dispose();

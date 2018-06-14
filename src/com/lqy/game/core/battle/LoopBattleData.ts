@@ -2,8 +2,8 @@
 * 循环假战斗数据
 */
 class LoopBattleData{
-    private attHeroVos:Array<RoleVo>;
-    private attEnemyVos:Array<RoleVo>;
+    private attHeroVos:Array<HeroVo>;
+    private attEnemyVos:Array<MasterNPCVo>;
     public curAttCamp:number = 0;
     public curBattleTurnVos:Array<BattleTurnVo>;
     public isWin:boolean;
@@ -14,22 +14,22 @@ class LoopBattleData{
     public initData():void
     {
         this.attHeroVos = this.getJoinBattleHeroVo();
-        this.attEnemyVos = GameDataManager.ins.enemyData.roleVoAry;
-        this.attHeroVos.forEach(roleVo => {
-            roleVo.battleHP = roleVo.hp;
-            roleVo.battleDieAttTimes = roleVo.dieAttTimes;
-            roleVo.resetSkillCD();
-            roleVo.isDeath = false;
-            roleVo.isAtted = false;
-            roleVo.attEnemyVos = [];
+        this.attEnemyVos = GameDataManager.ins.enemyData.masterNPCVos;
+        this.attHeroVos.forEach(heroVo => {
+            heroVo.battleHP = heroVo.hp;
+            heroVo.battleDieAttTimes = heroVo.dieAttTimes;
+            // heroVo.resetSkillCD();
+            heroVo.isDeath = false;
+            heroVo.isAtted = false;
+            heroVo.attEnemyVos = [];
         });
-        this.attEnemyVos.forEach(roleVo => {
-            roleVo.battleHP = roleVo.hp;
-            roleVo.battleDieAttTimes = roleVo.dieAttTimes;
-            roleVo.resetSkillCD();
-            roleVo.isDeath = false;
-            roleVo.isAtted = false;
-            roleVo.attEnemyVos = [];
+        this.attEnemyVos.forEach(masterNpcVo => {
+            masterNpcVo.battleHP = masterNpcVo.hp;
+            masterNpcVo.battleDieAttTimes = masterNpcVo.dieAttTimes;
+            // masterNpcVo.resetSkillCD();
+            masterNpcVo.isDeath = false;
+            masterNpcVo.isAtted = false;
+            masterNpcVo.attEnemyVos = [];
         });
 
         this.seekAttTarget(this.attHeroVos,this.attEnemyVos);
@@ -37,13 +37,13 @@ class LoopBattleData{
         this.curAttCamp = BattleAttCampType.HERO;
     }
     /**得到参战英雄RoleVo */
-    private getJoinBattleHeroVo():Array<RoleVo>
+    private getJoinBattleHeroVo():Array<HeroVo>
     {
-        var tempAry:Array<RoleVo> = new Array();
-        GameDataManager.ins.selfPlayerData.roleVoAry.forEach(roleVo => {
-            tempAry.push(roleVo);
+        var tempAry:Array<HeroVo> = new Array();
+        GameDataManager.ins.selfPlayerData.upHeroVos.forEach(heroVo => {
+            tempAry.push(heroVo);
         });
-        tempAry.sort(function(vo1:RoleVo,vo2:RoleVo):number{
+        tempAry.sort(function(vo1:HeroVo,vo2:HeroVo):number{
             return vo1.gridX > vo2.gridX ? -1 : 1;
         })
         tempAry = tempAry.slice(0,GameConfig.BATTLE_LOOP_HERO_SUM);
@@ -73,17 +73,17 @@ class LoopBattleData{
      * 得到当前攻击角色
      * @param roleVos 
      */
-    public getBattleTurnVos(attRoleVos:Array<RoleVo>,defRoleVos:Array<RoleVo>):Array<BattleTurnVo>
+    public getBattleTurnVos(attRoleVos:Array<BaseRoleVo>,defRoleVos:Array<BaseRoleVo>):Array<BattleTurnVo>
     {
         var ary:Array<BattleTurnVo> = [];
         var battleTurnVo:BattleTurnVo;
-        var attRoleVo:RoleVo;
+        var attRoleVo:BaseRoleVo;
         
         for(var i = 0;i < attRoleVos.length;i++)
         {
             attRoleVo = attRoleVos[i];
             battleTurnVo = new BattleTurnVo();
-            var defRoleVo:RoleVo;
+            var defRoleVo:BaseRoleVo;
             if(!attRoleVo.isDeath && !attRoleVo.isAtted)
             {
                 //寻找攻击具体对象
@@ -103,7 +103,7 @@ class LoopBattleData{
         return ary;
     }
     /**计算属性 */
-    public calculationAttribute(attRoleVo:RoleVo,defRoleVo:RoleVo):void
+    public calculationAttribute(attRoleVo:BaseRoleVo,defRoleVo:BaseRoleVo):void
     {
         //血量检测
         // this.curDefRoleVo.battleHP -= this.curAttRoleVo.att;
@@ -112,7 +112,7 @@ class LoopBattleData{
         // this.checkBattleEnd();
         //攻击次数检测
         this.curBattleTurnVos.forEach(battleTurnVo => {
-            if(attRoleVo.id == battleTurnVo.attRoleVo.id && defRoleVo.id == battleTurnVo.defRoleVo.id)
+            if(attRoleVo.roleId == battleTurnVo.attRoleVo.roleId && defRoleVo.roleId == battleTurnVo.defRoleVo.roleId)
             {
                 battleTurnVo.calculationAttribute();
             }
@@ -199,12 +199,12 @@ class LoopBattleData{
      * @param attAry 
      * @param defAry 
      */
-    private seekAttTarget(attAry:Array<RoleVo>,defAry:Array<RoleVo>):void
+    private seekAttTarget(attAry:Array<BaseRoleVo>,defAry:Array<BaseRoleVo>):void
     {
-        var reduceAry:Array<RoleVo> = [];
-        var plusAry:Array<RoleVo> = [];
-        var attRoleVo:RoleVo;
-        var defRoleVo:RoleVo;
+        var reduceAry:Array<BaseRoleVo> = [];
+        var plusAry:Array<BaseRoleVo> = [];
+        var attRoleVo:BaseRoleVo;
+        var defRoleVo:BaseRoleVo;
         for(var i = 0; i < attAry.length;i++)
         {
             attRoleVo = attAry[i];
@@ -278,8 +278,8 @@ class LoopBattleData{
 }
 
 class BattleTurnVo{
-    public attRoleVo:RoleVo;
-    public defRoleVo:RoleVo;
+    public attRoleVo:BaseRoleVo;
+    public defRoleVo:BaseRoleVo;
     constructor(){
 
     }
@@ -288,5 +288,6 @@ class BattleTurnVo{
         this.defRoleVo.battleDieAttTimes--;
         this.defRoleVo.isDeath = this.defRoleVo.battleDieAttTimes <= 0;
         this.defRoleVo.isAtted = true;
+        // console.log(this.defRoleVo.name ,this.defRoleVo.battleDieAttTimes);
     }
 }

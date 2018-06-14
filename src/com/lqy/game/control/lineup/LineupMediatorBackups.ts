@@ -96,44 +96,44 @@ class LineupMediatorBackups extends BaseMediator{
     }
     private calDragIconTime(index:number):void
     {
-        this.dragTime++;
-        if(this.dragTime >= 1)
-        {
-            var cell:IconView = this.view.listIcon.getCell(index);
-            if(cell)
-            {
-                if(this.dragIcon)
-                {
-                    this.dragIcon.dispose();
-                    this.dragIcon = null;
-                }
-                this.dragIcon = new IconView();
-                this.dragIcon.setData(cell.data);
-                this.dragIcon.x = this.view.mouseX - this.dragIcon.width / 2;
-                this.dragIcon.y = this.view.mouseY - this.dragIcon.height / 2;
-                this.view.addChild(this.dragIcon);
-            }
-            Laya.timer.clear(this,this.calDragIconTime);
-            //禁止滚动
-            var scroll:any = (this.view.listIcon as Laya.List).scrollBar;
-            Laya.timer.clear(scroll,scroll.loop);
-            // scroll.off(/*laya.events.Event.CHANGE*/"change",this.view.listIcon,this.view.listIcon.onScrollBarChange);
-            // scroll.slider.off(/*laya.events.Event.CHANGE*/"change",scroll,scroll.onSliderChange);
-        }
+        // this.dragTime++;
+        // if(this.dragTime >= 1)
+        // {
+        //     var cell:IconView = this.view.listIcon.getCell(index);
+        //     if(cell)
+        //     {
+        //         if(this.dragIcon)
+        //         {
+        //             this.dragIcon.dispose();
+        //             this.dragIcon = null;
+        //         }
+        //         this.dragIcon = new IconView();
+        //         this.dragIcon.setData(cell.data);
+        //         this.dragIcon.x = this.view.mouseX - this.dragIcon.width / 2;
+        //         this.dragIcon.y = this.view.mouseY - this.dragIcon.height / 2;
+        //         this.view.addChild(this.dragIcon);
+        //     }
+        //     Laya.timer.clear(this,this.calDragIconTime);
+        //     //禁止滚动
+        //     var scroll:any = (this.view.listIcon as Laya.List).scrollBar;
+        //     Laya.timer.clear(scroll,scroll.loop);
+        //     // scroll.off(/*laya.events.Event.CHANGE*/"change",this.view.listIcon,this.view.listIcon.onScrollBarChange);
+        //     // scroll.slider.off(/*laya.events.Event.CHANGE*/"change",scroll,scroll.onSliderChange);
+        // }
     }
     private onViewMouseUp(e):void
     {
         if(this.dragIcon)
         {
-            this.dragUpLineup(this.dragIcon.data.roleID);
+            // this.dragUpLineup(this.dragIcon.data.roleID);
 
-            this.dragIcon.dispose();
-            this.dragIcon = null;
-            //启动滚动事件
-            var scroll:any = (this.view.listIcon as Laya.List).scrollBar;
-            Laya.timer.frameLoop(1,scroll,scroll.loop);
-            // scroll.on(/*laya.events.Event.CHANGE*/"change",this.view.listIcon,this.view.listIcon.onScrollBarChange);
-            // scroll.slider.on(/*laya.events.Event.CHANGE*/"change",scroll,scroll.onSliderChange);
+            // this.dragIcon.dispose();
+            // this.dragIcon = null;
+            // //启动滚动事件
+            // var scroll:any = (this.view.listIcon as Laya.List).scrollBar;
+            // Laya.timer.frameLoop(1,scroll,scroll.loop);
+            // // scroll.on(/*laya.events.Event.CHANGE*/"change",this.view.listIcon,this.view.listIcon.onScrollBarChange);
+            // // scroll.slider.on(/*laya.events.Event.CHANGE*/"change",scroll,scroll.onSliderChange);
 
             
         }

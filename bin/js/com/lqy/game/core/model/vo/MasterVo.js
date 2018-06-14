@@ -16,6 +16,11 @@ var MasterVo = /** @class */ (function (_super) {
     function MasterVo() {
         return _super.call(this, false) || this;
     }
+    MasterVo.prototype.initBaseData = function () {
+        // this.roleId = this.heroId;
+        // this.scale = 1;
+        // this.key = this.heroKey;
+    };
     return MasterVo;
 }(BaseRoleVo));
 //# sourceMappingURL=MasterVo.js.map

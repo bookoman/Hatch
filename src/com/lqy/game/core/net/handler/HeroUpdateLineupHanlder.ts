@@ -19,7 +19,7 @@ class HeroUpdateLineupHanlder extends SocketHanlder{
         selfPlayerData.heroLineupDic.set(message.siteIdx,message.heroId);
         if(message.flag)
         {
-            selfPlayerData.addUpHeroVo(message.heroId);
+            selfPlayerData.addUpHeroVo(message.heroId,message.flag);
         }
         else
         {

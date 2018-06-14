@@ -18,6 +18,8 @@ class EventManager{
 
     public static TEST_CHANGE_ROLE_SCALE:string = "TEST_CHANGE_ROLE_SCALE";
     public static TEST_LIST_SCRALE_RENDER:string = "TEST_LIST_SCRALE_RENDER";
+    /**选择挑战关卡 */
+    public static CHOICE_CHALLEGEN_GATE:string = "CHOICE_CHALLEGEN_GATE";
 
     /**事件管理器 */
     public eventObj:Dictionary = null;

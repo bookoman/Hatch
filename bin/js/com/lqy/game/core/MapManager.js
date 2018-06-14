@@ -69,11 +69,11 @@ var MapManager = /** @class */ (function () {
                 this.farMapEngine.y = 0;
                 LayerManager.ins.addToLayer(this.farMapEngine, LayerManager.BG_LAYER, false, true, false);
                 this.mapLoopEngine = new MapLoopEngine();
-                this.mapLoopEngine.initMap("res/outside/map", mapID, MapType.BACKGROUND_MAP, 6, GameConfig.STAGE_WIDTH);
+                this.mapLoopEngine.initMap("res/outside/map", mapID, MapType.BACKGROUND_MAP, 8, GameConfig.STAGE_WIDTH);
                 this.mapLoopEngine.y = GameConfig.MAP_INIT_Y;
                 LayerManager.ins.addToLayer(this.mapLoopEngine, LayerManager.BG_LAYER, false, true, false);
                 this.nearMapLoopEngin = new MapLoopEngine();
-                this.nearMapLoopEngin.initMap("res/outside/map", mapID, MapType.NEAR_MAP, 3, GameConfig.STAGE_WIDTH);
+                this.nearMapLoopEngin.initMap("res/outside/map", mapID, MapType.NEAR_MAP, 5, GameConfig.STAGE_WIDTH);
                 this.nearMapLoopEngin.y = this.mapLoopEngine.y + 210;
                 LayerManager.ins.addToLayer(this.nearMapLoopEngin, LayerManager.BG_NEAR_LAYER, false, true, false);
                 //测试移动

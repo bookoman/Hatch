@@ -16,11 +16,11 @@ var Enemy = /** @class */ (function (_super) {
     function Enemy() {
         return _super.call(this) || this;
     }
-    Enemy.prototype.initRole = function (roleVo, showPriority, scale, parentDis) {
-        _super.prototype.initRole.call(this, roleVo, showPriority, scale, parentDis);
+    Enemy.prototype.initRole = function (baseRoleVo, showPriority, scale, parentDis) {
+        _super.prototype.initRole.call(this, baseRoleVo, showPriority, scale, parentDis);
         // this.x = GameConfig.STAGE_WIDTH + GameConfig.LINEUP_GRID_WIDTH + roleVo.runWidth;
-        this.x = this.roleVo.posPoint.x + (parentDis ? 0 : GameConfig.STAGE_WIDTH / 2);
-        this.y = this.roleVo.posPoint.y;
+        this.x = this.baseRoleVo.posPoint.x + (parentDis ? 0 : GameConfig.STAGE_WIDTH / 2);
+        this.y = this.baseRoleVo.posPoint.y;
     };
     // public run():void
     // {
@@ -36,9 +36,9 @@ var Enemy = /** @class */ (function (_super) {
     // }
     /**跟随地图移动 */
     Enemy.prototype.moveByMap = function (speed) {
-        if (this.roleVo && this.x > this.roleVo.posPoint.x) {
+        if (this.baseRoleVo && this.x > this.baseRoleVo.posPoint.x) {
             this.x -= speed;
-            if (this.x <= this.roleVo.posPoint.x) {
+            if (this.x <= this.baseRoleVo.posPoint.x) {
                 EventManager.ins.dispatchEvent(EventManager.ENEMY_RUNTO_COMPLETE);
             }
         }

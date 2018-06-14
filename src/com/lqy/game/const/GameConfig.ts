@@ -54,6 +54,8 @@ class GameConfig{
 
     /**单机游戏 */
     public static SINGLE_GAME:boolean = false;
+    /**挂机关卡地图key数据 */
+    public static GATE_MAP_KEYS:Array<string> = [];
     
 }
 
@@ -75,6 +77,21 @@ class Protocol{
     public static HERO_GET_INFOS:number = 1;
     /**更新阵型 */
     public static HERO_UPDATE_FORMATION:number = 2;
+
+    /**关卡模块 */
+    public static GATE:number = 1002;
+    /**获取玩家关卡信息 */
+    public static GATE_INFO:number = 1;
+    /**返回玩家关卡信息 */
+    public static GATE_HANDUP_STATE:number = 2;
+    /**切换挂机关卡 */
+    public static GATE_SWITCH_HANG_GATE:number = 3;
+    /**挑战关卡 */
+    public static GATE_BATTLE:number = 4;
+    /**扫荡关卡 */
+    public static GATE_SCAN:number = 5;
+
+
 }
 /**http请求地址 */
 class HTTPRequestUrl{
@@ -86,6 +103,7 @@ class HTTPRequestUrl{
     public static enterGameURL:string = "http://192.168.2.126:8080/api/entergame.do";
 
 }
+
 /**服务器状态 */
 class GameServerState{
 
@@ -116,11 +134,7 @@ enum MapType
 /**角色动画枚举 */
 enum RoleAniIndex
 {
-    STAND = 0,INJURED,DEATH,ATTACK,MOVE,SKILL1,SKILL2,SKILL3,SKILL4
-}
-/**新角色动画枚举 */
-enum NewRoleAniIndex
-{
+    // STAND = 0,INJURED,DEATH,ATTACK,MOVE,SKILL1,SKILL2,SKILL3,SKILL4
     ATTACK = 0,INJURED,DEATH,MOVE,STAND
 }
 /**

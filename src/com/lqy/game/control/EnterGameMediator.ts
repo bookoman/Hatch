@@ -23,7 +23,7 @@ class EnterGameMediator extends BaseMediator{
         this.view.btnChoice.on(Laya.Event.CLICK,this,this.onBtnChoice);
         this.view.btnRegster.on(Laya.Event.CLICK,this,this.onBtnRegster);
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,new UserLoginHandler(this,this.onWebSocketLogined));
-        WebSocketManager.ins.registerHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,new GetHeroInfosHanlder(this,this.getHeroInfosHandler));
+        
     }
 
     protected removeEvents():void
@@ -32,22 +32,18 @@ class EnterGameMediator extends BaseMediator{
         this.view.btnChoice.off(Laya.Event.CLICK,this,this.onBtnChoice);
         this.view.btnRegster.off(Laya.Event.CLICK,this,this.onBtnRegster);
         WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,this);
-        WebSocketManager.ins.unregisterHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,this);
+        
     }
 
     private onWebSocketLogined(data):void
     {
-        console.log("登录成功。。。"+data);    
-        ClientSender.getHeroInfoReq(1);
-        
-    }
-    /**得到宠物信息 */
-    private getHeroInfosHandler():void
-    {
+        console.log("登录成功。。。"+data);  
         PreLoadingView.ins.show();
         SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
-        this.dispose();
+        this.dispose();  
+        
     }
+    
     public updateServerInfo():void
     {
         if(GameDataManager.ins.curServerInfo)

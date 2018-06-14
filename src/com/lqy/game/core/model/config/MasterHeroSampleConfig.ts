@@ -5,12 +5,14 @@ class MasterHeroSampleConfig{
     public key:string;
     public icon:string;
     public modelId:string;
+    public modelSize:number;
     public name:string;
     public professionTypeKey:string;
     public level:number;
     public qualityLevel:number;
     public hp:number;
     public atk:number;
+    public atcCount:number;
     public def:number;
     public speed:number;
     public hit:number;
@@ -22,6 +24,7 @@ class MasterHeroSampleConfig{
     public tenacity:number;
     public injury:number;
     public skillKeys:string;
+    
 
     constructor(){
 

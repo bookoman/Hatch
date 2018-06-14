@@ -140,6 +140,7 @@ class ConfigManager{
         this.parseGateMapSample();
         this.parseGateSample();
         this.parseHeroSkillSample();
+        this.parseMasterHeroSample();
     }
     
     /**宠物品质 */
@@ -212,9 +213,14 @@ class ConfigManager{
         var configStr = Laya.loader.getRes("res/config/GateMapSample.xml");
         this.xmlToObjcet(configStr,GateMapSampleConfig,"key",this.gateMapSampleDic);
 
+        
+        this.gateMapSampleDic.keys.forEach(key => {
+            GameConfig.GATE_MAP_KEYS.push(key);
+        });
+
         Laya.loader.clearRes("res/config/GateMapSample.xml");
     }
-    /**光卡配置 */
+    /**关卡配置 */
     public parseGateSample():void
     {
         if(this.gateSampleDic == null)
@@ -264,6 +270,19 @@ class ConfigManager{
     public getSkillVoByID(id:string):SkillVo
     {
         return this.skillConfigDic.get(id);
+    }
+    /**得到对应地图块所有关卡 */
+    public getGateConfigsByMapKey(mapKey:string):Array<GateSampleConfig>
+    {
+        var ary:Array<GateSampleConfig> = [];
+        var config:GateSampleConfig;
+        for (var i = 0;i <this.gateSampleDic.values.length;i++) {
+            config = this.gateSampleDic.values[i];
+            if (mapKey == config.mapId) {
+                ary.push(config);
+            }
+        }
+        return ary;
     }
 
     //*********************************************新配置取得 */
@@ -360,7 +379,11 @@ class ConfigManager{
                     if(value.indexOf("<element") == -1 && value.indexOf("=") == -1 && value.indexOf("/>") == -1)
                     {
                         j = j + 2;
-                        obj[value] = tempAry[j].split("\"")[1];
+                        var attrValue = tempAry[j].split("\"")[1];
+                        if(!attrValue)
+                            attrValue = tempAry[j];
+                        obj[value] = attrValue;
+                        // console.log(value,"=",obj[value]);
                     }
                 }
                 // console.log(obj);

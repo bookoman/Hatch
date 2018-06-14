@@ -25,7 +25,7 @@ var HeroUpdateLineupHanlder = /** @class */ (function (_super) {
         var selfPlayerData = GameDataManager.ins.selfPlayerData;
         selfPlayerData.heroLineupDic.set(message.siteIdx, message.heroId);
         if (message.flag) {
-            selfPlayerData.addUpHeroVo(message.heroId);
+            selfPlayerData.addUpHeroVo(message.heroId, message.flag);
         }
         else {
             selfPlayerData.removeUpHeroVo(message.heroId);

@@ -20,8 +20,9 @@ var GameMediator = /** @class */ (function (_super) {
         return _this;
     }
     GameMediator.prototype.initView = function () {
+        ClientSender.getHeroInfoReq(1);
         ObjectPoolUtil.init();
-        GameDataManager.ins.initData();
+        // GameDataManager.ins.initData();
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.TOP_LAYER, false, false, true);
         _super.prototype.initView.call(this);
@@ -34,6 +35,7 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnHero.on(Laya.Event.CLICK, this, this.onBtnHero);
         this.view.btnEquip.on(Laya.Event.CLICK, this, this.onBtnEquip);
         this.view.btnHome.on(Laya.Event.CLICK, this, this.onBtnHome);
+        WebSocketManager.ins.registerHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, new GetHeroInfosHanlder(this, this.getHeroInfosHandler));
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = new Handler(this,this.onListAniScaleRender);
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = new Handler(this,this.onListMouseHandler);
         // EventManager.ins.addEvent(EventManager.TEST_LIST_SCRALE_RENDER,this,this.listScraleInit);
@@ -45,6 +47,7 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnHero.off(Laya.Event.CLICK, this, this.onBtnHero);
         this.view.btnEquip.off(Laya.Event.CLICK, this, this.onBtnEquip);
         this.view.btnHome.off(Laya.Event.CLICK, this, this.onBtnHome);
+        WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, this);
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = null;
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = null;
     };
@@ -55,6 +58,9 @@ var GameMediator = /** @class */ (function (_super) {
     //     var ary = GameDataManager.ins.selfPlayerData.roleVoAry.concat(GameDataManager.ins.bossData.roleVoAry);
     //     (this.view.viewAniScale.listAniScale as Laya.List).array = ary;
     // }
+    /**得到宠物信息 */
+    GameMediator.prototype.getHeroInfosHandler = function () {
+    };
     GameMediator.prototype.onListAniScaleRender = function (cell, index) {
         if (cell && cell.dataSource) {
             cell.getChildByName("lblRoleName").text = cell.dataSource.name;

@@ -37,8 +37,8 @@ class GetHeroInfosHanlder extends SocketHanlder{
                 {
                     heroVo[key] = info[key];
                 }
-                    
             }
+            heroVo.initBaseData();
             selfPlayerData.heroVoDic.set(heroVo.heroId,heroVo);
         }
         
@@ -49,9 +49,9 @@ class GetHeroInfosHanlder extends SocketHanlder{
         {
             heroId = heroInfo.heroFormation[key];
             selfPlayerData.heroLineupDic.set(key,heroId);
-            selfPlayerData.addUpHeroVo(heroId);
+            selfPlayerData.addUpHeroVo(heroId,Number(key));
         }
-        selfPlayerData.heroSum = selfPlayerData.upHeroVos.length;
+        selfPlayerData.heroSum = selfPlayerData.heroLineupDic.values.length;
         super.success();
     }
 

@@ -83,19 +83,19 @@ class LineupGridMediatorBackups extends BaseMediator{
         if(this.isLoaded)
         {   
             /**测试自己龙动作 */
-            if(this.roleID == "20005")
-            {
-                if(aniID == RoleAniIndex.ATTACK)
-                    aniID = NewRoleAniIndex.ATTACK;
-                else if(aniID == RoleAniIndex.INJURED)
-                    aniID = NewRoleAniIndex.INJURED;
-                else if(aniID == RoleAniIndex.DEATH)
-                    aniID = NewRoleAniIndex.DEATH;
-                else if(aniID == RoleAniIndex.MOVE)
-                    aniID = NewRoleAniIndex.MOVE;
-                else if(aniID == RoleAniIndex.STAND)
-                    aniID = NewRoleAniIndex.STAND;
-            }
+            // if(this.roleID == "20005")
+            // {
+            //     if(aniID == RoleAniIndex.ATTACK)
+            //         aniID = NewRoleAniIndex.ATTACK;
+            //     else if(aniID == RoleAniIndex.INJURED)
+            //         aniID = NewRoleAniIndex.INJURED;
+            //     else if(aniID == RoleAniIndex.DEATH)
+            //         aniID = NewRoleAniIndex.DEATH;
+            //     else if(aniID == RoleAniIndex.MOVE)
+            //         aniID = NewRoleAniIndex.MOVE;
+            //     else if(aniID == RoleAniIndex.STAND)
+            //         aniID = NewRoleAniIndex.STAND;
+            // }
             loop = loop === undefined ? true : loop; 
             aniID = aniID % this.aniCount;
 

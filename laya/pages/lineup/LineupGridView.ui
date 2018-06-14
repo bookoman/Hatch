@@ -15,7 +15,7 @@
         {
             "x":15,
             "type":"Clip",
-            "props":{"y":0,"x":0,"width":134,"var":"clipShadow","skin":"main/clip_shadow.png","index":0,"height":54,"clipY":2},
+            "props":{"y":0,"x":6,"width":161,"var":"clipShadow","skin":"main/clip_shadow.png","index":0,"height":54,"clipY":2},
             "nodeParent":1,
             "label":"Clip(clipShadow)",
             "isDirectory":false,
@@ -28,7 +28,7 @@
         {
             "x":15,
             "type":"Label",
-            "props":{"y":54,"x":34,"width":64,"var":"lblLineupID","styleSkin":"comp/label.png","height":32,"fontSize":30,"color":"#000000","align":"center"},
+            "props":{"y":49,"x":0,"width":178,"var":"lblLineupID","text":"霸王龙 【真】","styleSkin":"comp/label.png","height":32,"fontSize":20,"color":"#f4eb1a","bold":true,"align":"center"},
             "nodeParent":1,
             "label":"Label(lblLineupID)",
             "isDirectory":false,

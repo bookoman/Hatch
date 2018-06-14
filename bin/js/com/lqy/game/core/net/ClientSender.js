@@ -33,6 +33,14 @@ var ClientSender = /** @class */ (function () {
         var buffer = UpdateFormationRequest.encode(message).finish();
         WebSocketManager.ins.sendMsg(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, buffer);
     };
+    /**请求关卡信息 */
+    ClientSender.gateGateInfoReq = function () {
+        var GateInfoRequest = WebSocketManager.ins.defineProtoClass("GateInfoRequest");
+        var message = {};
+        message.statusCode = 1;
+        var buffer = GateInfoRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.GATE, Protocol.GATE_INFO, buffer);
+    };
     /**********************************Http */
     /**测试登录 */
     ClientSender.httpLoginReq = function (account, pwd, caller, callBack) {

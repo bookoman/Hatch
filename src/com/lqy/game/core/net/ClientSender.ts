@@ -39,7 +39,15 @@ class ClientSender{
         var buffer = UpdateFormationRequest.encode(message).finish();
         WebSocketManager.ins.sendMsg(Protocol.HERO,Protocol.HERO_UPDATE_FORMATION,buffer);
     }
-
+    /**请求关卡信息 */
+    public static gateGateInfoReq():void
+    {
+        var GateInfoRequest = WebSocketManager.ins.defineProtoClass("GateInfoRequest");
+        var message:any = {};
+        message.statusCode = 1;
+        var buffer = GateInfoRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.GATE,Protocol.GATE_INFO,buffer);
+    }
 
 
     /**********************************Http */

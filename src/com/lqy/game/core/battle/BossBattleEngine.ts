@@ -20,13 +20,13 @@ class BossBattleEngine{
     private getJoinBattleHeroVo(herosAry):Array<BaseRole>
     {
         var tempAry:Array<BaseRole> = new Array();
-        herosAry.forEach(hero => {
-            tempAry.push(hero);
-        });
-        tempAry.sort(function(vo1:BaseRole,vo2:BaseRole):number{
-            return vo1.roleVo.gridX > vo2.roleVo.gridX ? -1 : 1;
-        })
-        tempAry = tempAry.slice(0,GameConfig.BATTLE_BOSS_HERO_SUM);
+        // herosAry.forEach(hero => {
+        //     tempAry.push(hero);
+        // });
+        // tempAry.sort(function(vo1:BaseRole,vo2:BaseRole):number{
+        //     return vo1.roleVo.gridX > vo2.roleVo.gridX ? -1 : 1;
+        // })
+        // tempAry = tempAry.slice(0,GameConfig.BATTLE_BOSS_HERO_SUM);
         return tempAry;
     }
     /**开始战斗 */
@@ -97,36 +97,36 @@ class BossBattleEngine{
      */
     public battleAtt(attRoleVo:RoleVo,defRoleVo:RoleVo):void
     {
-        var tempAry:Array<BaseRole> = this.heroRoles.concat(this.enemyRoles);
-        tempAry.forEach(roleView => {
-            if(roleView)
-            {
-                if(roleView.roleVo.id == attRoleVo.id)
-                {
-                    this.attRole = roleView;
-                }
-                else if(roleView.roleVo.id == defRoleVo.id)
-                {
-                    this.defRole = roleView;
-                }
-            }
-        });
-        if(this.attRole && this.defRole)
-        {
-            //远攻
-            if(this.attRole.roleVo.attFar == 1)
-            {              
-                this.playAttackAni();
-                SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
-            }
-            else
-            {//近攻               
-                this.attRole.aniPlay(RoleAniIndex.MOVE);
-                var tempX:number = defRoleVo.isEnemy ? 200 : -200;               
-                Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000 / GameConfig.BATTLE_ADDSPEED_TIMES,null,new Handler(this,this.playAttackAni,[attRoleVo,defRoleVo],true),0,true);
-                SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
-            }
-        }
+        // var tempAry:Array<BaseRole> = this.heroRoles.concat(this.enemyRoles);
+        // tempAry.forEach(roleView => {
+        //     if(roleView)
+        //     {
+        //         if(roleView.roleVo.id == attRoleVo.id)
+        //         {
+        //             this.attRole = roleView;
+        //         }
+        //         else if(roleView.roleVo.id == defRoleVo.id)
+        //         {
+        //             this.defRole = roleView;
+        //         }
+        //     }
+        // });
+        // if(this.attRole && this.defRole)
+        // {
+        //     //远攻
+        //     if(this.attRole.roleVo.attFar == 1)
+        //     {              
+        //         this.playAttackAni();
+        //         SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+        //     }
+        //     else
+        //     {//近攻               
+        //         this.attRole.aniPlay(RoleAniIndex.MOVE);
+        //         var tempX:number = defRoleVo.isEnemy ? 200 : -200;               
+        //         Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000 / GameConfig.BATTLE_ADDSPEED_TIMES,null,new Handler(this,this.playAttackAni,[attRoleVo,defRoleVo],true),0,true);
+        //         SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+        //     }
+        // }
     }
     /**
      * 移动到敌方攻击
@@ -134,8 +134,8 @@ class BossBattleEngine{
      */
     private playAttackAni():void
     {
-        var attRoleVo:RoleVo = this.attRole.roleVo;
-        var defRoleVo:RoleVo = this.defRole.roleVo;
+        var attRoleVo:BaseRoleVo = this.attRole.baseRoleVo;
+        var defRoleVo:BaseRoleVo = this.defRole.baseRoleVo;
         var skillID:number = attRoleVo.getCanUserSkill();
         if(skillID > 0)
         {
@@ -165,7 +165,7 @@ class BossBattleEngine{
         else
         {
             this.defRole.aniPlay(RoleAniIndex.INJURED,false);
-            this.defRole.showFloatFont(attRoleVo.att);
+            this.defRole.showFloatFont(attRoleVo.atk);
         }
         this.defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
     }
@@ -174,20 +174,20 @@ class BossBattleEngine{
      */
     private moveBackLineup():void
     {
-        var attRoleVo:RoleVo = this.attRole.roleVo;
-        Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000 / 2 / GameConfig.BATTLE_ADDSPEED_TIMES,null,new Handler(this,this.moveBackLineupComplete,null,true),0,true);
+        // var attRoleVo:RoleVo = this.attRole.roleVo;
+        // Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000 / 2 / GameConfig.BATTLE_ADDSPEED_TIMES,null,new Handler(this,this.moveBackLineupComplete,null,true),0,true);
     }
     /**
      * 移动回阵型完成
      */
     private moveBackLineupComplete():void
     {
-        DebugViewUtil.log("攻击返回",this.attRole.roleVo.name);
-        this.attRole.aniPlay(RoleAniIndex.STAND);
-        if(!this.defRole.roleVo.isDeath)
-        {
-            this.defRole.aniPlay(RoleAniIndex.STAND);
-        }
-        this.attCompleted();
+        // DebugViewUtil.log("攻击返回",this.attRole.roleVo.name);
+        // this.attRole.aniPlay(RoleAniIndex.STAND);
+        // if(!this.defRole.roleVo.isDeath)
+        // {
+        //     this.defRole.aniPlay(RoleAniIndex.STAND);
+        // }
+        // this.attCompleted();
     }
 }

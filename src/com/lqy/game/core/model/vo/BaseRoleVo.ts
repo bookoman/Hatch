@@ -2,9 +2,28 @@
 * 角色基础Vo
 */
 class BaseRoleVo{
-
+    /**角色id */
+    public roleId:string;
+    /**缩放比例 */
+    public scale:number;
+    /**配置表key */
+    public key:string;
+    /**模型资源id */
+    public modelId:string;
+    /**名字 */
+    public name:string;
+    /**攻击死亡次数 */
+    public dieAttTimes:number;
+    /**攻击 */
+    public atk:number;
+    /**攻击速度 */
+    public atkSpeed:number;
+    
     public skillVos:Array<SkillVo>;
 
+    public attFar:number = 0;
+
+    public hp:number = 0;
     
     /**计算属性 */
     /**阵型格子 */
@@ -15,6 +34,7 @@ class BaseRoleVo{
     public posPoint:Point;
     /**是否是敌人 */
     public isEnemy:boolean;
+
     
     //战斗数据
     
@@ -24,14 +44,17 @@ class BaseRoleVo{
     public isDeath:boolean = true;
     public isAtted:boolean;
     /**玩家可以攻击的敌人 */
-    public attEnemyVos:Array<RoleVo>;
+    public attEnemyVos:Array<BaseRoleVo>;
     /**技能攻击多个敌人 */
-    public skillAttEnemyVos:Array<RoleVo>;
+    public skillAttEnemyVos:Array<BaseRoleVo>;
     constructor(isEnemy:boolean){
         this.isEnemy = isEnemy;
     }
    
-    
+    public initBaseData():void
+    {
+
+    }
 
     /**初始化阵型数据 */
     public initRowColPosPoint():void
@@ -74,14 +97,14 @@ class BaseRoleVo{
     public getCanUserSkill():number
     {   
         var skillID:number = 0;
-        this.skillVos.forEach(skillVo => {
-            if(skillVo.isCanUse)
-            {
-                // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表"+skillVo.id);
-                skillVo.isCanUse = false;
-                skillID =  Number(skillVo.id);
-            }
-        });
+        // this.skillVos.forEach(skillVo => {
+        //     if(skillVo.isCanUse)
+        //     {
+        //         // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表"+skillVo.id);
+        //         skillVo.isCanUse = false;
+        //         skillID =  Number(skillVo.id);
+        //     }
+        // });
         return skillID;
     }   
 }

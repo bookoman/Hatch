@@ -6,9 +6,8 @@ var BossBattleData = /** @class */ (function () {
         this.curAttCamp = 0;
     }
     BossBattleData.prototype.initData = function () {
-        // this.attHeroVos = GameDataManager.ins.selfPlayerData.roleVoAry;
         this.attHeroVos = this.getJoinBattleHeroVo();
-        this.attEnemyVos = GameDataManager.ins.bossData.roleVoAry;
+        // this.attEnemyVos = GameDataManager.ins.bossData.roleVoAry;
         this.attHeroVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
             roleVo.resetSkillCD();
@@ -30,13 +29,13 @@ var BossBattleData = /** @class */ (function () {
     /**得到参战英雄RoleVo */
     BossBattleData.prototype.getJoinBattleHeroVo = function () {
         var tempAry = new Array();
-        GameDataManager.ins.selfPlayerData.roleVoAry.forEach(function (roleVo) {
-            tempAry.push(roleVo);
-        });
-        tempAry.sort(function (vo1, vo2) {
-            return vo1.gridX > vo2.gridX ? -1 : 1;
-        });
-        tempAry = tempAry.slice(0, GameConfig.BATTLE_BOSS_HERO_SUM);
+        // GameDataManager.ins.selfPlayerData.roleVoAry.forEach(roleVo => {
+        //     tempAry.push(roleVo);
+        // });
+        // tempAry.sort(function(vo1:RoleVo,vo2:RoleVo):number{
+        //     return vo1.gridX > vo2.gridX ? -1 : 1;
+        // })
+        // tempAry = tempAry.slice(0,GameConfig.BATTLE_BOSS_HERO_SUM);
         return tempAry;
     };
     /**

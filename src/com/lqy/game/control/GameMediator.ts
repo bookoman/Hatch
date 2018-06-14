@@ -9,8 +9,10 @@ class GameMediator extends BaseMediator{
     }
     protected initView():void
     {
+        ClientSender.getHeroInfoReq(1);
+
         ObjectPoolUtil.init();
-        GameDataManager.ins.initData();
+        // GameDataManager.ins.initData();
 
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view,LayerManager.TOP_LAYER,false,false,true);
@@ -28,7 +30,7 @@ class GameMediator extends BaseMediator{
         this.view.btnEquip.on(Laya.Event.CLICK,this,this.onBtnEquip);
         this.view.btnHome.on(Laya.Event.CLICK,this,this.onBtnHome);
 
-        
+        WebSocketManager.ins.registerHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,new GetHeroInfosHanlder(this,this.getHeroInfosHandler));
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = new Handler(this,this.onListAniScaleRender);
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = new Handler(this,this.onListMouseHandler);
         // EventManager.ins.addEvent(EventManager.TEST_LIST_SCRALE_RENDER,this,this.listScraleInit);
@@ -43,15 +45,13 @@ class GameMediator extends BaseMediator{
         this.view.btnEquip.off(Laya.Event.CLICK,this,this.onBtnEquip);
         this.view.btnHome.off(Laya.Event.CLICK,this,this.onBtnHome);
 
-        
-
+        WebSocketManager.ins.unregisterHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,this);
         
 
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = null;
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = null;
     }
     
-
     // private listScraleInit():void
     // {
     //     this.view.viewAniScale.visible = true;
@@ -59,6 +59,11 @@ class GameMediator extends BaseMediator{
     //     var ary = GameDataManager.ins.selfPlayerData.roleVoAry.concat(GameDataManager.ins.bossData.roleVoAry);
     //     (this.view.viewAniScale.listAniScale as Laya.List).array = ary;
     // }
+    /**得到宠物信息 */
+    private getHeroInfosHandler():void
+    {
+        
+    }
     private onListAniScaleRender(cell:Box,index:number):void
     {
         if(cell && cell.dataSource)

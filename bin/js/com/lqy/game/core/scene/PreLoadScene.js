@@ -29,7 +29,8 @@ var PreLoadScene = /** @class */ (function (_super) {
             { url: "res/config/HeroLevelSample.xml", type: Loader.TEXT },
             { url: "res/config/HeroSample.xml", type: Loader.TEXT },
             { url: "res/config/HeroTypeSample.xml", type: Loader.TEXT },
-            { url: "res/config/QualityScoreSample.xml", type: Loader.TEXT }
+            { url: "res/config/QualityScoreSample.xml", type: Loader.TEXT },
+            { url: "res/config/MasterHeroSample.xml", type: Loader.TEXT }
         ];
         Laya.loader.load(resAry, Handler.create(this, this.onLoaded), Handler.create(this, this.loadGameResProgress, null, false));
     };

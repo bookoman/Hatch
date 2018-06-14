@@ -27,7 +27,7 @@ class SignMediator extends BaseMediator{
 
     private onBtnClose(e:Laya.Event):void
     {
-        console.log("功能暂时关闭"+ this.view.inputName.text);   
+        LayerManager.ins.removeToLayer(this.view,LayerManager.UI_LAYER,true,false);
     }
 
     private onBtnRecharge(e:Laya.Event):void
@@ -37,6 +37,6 @@ class SignMediator extends BaseMediator{
     
     private onBtnRechargeExit(e:Laya.Event):void
     {
-          console.log("功能暂时关闭"+ this.view.inputName.text);   
+        LayerManager.ins.removeToLayer(this.view,LayerManager.UI_LAYER,true,false);
     }
 }

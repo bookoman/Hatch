@@ -50,6 +50,8 @@ var GameConfig = /** @class */ (function () {
     GameConfig.HERO_DEFAULT_ANI_MODELID = "baolong001";
     /**单机游戏 */
     GameConfig.SINGLE_GAME = false;
+    /**挂机关卡地图key数据 */
+    GameConfig.GATE_MAP_KEYS = [];
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {
@@ -73,6 +75,18 @@ var Protocol = /** @class */ (function () {
     Protocol.HERO_GET_INFOS = 1;
     /**更新阵型 */
     Protocol.HERO_UPDATE_FORMATION = 2;
+    /**关卡模块 */
+    Protocol.GATE = 1002;
+    /**获取玩家关卡信息 */
+    Protocol.GATE_INFO = 1;
+    /**返回玩家关卡信息 */
+    Protocol.GATE_HANDUP_STATE = 2;
+    /**切换挂机关卡 */
+    Protocol.GATE_SWITCH_HANG_GATE = 3;
+    /**挑战关卡 */
+    Protocol.GATE_BATTLE = 4;
+    /**扫荡关卡 */
+    Protocol.GATE_SCAN = 5;
     return Protocol;
 }());
 /**http请求地址 */
@@ -119,25 +133,13 @@ var MapType;
 /**角色动画枚举 */
 var RoleAniIndex;
 (function (RoleAniIndex) {
-    RoleAniIndex[RoleAniIndex["STAND"] = 0] = "STAND";
+    // STAND = 0,INJURED,DEATH,ATTACK,MOVE,SKILL1,SKILL2,SKILL3,SKILL4
+    RoleAniIndex[RoleAniIndex["ATTACK"] = 0] = "ATTACK";
     RoleAniIndex[RoleAniIndex["INJURED"] = 1] = "INJURED";
     RoleAniIndex[RoleAniIndex["DEATH"] = 2] = "DEATH";
-    RoleAniIndex[RoleAniIndex["ATTACK"] = 3] = "ATTACK";
-    RoleAniIndex[RoleAniIndex["MOVE"] = 4] = "MOVE";
-    RoleAniIndex[RoleAniIndex["SKILL1"] = 5] = "SKILL1";
-    RoleAniIndex[RoleAniIndex["SKILL2"] = 6] = "SKILL2";
-    RoleAniIndex[RoleAniIndex["SKILL3"] = 7] = "SKILL3";
-    RoleAniIndex[RoleAniIndex["SKILL4"] = 8] = "SKILL4";
+    RoleAniIndex[RoleAniIndex["MOVE"] = 3] = "MOVE";
+    RoleAniIndex[RoleAniIndex["STAND"] = 4] = "STAND";
 })(RoleAniIndex || (RoleAniIndex = {}));
-/**新角色动画枚举 */
-var NewRoleAniIndex;
-(function (NewRoleAniIndex) {
-    NewRoleAniIndex[NewRoleAniIndex["ATTACK"] = 0] = "ATTACK";
-    NewRoleAniIndex[NewRoleAniIndex["INJURED"] = 1] = "INJURED";
-    NewRoleAniIndex[NewRoleAniIndex["DEATH"] = 2] = "DEATH";
-    NewRoleAniIndex[NewRoleAniIndex["MOVE"] = 3] = "MOVE";
-    NewRoleAniIndex[NewRoleAniIndex["STAND"] = 4] = "STAND";
-})(NewRoleAniIndex || (NewRoleAniIndex = {}));
 /**
  * 战斗攻击阵营
  */

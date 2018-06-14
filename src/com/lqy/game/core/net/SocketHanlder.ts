@@ -19,7 +19,7 @@ class SocketHanlder{
         }
         else
         {
-            console.log("服务器返回："+data.statusCode);
+            console.log("服务器返回：",data.statusCode);
         }
     }
     protected success(data?:any):void

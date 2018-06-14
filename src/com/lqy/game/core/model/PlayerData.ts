@@ -6,7 +6,7 @@ class PlayerData{
     public name:string;
     // public lineupId:string;
     /**宠物数据 */
-    public roleVoAry:Array<RoleVo>;
+    // public roleVoAry:Array<RoleVo>;
     /**宠物数据 */
     public heroVoDic:Dictionary;
     /**上阵英雄 */
@@ -19,13 +19,14 @@ class PlayerData{
         
     }
     /**添加上阵宠物 */
-    public addUpHeroVo(heroId:string):void
+    public addUpHeroVo(heroId:string,lineId:number):void
     {
         if(!this.upHeroVos)
         {
             this.upHeroVos = [];
         }
         var heroVo = GameDataManager.ins.getHeroVoByHeroId(heroId);
+        heroVo.lineupGrid = lineId;
         var ind:number = this.upHeroVos.indexOf(heroVo);
         if(ind > -1)
         {
@@ -47,6 +48,7 @@ class PlayerData{
         {
             if(this.upHeroVos[i].heroId == heroId)
             {
+                this.upHeroVos[i].lineupGrid = null;
                 this.upHeroVos.splice(i,1);
                 break
             }

@@ -38,7 +38,7 @@ var BaseRole = /** @class */ (function (_super) {
     //         console.log(this.roleVo.name,bound.width,bound.height);
     //     }
     // }
-    BaseRole.prototype.initRole = function (roleVo, showPriority, scale, parentDis) {
+    BaseRole.prototype.initRole = function (baseRoleVo, showPriority, scale, parentDis) {
         this.clipShadow = new Laya.Clip("main/clip_shadow.png");
         this.clipShadow.height = 43;
         this.clipShadow.x = -this.clipShadow.width / 2;
@@ -46,7 +46,7 @@ var BaseRole = /** @class */ (function (_super) {
         this.clipShadow.clipY = 2;
         this.clipShadow.alpha = 0.3;
         this.addChild(this.clipShadow);
-        this.roleVo = roleVo;
+        this.baseRoleVo = baseRoleVo;
         this.showPriority = showPriority;
         if (scale) {
             this.aniScale = scale;
@@ -54,7 +54,7 @@ var BaseRole = /** @class */ (function (_super) {
         this.isLoaded = false;
         this.skeletonAni = new Skeleton();
         this.skeletonAni.scale(this.aniScale, this.aniScale);
-        this.skeletonAni.scaleX = this.roleVo.scaleX * this.aniScale;
+        this.skeletonAni.scaleX = this.baseRoleVo.scale * this.aniScale;
         this.addChild(this.skeletonAni);
         if (parentDis) {
             parentDis.addChild(this);
@@ -83,18 +83,19 @@ var BaseRole = /** @class */ (function (_super) {
         this.defRole = defRole;
         if (this.isLoaded) {
             /**测试自己龙动作 */
-            if (this.roleVo.id == "20005" || this.roleVo.id == "10006" || this.roleVo.id == "10007") {
-                if (aniID == RoleAniIndex.ATTACK)
-                    aniID = NewRoleAniIndex.ATTACK;
-                else if (aniID == RoleAniIndex.INJURED)
-                    aniID = NewRoleAniIndex.INJURED;
-                else if (aniID == RoleAniIndex.DEATH)
-                    aniID = NewRoleAniIndex.DEATH;
-                else if (aniID == RoleAniIndex.MOVE)
-                    aniID = NewRoleAniIndex.MOVE;
-                else if (aniID == RoleAniIndex.STAND)
-                    aniID = NewRoleAniIndex.STAND;
-            }
+            // if(this.roleVo.id == "20005" || this.roleVo.id == "10006" || this.roleVo.id == "10007")
+            // {
+            //     if(aniID == RoleAniIndex.ATTACK)
+            //         aniID = NewRoleAniIndex.ATTACK;
+            //     else if(aniID == RoleAniIndex.INJURED)
+            //         aniID = NewRoleAniIndex.INJURED;
+            //     else if(aniID == RoleAniIndex.DEATH)
+            //         aniID = NewRoleAniIndex.DEATH;
+            //     else if(aniID == RoleAniIndex.MOVE)
+            //         aniID = NewRoleAniIndex.MOVE;
+            //     else if(aniID == RoleAniIndex.STAND)
+            //         aniID = NewRoleAniIndex.STAND;
+            // }
             loop = loop === undefined ? true : loop;
             aniID = aniID % this.aniCount;
             //>= aniCount默认播放第一个动画
@@ -154,9 +155,9 @@ var BaseRole = /** @class */ (function (_super) {
     };
     BaseRole.prototype.skeletonAniLoad = function () {
         //分帧加载
-        if (this.roleVo) {
-            this.aniUrl = "res/outside/anim/role/" + this.roleVo.modelId + "/" + this.roleVo.modelId + ".sk";
-            // url = "res/outside/anim/role/baolong001/baolong001.sk";
+        if (this.baseRoleVo) {
+            this.aniUrl = "res/outside/anim/role/" + this.baseRoleVo.modelId + "/" + this.baseRoleVo.modelId + ".sk";
+            this.aniUrl = "res/outside/anim/role/xunmenglong001/xunmenglong001.sk";
             this.skeletonAni.load(this.aniUrl, Laya.Handler.create(this, this.loadCompleted));
         }
     };
@@ -186,7 +187,7 @@ var BaseRole = /** @class */ (function (_super) {
         this.LblName.fontSize = 24;
         this.LblName.color = "#00FF99";
         this.LblName.align = "center";
-        this.LblName.text = this.roleVo.name;
+        this.LblName.text = this.baseRoleVo.name;
         this.addChild(this.LblName);
     };
     BaseRole.prototype.setBlood = function (value) {
@@ -208,7 +209,7 @@ var BaseRole = /** @class */ (function (_super) {
     };
     BaseRole.prototype.setVis = function (bool) {
         //延迟回调判断，复活就设置隐藏
-        if (this.roleVo && this.roleVo.isDeath) {
+        if (this.baseRoleVo && this.baseRoleVo.isDeath) {
             this.visible = bool;
         }
     };
@@ -227,7 +228,7 @@ var BaseRole = /** @class */ (function (_super) {
             this.roleBloodBar.removeSelf();
             ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR, this.roleBloodBar);
         }
-        this.roleVo = null;
+        this.baseRoleVo = null;
     };
     BaseRole.prototype.moveByMap = function (speed) {
     };

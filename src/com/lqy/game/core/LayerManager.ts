@@ -113,8 +113,8 @@ class LayerManager{
  * 自定义层级
  */
 class MyLayer extends Laya.Sprite{
+    public maskSprite:Laya.Sprite = null;
     private maskCount:number = 0;
-    private maskSprite:Laya.Sprite = null;
     private viewObj:Object = {};
     private curView = null;
     constructor()

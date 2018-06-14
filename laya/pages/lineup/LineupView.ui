@@ -2,8 +2,29 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":41,
-    "props":{"width":750,"sceneColor":"#000000","renderType":"render","height":1334},
+    "selecteID":38,
+    "referenceLines":[
+        {
+            "value":150,
+            "type":0,
+            "id":1
+        },
+        {
+            "value":300,
+            "type":0,
+            "id":2
+        },
+        {
+            "value":450,
+            "type":0,
+            "id":3
+        },
+        {
+            "value":600,
+            "type":0,
+            "id":4
+        }],
+    "props":{"width":750,"renderType":"render","height":1334},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -27,6 +48,19 @@
         },
         {
             "x":15,
+            "type":"Image",
+            "props":{"y":522,"x":-4,"skin":"unpack/lineup/juese_bg.png"},
+            "nodeParent":1,
+            "label":"Image",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":41,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
             "type":"List",
             "props":{"y":967,"x":23,"width":716,"var":"listIcon","repeatY":2,"repeatX":6,"height":234},
             "nodeParent":1,
@@ -40,7 +74,7 @@
                 {
                     "x":30,
                     "type":"VScrollBar",
-                    "props":{"y":4,"x":698,"width":17,"skin":"comp/vscroll.png","name":"scrollBar","height":188},
+                    "props":{"y":4,"x":698,"width":17,"visible":false,"skin":"comp/vscroll.png","name":"scrollBar","height":188},
                     "nodeParent":20,
                     "label":"VScrollBar(scrollBar)",
                     "isDirectory":false,
@@ -54,7 +88,7 @@
                     "x":30,
                     "type":"UIView",
                     "source":"comp/IconView.ui",
-                    "props":{"y":0,"x":0,"runtime":"IconView","name":"render"},
+                    "props":{"y":1,"x":2,"runtime":"IconView","name":"render"},
                     "nodeParent":20,
                     "label":"UIView(render)",
                     "isDirectory":false,
@@ -69,7 +103,7 @@
             "x":15,
             "type":"UIView",
             "source":"lineup/LineupGridView.ui",
-            "props":{"y":525,"x":351,"var":"grid0"},
+            "props":{"y":645,"x":287,"var":"grid0"},
             "nodeParent":1,
             "label":"UIView(grid0)",
             "isDirectory":false,
@@ -83,7 +117,7 @@
             "x":15,
             "type":"UIView",
             "source":"lineup/LineupGridView.ui",
-            "props":{"y":652,"x":456,"var":"grid1"},
+            "props":{"y":743,"x":412,"var":"grid1"},
             "nodeParent":1,
             "label":"UIView(grid1)",
             "isDirectory":false,
@@ -97,7 +131,7 @@
             "x":15,
             "type":"UIView",
             "source":"lineup/LineupGridView.ui",
-            "props":{"y":775,"x":562,"var":"grid2"},
+            "props":{"y":841,"x":536,"var":"grid2"},
             "nodeParent":1,
             "label":"UIView(grid2)",
             "isDirectory":false,
@@ -111,7 +145,7 @@
             "x":15,
             "type":"UIView",
             "source":"lineup/LineupGridView.ui",
-            "props":{"y":602,"x":94,"var":"grid3"},
+            "props":{"y":711,"x":84,"var":"grid3"},
             "nodeParent":1,
             "label":"UIView(grid3)",
             "isDirectory":false,
@@ -125,13 +159,228 @@
             "x":15,
             "type":"UIView",
             "source":"lineup/LineupGridView.ui",
-            "props":{"y":752,"x":174,"var":"grid4"},
+            "props":{"y":817,"x":168,"var":"grid4"},
             "nodeParent":1,
             "label":"UIView(grid4)",
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
             "compId":38,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":26,"x":23,"skin":"main/skill_bg02.png"},
+            "nodeParent":1,
+            "label":"Image",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":43,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":48,"x":45,"skin":"main/skill_bg01.png"},
+            "nodeParent":1,
+            "label":"Image",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":42,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Button",
+            "props":{"y":373,"x":23,"width":131,"stateNum":"1","skin":"comp/btn_base.png","height":51},
+            "nodeParent":1,
+            "label":"Button",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":44,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Button",
+            "props":{"y":373,"x":193,"width":131,"stateNum":"1","skin":"comp/btn_skill.png","height":51},
+            "nodeParent":1,
+            "label":"Button",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":45,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Button",
+            "props":{"y":373,"x":362,"width":131,"stateNum":"1","skin":"comp/btn_evolve.png","height":51},
+            "nodeParent":1,
+            "label":"Button",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":46,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Button",
+            "props":{"y":275,"x":505,"width":131,"stateNum":"1","skin":"comp/btn_resetskill.png","height":52},
+            "nodeParent":1,
+            "label":"Button",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":47,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":962,"x":0,"width":750,"skin":"comp/skill_bk.png","height":245},
+            "nodeParent":1,
+            "label":"Image",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":48,
+            "child":[
+                ],
+            "$HIDDEN":false
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":930,"x":20,"skin":"comp/skill_ht.png"},
+            "nodeParent":1,
+            "label":"Image",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":49,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"UIView",
+            "source":"lineup/SkillGridView.ui",
+            "props":{"y":84,"x":82},
+            "nodeParent":1,
+            "label":"UIView",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":57,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"UIView",
+            "source":"lineup/SkillGridView.ui",
+            "props":{"y":218,"x":82},
+            "nodeParent":1,
+            "label":"UIView",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":58,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"UIView",
+            "source":"lineup/SkillGridView.ui",
+            "props":{"y":218,"x":201},
+            "nodeParent":1,
+            "label":"UIView",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":59,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"UIView",
+            "source":"lineup/SkillGridView.ui",
+            "props":{"y":84,"x":319},
+            "nodeParent":1,
+            "label":"UIView",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":60,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"UIView",
+            "source":"lineup/SkillGridView.ui",
+            "props":{"y":84,"x":201},
+            "nodeParent":1,
+            "label":"UIView",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":61,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"UIView",
+            "source":"lineup/SkillGridView.ui",
+            "props":{"y":218,"x":319},
+            "nodeParent":1,
+            "label":"UIView",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":62,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Label",
+            "props":{"y":50,"x":441,"width":258,"text":"技能 XXX","height":32,"fontSize":28,"color":"#5a5757","bold":true,"align":"center"},
+            "nodeParent":1,
+            "label":"Label",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":63,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Text",
+            "props":{"y":91,"x":441,"wordWrap":true,"width":258,"text":"我知道我很吊。但是我不说...到底那里吊，我也不知道","leading":12,"height":176,"fontSize":18,"color":"#716464","bold":true,"align":"left"},
+            "nodeParent":1,
+            "label":"Text",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":66,
             "child":[
                 ]
         }],

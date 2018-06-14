@@ -7,12 +7,14 @@ class UIRole{
     private aniCount:number = 0;
     public heroKey:string;
     private disParent;
-
+    private imgShadow:Laya.Image;
+    
     private aniId:number;
     private loop:boolean;
     private caller:any;
     private method:Function;
     private aniUrl:string;
+
 
     constructor(heroKey:string){
         this.heroKey = heroKey;
@@ -20,17 +22,32 @@ class UIRole{
         this.skeletonAni = new Skeleton();
         
     }
-    public addParent(parent,rx:number,ry:number,sx?:number,sy?:number):void
+    public addParent(parent,rx:number,ry:number,sx?:number,sy?:number,showShadow?:boolean):void
     {
         this.disParent = parent;
+        var config:HeroSampleConfig = ConfigManager.ins.getHeroSampleConfig(this.heroKey);
         if(sx === undefined)
-            sx = -1;
-        if(sy === undefined)
-            sy = 1;
+        {
+            sx = -config.modelSize;
+        }
+        if(sy === undefined){
+            sy = config.modelSize;
+        }
+        if(showShadow === undefined)
+            showShadow = false;
+
+        this.imgShadow = new Laya.Image("comp/img_shadow.png");
+        this.imgShadow.scale(sx,sy);
+        this.imgShadow.x = rx - this.imgShadow.width * sx / 2;
+        this.imgShadow.y = ry - this.imgShadow.height * sy / 2;
+        this.imgShadow.alpha = 0.3;
+        this.imgShadow.visible = showShadow;
+        parent.addChild(this.imgShadow)
         this.skeletonAni.scale(sx,sy);
         this.skeletonAni.pos(rx,ry);
         this.disParent.addChild(this.skeletonAni);
-        this.aniPlay(NewRoleAniIndex.STAND);
+        this.aniPlay(RoleAniIndex.STAND);
+        
     }
 
     public updateRole(heroKey:string,sx?:number,sy?:number):void
@@ -119,6 +136,7 @@ class UIRole{
             // console.log(this.roleVo.name);
             this.skeletonAni.paused();
             this.method.call(this.caller);
+            
         }
     }
 
@@ -129,6 +147,13 @@ class UIRole{
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();
             this.aniPlay(this.aniId,this.loop,this.caller,this.method);
+
+
+            // var rect = this.skeletonAni.getSelfBounds();
+            // this.imgShadow.width = rect.width / 4;
+            // this.imgShadow.height = this.imgShadow.height * this.skeletonAni.scaleY;
+            // this.imgShadow.x = this.skeletonAni.x - this.imgShadow.width / 2;
+            // this.imgShadow.y = this.skeletonAni.y - this.imgShadow.height / 2;
         }
     }
     private skeletonLoadError(url):void

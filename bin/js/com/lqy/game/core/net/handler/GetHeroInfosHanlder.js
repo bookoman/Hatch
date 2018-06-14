@@ -45,6 +45,7 @@ var GetHeroInfosHanlder = /** @class */ (function (_super) {
                     heroVo[key] = info[key];
                 }
             }
+            heroVo.initBaseData();
             selfPlayerData.heroVoDic.set(heroVo.heroId, heroVo);
         }
         //阵型数据
@@ -53,9 +54,9 @@ var GetHeroInfosHanlder = /** @class */ (function (_super) {
         for (var key in heroInfo.heroFormation) {
             heroId = heroInfo.heroFormation[key];
             selfPlayerData.heroLineupDic.set(key, heroId);
-            selfPlayerData.addUpHeroVo(heroId);
+            selfPlayerData.addUpHeroVo(heroId, Number(key));
         }
-        selfPlayerData.heroSum = selfPlayerData.upHeroVos.length;
+        selfPlayerData.heroSum = selfPlayerData.heroLineupDic.values.length;
         _super.prototype.success.call(this);
     };
     return GetHeroInfosHanlder;

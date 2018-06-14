@@ -7,11 +7,12 @@ var PlayerData = /** @class */ (function () {
         this.heroSum = 0;
     }
     /**添加上阵宠物 */
-    PlayerData.prototype.addUpHeroVo = function (heroId) {
+    PlayerData.prototype.addUpHeroVo = function (heroId, lineId) {
         if (!this.upHeroVos) {
             this.upHeroVos = [];
         }
         var heroVo = GameDataManager.ins.getHeroVoByHeroId(heroId);
+        heroVo.lineupGrid = lineId;
         var ind = this.upHeroVos.indexOf(heroVo);
         if (ind > -1) {
             this.upHeroVos[ind] = heroVo;
@@ -27,6 +28,7 @@ var PlayerData = /** @class */ (function () {
         }
         for (var i = 0; i < this.upHeroVos.length; i++) {
             if (this.upHeroVos[i].heroId == heroId) {
+                this.upHeroVos[i].lineupGrid = null;
                 this.upHeroVos.splice(i, 1);
                 break;
             }
