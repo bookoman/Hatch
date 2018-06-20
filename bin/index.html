@@ -55,6 +55,7 @@
 	<script src="js/com/lqy/game/util/LG.js"></script>
 	<script src="js/com/lqy/game/util/DebugViewUtil.js"></script>
 	<script src="js/com/lqy/game/util/CommonUtil.js"></script>
+	<script src="js/com/lqy/game/core/TipsManager.js"></script>
 	<script src="js/com/lqy/game/core/SoundsManager.js"></script>
 	<script src="js/com/lqy/game/core/SoundManager.js"></script>
 	<script src="js/com/lqy/game/core/SceneMananger.js"></script>
@@ -77,6 +78,7 @@
 	<script src="js/com/lqy/game/core/model/config/QualityScoreSampleConfig.js"></script>
 	<script src="js/com/lqy/game/core/model/config/QualitySampleConfig.js"></script>
 	<script src="js/com/lqy/game/core/model/config/MasterHeroSampleConfig.js"></script>
+	<script src="js/com/lqy/game/core/model/config/ItemSampleConfig.js"></script>
 	<script src="js/com/lqy/game/core/model/config/HeroTypeSampleConfig.js"></script>
 	<script src="js/com/lqy/game/core/model/config/HeroSkillSampleConfig.js"></script>
 	<script src="js/com/lqy/game/core/model/config/HeroSampleConfig.js"></script>
@@ -104,10 +106,12 @@
 	<script src="js/com/lqy/game/component/IconView.js"></script>
 	<script src="js/com/lqy/game/component/ModuleLoadingView.js"></script>
 	<script src="js/com/lqy/game/component/PreLoadingView.js"></script>
+	<script src="js/com/lqy/game/component/PreLoadingViewCopy.js"></script>
 	<script src="js/com/lqy/game/component/RoleBloodBar.js"></script>
 	<script src="js/com/lqy/game/component/SkillView.js"></script>
-	<script src="js/com/lqy/game/control/BattleReportMediator.js"></script>
-	<script src="js/com/lqy/game/control/ChallegenBossMediator.js"></script>
+	<script src="js/com/lqy/game/control/battle/BattleReportMediator.js"></script>
+	<script src="js/com/lqy/game/control/battle/ChallegenBossMediator.js"></script>
+	<script src="js/com/lqy/game/control/battle/MapBattleMediator.js"></script>
 	<script src="js/com/lqy/game/control/ChoiceServerMediator.js"></script>
 	<script src="js/com/lqy/game/control/EnterGameMediator.js"></script>
 	<script src="js/com/lqy/game/control/EquipMediator.js"></script>
@@ -120,7 +124,6 @@
 	<script src="js/com/lqy/game/control/lineup/LineupMediatorBackups.js"></script>
 	<script src="js/com/lqy/game/control/LoginMediator.js"></script>
 	<script src="js/com/lqy/game/control/map/GateListMediator.js"></script>
-	<script src="js/com/lqy/game/control/map/MapBattleMediator.js"></script>
 	<script src="js/com/lqy/game/control/map/MapWorldMediator.js"></script>
 	<script src="js/com/lqy/game/control/SignMediator.js"></script>
 	<script src="js/com/lqy/game/control/TestMediator.js"></script>
@@ -133,9 +136,13 @@
 	<script src="js/com/lqy/game/core/model/vo/MasterNPCVo.js"></script>
 	<script src="js/com/lqy/game/core/model/vo/MasterVo.js"></script>
 	<script src="js/com/lqy/game/core/net/SocketHanlder.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/BattleGateHandler.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/GateHangupStateHandler.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/GateSwitchHangupHandler.js"></script>
 	<script src="js/com/lqy/game/core/net/handler/GetGateInfoHandler.js"></script>
 	<script src="js/com/lqy/game/core/net/handler/GetHeroInfosHanlder.js"></script>
 	<script src="js/com/lqy/game/core/net/handler/HeroUpdateLineupHanlder.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/ScanGateHandler.js"></script>
 	<script src="js/com/lqy/game/core/net/handler/UserLoginHandler.js"></script>
 	<script src="js/com/lqy/game/core/net/PackageIn.js"></script>
 	<script src="js/com/lqy/game/core/net/PackageOut.js"></script>

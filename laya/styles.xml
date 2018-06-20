@@ -18,4 +18,12 @@
    <item name="main/img_tzdb8.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
    <item name="main/img_tzdb9.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/worldmap/p3.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/preload/l_yezhi_1.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/preload/bg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/preload/light.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/preload/loading.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/preload/preBg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/preload/progress.png" type="ProgressBar" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/preload/progressBg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/preload/progressLight.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
 </res>

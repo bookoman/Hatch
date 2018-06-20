@@ -30,6 +30,8 @@ var MapWorldMediator = /** @class */ (function (_super) {
         return _this;
     }
     MapWorldMediator.prototype.initView = function () {
+        this.view = new ui.map.MapWorldViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         var imgBlock;
         for (var i = 0; i < GameConfig.GATE_MAP_KEYS.length; i++) {
             imgBlock = this.view["imgBlock" + i];
@@ -51,6 +53,9 @@ var MapWorldMediator = /** @class */ (function (_super) {
         for (var i = 0; i < GameConfig.GATE_MAP_KEYS.length; i++) {
             this.view["imgBlock" + i].off(Laya.Event.CLICK, this, this.onBlockClick);
         }
+    };
+    /**进入地图假战斗 */
+    MapWorldMediator.prototype.enterMapBattle = function () {
     };
     /**
      *
@@ -125,7 +130,9 @@ var MapWorldMediator = /** @class */ (function (_super) {
     };
     MapWorldMediator.prototype.dispose = function () {
         _super.prototype.dispose.call(this);
-        this.gateListMediator.dispose();
+        if (this.gateListMediator) {
+            this.gateListMediator.dispose();
+        }
     };
     return MapWorldMediator;
 }(BaseMediator));

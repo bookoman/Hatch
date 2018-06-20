@@ -20,6 +20,8 @@ class MapWorldMediator extends BaseMediator{
     }
     protected initView():void
     {   
+        this.view = new ui.map.MapWorldViewUI();
+        LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,false,true);
 
         var imgBlock:Laya.Image;
         for(var i = 0; i < GameConfig.GATE_MAP_KEYS.length;i++)
@@ -37,6 +39,8 @@ class MapWorldMediator extends BaseMediator{
     {
         this.view.panelBlock.on(Laya.Event.MOUSE_DOWN,this,this.onViewMouseEvent);
         this.view.panelBlock.on(Laya.Event.MOUSE_UP,this,this.onViewMouseEvent);
+        
+        
         // console.log(imgBlock.mouseEnabled,imgBlock.mouseThrough);
     }
     
@@ -44,11 +48,18 @@ class MapWorldMediator extends BaseMediator{
     {
         this.view.panelBlock.off(Laya.Event.MOUSE_DOWN,this.onViewMouseEvent);
         this.view.panelBlock.off(Laya.Event.MOUSE_UP,this.onViewMouseEvent);
+        
 
         for(var i = 0; i < GameConfig.GATE_MAP_KEYS.length;i++)
         {
             this.view["imgBlock"+i].off(Laya.Event.CLICK,this,this.onBlockClick);
         }
+    }
+   
+    /**进入地图假战斗 */
+    public enterMapBattle():void
+    {
+        
     }
     /**
      * 
@@ -144,6 +155,9 @@ class MapWorldMediator extends BaseMediator{
     public dispose():void
     {
         super.dispose();
-        this.gateListMediator.dispose();
+        if(this.gateListMediator)
+        {
+            this.gateListMediator.dispose();
+        }
     }
 }

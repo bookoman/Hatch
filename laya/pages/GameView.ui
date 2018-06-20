@@ -1,8 +1,8 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":1,
-    "selecteID":29,
+    "selectedBox":12,
+    "selecteID":11,
     "props":{"width":750,"sceneColor":"#000000","mouseThrough":true,"height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -81,7 +81,7 @@
                 {
                     "x":30,
                     "type":"Button",
-                    "props":{"y":0,"x":294,"width":148,"var":"btnHero","stateNum":"1","skin":"main/juese.png","labelSize":40,"height":100},
+                    "props":{"y":0,"x":435,"width":148,"var":"btnHero","stateNum":"1","skin":"main/juese.png","labelSize":40,"height":100},
                     "nodeParent":12,
                     "label":"Button(btnHero)",
                     "isOpen":true,
@@ -109,7 +109,7 @@
                 {
                     "x":30,
                     "type":"Button",
-                    "props":{"y":-1,"x":449,"width":148,"var":"btnEquip","stateNum":"1","skin":"main/bag.png","labelSize":40,"height":100},
+                    "props":{"y":-1,"x":590,"width":148,"var":"btnEquip","stateNum":"1","skin":"main/bag.png","labelSize":40,"height":100},
                     "nodeParent":12,
                     "label":"Button(btnEquip)",
                     "isOpen":true,
@@ -123,9 +123,9 @@
                 {
                     "x":30,
                     "type":"Button",
-                    "props":{"y":-1,"x":598,"width":148,"var":"btnHome","stateNum":"1","skin":"main/zuoz.png","labelSize":40,"height":100},
+                    "props":{"y":0,"x":292,"width":148,"var":"btnBattle","stateNum":"1","skin":"main/zuoz.png","labelSize":40,"height":100},
                     "nodeParent":12,
-                    "label":"Button(btnHome)",
+                    "label":"Button(btnBattle)",
                     "isOpen":true,
                     "isDirectory":false,
                     "isAniNode":true,

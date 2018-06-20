@@ -154,8 +154,8 @@ var GameButtomTabIndex;
 (function (GameButtomTabIndex) {
     GameButtomTabIndex[GameButtomTabIndex["MAP_BATTLE"] = 0] = "MAP_BATTLE";
     GameButtomTabIndex[GameButtomTabIndex["LINEUP"] = 1] = "LINEUP";
-    GameButtomTabIndex[GameButtomTabIndex["HERO"] = 2] = "HERO";
-    GameButtomTabIndex[GameButtomTabIndex["EQUIP"] = 3] = "EQUIP";
-    GameButtomTabIndex[GameButtomTabIndex["HOME"] = 4] = "HOME";
+    GameButtomTabIndex[GameButtomTabIndex["BATTLE"] = 2] = "BATTLE";
+    GameButtomTabIndex[GameButtomTabIndex["HERO"] = 3] = "HERO";
+    GameButtomTabIndex[GameButtomTabIndex["EQUIP"] = 4] = "EQUIP";
 })(GameButtomTabIndex || (GameButtomTabIndex = {}));
 //# sourceMappingURL=GameConfig.js.map

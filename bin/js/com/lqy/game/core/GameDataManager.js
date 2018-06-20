@@ -11,7 +11,7 @@ var GameDataManager = /** @class */ (function () {
         /**关卡信息数组 */
         this.gateInfoDic = null;
         /**关卡地图开启信息 */
-        this.gateMapInfoObj = {};
+        this.gateMapInfoObj = null;
         /**当前挂机关卡 */
         this.hangGateKey = null;
     }
@@ -26,7 +26,8 @@ var GameDataManager = /** @class */ (function () {
         configurable: true
     });
     /**保存开启关卡信息 */
-    GameDataManager.prototype.saveGateInfoVoDic = function (gateData) {
+    GameDataManager.prototype.saveGateInfoVoInfo = function (gateData) {
+        this.gateMapInfoObj = {};
         this.hangGateKey = gateData.hangGateKey;
         if (this.gateInfoDic == null) {
             this.gateInfoDic = new Dictionary();
@@ -116,7 +117,7 @@ var GameDataManager = /** @class */ (function () {
         //怪物数据
         this.enemyData = new EnemyData();
         this.enemyData.masterNPCVos = [];
-        var gateSampleConfig = ConfigManager.ins.getGateSampleConfig("G_1-1");
+        var gateSampleConfig = ConfigManager.ins.getGateSampleConfig(this.hangGateKey);
         var keys = gateSampleConfig.getRandowHandUpMasters();
         // var keys:Array<string> = ["20001"];
         var masterNPCVo;

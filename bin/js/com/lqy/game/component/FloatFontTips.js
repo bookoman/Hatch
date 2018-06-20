@@ -14,7 +14,9 @@ var __extends = (this && this.__extends) || (function () {
 var FloatFontTips = /** @class */ (function (_super) {
     __extends(FloatFontTips, _super);
     function FloatFontTips() {
-        return _super.call(this) || this;
+        var _this = _super.call(this) || this;
+        _this.htmlDiv = new Laya.HTMLDivElement();
+        return _this;
     }
     /**
      * 设置属性
@@ -38,17 +40,39 @@ var FloatFontTips = /** @class */ (function (_super) {
      */
     FloatFontTips.prototype.show = function (msg, parent, sx, sy, showTime, floatHei) {
         this.text = msg;
-        this.x = sx;
-        this.y = sy;
+        this.x = sx - this.width / 2;
+        this.y = sy - this.height / 2;
         parent.addChild(this);
         this.alpha = 1;
-        Laya.Tween.to(this, { y: this.y - floatHei, alpha: 0.6 }, showTime * 1000, Laya.Ease.backInOut, new Laya.Handler(this, this.floatCompleted));
+        Laya.Tween.to(this, { y: this.y - floatHei, alpha: 0.6 }, showTime * 1000, Laya.Ease.backInOut, Laya.Handler.create(this, this.floatCompleted));
+    };
+    /**
+     * 显示html文本
+     * @param html
+     * @param parent
+     * @param sx
+     * @param sy
+     * @param showTime
+     * @param floatHei
+     */
+    FloatFontTips.prototype.showHtml = function (html, parent, sx, sy, showTime, floatHei) {
+        this.htmlDiv.innerHTML = html;
+        this.addChild(this.htmlDiv);
+        // htmlDiv.pos(50, 200);
+        this.x = sx - this.htmlDiv.contextWidth / 2;
+        this.y = sy - this.htmlDiv.contextHeight / 2;
+        parent.addChild(this);
+        this.alpha = 1;
+        Laya.Tween.to(this, { y: this.y - floatHei, alpha: 0.6 }, showTime * 1000, Laya.Ease.backInOut, Laya.Handler.create(this, this.floatCompleted));
     };
     /**
      * 移动完成
      */
     FloatFontTips.prototype.floatCompleted = function () {
+        this.htmlDiv.innerHTML = "";
+        this.text = "";
         this.removeSelf();
+        Laya.Tween.clearAll(this);
         ObjectPoolUtil.stillObject(ObjectPoolUtil.FLOAT_FONT_TIPS, this);
     };
     return FloatFontTips;

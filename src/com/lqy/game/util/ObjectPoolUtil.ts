@@ -30,7 +30,7 @@ class ObjectPoolUtil{
     public static init():void
     {
         this.floatFontTipsAry = new Array();
-        for(var i = 0;i < 20; i++)
+        for(var i = 0;i < 30; i++)
         {
             this.floatFontTipsAry.push(new FloatFontTips());
         }

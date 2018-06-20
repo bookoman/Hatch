@@ -51,6 +51,8 @@ var ConfigManager = /** @class */ (function () {
         this.heroSkillSampleDic = null;
         /**怪物配置 */
         this.masterHeroSampleDic = null;
+        /**道具 */
+        this.itemSampleDic = null;
         //测试数据
         this.roleConfigDic = new Dictionary();
         this.skillConfigDic = new Dictionary();
@@ -128,6 +130,7 @@ var ConfigManager = /** @class */ (function () {
         this.parseGateSample();
         this.parseHeroSkillSample();
         this.parseMasterHeroSample();
+        this.parseItemSampleDic();
     };
     /**宠物品质 */
     ConfigManager.prototype.parseQualitySample = function () {
@@ -213,6 +216,15 @@ var ConfigManager = /** @class */ (function () {
         this.xmlToObjcet(configStr, MasterHeroSampleConfig, "key", this.masterHeroSampleDic);
         Laya.loader.clearRes("res/config/MasterHeroSample.xml");
     };
+    /**道具配置 */
+    ConfigManager.prototype.parseItemSampleDic = function () {
+        if (this.itemSampleDic == null) {
+            this.itemSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/ItemSample.xml");
+        this.xmlToObjcet(configStr, ItemSampleConfig, "key", this.itemSampleDic);
+        Laya.loader.clearRes("res/config/ItemSample.xml");
+    };
     /**
      *得到角色配置
      * @param id
@@ -278,6 +290,10 @@ var ConfigManager = /** @class */ (function () {
     ConfigManager.prototype.getMasterHeroSampleConfig = function (key) {
         return this.masterHeroSampleDic.get(key);
     };
+    /**根据key得到物品配置 */
+    ConfigManager.prototype.getItemSampleConfig = function (key) {
+        return this.itemSampleDic.get(key);
+    };
     /**
      * xml转为对象
      * @param str
@@ -286,6 +302,7 @@ var ConfigManager = /** @class */ (function () {
      * @param dic
      */
     ConfigManager.prototype.xmlToObjcet = function (str, DineClass, keyPro, dic) {
+        console.log(DineClass);
         var content = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
         var datas = content.split("\r\n");
         var element;

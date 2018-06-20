@@ -25,8 +25,8 @@ var GetGateInfoHandler = /** @class */ (function (_super) {
     /**处理数据 */
     GetGateInfoHandler.prototype.success = function (message) {
         var jsonObj = JSON.parse(message.roleGateInfo);
-        GameDataManager.ins.saveGateInfoVoDic(jsonObj);
-        console.log(message.roleGateInfo);
+        GameDataManager.ins.saveGateInfoVoInfo(jsonObj);
+        // console.log(message.roleGateInfo);
         _super.prototype.success.call(this);
     };
     return GetGateInfoHandler;

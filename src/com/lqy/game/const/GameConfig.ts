@@ -92,6 +92,9 @@ class Protocol{
     public static GATE_SCAN:number = 5;
 
 
+
+
+
 }
 /**http请求地址 */
 class HTTPRequestUrl{
@@ -147,5 +150,5 @@ enum BattleAttCampType
 /**游戏底部按钮索引 */
 enum GameButtomTabIndex
 {
-    MAP_BATTLE = 0,LINEUP,HERO,EQUIP,HOME
+    MAP_BATTLE = 0,LINEUP,BATTLE,HERO,EQUIP
 }

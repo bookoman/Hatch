@@ -6,7 +6,7 @@ var ObjectPoolUtil = /** @class */ (function () {
     }
     ObjectPoolUtil.init = function () {
         this.floatFontTipsAry = new Array();
-        for (var i = 0; i < 20; i++) {
+        for (var i = 0; i < 30; i++) {
             this.floatFontTipsAry.push(new FloatFontTips());
         }
         this.roleBloodBarAry = new Array();

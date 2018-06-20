@@ -20,19 +20,26 @@ class PreLoadScene extends BaseScene{
             {url:"res/config/HeroSample.xml",type:Loader.TEXT},
             {url:"res/config/HeroTypeSample.xml",type:Loader.TEXT},
             {url:"res/config/QualityScoreSample.xml",type:Loader.TEXT},
-            {url:"res/config/MasterHeroSample.xml",type:Loader.TEXT}
+            {url:"res/config/MasterHeroSample.xml",type:Loader.TEXT},
+            {url:"res/config/ItemSample.xml",type:Loader.TEXT}
         ];
         Laya.loader.load(resAry, Handler.create(this,this.onLoaded),Handler.create(this,this.loadGameResProgress,null,false));
+        PreLoadingView.ins.setCallBack(this,this.loadedComplete);
     }
     private loadGameResProgress(value):void
     {
         PreLoadingView.ins.setProgress(value);
     }
+    private loadedComplete():void
+    {
+        ConfigManager.ins.parsePreLoadConfigs();
+        SceneMananger.ins.enter(SceneMananger.GAME_SCENE);
+    }
     public onLoaded(): void
     {
         PreLoadingView.ins.setProgress(1);
-        ConfigManager.ins.parsePreLoadConfigs();
-        SceneMananger.ins.enter(SceneMananger.GAME_SCENE);
+        // ConfigManager.ins.parsePreLoadConfigs();
+        // SceneMananger.ins.enter(SceneMananger.GAME_SCENE);
         // DebugViewUtil.log("浏览器宽高",Laya.Browser.width+","+Laya.Browser.height);
     }
 

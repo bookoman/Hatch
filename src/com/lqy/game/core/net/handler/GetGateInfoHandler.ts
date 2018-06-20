@@ -15,8 +15,8 @@ class GetGateInfoHandler extends SocketHanlder{
     protected success(message):void
     {
         var jsonObj = JSON.parse(message.roleGateInfo);
-        GameDataManager.ins.saveGateInfoVoDic(jsonObj);
-        console.log(message.roleGateInfo);
+        GameDataManager.ins.saveGateInfoVoInfo(jsonObj);
+        // console.log(message.roleGateInfo);
         
         super.success();
     }

@@ -31,7 +31,8 @@ var MapBattleMediator = /** @class */ (function (_super) {
             // this.showMapWordMediator();
         }
         else {
-            this.view.mapWordView.removeSelf();
+            this.showMapWordMediator();
+            // this.view.mapWordView.removeSelf();
             // this.enterMapBattle();
         }
     };
@@ -48,7 +49,8 @@ var MapBattleMediator = /** @class */ (function (_super) {
         WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_INFO, this);
     };
     MapBattleMediator.prototype.choiceChanllegeGate = function () {
-        this.mapWorldMediator.dispose();
+        if (this.mapWorldMediator)
+            this.mapWorldMediator.dispose();
         this.enterMapBattle();
     };
     MapBattleMediator.prototype.gateInfoHanlder = function () {

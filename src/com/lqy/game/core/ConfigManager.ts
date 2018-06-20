@@ -57,6 +57,8 @@ class ConfigManager{
     private heroSkillSampleDic:Dictionary = null;
     /**怪物配置 */
     private masterHeroSampleDic:Dictionary = null;
+    /**道具 */
+    private itemSampleDic:Dictionary = null;
 
     private static _ins:ConfigManager = null;
 
@@ -141,6 +143,7 @@ class ConfigManager{
         this.parseGateSample();
         this.parseHeroSkillSample();
         this.parseMasterHeroSample();
+        this.parseItemSampleDic();
     }
     
     /**宠物品质 */
@@ -256,6 +259,18 @@ class ConfigManager{
 
         Laya.loader.clearRes("res/config/MasterHeroSample.xml");
     }
+    /**道具配置 */
+    public parseItemSampleDic():void
+    {
+        if(this.itemSampleDic == null)
+        {
+            this.itemSampleDic = new Dictionary();
+        }
+        var configStr = Laya.loader.getRes("res/config/ItemSample.xml");
+        this.xmlToObjcet(configStr,ItemSampleConfig,"key",this.itemSampleDic);
+
+        Laya.loader.clearRes("res/config/ItemSample.xml");
+    }
 
 
     /**
@@ -340,6 +355,11 @@ class ConfigManager{
     {
         return this.masterHeroSampleDic.get(key);
     }
+    /**根据key得到物品配置 */
+    public getItemSampleConfig(key:string):ItemSampleConfig
+    {
+        return this.itemSampleDic.get(key);
+    }
 
 
 
@@ -359,6 +379,7 @@ class ConfigManager{
      */
     private xmlToObjcet(str:string,DineClass?:any,keyPro?:any,dic?:Dictionary):void
     {
+        console.log(DineClass);
         var content:string = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
         var datas:Array<string> = content.split("\r\n");
         var element:string;

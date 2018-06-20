@@ -48,6 +48,46 @@ class ClientSender{
         var buffer = GateInfoRequest.encode(message).finish();
         WebSocketManager.ins.sendMsg(Protocol.GATE,Protocol.GATE_INFO,buffer);
     }
+    /**挑战关卡 */
+    public static ballteGateReq(gateKey:string):void
+    {
+        var BattleGateRequest = WebSocketManager.ins.defineProtoClass("BattleGateRequest");
+        var message:any = {};
+        message.gateKey = gateKey;
+        var buffer = BattleGateRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.GATE,Protocol.GATE_BATTLE,buffer);
+    }
+
+    /**请求扫荡关卡 */
+    public static scanGateReq(gateKey:string):void
+    {
+        var ScanGateRequest = WebSocketManager.ins.defineProtoClass("ScanGateRequest");
+        var message:any = {};
+        message.gateKey = gateKey;
+        var buffer = ScanGateRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.GATE,Protocol.GATE_SCAN,buffer);
+    }
+    /**请求关卡挂机奖励信息 */
+    public static gateHangupStateReq():void
+    {
+        var HangupStateRequest = WebSocketManager.ins.defineProtoClass("HangupStateRequest");
+        var message:any = {};
+        message.statusCode = 1;
+        var buffer = HangupStateRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.GATE,Protocol.GATE_HANDUP_STATE,buffer);
+        // WebSocketManager.ins.sendMsg(Protocol.GATE,Protocol.GATE_HANDUP_STATE);
+    }
+    /**请求关卡挂机信息 */
+    public static gateSwitchHangReq(gateKey:string):void
+    {
+        var SwitchHangGateRequest = WebSocketManager.ins.defineProtoClass("SwitchHangGateRequest");
+        var message:any = {};
+        message.gateKey = gateKey;
+        var buffer = SwitchHangGateRequest.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.GATE,Protocol.GATE_SWITCH_HANG_GATE,buffer);
+        // WebSocketManager.ins.sendMsg(Protocol.GATE,Protocol.GATE_HANDUP_STATE);
+    }
+    
 
 
     /**********************************Http */

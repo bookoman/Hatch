@@ -17,6 +17,8 @@ var PreLoadingView = /** @class */ (function (_super) {
     __extends(PreLoadingView, _super);
     function PreLoadingView() {
         var _this = _super.call(this) || this;
+        _this.timeRunValue = 0;
+        _this.progressValue = 0;
         _this.initSkin();
         return _this;
     }
@@ -30,12 +32,20 @@ var PreLoadingView = /** @class */ (function (_super) {
         enumerable: true,
         configurable: true
     });
+    PreLoadingView.prototype.setCallBack = function (caller, callBack) {
+        this.caller = caller;
+        this.callBack = callBack;
+    };
     PreLoadingView.prototype.initSkin = function () {
-        this.imgBg = new LayaImage("res/outside/preload/bg.jpg");
+        this.imgBg = new LayaImage("unpack/preload/bg.png");
+        this.width = GameConfig.STAGE_WIDTH;
+        this.height = 180;
         this.x = 0;
         this.y = 0;
-        this.addChild(this.imgBg);
-        Laya.loader.load(["res/outside/preload/progress.png", "res/outside/preload/progressBg.png"], Laya.Handler.create(this, this.resLoaded));
+        this.boxLoading.addChild(this.imgBg);
+        var resAry = ["unpack/preload/progress.png", "unpack/preload/progressBg.png",
+            "unpack/preload/progressLight.png", "unpack/preload/preBg.png", "unpack/preload/light.png", "unpack/preload/loading.png"];
+        Laya.loader.load(resAry, Laya.Handler.create(this, this.resLoaded));
     };
     /**
      * 加载资源
@@ -43,41 +53,103 @@ var PreLoadingView = /** @class */ (function (_super) {
      */
     PreLoadingView.prototype.resLoaded = function (e) {
         this.imgProBg = new LayaImage();
-        this.imgProBg.texture = Laya.loader.getRes("res/outside/preload/progressBg.png");
-        this.imgProBg.x = GameConfig.STAGE_WIDTH - this.imgProBg.texture.width >> 1;
-        this.imgProBg.y = GameConfig.STAGE_HEIGHT - this.imgProBg.texture.height >> 1;
-        this.addChild(this.imgProBg);
+        this.imgProBg.texture = Laya.loader.getRes("unpack/preload/progressBg.png");
+        this.imgProBg.x = this.width - this.imgProBg.texture.width >> 1;
+        this.imgProBg.y = this.height - this.imgProBg.texture.height;
+        this.boxLoading.addChild(this.imgProBg);
+        this.imgPreBg = new LayaImage();
+        this.imgPreBg.texture = Laya.loader.getRes("unpack/preload/preBg.png");
+        this.imgPreBg.x = this.width - this.imgPreBg.texture.width >> 1;
+        this.imgPreBg.y = this.height - this.imgPreBg.texture.height;
+        this.boxLoading.addChild(this.imgPreBg);
         this.imgPro = new LayaImage();
-        this.imgPro.texture = Laya.loader.getRes("res/outside/preload/progress.png");
+        this.imgPro.texture = Laya.loader.getRes("unpack/preload/progress.png");
         this.imgPro.x = this.imgProBg.x;
         this.imgPro.y = this.imgProBg.y + 1;
-        this.addChild(this.imgPro);
-        this.lblPro = new LayaLabel();
-        this.lblPro.x = this.imgProBg.x;
-        this.lblPro.y = this.imgProBg.y;
-        this.lblPro.width = this.imgPro.texture.width;
-        this.lblPro.height = this.imgPro.texture.height;
-        this.lblPro.fontSize = 16;
-        this.lblPro.align = "center";
-        this.lblPro.text = "";
-        this.addChild(this.lblPro);
+        this.boxLoading.addChild(this.imgPro);
+        this.imgProLight = new LayaImage("unpack/preload/progressLight.png");
+        this.imgProLight.x = this.imgPro.x;
+        this.imgProLight.y = this.imgPro.y;
+        this.imgProLight.width = 1;
+        this.boxLoading.addChild(this.imgProLight);
+        // this.lblPro = new LayaLabel();
+        // this.lblPro.x = this.imgProBg.x
+        // this.lblPro.y = this.imgProBg.y;
+        // this.lblPro.width = this.imgPro.texture.width;
+        // this.lblPro.height = this.imgPro.texture.height;
+        // this.lblPro.fontSize = 16;
+        // this.lblPro.align = "center";
+        // this.lblPro.text = "";
+        // this.addChild(this.lblPro);
+        this.loading = new LayaImage();
+        this.loading.texture = Laya.loader.getRes("unpack/preload/loading.png");
+        this.loading.x = this.width - this.loading.texture.width >> 1;
+        this.loading.y = this.height + 4;
+        this.boxLoading.addChild(this.loading);
+        this.lightIcon = new LayaImage();
+        this.lightIcon.texture = Laya.loader.getRes("unpack/preload/light.png");
+        this.lightIcon.x = this.imgProBg.x;
+        this.lightIcon.y = this.imgProBg.y + this.imgProBg.texture.height / 2 - this.lightIcon.texture.height / 2;
+        this.boxLoading.addChild(this.lightIcon);
         this.setProgress(0);
+        Laya.timer.loop(10, this, this.timeRunProgress);
     };
-    PreLoadingView.prototype.setProgress = function (value) {
-        if (this.imgPro && this.lblPro) {
+    PreLoadingView.prototype.timeRunProgress = function () {
+        if (this.imgPro) {
             if (this.maskRect == null) {
                 this.maskRect = new Rectangle(0, 0, this.imgPro.texture.width, this.imgPro.texture.height);
             }
-            this.maskRect.x = (1 - value) * this.imgPro.texture.width;
+            this.maskRect.x = this.imgProBg.texture.width - this.timeRunValue;
             this.imgPro.scrollRect = this.maskRect;
-            this.lblPro.text = "资源加载进度（" + Math.floor(value * 100) + "%）";
+            //高亮图标
+            // var proW:number = value * this.imgPro.texture.width;
+            this.lightIcon.x = this.timeRunValue - this.lightIcon.texture.width / 2;
+            this.imgProLight.width = this.timeRunValue / 3;
+            this.imgProLight.x = this.timeRunValue - this.imgProLight.width;
+            // this.lblPro.text = "资源加载进度（"+ Math.floor(value * 100)+"%）";
+            // console.log("..........."+value);
         }
-        if (value == 1) {
+        //如果加载值
+        if (this.timeRunValue / this.imgProBg.texture.width > 0.95 && this.progressValue < 1) {
+            return;
+        }
+        this.timeRunValue += Math.max(4, Math.random() * 20);
+        if (this.timeRunValue >= this.imgProBg.texture.width) {
+            Laya.timer.clear(this, this.timeRunProgress);
+            if (this.caller && this.callBack) {
+                this.callBack.call(this.caller);
+            }
             Laya.timer.once(200, this, this.hide);
         }
     };
+    PreLoadingView.prototype.setProgress = function (value) {
+        this.progressValue = value;
+        // if(this.imgPro && this.lblPro)
+        // if(this.imgPro)
+        // {
+        //     if(this.maskRect == null)
+        //     {
+        //         this.maskRect = new Rectangle(0,0,this.imgPro.texture.width,this.imgPro.texture.height);
+        //     }
+        //     this.maskRect.x = (1 - value) * this.imgPro.texture.width;
+        //     this.imgPro.scrollRect = this.maskRect;
+        //     //高亮图标
+        //     var proW:number = value * this.imgPro.texture.width;
+        //     this.lightIcon.x = proW - this.lightIcon.texture.width / 2;
+        //     this.imgProLight.width = proW / 3;
+        //     this.imgProLight.x = proW - this.imgProLight.width;
+        //     // this.lblPro.text = "资源加载进度（"+ Math.floor(value * 100)+"%）";
+        // }
+        // if(value == 1)
+        // {
+        //     Laya.timer.once(200,this,this.hide);
+        // }
+    };
     PreLoadingView.prototype.show = function () {
-        LayerManager.ins.addToLayer(this, LayerManager.UI_LAYER, false, false, false);
+        LayerManager.ins.addToLayer(this, LayerManager.UI_LAYER, false, false, true);
+        var aniObj = this.getChildByName("yezhi");
+        aniObj.x = this.x + this.width / 2;
+        aniObj.y = this.imgBg.y;
     };
     PreLoadingView.prototype.hide = function () {
         this.imgBg.removeSelf();
@@ -86,11 +158,21 @@ var PreLoadingView = /** @class */ (function (_super) {
         this.imgPro = null;
         this.imgProBg.removeSelf();
         this.imgProBg = null;
-        this.lblPro.removeSelf();
-        this.lblPro = null;
+        this.imgProLight.removeSelf();
+        this.imgProLight = null;
+        this.imgPreBg.removeSelf();
+        this.imgPreBg = null;
+        this.lightIcon.removeSelf();
+        this.lightIcon = null;
+        this.loading.removeSelf();
+        this.loading = null;
+        // this.lblPro.removeSelf();
+        // this.lblPro = null;
+        this.caller = null;
+        this.callBack = null;
         this.removeSelf();
     };
     PreLoadingView._ins = null;
     return PreLoadingView;
-}(Laya.Sprite));
+}(ui.PreLoadViewUI));
 //# sourceMappingURL=PreLoadingView.js.map

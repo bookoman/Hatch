@@ -33,6 +33,7 @@ P 5EDC128C html.png
 P ACFFCCCF image.png
 P B804ADB3 img_shadow.png
 P A3066B81 img_tick.png
+P EF5C6C0E l_yezhi_1.png
 P 5EDC128C label.png
 P 5EDC128C linkbutton.png
 P 9E4DD730 progress$bar.png
@@ -108,6 +109,15 @@ R 93F650EB img_reportsbg.png
 R ABF2AEF3 main.jpg
 R 43507D1A role.jpg
 R DED7EA0A roleBg.png
+D unpack/preload
+R 63FB07A0 bg.png
+R EF5C6C0E l_yezhi_1.png
+R D7518C64 light.png
+R CA844E7B loading.png
+R 5EFEF576 preBg.png
+R F6C100E1 progress.png
+R 41CCD3AD progressBg.png
+R 5DB194CD progressLight.png
 D unpack/worldmap
 R 8BC2DFBB bg.png
 R C79DB7B3 img_gatebg.png

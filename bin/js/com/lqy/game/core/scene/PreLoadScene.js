@@ -30,17 +30,23 @@ var PreLoadScene = /** @class */ (function (_super) {
             { url: "res/config/HeroSample.xml", type: Loader.TEXT },
             { url: "res/config/HeroTypeSample.xml", type: Loader.TEXT },
             { url: "res/config/QualityScoreSample.xml", type: Loader.TEXT },
-            { url: "res/config/MasterHeroSample.xml", type: Loader.TEXT }
+            { url: "res/config/MasterHeroSample.xml", type: Loader.TEXT },
+            { url: "res/config/ItemSample.xml", type: Loader.TEXT }
         ];
         Laya.loader.load(resAry, Handler.create(this, this.onLoaded), Handler.create(this, this.loadGameResProgress, null, false));
+        PreLoadingView.ins.setCallBack(this, this.loadedComplete);
     };
     PreLoadScene.prototype.loadGameResProgress = function (value) {
         PreLoadingView.ins.setProgress(value);
     };
-    PreLoadScene.prototype.onLoaded = function () {
-        PreLoadingView.ins.setProgress(1);
+    PreLoadScene.prototype.loadedComplete = function () {
         ConfigManager.ins.parsePreLoadConfigs();
         SceneMananger.ins.enter(SceneMananger.GAME_SCENE);
+    };
+    PreLoadScene.prototype.onLoaded = function () {
+        PreLoadingView.ins.setProgress(1);
+        // ConfigManager.ins.parsePreLoadConfigs();
+        // SceneMananger.ins.enter(SceneMananger.GAME_SCENE);
         // DebugViewUtil.log("浏览器宽高",Laya.Browser.width+","+Laya.Browser.height);
     };
     PreLoadScene.prototype.leave = function () {

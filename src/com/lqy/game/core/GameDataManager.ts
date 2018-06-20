@@ -20,7 +20,7 @@ class GameDataManager{
     /**关卡信息数组 */
     public gateInfoDic:Dictionary = null;
     /**关卡地图开启信息 */
-    public gateMapInfoObj:Object = {};
+    public gateMapInfoObj:Object = null;
     /**当前挂机关卡 */
     public hangGateKey:string = null;
     
@@ -37,8 +37,10 @@ class GameDataManager{
         return this._ins;
     }
     /**保存开启关卡信息 */
-    public saveGateInfoVoDic(gateData):void
+    public saveGateInfoVoInfo(gateData):void
     {   
+        this.gateMapInfoObj = {};
+
         this.hangGateKey = gateData.hangGateKey;
         if(this.gateInfoDic == null)
         {
@@ -58,6 +60,7 @@ class GameDataManager{
         }
         
     }
+    
     /**
      * 得到对应地图块所有关卡
      * @param mapkey 
@@ -84,7 +87,7 @@ class GameDataManager{
         }
         return true;
     }
-    public getGateInfoVo(gateKey:string):void
+    public getGateInfoVo(gateKey:string):GateInfoVo
     {
         return this.gateInfoDic.get(gateKey);
     }
@@ -144,7 +147,7 @@ class GameDataManager{
         //怪物数据
         this.enemyData = new EnemyData();
         this.enemyData.masterNPCVos = [];
-        var gateSampleConfig:GateSampleConfig = ConfigManager.ins.getGateSampleConfig("G_1-1");
+        var gateSampleConfig:GateSampleConfig = ConfigManager.ins.getGateSampleConfig(this.hangGateKey);
         var keys:Array<string> = gateSampleConfig.getRandowHandUpMasters();
         // var keys:Array<string> = ["20001"];
         var masterNPCVo:MasterNPCVo;
