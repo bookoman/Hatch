@@ -243,6 +243,43 @@ var ui;
 (function (ui) {
     var main;
     (function (main) {
+        var ModuleLoadViewUI = /** @class */ (function (_super) {
+            __extends(ModuleLoadViewUI, _super);
+            function ModuleLoadViewUI() {
+                return _super.call(this) || this;
+            }
+            ModuleLoadViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.main.ModuleLoadViewUI.uiView);
+            };
+            ModuleLoadViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Panel", "props": { "width": 240, "var": "panelLoad", "height": 260, "centerY": -50, "centerX": 0 } }] };
+            return ModuleLoadViewUI;
+        }(View));
+        main.ModuleLoadViewUI = ModuleLoadViewUI;
+    })(main = ui.main || (ui.main = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var main;
+    (function (main) {
+        var PreLoadViewUI = /** @class */ (function (_super) {
+            __extends(PreLoadViewUI, _super);
+            function PreLoadViewUI() {
+                return _super.call(this) || this;
+            }
+            PreLoadViewUI.prototype.createChildren = function () {
+                View.regComponent("Particle2D", laya.particle.Particle2D);
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.main.PreLoadViewUI.uiView);
+            };
+            PreLoadViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Box", "props": { "y": 0, "x": 2, "width": 750, "var": "boxLoading", "height": 1334 } }, { "type": "Particle2D", "props": { "y": 507, "x": 302, "url": "ani/yezhi_1.part", "name": "yezhi" } }] };
+            return PreLoadViewUI;
+        }(View));
+        main.PreLoadViewUI = PreLoadViewUI;
+    })(main = ui.main || (ui.main = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var main;
+    (function (main) {
         var SkillViewUI = /** @class */ (function (_super) {
             __extends(SkillViewUI, _super);
             function SkillViewUI() {
@@ -327,22 +364,6 @@ var ui;
         return MapViewUI;
     }(View));
     ui.MapViewUI = MapViewUI;
-})(ui || (ui = {}));
-(function (ui) {
-    var PreLoadViewUI = /** @class */ (function (_super) {
-        __extends(PreLoadViewUI, _super);
-        function PreLoadViewUI() {
-            return _super.call(this) || this;
-        }
-        PreLoadViewUI.prototype.createChildren = function () {
-            View.regComponent("Particle2D", laya.particle.Particle2D);
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.PreLoadViewUI.uiView);
-        };
-        PreLoadViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Box", "props": { "y": 0, "x": 2, "width": 750, "var": "boxLoading", "height": 1334 } }, { "type": "Particle2D", "props": { "y": 507, "x": 302, "url": "ani/yezhi_1.part", "name": "yezhi" } }] };
-        return PreLoadViewUI;
-    }(View));
-    ui.PreLoadViewUI = PreLoadViewUI;
 })(ui || (ui = {}));
 (function (ui) {
     var SignViewUI = /** @class */ (function (_super) {

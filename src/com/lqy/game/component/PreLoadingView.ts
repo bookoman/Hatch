@@ -4,7 +4,7 @@ import LayaLabel = Laya.Label;
 /*
 * 进入游戏资源加载条
 */
-class PreLoadingView extends ui.PreLoadViewUI{
+class PreLoadingView extends ui.main.PreLoadViewUI{
     private imgBg:LayaImage;
     private imgProBg:LayaImage;
     private imgPro:LayaImage;

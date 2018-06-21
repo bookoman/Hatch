@@ -109,6 +109,12 @@ R 93F650EB img_reportsbg.png
 R ABF2AEF3 main.jpg
 R 43507D1A role.jpg
 R DED7EA0A roleBg.png
+D unpack/moduleload
+R 1337AB41 bg.png
+R 4C5FD62C clip_bug.png
+R 4B0ADE58 clip_load.png
+R FA7C621B prebg.png
+R 6C53313E 效果.png
 D unpack/preload
 R 63FB07A0 bg.png
 R EF5C6C0E l_yezhi_1.png

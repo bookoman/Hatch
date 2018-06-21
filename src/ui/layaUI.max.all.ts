@@ -254,6 +254,39 @@ module ui {
 }
 
 module ui.main {
+    export class ModuleLoadViewUI extends View {
+		public panelLoad:Laya.Panel;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Panel","props":{"width":240,"var":"panelLoad","height":260,"centerY":-50,"centerX":0}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.main.ModuleLoadViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.main {
+    export class PreLoadViewUI extends View {
+		public boxLoading:Laya.Box;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Box","props":{"y":0,"x":2,"width":750,"var":"boxLoading","height":1334}},{"type":"Particle2D","props":{"y":507,"x":302,"url":"ani/yezhi_1.part","name":"yezhi"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        			View.regComponent("Particle2D",laya.particle.Particle2D);
+
+            super.createChildren();
+            this.createView(ui.main.PreLoadViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.main {
     export class SkillViewUI extends View {
 
         public static  uiView:any ={"type":"View","props":{"width":400,"height":40}};
@@ -336,23 +369,6 @@ module ui {
         
             super.createChildren();
             this.createView(ui.MapViewUI.uiView);
-
-        }
-
-    }
-}
-
-module ui {
-    export class PreLoadViewUI extends View {
-		public boxLoading:Laya.Box;
-
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Box","props":{"y":0,"x":2,"width":750,"var":"boxLoading","height":1334}},{"type":"Particle2D","props":{"y":507,"x":302,"url":"ani/yezhi_1.part","name":"yezhi"}}]};
-        constructor(){ super()}
-        createChildren():void {
-        			View.regComponent("Particle2D",laya.particle.Particle2D);
-
-            super.createChildren();
-            this.createView(ui.PreLoadViewUI.uiView);
 
         }
 

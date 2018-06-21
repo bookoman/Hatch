@@ -174,5 +174,5 @@ var PreLoadingView = /** @class */ (function (_super) {
     };
     PreLoadingView._ins = null;
     return PreLoadingView;
-}(ui.PreLoadViewUI));
+}(ui.main.PreLoadViewUI));
 //# sourceMappingURL=PreLoadingView.js.map

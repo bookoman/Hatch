@@ -26,4 +26,11 @@
    <item name="unpack/preload/progress.png" type="ProgressBar" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/preload/progressBg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/preload/progressLight.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/moduleload" type="" compress="0" pack="0" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/moduleload/bg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/moduleload/clip_bug.png" type="Clip" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/moduleload/load.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/moduleload/prebg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/moduleload/效果.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/moduleload/clip_load.png" type="Clip" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
 </res>
