@@ -29,14 +29,14 @@
         {
             "x":15,
             "type":"Particle2D",
-            "source":"ani/yezhi_1.part",
-            "props":{"y":507,"x":302,"url":"ani/yezhi_1.part","name":"yezhi"},
+            "source":"res/ani/yezhi_1.part",
+            "props":{"y":507,"x":302,"url":"res/ani/yezhi_1.part","name":"yezhi"},
             "nodeParent":1,
             "label":"Particle2D(yezhi)",
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
-            "compId":7,
+            "compId":8,
             "child":[
                 ]
         }],

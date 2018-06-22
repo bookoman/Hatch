@@ -379,7 +379,6 @@ class ConfigManager{
      */
     private xmlToObjcet(str:string,DineClass?:any,keyPro?:any,dic?:Dictionary):void
     {
-        console.log(DineClass);
         var content:string = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
         var datas:Array<string> = content.split("\r\n");
         var element:string;

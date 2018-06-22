@@ -4,7 +4,10 @@
 var BaseRoleVo = /** @class */ (function () {
     function BaseRoleVo(isEnemy) {
         this.attFar = 0;
+        /**血量 */
         this.hp = 0;
+        /**等级 */
+        this.level = 1;
         /**是否死亡 */
         this.isDeath = true;
         this.isEnemy = isEnemy;
@@ -29,19 +32,19 @@ var BaseRoleVo = /** @class */ (function () {
         this.posPoint = MapManager.ins.squintAngleGrid.gridToViewPoint(this.gridX, this.gridY);
         //偏移格子半个宽高
         this.posPoint.x += GameConfig.LINEUP_GRID_WIDTH / 2;
-        this.posPoint.y += GameConfig.MAP_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y + GameConfig.LINEUP_GRID_HEIGHT / 2;
+        this.posPoint.y += GameConfig.BATTLE_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y + GameConfig.LINEUP_GRID_HEIGHT / 2;
     };
     /**重置技能CD */
     BaseRoleVo.prototype.resetSkillCD = function () {
-        this.skillVos.forEach(function (skillVo) {
-            skillVo.calCD = skillVo.cd;
-        });
+        // this.skillVos.forEach(skillVo => {
+        //     skillVo.calCD = skillVo.cd;
+        // });
     };
     /**cd计时跑起来 */
     BaseRoleVo.prototype.runCD = function () {
-        this.skillVos.forEach(function (skillVo) {
-            skillVo.runCD();
-        });
+        // this.skillVos.forEach(skillVo => {
+        //     skillVo.runCD();
+        // });
     };
     /**得到可用技能 ，自动释放技能*/
     BaseRoleVo.prototype.getCanUserSkill = function () {

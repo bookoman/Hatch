@@ -4,15 +4,15 @@
 class MapManager{
     //地图测试数据 mapId >> mapVO
     private mapCofing:Object = {
-        "1":{"mapID":1,"name":"1","battleHeroGrid":[[1,0],[1,2],[1,4],[0,1],[0,3],[0,2]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"mapInitY":600,"battleSceneH":500,"gw":240,"gh":100},
-        "2":{"mapID":2,"name":"2","battleHeroGrid":[[1,0],[1,2],[1,4],[0,1],[0,3],[0,2]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"mapInitY":560,"battleSceneH":500,"gw":240,"gh":100},
-        "10000":{"mapID":10000,"name":"Boss挑战","battleHeroGrid":[[1,2],[1,6],[1,10],[1,14],[1,18],[0,10]],"battleEnemyGrid":[[5,2],[5,6],[5,10],[5,14],[5,18]],"mapInitY":100,"battleSceneH":1000,"gw":100,"gh":100}
+        "1":{"mapID":1,"name":"1","battleHeroGrid":[[1,0],[1,2],[1,4],[0,1],[0,3],[0,2]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"middleBgInitY":0,"nearBgInitY":782,"battleInitY":600,"battleSceneH":500,"gw":240,"gh":100},
+        "2":{"mapID":2,"name":"2","battleHeroGrid":[[1,0],[1,2],[1,4],[0,1],[0,3],[0,2]],"battleEnemyGrid":[[2,0],[2,2],[2,4]],"middleBgInitY":560,"nearBgInitY":782,"battleInitY":860,"battleSceneH":500,"gw":240,"gh":100},
+        "10000":{"mapID":10000,"name":"Boss挑战","battleHeroGrid":[[1,2],[1,6],[1,10],[1,14],[1,18],[0,10]],"battleEnemyGrid":[[5,2],[5,6],[5,10],[5,14],[5,18]],"middleBgInitY":100,"nearBgInitY":782,"battleInitY":100,"battleSceneH":1000,"gw":100,"gh":100}
     }
     constructor(){
         
     }
     private static _ins:MapManager = null;
-    private curMapConfig:Object;
+    private curMapConfig:any;
     private mapEngine:MapEngine = null;
     private farMapEngine:MapLoopEngine = null;
     private mapLoopEngine:MapLoopEngine = null;
@@ -45,7 +45,7 @@ class MapManager{
                                 mapWidth:number,mapHeight:number,tileWidth:number = 0 ,tileHeight:number = 0):void
     {
         this.curMapConfig = this.mapCofing[mapID];
-        GameConfig.MAP_INIT_Y = this.curMapConfig["mapInitY"];
+        GameConfig.BATTLE_INIT_Y = this.curMapConfig["battleInitY"];
         GameConfig.BATTLE_SCENE_HEIGHT = this.curMapConfig["battleSceneH"];
         GameConfig.LINEUP_GRID_WIDTH = this.curMapConfig["gw"];
         GameConfig.LINEUP_GRID_HEIGHT = this.curMapConfig["gh"];
@@ -80,11 +80,11 @@ class MapManager{
                 LayerManager.ins.addToLayer(this.farMapEngine,LayerManager.BG_LAYER,false,true,false);
                 this.mapLoopEngine = new MapLoopEngine();
                 this.mapLoopEngine.initMap("res/outside/map",mapID,MapType.BACKGROUND_MAP,8,GameConfig.STAGE_WIDTH);
-                this.mapLoopEngine.y = GameConfig.MAP_INIT_Y;
+                this.mapLoopEngine.y = this.curMapConfig.middleBgInitY;
                 LayerManager.ins.addToLayer(this.mapLoopEngine,LayerManager.BG_LAYER,false,true,false);
                 this.nearMapLoopEngin = new MapLoopEngine();
                 this.nearMapLoopEngin.initMap("res/outside/map",mapID,MapType.NEAR_MAP,5,GameConfig.STAGE_WIDTH);
-                this.nearMapLoopEngin.y = this.mapLoopEngine.y + 210;
+                this.nearMapLoopEngin.y = this.curMapConfig.nearBgInitY;
                 LayerManager.ins.addToLayer(this.nearMapLoopEngin,LayerManager.BG_NEAR_LAYER,false,true,false);
                 //测试移动
                 Laya.timer.frameLoop(2,this,this.mapMoveLoop);

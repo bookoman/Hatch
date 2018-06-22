@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":4,
+    "selecteID":5,
     "props":{"width":750,"sceneColor":"#000000","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -14,31 +14,30 @@
     "child":[
         {
             "x":15,
+            "type":"Image",
+            "props":{"y":0,"x":0,"skin":"unpack/main/img_fenwei.png"},
+            "nodeParent":1,
+            "label":"Image",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":5,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
             "type":"Button",
-            "props":{"y":837,"x":496,"width":243,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":88},
+            "props":{"y":891,"x":567,"width":172,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":59},
             "nodeParent":1,
             "label":"Button(btnChalleangeBoss)",
+            "isOpen":true,
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
             "compId":3,
             "child":[
                 ]
-        },
-        {
-            "x":15,
-            "type":"UIView",
-            "source":"map/MapWorldView.ui",
-            "props":{"y":0,"x":0,"visible":false,"var":"mapWordView"},
-            "nodeParent":1,
-            "label":"UIView(mapWordView)",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":4,
-            "child":[
-                ],
-            "$HIDDEN":false
         }],
     "animations":[
         {

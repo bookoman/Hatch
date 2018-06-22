@@ -27,13 +27,14 @@ class MapWorldMediator extends BaseMediator{
         for(var i = 0; i < GameConfig.GATE_MAP_KEYS.length;i++)
         {
             imgBlock = this.view["imgBlock"+i];
-            imgBlock.dataSource = GameConfig.GATE_MAP_KEYS[i];
+            imgBlock.name = GameConfig.GATE_MAP_KEYS[i];
             this.setBlockGray(imgBlock);
             this.view["imgBlock"+i].on(Laya.Event.CLICK,this,this.onBlockClick);
         }
 
         this.view.visible = true;
         super.initView();
+        this.worldmapEffect();
     }
     protected addEvents():void
     {
@@ -55,11 +56,31 @@ class MapWorldMediator extends BaseMediator{
             this.view["imgBlock"+i].off(Laya.Event.CLICK,this,this.onBlockClick);
         }
     }
+    /**云雾特效 */
+    public worldmapEffect(): void {
+        Tween.to(this.view.yun1, { x: -326, y: -927, alpha: 0 }, 3000, null, Laya.Handler.create(this,this.yunMoveComplete,[this.view.yun1]), 1000);
+        Tween.to(this.view.yun2, { x: -1497, y: 1377, alpha: 0 }, 3000, null, Laya.Handler.create(this,this.yunMoveComplete,[this.view.yun2]), 1000);
+        Tween.to(this.view.yun3, { x: -2004, y: 116, alpha: 0 }, 3000, null, Laya.Handler.create(this,this.yunMoveComplete,[this.view.yun3]), 1000);
+        Tween.to(this.view.yun4, { x: 2165, y: 1031, alpha: 0 }, 3000, null, Laya.Handler.create(this,this.yunMoveComplete,[this.view.yun4]), 1000);
+
+        Tween.to(this.view.wumaiImage, { x: 1500, alpha: 0 }, 3500, null, Laya.Handler.create(this,this.yunMoveComplete,[this.view.wumaiImage]), 0);
+        Tween.to(this.view.panelBlock, { x: 0, y: 0, scaleX: 1.0, scaleY: 1.0 }, 1000, null, null, 1000);
+
+        //选中当前打的地图板块
+        this.view.imgBlock0.filters = [this.glowFilter];
+    }
+    private yunMoveComplete(disImg:Laya.Image):void
+    {
+        if(disImg){
+            Laya.Tween.clearAll(disImg);
+            disImg.removeSelf();
+        }
+    }
    
     /**进入地图假战斗 */
     public enterMapBattle():void
     {
-        
+
     }
     /**
      * 
@@ -68,7 +89,7 @@ class MapWorldMediator extends BaseMediator{
      */
     private setBlockGray(imgBlock:Laya.Image):void
     {
-        var bool:boolean = GameDataManager.ins.getGateMapIsOpen(imgBlock.dataSource);
+        var bool:boolean = GameDataManager.ins.getGateMapIsOpen(imgBlock.name);
         imgBlock.filters = bool == false ? [this.grayFilter] : null;
     }
     private onBlockClick(e):void
@@ -77,16 +98,16 @@ class MapWorldMediator extends BaseMediator{
         {
             return;
         }
-        if(!GameDataManager.ins.getGateMapIsOpen(e.target.dataSource))
+        if(!GameDataManager.ins.getGateMapIsOpen(e.target.name))
         {
-            console.log("关卡未开启，请通关上一地图所有关卡");
+            TipsManager.ins.showFloatMsg("关卡未开启，请通关上一地图所有关卡",30,"#ff0000",this.view,this.view.width/2,this.view.height/2,1,0,100);
             return;
         }
         var imgBlock:Laya.Image;
         for(var i = 0; i < 7;i++)
         {
             imgBlock = this.view["imgBlock"+i];
-            if(GameDataManager.ins.getGateMapIsOpen(imgBlock.dataSource))
+            if(GameDataManager.ins.getGateMapIsOpen(imgBlock.name))
             {
                 imgBlock.filters = null;
             }
@@ -94,7 +115,7 @@ class MapWorldMediator extends BaseMediator{
         imgBlock = e.target;
         imgBlock.filters = [this.glowFilter];
         this.gateListMediator = new GateListMediator();
-        this.gateListMediator.setData(imgBlock.dataSource);
+        this.gateListMediator.setData(imgBlock.name);
 
     }
     private onViewMouseEvent(e:Laya.Event):void

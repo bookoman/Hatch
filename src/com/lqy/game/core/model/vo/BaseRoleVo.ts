@@ -16,13 +16,15 @@ class BaseRoleVo{
     public dieAttTimes:number;
     /**攻击 */
     public atk:number;
+    /**防御 */
+    public def:number;
     /**攻击速度 */
-    public atkSpeed:number;
+    public speed:number;
     
     public skillVos:Array<SkillVo>;
 
     public attFar:number = 0;
-
+    /**血量 */
     public hp:number = 0;
     
     /**计算属性 */
@@ -34,6 +36,19 @@ class BaseRoleVo{
     public posPoint:Point;
     /**是否是敌人 */
     public isEnemy:boolean;
+    /**等级 */
+    public level:number = 1;
+    /**成长攻击 */
+    public upAtk:number;
+    /**成长防御 */
+    public updef:number;
+    /**暴击概率 */
+    public doubleAtk:number;
+    /**暴击伤害 */
+    public hurt:number;
+    /**韧性 */
+    public tenacity:number;
+
 
     
     //战斗数据
@@ -77,21 +92,21 @@ class BaseRoleVo{
         this.posPoint = MapManager.ins.squintAngleGrid.gridToViewPoint(this.gridX,this.gridY);
         //偏移格子半个宽高
         this.posPoint.x += GameConfig.LINEUP_GRID_WIDTH / 2;
-        this.posPoint.y += GameConfig.MAP_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y + GameConfig.LINEUP_GRID_HEIGHT / 2;
+        this.posPoint.y += GameConfig.BATTLE_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y + GameConfig.LINEUP_GRID_HEIGHT / 2;
     }
     /**重置技能CD */
     public resetSkillCD():void
     {
-        this.skillVos.forEach(skillVo => {
-            skillVo.calCD = skillVo.cd;
-        });
+        // this.skillVos.forEach(skillVo => {
+        //     skillVo.calCD = skillVo.cd;
+        // });
     }
     /**cd计时跑起来 */
     public runCD():void
     {
-        this.skillVos.forEach(skillVo => {
-            skillVo.runCD();
-        });
+        // this.skillVos.forEach(skillVo => {
+        //     skillVo.runCD();
+        // });
     }
     /**得到可用技能 ，自动释放技能*/
     public getCanUserSkill():number

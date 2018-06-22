@@ -3,7 +3,6 @@
 */
 class HeroVo extends BaseRoleVo{
     public heroId:string;
-    public level:number;
     public exp:number;
     public createTime:string;
     public heroKey:string;
@@ -11,10 +10,7 @@ class HeroVo extends BaseRoleVo{
     public qualityKey:string;
     public heroAttr:HeroAttr;
     public heroTypeKey:string;
-    public atk:number;
-    public def:number;
-    public speed:number;
-    public hp:number;
+    
     /**性别 女 true,男 false */
     public female:boolean;
     /**是否交配 */
@@ -32,11 +28,17 @@ class HeroVo extends BaseRoleVo{
         this.key = this.heroKey;
         var config:HeroSampleConfig = ConfigManager.ins.getHeroSampleConfig(this.heroKey);
         this.modelId = config.modelId;
+        this.scale = config.modelSize;
         this.name = config.name;
+        this.doubleAtk = this.heroAttr.doubleAtkRate;
+        this.hurt = config.hurt;
+        this.tenacity = config.tenacity;
         this.dieAttTimes = 1000;
 
-        this.atk = this.atk;
-        this.atkSpeed = this.speed;
+        var qualityConfig:QualitySampleConfig = ConfigManager.ins.getQualitySampleConfig(this.qualityKey);
+        this.upAtk = qualityConfig.aktMin;
+        this.updef = qualityConfig.defMin;
+
     }
     
 }

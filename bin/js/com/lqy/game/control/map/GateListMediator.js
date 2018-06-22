@@ -59,7 +59,7 @@ var GateListMediator = /** @class */ (function (_super) {
             else if (e.target == cell.getChildByName("btnSweep")) {
                 var btnSp = cell.getChildByName("btnSweep");
                 if (btnSp.filters) {
-                    TipsManager.ins.showFloatMsg("2秒之后才能扫荡", 30, "#ff0000", this.view, this.view.width / 2, this.view.height / 2, 1, 100);
+                    TipsManager.ins.showFloatMsg("2秒之后才能扫荡", 30, "#ff0000", this.view, this.view.width / 2, this.view.height / 2, 1, 0, 100);
                     return;
                 }
                 Laya.timer.once(2000, this, this.timeEndCanScan, [btnSp], false);

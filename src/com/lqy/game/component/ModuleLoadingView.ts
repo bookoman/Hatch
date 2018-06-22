@@ -41,7 +41,7 @@ class ModuleLoadingView extends ui.main.ModuleLoadViewUI{
         Laya.loader.load(resAry,Laya.Handler.create(this,this.resLoaded));
         
         this.skeletonAni = new Skeleton();
-        this.skeletonAni.load("res/outside/anim/role/xunmenglong001/xunmenglong001.sk",Laya.Handler.create(this,this.loadCompleted));
+        this.skeletonAni.load("res/outside/spine/role/xunmenglong001/xunmenglong001.sk",Laya.Handler.create(this,this.loadCompleted));
 
         this.clipLoads = new Array();
         var clipLoad:Laya.Clip;

@@ -129,9 +129,31 @@ var GameDataManager = /** @class */ (function () {
             this.enemyData.masterNPCVos.push(masterNPCVo);
         }
         this.enemyData.masterNPCVos.sort(function (a, b) {
-            return a.atkSpeed > b.atkSpeed ? -1 : 1;
+            return a.speed > b.speed ? -1 : 1;
         });
         this.enemyData.enemySum = this.enemyData.masterNPCVos.length;
+    };
+    /**
+     * 生产Boss数据
+     */
+    GameDataManager.prototype.productBossData = function () {
+        //怪物数据
+        this.bossData = new EnemyData();
+        this.bossData.masterVos = [];
+        var gateSampleConfig = ConfigManager.ins.getGateSampleConfig(this.hangGateKey);
+        var keys = gateSampleConfig.getRandowHandUpMasters(5);
+        var masterVo;
+        for (var i = 0; i < keys.length; i++) {
+            masterVo = new MasterVo();
+            masterVo.lineupGrid = i;
+            masterVo.initBaseData(keys[i]);
+            masterVo.initRowColPosPoint();
+            this.bossData.masterVos.push(masterVo);
+        }
+        this.bossData.masterVos.sort(function (a, b) {
+            return a.speed > b.speed ? -1 : 1;
+        });
+        this.bossData.enemySum = this.bossData.masterVos.length;
     };
     GameDataManager.prototype.resetRolePoint = function () {
         if (this.selfPlayerData) {
@@ -151,7 +173,7 @@ var GameDataManager = /** @class */ (function () {
             return;
         }
         this.selfPlayerData.upHeroVos.sort(function (a, b) {
-            return a.atkSpeed > b.atkSpeed ? -1 : 1;
+            return a.speed > b.speed ? -1 : 1;
         });
         this.selfPlayerData.upHeroVos.forEach(function (baseROleVo) {
             baseROleVo.initRowColPosPoint();

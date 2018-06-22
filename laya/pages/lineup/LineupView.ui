@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":38,
+    "selecteID":43,
     "referenceLines":[
         {
             "value":150,
@@ -172,7 +172,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":26,"x":23,"skin":"main/skill_bg02.png"},
+            "props":{"y":26,"x":23,"skin":"unpack/main/skill_bg02.png"},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -250,7 +250,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":962,"x":0,"width":750,"skin":"comp/skill_bk.png","height":245},
+            "props":{"y":962,"x":0,"width":750,"skin":"unpack/main/skill_bk.png","height":245},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -264,7 +264,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":930,"x":20,"skin":"comp/skill_ht.png"},
+            "props":{"y":930,"x":20,"skin":"unpack/main/skill_ht.png"},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,

@@ -1,8 +1,8 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":8,
-    "selecteID":3,
+    "selectedBox":1,
+    "selecteID":34,
     "props":{"width":750,"sceneColor":"#000000","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -15,17 +15,16 @@
         {
             "x":15,
             "type":"Panel",
-            "props":{"y":-100,"x":0,"width":1699,"var":"panelBlock","height":1351},
+            "props":{"y":59,"x":-348,"width":1699,"var":"panelBlock","scaleY":0.9,"scaleX":0.8,"name":"panelBlock","height":1351},
             "nodeParent":1,
             "label":"Panel(panelBlock)",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":8,
             "child":[
                 {
-                    "x":30,
                     "type":"Image",
                     "props":{"y":0,"x":0,"skin":"unpack/worldmap/bg.png"},
                     "nodeParent":8,
@@ -40,19 +39,17 @@
                     "$HIDDEN":false
                 },
                 {
-                    "x":30,
                     "type":"Image",
                     "props":{"y":-13,"x":537,"var":"imgBlock3","skin":"unpack/worldmap/p7.png"},
                     "nodeParent":8,
                     "label":"Image(imgBlock3)",
-                    "isOpen":true,
+                    "isOpen":false,
                     "isDirectory":true,
                     "isAniNode":true,
                     "hasChild":true,
                     "compId":13,
                     "child":[
                         {
-                            "x":45,
                             "type":"Poly",
                             "props":{"y":13,"x":54,"renderType":"hit","points":"-13,479,-35,136,41,-5,344,20,396,223,754,227,689,503,265,767","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"},
                             "nodeParent":13,
@@ -68,7 +65,6 @@
                     "$HIDDEN":false
                 },
                 {
-                    "x":30,
                     "type":"Image",
                     "props":{"y":194,"x":1222,"var":"imgBlock6","skin":"unpack/worldmap/p2.png"},
                     "nodeParent":8,
@@ -80,7 +76,6 @@
                     "compId":7,
                     "child":[
                         {
-                            "x":45,
                             "type":"Poly",
                             "props":{"y":11,"x":-197,"renderType":"hit","points":"368,572,212,486,228,186,346,68,513,33,668,84,667,697","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"},
                             "nodeParent":7,
@@ -96,7 +91,6 @@
                     "$HIDDEN":false
                 },
                 {
-                    "x":30,
                     "type":"Image",
                     "props":{"y":595,"x":683,"var":"imgBlock4","skin":"unpack/worldmap/p1.png"},
                     "nodeParent":8,
@@ -108,7 +102,6 @@
                     "compId":6,
                     "child":[
                         {
-                            "x":45,
                             "type":"Poly",
                             "props":{"y":110,"x":164,"renderType":"hit","points":"6,328,-178,245,-110,121,178,-43,375,-87,555,179,277,362","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"},
                             "nodeParent":6,
@@ -124,7 +117,6 @@
                     "$HIDDEN":false
                 },
                 {
-                    "x":30,
                     "type":"Image",
                     "props":{"y":891,"x":1210,"var":"imgBlock5","skin":"unpack/worldmap/p3.png"},
                     "nodeParent":8,
@@ -136,7 +128,6 @@
                     "compId":9,
                     "child":[
                         {
-                            "x":45,
                             "type":"Poly",
                             "props":{"y":41,"x":79,"renderType":"hit","points":"7,382,-76,238,-18,11,184,-37,409,-24,399,265,326,384","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"},
                             "nodeParent":9,
@@ -152,7 +143,6 @@
                     "$HIDDEN":false
                 },
                 {
-                    "x":30,
                     "type":"Image",
                     "props":{"y":102,"x":28,"var":"imgBlock2","skin":"unpack/worldmap/p5.png"},
                     "nodeParent":8,
@@ -164,7 +154,6 @@
                     "compId":11,
                     "child":[
                         {
-                            "x":45,
                             "type":"Poly",
                             "props":{"y":61,"x":31,"renderType":"hit","points":"533,566,65,301,-39,58,106,-37,328,-35,450,51,566,447","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"},
                             "nodeParent":11,
@@ -180,19 +169,17 @@
                     "$HIDDEN":false
                 },
                 {
-                    "x":30,
                     "type":"Image",
                     "props":{"y":531,"x":136,"var":"imgBlock1","skin":"unpack/worldmap/p4.png"},
                     "nodeParent":8,
                     "label":"Image(imgBlock1)",
-                    "isOpen":true,
+                    "isOpen":false,
                     "isDirectory":true,
                     "isAniNode":true,
                     "hasChild":true,
                     "compId":10,
                     "child":[
                         {
-                            "x":45,
                             "type":"Poly",
                             "props":{"y":37,"x":46,"renderType":"hit","points":"61,304,-41,204,-6.5,17,171.5,20.5,242,60.5,465,283,342,371","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"},
                             "nodeParent":10,
@@ -208,19 +195,17 @@
                     "$HIDDEN":false
                 },
                 {
-                    "x":30,
                     "type":"Image",
                     "props":{"y":893,"x":67,"var":"imgBlock0","skin":"unpack/worldmap/p6.png"},
                     "nodeParent":8,
                     "label":"Image(imgBlock0)",
-                    "isOpen":true,
+                    "isOpen":false,
                     "isDirectory":true,
                     "isAniNode":true,
                     "hasChild":true,
                     "compId":12,
                     "child":[
                         {
-                            "x":45,
                             "type":"Poly",
                             "props":{"y":50,"x":73,"renderType":"hit","points":"-71,424,-28,289,-39,32,184,-37,385.5,-3.5,622,60,675,421","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"},
                             "nodeParent":12,
@@ -235,7 +220,83 @@
                         }],
                     "$HIDDEN":false
                 }],
+            "$LOCKED":true,
             "$HIDDEN":false
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":446,"x":-775,"width":3078,"var":"wumaiImage","skin":"unpack/worldmap/wumai.png","name":"wumaiImage","height":1204,"anchorY":0.5,"anchorX":0.5},
+            "nodeParent":1,
+            "label":"Image(wumaiImage)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":27,
+            "child":[
+                ],
+            "$LOCKED":false,
+            "$HIDDEN":true
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":-263,"x":-370,"width":1623,"var":"yun1","skin":"unpack/worldmap/yun1.png","height":959},
+            "nodeParent":1,
+            "label":"Image(yun1)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":31,
+            "child":[
+                ],
+            "$LOCKED":true,
+            "$HIDDEN":true
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":805,"x":-1009,"width":1597,"var":"yun2","skin":"unpack/worldmap/yun2.png","height":711},
+            "nodeParent":1,
+            "label":"Image(yun2)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":32,
+            "child":[
+                ],
+            "$LOCKED":true,
+            "$HIDDEN":true
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":180,"x":-1068,"width":1599,"var":"yun3","skin":"unpack/worldmap/yun3.png","height":1027},
+            "nodeParent":1,
+            "label":"Image(yun3)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":33,
+            "child":[
+                ],
+            "$LOCKED":true,
+            "$HIDDEN":true
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":711,"x":13,"width":1032,"var":"yun4","skin":"unpack/worldmap/yun4.png","height":824},
+            "nodeParent":1,
+            "label":"Image(yun4)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":34,
+            "child":[
+                ],
+            "$LOCKED":true,
+            "$HIDDEN":true
         }],
     "animations":[
         {

@@ -13,8 +13,8 @@ var GameConfig = /** @class */ (function () {
     // public static MAP_BLOCK_WIDTH:number = 200;
     // public static MAP_BLOCK_HEIGHT:number = 200;
     // public static MAP_NEAR_TYPE:number = 1;
-    /**场景地图出事化Y坐标 */
-    GameConfig.MAP_INIT_Y = 600;
+    /**战斗初始化Y坐标 */
+    GameConfig.BATTLE_INIT_Y = 0;
     /**战斗场景与场景地图偏移 */
     GameConfig.BATTLE_SCENE_OFFSET_Y = 40;
     /**主场景战斗场景高度 */

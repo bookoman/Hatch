@@ -5,21 +5,21 @@ class BossBattleData{
     /**动画加载准备完毕 */
     public static curLoadNum:number = 0;
     public static loadSum:number = 0;
-    private attHeroVos:Array<RoleVo>;
-    private attEnemyVos:Array<RoleVo>;
+    private attHeroVos:Array<BaseRoleVo>;
+    private attEnemyVos:Array<BaseRoleVo>;
     public curAttCamp:number = 0;
-    public curAttRoleVo:RoleVo;
-    public curDefRoleVo:RoleVo;
+    public curAttRoleVo:BaseRoleVo;
+    public curDefRoleVo:BaseRoleVo;
     public isWin:boolean;
     public isEnd:boolean;
     
     constructor(){
-
+        
     }
     public initData():void
     {
         this.attHeroVos = this.getJoinBattleHeroVo();
-        // this.attEnemyVos = GameDataManager.ins.bossData.roleVoAry;
+        this.attEnemyVos = GameDataManager.ins.bossData.masterVos;
         this.attHeroVos.forEach(roleVo => {
             roleVo.battleHP = roleVo.hp;
             roleVo.resetSkillCD();
@@ -40,16 +40,16 @@ class BossBattleData{
         this.curAttCamp = BattleAttCampType.HERO;
     }
     /**得到参战英雄RoleVo */
-    private getJoinBattleHeroVo():Array<RoleVo>
+    private getJoinBattleHeroVo():Array<BaseRoleVo>
     {
-        var tempAry:Array<RoleVo> = new Array();
-        // GameDataManager.ins.selfPlayerData.roleVoAry.forEach(roleVo => {
-        //     tempAry.push(roleVo);
-        // });
-        // tempAry.sort(function(vo1:RoleVo,vo2:RoleVo):number{
-        //     return vo1.gridX > vo2.gridX ? -1 : 1;
-        // })
-        // tempAry = tempAry.slice(0,GameConfig.BATTLE_BOSS_HERO_SUM);
+        var tempAry:Array<BaseRoleVo> = new Array();
+        GameDataManager.ins.selfPlayerData.upHeroVos.forEach(baseRoleVo => {
+            tempAry.push(baseRoleVo);
+        });
+        tempAry.sort(function(vo1:BaseRoleVo,vo2:BaseRoleVo):number{
+            return vo1.gridX > vo2.gridX ? -1 : 1;
+        })
+        tempAry = tempAry.slice(0,GameConfig.BATTLE_BOSS_HERO_SUM);
         return tempAry;
     }
     /**
@@ -83,7 +83,11 @@ class BossBattleData{
     /**计算属性 */
     public calculationAttribute():void
     {
-        this.curDefRoleVo.battleHP -= this.curAttRoleVo.att;
+
+        var readHurt:number = FormulaUtil.realDamageValue(this.curAttRoleVo,this.curDefRoleVo);
+
+        this.curDefRoleVo.battleHP -= readHurt;
+        // this.curDefRoleVo.battleHP -= this.curAttRoleVo.atk;
         this.curDefRoleVo.isDeath = this.curDefRoleVo.battleHP <= 0;
         this.curAttRoleVo.isAtted = true;
         this.checkBattleEnd();
@@ -165,18 +169,18 @@ class BossBattleData{
      * 得到当前攻击角色
      * @param roleVos 
      */
-    public getAttRoleVo(roleVos:Array<RoleVo>):RoleVo
+    public getAttRoleVo(baseRoleVos:Array<BaseRoleVo>):BaseRoleVo
     {
-        var roleVo:RoleVo;
-        for(var i = 0;i < roleVos.length;i++)
+        var baseRoleVo:BaseRoleVo;
+        for(var i = 0;i < baseRoleVos.length;i++)
         {
-            roleVo = roleVos[i];
-            if(!roleVo.isDeath && !roleVo.isAtted)
+            baseRoleVo = baseRoleVos[i];
+            if(!baseRoleVo.isDeath && !baseRoleVo.isAtted)
             {
                 break;
             }
         }
-        return roleVo;
+        return baseRoleVo;
     }
     /**
      * 寻找攻击目标
@@ -216,9 +220,9 @@ class BossBattleData{
      * @param attAry 
      * @param defAry 
      */
-    private seekAttTarget2(attAry:Array<RoleVo>,defAry:Array<RoleVo>):void
+    private seekAttTarget2(attAry:Array<BaseRoleVo>,defAry:Array<BaseRoleVo>):void
     {
-        var attRoleVo:RoleVo;
+        var attRoleVo:BaseRoleVo;
         for(var i = 0;i < attAry.length;i++)
         {
             attRoleVo = attAry[i];
@@ -228,13 +232,13 @@ class BossBattleData{
             }
             if(attRoleVo.isEnemy)
             {
-                attRoleVo.attEnemyVos.sort(function(a:RoleVo,b:RoleVo):number{
+                attRoleVo.attEnemyVos.sort(function(a:BaseRoleVo,b:BaseRoleVo):number{
                     return a.gridY % 2 == 0 ? 1 : -1;
                 });
             }
             else
             {
-                attRoleVo.attEnemyVos.sort(function(a:RoleVo,b:RoleVo):number{
+                attRoleVo.attEnemyVos.sort(function(a:BaseRoleVo,b:BaseRoleVo):number{
                     return a.gridX > b.gridX ? 1 : -1;
                 });
             }
@@ -248,15 +252,17 @@ class BossBattleData{
     {
         if(this.attHeroVos)
         {
-            this.attHeroVos.forEach(roleVo => {
-                roleVo.runCD();
+            this.attHeroVos.forEach(baseRoleVo => {
+                baseRoleVo.runCD();
             });
         }
         if(this.attEnemyVos)
         {
-            this.attEnemyVos.forEach(roleVo => {
-                roleVo.runCD();
+            this.attEnemyVos.forEach(baseRoleVo => {
+                baseRoleVo.runCD();
             });
         }
     }
+
+    
 }

@@ -54,7 +54,7 @@
                 {
                     "x":30,
                     "type":"TextInput",
-                    "props":{"y":73,"x":187,"width":216,"var":"inputAccount","text":"xielong2","skin":"comp/textinput.png","height":36,"fontSize":30},
+                    "props":{"y":73,"x":187,"width":216,"var":"inputAccount","text":"xielong3","skin":"comp/textinput.png","height":36,"fontSize":30},
                     "nodeParent":3,
                     "label":"TextInput(inputAccount)",
                     "isDirectory":false,

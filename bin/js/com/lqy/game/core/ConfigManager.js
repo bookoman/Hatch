@@ -302,7 +302,6 @@ var ConfigManager = /** @class */ (function () {
      * @param dic
      */
     ConfigManager.prototype.xmlToObjcet = function (str, DineClass, keyPro, dic) {
-        console.log(DineClass);
         var content = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
         var datas = content.split("\r\n");
         var element;

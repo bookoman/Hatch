@@ -25,11 +25,11 @@ var TipsManager = /** @class */ (function () {
      * @param showTime
      * @param floatHei
      */
-    TipsManager.prototype.showFloatMsg = function (msg, fontSize, color, parent, sx, sy, showTime, floatHei) {
+    TipsManager.prototype.showFloatMsg = function (msg, fontSize, color, parent, sx, sy, showTime, floatWidth, floatHei) {
         var floatFontTip = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
         if (floatFontTip) {
             floatFontTip.setAttribute(fontSize, color);
-            floatFontTip.show(msg, parent, sx, sy, showTime, floatHei);
+            floatFontTip.show(msg, parent, sx, sy, showTime, floatWidth, floatHei);
         }
     };
     /**

@@ -161,10 +161,37 @@ class GameDataManager{
         }
         this.enemyData.masterNPCVos.sort(
             function(a:BaseRoleVo,b:BaseRoleVo):number{
-                return a.atkSpeed > b.atkSpeed ? -1 : 1
+                return a.speed > b.speed ? -1 : 1
             }
         );
         this.enemyData.enemySum = this.enemyData.masterNPCVos.length;
+    }
+
+    /**
+     * 生产Boss数据
+     */
+    public productBossData():void
+    {
+        //怪物数据
+        this.bossData = new EnemyData();
+        this.bossData.masterVos = [];
+        var gateSampleConfig:GateSampleConfig = ConfigManager.ins.getGateSampleConfig(this.hangGateKey);
+        var keys:Array<string> = gateSampleConfig.getRandowHandUpMasters(5);
+        var masterVo:MasterVo;
+        for(var i = 0;i < keys.length;i++)
+        {
+            masterVo = new MasterVo();
+            masterVo.lineupGrid = i;
+            masterVo.initBaseData(keys[i]);
+            masterVo.initRowColPosPoint();
+            this.bossData.masterVos.push(masterVo);
+        }
+        this.bossData.masterVos.sort(
+            function(a:BaseRoleVo,b:BaseRoleVo):number{
+                return a.speed > b.speed ? -1 : 1
+            }
+        );
+        this.bossData.enemySum = this.bossData.masterVos.length;
     }
 
 
@@ -193,7 +220,7 @@ class GameDataManager{
         }
         this.selfPlayerData.upHeroVos.sort(
             function(a:BaseRoleVo,b:BaseRoleVo):number{
-                return a.atkSpeed > b.atkSpeed ? -1 : 1
+                return a.speed > b.speed ? -1 : 1
             }
         );
         this.selfPlayerData.upHeroVos.forEach(baseROleVo => {

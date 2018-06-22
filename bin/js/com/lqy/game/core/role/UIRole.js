@@ -89,7 +89,7 @@ var UIRole = /** @class */ (function () {
             if (this.heroKey) {
                 Laya.loader.on(/*laya.events.Event.ERROR*/ "error", this, this.skeletonLoadError);
                 var config = ConfigManager.ins.getHeroSampleConfig(this.heroKey);
-                this.aniUrl = "res/outside/anim/role/" + config.modelId + "/" + config.modelId + ".sk";
+                this.aniUrl = "res/outside/spine/role/" + config.modelId + "/" + config.modelId + ".sk";
                 this.skeletonAni.load(this.aniUrl, Laya.Handler.create(this, this.loadCompleted));
             }
         }

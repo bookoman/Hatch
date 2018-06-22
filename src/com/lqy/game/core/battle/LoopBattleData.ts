@@ -201,28 +201,40 @@ class LoopBattleData{
      */
     private seekAttTarget(attAry:Array<BaseRoleVo>,defAry:Array<BaseRoleVo>):void
     {
-        var reduceAry:Array<BaseRoleVo> = [];
-        var plusAry:Array<BaseRoleVo> = [];
+        // var reduceAry:Array<BaseRoleVo> = [];
+        // var plusAry:Array<BaseRoleVo> = [];
+        var endAry:Array<BaseRoleVo>;
         var attRoleVo:BaseRoleVo;
         var defRoleVo:BaseRoleVo;
         for(var i = 0; i < attAry.length;i++)
         {
             attRoleVo = attAry[i];
+            endAry = [];
+            endAry[0] = null;
             for(var j = 0;j < defAry.length;j++)
             {
                 defRoleVo = defAry[j];
                 
                 var attInd:number = attRoleVo.gridY  - defRoleVo.gridY;
-                if(attInd < 0)
+                if(attInd == 0)
                 {
-                    reduceAry[Math.abs(attInd)] = defRoleVo;
+                    endAry[0] = defRoleVo;
                 }
                 else
                 {
-                    plusAry[attInd] = defRoleVo;   
+                    endAry.push(defRoleVo);
                 }
+                // if(attInd < 0)
+                // {
+                //     reduceAry[Math.abs(attInd)] = defRoleVo;
+                // }
+                // else
+                // {
+                //     plusAry[attInd] = defRoleVo;   
+                // }
             }
-            attRoleVo.attEnemyVos = plusAry.concat(reduceAry);
+            // attRoleVo.attEnemyVos = plusAry.concat(reduceAry);
+            attRoleVo.attEnemyVos = endAry;
         }
     }
     /**

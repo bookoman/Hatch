@@ -7,7 +7,7 @@ var BossBattleData = /** @class */ (function () {
     }
     BossBattleData.prototype.initData = function () {
         this.attHeroVos = this.getJoinBattleHeroVo();
-        // this.attEnemyVos = GameDataManager.ins.bossData.roleVoAry;
+        this.attEnemyVos = GameDataManager.ins.bossData.masterVos;
         this.attHeroVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
             roleVo.resetSkillCD();
@@ -29,13 +29,13 @@ var BossBattleData = /** @class */ (function () {
     /**得到参战英雄RoleVo */
     BossBattleData.prototype.getJoinBattleHeroVo = function () {
         var tempAry = new Array();
-        // GameDataManager.ins.selfPlayerData.roleVoAry.forEach(roleVo => {
-        //     tempAry.push(roleVo);
-        // });
-        // tempAry.sort(function(vo1:RoleVo,vo2:RoleVo):number{
-        //     return vo1.gridX > vo2.gridX ? -1 : 1;
-        // })
-        // tempAry = tempAry.slice(0,GameConfig.BATTLE_BOSS_HERO_SUM);
+        GameDataManager.ins.selfPlayerData.upHeroVos.forEach(function (baseRoleVo) {
+            tempAry.push(baseRoleVo);
+        });
+        tempAry.sort(function (vo1, vo2) {
+            return vo1.gridX > vo2.gridX ? -1 : 1;
+        });
+        tempAry = tempAry.slice(0, GameConfig.BATTLE_BOSS_HERO_SUM);
         return tempAry;
     };
     /**
@@ -61,7 +61,9 @@ var BossBattleData = /** @class */ (function () {
     };
     /**计算属性 */
     BossBattleData.prototype.calculationAttribute = function () {
-        this.curDefRoleVo.battleHP -= this.curAttRoleVo.att;
+        var readHurt = FormulaUtil.realDamageValue(this.curAttRoleVo, this.curDefRoleVo);
+        this.curDefRoleVo.battleHP -= readHurt;
+        // this.curDefRoleVo.battleHP -= this.curAttRoleVo.atk;
         this.curDefRoleVo.isDeath = this.curDefRoleVo.battleHP <= 0;
         this.curAttRoleVo.isAtted = true;
         this.checkBattleEnd();
@@ -130,15 +132,15 @@ var BossBattleData = /** @class */ (function () {
      * 得到当前攻击角色
      * @param roleVos
      */
-    BossBattleData.prototype.getAttRoleVo = function (roleVos) {
-        var roleVo;
-        for (var i = 0; i < roleVos.length; i++) {
-            roleVo = roleVos[i];
-            if (!roleVo.isDeath && !roleVo.isAtted) {
+    BossBattleData.prototype.getAttRoleVo = function (baseRoleVos) {
+        var baseRoleVo;
+        for (var i = 0; i < baseRoleVos.length; i++) {
+            baseRoleVo = baseRoleVos[i];
+            if (!baseRoleVo.isDeath && !baseRoleVo.isAtted) {
                 break;
             }
         }
-        return roleVo;
+        return baseRoleVo;
     };
     /**
      * 寻找攻击目标
@@ -197,13 +199,13 @@ var BossBattleData = /** @class */ (function () {
      */
     BossBattleData.prototype.runRoleSkillCD = function () {
         if (this.attHeroVos) {
-            this.attHeroVos.forEach(function (roleVo) {
-                roleVo.runCD();
+            this.attHeroVos.forEach(function (baseRoleVo) {
+                baseRoleVo.runCD();
             });
         }
         if (this.attEnemyVos) {
-            this.attEnemyVos.forEach(function (roleVo) {
-                roleVo.runCD();
+            this.attEnemyVos.forEach(function (baseRoleVo) {
+                baseRoleVo.runCD();
             });
         }
     };

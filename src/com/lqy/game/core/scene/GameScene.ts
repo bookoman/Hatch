@@ -10,7 +10,7 @@ class GameScene extends BaseScene{
     public enter():void
     {
         // super.enter();
-        new GameMediator([{url:"res/atlas/main.atlas",type:Loader.ATLAS}]);
+        new GameMediator();
         // new GameMediator("res/atlas/main.atlas");
         
     }

@@ -45,7 +45,7 @@ var RoleManager = /** @class */ (function () {
             });
             if (hero == null) {
                 hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-                hero.initRole(heroVo, i, 1);
+                hero.initRole(heroVo, i, -1);
                 this.heroRoles.push(hero);
             }
             hero.aniPlay(RoleAniIndex.MOVE);

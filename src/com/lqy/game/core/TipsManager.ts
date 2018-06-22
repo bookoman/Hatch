@@ -25,13 +25,13 @@ class TipsManager{
      * @param showTime 
      * @param floatHei 
      */
-    public showFloatMsg(msg:string,fontSize:number,color:string,parent:Laya.Sprite,sx:number,sy:number,showTime:number,floatHei:number):void
+    public showFloatMsg(msg:string,fontSize:number,color:string,parent:Laya.Sprite,sx:number,sy:number,showTime:number,floatWidth:number,floatHei:number):void
     {
         var floatFontTip:FloatFontTips = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
         if(floatFontTip)
         {
             floatFontTip.setAttribute(fontSize,color);
-            floatFontTip.show(msg,parent,sx,sy,showTime,floatHei);
+            floatFontTip.show(msg,parent,sx,sy,showTime,floatWidth,floatHei);
         }
     }
     /**

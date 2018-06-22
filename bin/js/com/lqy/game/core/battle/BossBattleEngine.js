@@ -13,13 +13,13 @@ var BossBattleEngine = /** @class */ (function () {
     /**得到参战英雄 */
     BossBattleEngine.prototype.getJoinBattleHeroVo = function (herosAry) {
         var tempAry = new Array();
-        // herosAry.forEach(hero => {
-        //     tempAry.push(hero);
-        // });
-        // tempAry.sort(function(vo1:BaseRole,vo2:BaseRole):number{
-        //     return vo1.roleVo.gridX > vo2.roleVo.gridX ? -1 : 1;
-        // })
-        // tempAry = tempAry.slice(0,GameConfig.BATTLE_BOSS_HERO_SUM);
+        herosAry.forEach(function (hero) {
+            tempAry.push(hero);
+        });
+        tempAry.sort(function (vo1, vo2) {
+            return vo1.baseRoleVo.gridX > vo2.baseRoleVo.gridX ? -1 : 1;
+        });
+        tempAry = tempAry.slice(0, GameConfig.BATTLE_BOSS_HERO_SUM);
         return tempAry;
     };
     /**开始战斗 */
@@ -77,36 +77,31 @@ var BossBattleEngine = /** @class */ (function () {
      * @param defRoleVo
      */
     BossBattleEngine.prototype.battleAtt = function (attRoleVo, defRoleVo) {
-        // var tempAry:Array<BaseRole> = this.heroRoles.concat(this.enemyRoles);
-        // tempAry.forEach(roleView => {
-        //     if(roleView)
-        //     {
-        //         if(roleView.roleVo.id == attRoleVo.id)
-        //         {
-        //             this.attRole = roleView;
-        //         }
-        //         else if(roleView.roleVo.id == defRoleVo.id)
-        //         {
-        //             this.defRole = roleView;
-        //         }
-        //     }
-        // });
-        // if(this.attRole && this.defRole)
-        // {
-        //     //远攻
-        //     if(this.attRole.roleVo.attFar == 1)
-        //     {              
-        //         this.playAttackAni();
-        //         SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
-        //     }
-        //     else
-        //     {//近攻               
-        //         this.attRole.aniPlay(RoleAniIndex.MOVE);
-        //         var tempX:number = defRoleVo.isEnemy ? 200 : -200;               
-        //         Laya.Tween.to(this.attRole,{x:defRoleVo.posPoint.x - tempX,y:defRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000 / GameConfig.BATTLE_ADDSPEED_TIMES,null,new Handler(this,this.playAttackAni,[attRoleVo,defRoleVo],true),0,true);
-        //         SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
-        //     }
-        // }
+        var _this = this;
+        var tempAry = this.heroRoles.concat(this.enemyRoles);
+        tempAry.forEach(function (roleView) {
+            if (roleView) {
+                if (roleView.baseRoleVo.roleId == attRoleVo.roleId) {
+                    _this.attRole = roleView;
+                }
+                else if (roleView.baseRoleVo.roleId == defRoleVo.roleId) {
+                    _this.defRole = roleView;
+                }
+            }
+        });
+        if (this.attRole && this.defRole) {
+            //远攻
+            if (this.attRole.baseRoleVo.attFar == 1) {
+                this.playAttackAni();
+                SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+            }
+            else { //近攻               
+                this.attRole.aniPlay(RoleAniIndex.MOVE);
+                var tempX = defRoleVo.isEnemy ? 200 : -200;
+                Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.playAttackAni, [attRoleVo, defRoleVo], true), 0, true);
+                SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+            }
+        }
     };
     /**
      * 移动到敌方攻击
@@ -146,20 +141,19 @@ var BossBattleEngine = /** @class */ (function () {
      * 攻击完移动回阵型
      */
     BossBattleEngine.prototype.moveBackLineup = function () {
-        // var attRoleVo:RoleVo = this.attRole.roleVo;
-        // Laya.Tween.to(this.attRole,{x:attRoleVo.posPoint.x,y:attRoleVo.posPoint.y},GameConfig.BATTLE_ATT_TIME*1000 / 2 / GameConfig.BATTLE_ADDSPEED_TIMES,null,new Handler(this,this.moveBackLineupComplete,null,true),0,true);
+        var attRoleVo = this.attRole.baseRoleVo;
+        Laya.Tween.to(this.attRole, { x: attRoleVo.posPoint.x, y: attRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / 2 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.moveBackLineupComplete, null, true), 0, true);
     };
     /**
      * 移动回阵型完成
      */
     BossBattleEngine.prototype.moveBackLineupComplete = function () {
-        // DebugViewUtil.log("攻击返回",this.attRole.roleVo.name);
-        // this.attRole.aniPlay(RoleAniIndex.STAND);
-        // if(!this.defRole.roleVo.isDeath)
-        // {
-        //     this.defRole.aniPlay(RoleAniIndex.STAND);
-        // }
-        // this.attCompleted();
+        // DebugViewUtil.log("攻击返回",this.attRole.baseRoleVo.name);
+        this.attRole.aniPlay(RoleAniIndex.STAND);
+        if (!this.defRole.baseRoleVo.isDeath) {
+            this.defRole.aniPlay(RoleAniIndex.STAND);
+        }
+        this.attCompleted();
     };
     return BossBattleEngine;
 }());

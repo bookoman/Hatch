@@ -38,13 +38,15 @@ var FloatFontTips = /** @class */ (function (_super) {
      * @param showTime
      * @param floatHei
      */
-    FloatFontTips.prototype.show = function (msg, parent, sx, sy, showTime, floatHei) {
+    FloatFontTips.prototype.show = function (msg, parent, sx, sy, showTime, floatWidth, floatHei, isRight) {
         this.text = msg;
         this.x = sx - this.width / 2;
         this.y = sy - this.height / 2;
         parent.addChild(this);
         this.alpha = 1;
-        Laya.Tween.to(this, { y: this.y - floatHei, alpha: 0.6 }, showTime * 1000, Laya.Ease.backInOut, Laya.Handler.create(this, this.floatCompleted));
+        var tx = this.x + (isRight ? 1 : -1) * floatWidth;
+        // Laya.Tween.to(this,{x:tx,y:this.y - floatHei,alpha:0.6},showTime * 1000,Laya.Ease.backInOut,Laya.Handler.create(this,this.floatCompleted));
+        Laya.Tween.to(this, { x: tx, y: this.y - floatHei, alpha: 0.6 }, showTime * 1000, Laya.Ease.backOut, Laya.Handler.create(this, this.floatCompleted));
     };
     /**
      * 显示html文本

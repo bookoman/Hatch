@@ -61,7 +61,7 @@ class GateListMediator extends BaseMediator{
                 var btnSp:Button = (cell.getChildByName("btnSweep") as Button);
                 if(btnSp.filters)
                 {
-                    TipsManager.ins.showFloatMsg("2秒之后才能扫荡",30,"#ff0000",this.view,this.view.width/2,this.view.height/2,1,100);
+                    TipsManager.ins.showFloatMsg("2秒之后才能扫荡",30,"#ff0000",this.view,this.view.width/2,this.view.height/2,1,0,100);
                     return;
                 }
                 Laya.timer.once(2000,this,this.timeEndCanScan,[btnSp],false);

@@ -33,7 +33,7 @@ var MapGrid = /** @class */ (function (_super) {
         // text.y = diamondHF - text.height / 2;
         this.addChild(text);
         this.x = this.op.x + diamondWF;
-        this.y = this.op.y + diamondHF + GameConfig.MAP_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y;
+        this.y = this.op.y + diamondHF + GameConfig.BATTLE_INIT_Y + GameConfig.BATTLE_SCENE_OFFSET_Y;
         // console.log(this.x,this.y);
         LayerManager.ins.addToLayer(this, LayerManager.TIP_LAYER, false, true, false);
     };

@@ -29,14 +29,16 @@ class FloatFontTips extends Laya.Label{
      * @param showTime 
      * @param floatHei 
      */
-    public show(msg:string,parent:Laya.Sprite,sx:number,sy:number,showTime:number,floatHei:number):void
+    public show(msg:string,parent:Laya.Sprite,sx:number,sy:number,showTime:number,floatWidth:number,floatHei:number,isRight?:boolean):void
     {
         this.text = msg;
         this.x = sx - this.width / 2;
         this.y = sy - this.height / 2;
         parent.addChild(this);
         this.alpha = 1;
-        Laya.Tween.to(this,{y:this.y - floatHei,alpha:0.6},showTime * 1000,Laya.Ease.backInOut,Laya.Handler.create(this,this.floatCompleted));
+        var tx:number = this.x + (isRight ? 1 : -1) * floatWidth;
+        // Laya.Tween.to(this,{x:tx,y:this.y - floatHei,alpha:0.6},showTime * 1000,Laya.Ease.backInOut,Laya.Handler.create(this,this.floatCompleted));
+        Laya.Tween.to(this,{x:tx,y:this.y - floatHei,alpha:0.6},showTime * 1000,Laya.Ease.backOut,Laya.Handler.create(this,this.floatCompleted));
     }
     /**
      * 显示html文本

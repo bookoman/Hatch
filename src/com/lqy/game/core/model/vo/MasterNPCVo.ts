@@ -3,11 +3,7 @@
 */
 class MasterNPCVo extends BaseRoleVo{
     public masterKey:string;
-    public atk:number;
-    public def:number;
-    public speed:number;
-    public hp:number;
-
+    
     constructor(){
         super(true);
     }
@@ -19,11 +15,13 @@ class MasterNPCVo extends BaseRoleVo{
         
         var config:MasterHeroSampleConfig = ConfigManager.ins.getMasterHeroSampleConfig(this.key);
         this.modelId = config.modelId;
+        this.scale = config.modelSize;
         this.name = config.name;
         this.dieAttTimes = 3;
 
         this.atk = config.atk;
-        this.atkSpeed = config.speed;
+        this.speed = config.speed;
+        this.level = 1;
     }
 
     

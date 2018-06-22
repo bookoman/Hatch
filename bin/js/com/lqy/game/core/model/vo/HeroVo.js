@@ -22,10 +22,15 @@ var HeroVo = /** @class */ (function (_super) {
         this.key = this.heroKey;
         var config = ConfigManager.ins.getHeroSampleConfig(this.heroKey);
         this.modelId = config.modelId;
+        this.scale = config.modelSize;
         this.name = config.name;
+        this.doubleAtk = this.heroAttr.doubleAtkRate;
+        this.hurt = config.hurt;
+        this.tenacity = config.tenacity;
         this.dieAttTimes = 1000;
-        this.atk = this.atk;
-        this.atkSpeed = this.speed;
+        var qualityConfig = ConfigManager.ins.getQualitySampleConfig(this.qualityKey);
+        this.upAtk = qualityConfig.aktMin;
+        this.updef = qualityConfig.defMin;
     };
     return HeroVo;
 }(BaseRoleVo));

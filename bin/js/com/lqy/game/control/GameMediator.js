@@ -105,17 +105,17 @@ var GameMediator = /** @class */ (function (_super) {
     GameMediator.prototype.gateInfoHanlder = function () {
         //显示地图界面
         var resAry = [
-            { url: "unpack/worldmap/p1.png" },
-            { url: "unpack/worldmap/p2.png" },
-            { url: "unpack/worldmap/p3.png" },
-            { url: "unpack/worldmap/p4.png" },
-            { url: "unpack/worldmap/p5.png" },
-            { url: "unpack/worldmap/p6.png" },
-            { url: "unpack/worldmap/p7.png" },
-            { url: "unpack/worldmap/bg.png" },
-            { url: "unpack/worldmap/img_gatebg.png" },
-            { url: "unpack/worldmap/img_listbg.png" },
-            { url: "unpack/worldmap/img_listgraybg.png" },
+            { url: "unpack/worldmap/p1.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p2.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p3.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p4.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p5.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p6.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p7.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/bg.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_gatebg.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_listbg.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_listgraybg.png", type: Loader.IMAGE },
             { url: "res/atlas/worldmap.atlas", type: Loader.ATLAS }
         ];
         this.curMediator = new MapWorldMediator(resAry);

@@ -16,7 +16,18 @@ class HeroSkillSampleConfig{
     public skillMainEffect:string;
     public skillAssistantEffect:string;
     public skillDesc:string;
+    public formula:string;
     constructor(){
 
+    }
+    /**得到技能伤害 */
+    public getSkillHurt(atk:number):number
+    {
+        var tempAry:Array<string> = this.formula.split("*");
+        var addString:string = tempAry[1];
+        tempAry = addString.split("+");
+        var value2:number = Number(tempAry[0]);
+        var value3:number = Number(tempAry[1]);
+        return atk * value2 + value3;
     }
 }

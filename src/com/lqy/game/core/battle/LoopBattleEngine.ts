@@ -80,7 +80,7 @@ class LoopBattleEngine{
         this.battleTurnVoSum = this.loopBattleData.curBattleTurnVos.length;
         this.loopBattleData.curBattleTurnVos.forEach(battleTurnVo => {
             //根据攻击速度攻击延迟
-            Laya.timer.once(1 * battleTurnVo.attRoleVo.atkSpeed / GameConfig.BATTLE_ADDSPEED_TIMES,this,this.battleAtt,[battleTurnVo.attRoleVo,battleTurnVo.defRoleVo],false);
+            Laya.timer.once(1 * battleTurnVo.attRoleVo.speed / GameConfig.BATTLE_ADDSPEED_TIMES,this,this.battleAtt,[battleTurnVo.attRoleVo,battleTurnVo.defRoleVo],false);
         });
         // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
     }

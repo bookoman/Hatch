@@ -12,7 +12,7 @@ var GateSampleConfig = /** @class */ (function () {
         return this.hangUpMasters.split(";");
     };
     /**随机怪物key */
-    GateSampleConfig.prototype.getRandowHandUpMasters = function () {
+    GateSampleConfig.prototype.getRandowHandUpMasters = function (masterCount) {
         var tempAry = this.getHangUpMastersAry();
         var masterKeys = [];
         var percents = [];
@@ -21,8 +21,9 @@ var GateSampleConfig = /** @class */ (function () {
             masterKeys[i] = ary[0];
             percents[i] = Number(ary[1]);
         }
+        var sumCount = masterCount === undefined ? this.masterCount : masterCount;
         var randomMasterKeys = [];
-        for (var count = 0; count < this.masterCount; count++) {
+        for (var count = 0; count < sumCount; count++) {
             var len = percents.length;
             var sum = 0;
             percents.forEach(function (percent) {

@@ -22,10 +22,12 @@ var MasterNPCVo = /** @class */ (function (_super) {
         this.roleId = this.key + "_" + this.lineupGrid;
         var config = ConfigManager.ins.getMasterHeroSampleConfig(this.key);
         this.modelId = config.modelId;
+        this.scale = config.modelSize;
         this.name = config.name;
         this.dieAttTimes = 3;
         this.atk = config.atk;
-        this.atkSpeed = config.speed;
+        this.speed = config.speed;
+        this.level = 1;
     };
     return MasterNPCVo;
 }(BaseRoleVo));

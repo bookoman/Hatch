@@ -30,7 +30,7 @@ class GateSampleConfig{
         return this.hangUpMasters.split(";");
     }
     /**随机怪物key */
-    public getRandowHandUpMasters():Array<string>
+    public getRandowHandUpMasters(masterCount?:number):Array<string>
     {
         var tempAry:Array<string> = this.getHangUpMastersAry();
         var masterKeys:Array<string> = [];
@@ -41,9 +41,9 @@ class GateSampleConfig{
             masterKeys[i] = ary[0];
             percents[i] = Number(ary[1]);
         }
-
+        var sumCount:number = masterCount === undefined ? this.masterCount : masterCount;
         var randomMasterKeys:Array<string> = [];
-        for(var count = 0;count < this.masterCount;count++)
+        for(var count = 0;count < sumCount;count++)
         {
             var len:number = percents.length;
             var sum:number = 0;

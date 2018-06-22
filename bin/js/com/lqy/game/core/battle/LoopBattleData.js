@@ -163,23 +163,35 @@ var LoopBattleData = /** @class */ (function () {
      * @param defAry
      */
     LoopBattleData.prototype.seekAttTarget = function (attAry, defAry) {
-        var reduceAry = [];
-        var plusAry = [];
+        // var reduceAry:Array<BaseRoleVo> = [];
+        // var plusAry:Array<BaseRoleVo> = [];
+        var endAry;
         var attRoleVo;
         var defRoleVo;
         for (var i = 0; i < attAry.length; i++) {
             attRoleVo = attAry[i];
+            endAry = [];
+            endAry[0] = null;
             for (var j = 0; j < defAry.length; j++) {
                 defRoleVo = defAry[j];
                 var attInd = attRoleVo.gridY - defRoleVo.gridY;
-                if (attInd < 0) {
-                    reduceAry[Math.abs(attInd)] = defRoleVo;
+                if (attInd == 0) {
+                    endAry[0] = defRoleVo;
                 }
                 else {
-                    plusAry[attInd] = defRoleVo;
+                    endAry.push(defRoleVo);
                 }
+                // if(attInd < 0)
+                // {
+                //     reduceAry[Math.abs(attInd)] = defRoleVo;
+                // }
+                // else
+                // {
+                //     plusAry[attInd] = defRoleVo;   
+                // }
             }
-            attRoleVo.attEnemyVos = plusAry.concat(reduceAry);
+            // attRoleVo.attEnemyVos = plusAry.concat(reduceAry);
+            attRoleVo.attEnemyVos = endAry;
         }
     };
     /**

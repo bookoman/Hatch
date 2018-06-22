@@ -1,4 +1,5 @@
 D .
+D ani
 D challengeboss
 D comp
 P D12221A9 bg.png
@@ -41,8 +42,6 @@ P 3FD78E12 progress.png
 P BF898D6A radio.png
 P BF898D6A radiogroup.png
 P 3985DB7C skill_bg003.png
-R C05B7C8F skill_bk.png
-R EFE4742A skill_ht.png
 P 8CFD9D35 tab.png
 P BDA71F88 textarea.png
 P BDA71F88 textinput.png
@@ -55,19 +54,17 @@ P 2BFF7046 vslider.png
 D hero
 D main
 P A7FC63D9 bag.png
-R 6D978B09 bg_dibian.png
 P 20196FC1 clip_shadow.png
 P B533CE1E huic.png
 P E6BEF92D huic_1.png
-P 1C298A94 img_blood.png
-P C6B7D49F img_bloodbg.png
+P 8A5092D9 img_blood.png
+P 740D53ED img_bloodbg.png
 P 3C936667 img_tzdb.png
 P D7F208FB juese.png
 P C131F4E2 juese_1.png
 P 42A3FE33 laba.png
 P 00C58ACB logo.png
 P 3ED4975B skill_bg01.png
-R C7A9AB28 skill_bg02.png
 P 9CCB3152 tansuo.png
 P E23808C2 zuoz.png
 D unpack
@@ -85,6 +82,31 @@ P C7F0F903 img_lbl6.png
 P 712B0160 img_map.png
 P 6EB1262C img_notice.png
 P B268763D img_reward.png
+D ani/common_buff
+P 757EBDE8 buff_1.png
+P C274C787 buff_10.png
+P 162715AD buff_11.png
+P F2FDBDDF buff_12.png
+P 9301FB69 buff_13.png
+P A49323EE buff_14.png
+P B8C991A1 buff_15.png
+P 803FE24E buff_16.png
+P 2129CC17 buff_2.png
+P E651B703 buff_3.png
+P 896EEF36 buff_4.png
+P 2D95EB44 buff_5.png
+P 5C8EC553 buff_6.png
+P 949D71D8 buff_7.png
+P E339C1FB buff_8.png
+P E0F6B3FC buff_9.png
+D ani/sk_siyao
+P FF726BE8 siyao_1.png
+P B7C387BF siyao_2.png
+P 3C97BEBF siyao_3.png
+P 0CF8E072 siyao_4.png
+P AD8BB1BC siyao_5.png
+P 9859BB5E siyao_6.png
+P 5885B9CD siyao_7.png
 D hero/icon
 P 077E0592 icon-001.png
 P 4FC42E68 icon-002.png
@@ -104,11 +126,16 @@ R 0FCDCA25 juese_bg.png
 D unpack/login
 R AEF7B252 logo.png
 D unpack/main
+R 6D978B09 bg_dibian.png
 R 6D978B09 diban.png
+R 23A50F59 img_fenwei.png
 R 93F650EB img_reportsbg.png
 R ABF2AEF3 main.jpg
 R 43507D1A role.jpg
 R DED7EA0A roleBg.png
+R C7A9AB28 skill_bg02.png
+R C05B7C8F skill_bk.png
+R EFE4742A skill_ht.png
 D unpack/moduleload
 R 1337AB41 bg.png
 R 4C5FD62C clip_bug.png
@@ -136,3 +163,8 @@ R 66060124 p4.png
 R B420CDF7 p5.png
 R A8B7EA2C p6.png
 R 09186987 p7.png
+P 8E8E545E wumai.png
+R 5831344A yun1.png
+R A8357BE4 yun2.png
+R 2964B51E yun3.png
+R C0901A52 yun4.png
