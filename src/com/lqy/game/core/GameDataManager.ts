@@ -180,7 +180,7 @@ class GameDataManager{
         this.bossData = new EnemyData();
         this.bossData.masterVos = [];
         var gateSampleConfig:GateSampleConfig = ConfigManager.ins.getGateSampleConfig(this.hangGateKey);
-        var keys:Array<string> = gateSampleConfig.getRandowHandUpMasters(5);
+        var keys:Array<string> = gateSampleConfig.getRandowHandUpMasters(5,true);
         var masterVo:MasterVo;
         for(var i = 0;i < keys.length;i++)
         {

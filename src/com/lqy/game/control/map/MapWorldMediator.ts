@@ -3,7 +3,6 @@
 */
 class MapWorldMediator extends BaseMediator{
     private gateListMediator:GateListMediator;
-    private rightFunctionMediator:RightFunctionMediator;
     private lastMoveX:number = 0;
     private mouseDownX:number = 0;
     private mouseUpX:number = 0;
@@ -36,6 +35,8 @@ class MapWorldMediator extends BaseMediator{
         this.view.visible = true;
         super.initView();
         this.worldmapEffect();
+
+        RightFunctionButtons.ins.show(this.view);
     }
     protected addEvents():void
     {
@@ -69,8 +70,6 @@ class MapWorldMediator extends BaseMediator{
 
         //选中当前打的地图板块
         this.view.imgBlock0.filters = [this.glowFilter];
-        
-        this.rightFunctionMediator = new RightFunctionMediator(null,this.view.rightFunctionView);
     }
     private yunMoveComplete(disImg:Laya.Image):void
     {
@@ -178,15 +177,11 @@ class MapWorldMediator extends BaseMediator{
  
     public dispose():void
     {
+        RightFunctionButtons.ins.hide();
         if(this.gateListMediator)
         {
             this.gateListMediator.dispose();
             this.gateListMediator = null;
-        }
-        if(this.rightFunctionMediator)
-        {
-            this.rightFunctionMediator.dispose();
-            this.rightFunctionMediator = null;
         }
         super.dispose();
     }

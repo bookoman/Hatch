@@ -29,10 +29,25 @@ class GateSampleConfig{
     {
         return this.hangUpMasters.split(";");
     }
-    /**随机怪物key */
-    public getRandowHandUpMasters(masterCount?:number):Array<string>
+    /**得到真打怪物 */
+    public getMastersAry():Array<string>
     {
-        var tempAry:Array<string> = this.getHangUpMastersAry();
+
+        return this.masters.split(";");
+    }
+    /**随机怪物key */
+    public getRandowHandUpMasters(masterCount?:number,isTureBattle?:boolean):Array<string>
+    {
+        isTureBattle = isTureBattle === undefined ? false : isTureBattle;
+        var tempAry:Array<string> = this.getMastersAry();
+        if(isTureBattle)
+        {
+            tempAry = this.getMastersAry();
+        }
+        else
+        {
+            tempAry = this.getHangUpMastersAry();
+        }
         var masterKeys:Array<string> = [];
         var percents:Array<number> = [];
         for(var i = 0;i < tempAry.length;i++)

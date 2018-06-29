@@ -24,7 +24,6 @@ class HeroVo extends BaseRoleVo{
     public initBaseData():void
     {
         
-
         this.roleId = this.heroId;
         this.scale = -1;
         this.key = this.heroKey;
@@ -35,11 +34,11 @@ class HeroVo extends BaseRoleVo{
         this.doubleAtk = this.heroAttr.doubleAtkRate;
         this.hurt = config.hurt;
         this.tenacity = config.tenacity;
-        this.dieAttTimes = 1000;
+        this.dieAttTimes = 10;
 
-        var qualityConfig:QualitySampleConfig = ConfigManager.ins.getQualitySampleConfig(this.qualityKey);
-        this.upAtk = qualityConfig.aktMin;
-        this.updef = qualityConfig.defMin;
+        // var qualityConfig:QualitySampleConfig = ConfigManager.ins.getQualitySampleConfig(this.qualityKey);
+        this.upAtk = this.heroAttr.upAtk;
+        this.updef = this.heroAttr.upDef;
 
         /**技能数据 */
         this.skillVos = [];
@@ -47,17 +46,17 @@ class HeroVo extends BaseRoleVo{
 
         var bool:boolean = skillVo.initData(config.skillKey);
         //流血buff测试
-        if(this.name == "美颌龙"){
+        if(this.name == "三角龙"){
             //流血技能
-            bool = skillVo.initData("SK_0096");
+            // bool = skillVo.initData("SK_0096");
             //单个加血技能
             // bool = skillVo.initData("SK_0061");
             //提升攻击力技能
             // bool = skillVo.initData("SK_0012");
             //嘲讽
             // bool = skillVo.initData("SK_0241");
-            skillVo.cd = 3;
-            skillVo.skillContinued = 2;
+            // skillVo.cd = 0;
+            // skillVo.skillContinued = 1;
         }
         if(bool){
             this.skillVos.push(skillVo);

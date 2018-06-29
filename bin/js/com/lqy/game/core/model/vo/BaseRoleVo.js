@@ -31,6 +31,8 @@ var BaseRoleVo = /** @class */ (function () {
         this.bossBattleRoleData = new BossBattleRoleData();
         this.realAtk = this.atk + this.level * this.upAtk;
         this.realDef = this.def + this.level * this.updef;
+        this.skillMainFormula = {};
+        this.skillSubFomula = {};
     };
     /**初始化阵型数据 */
     BaseRoleVo.prototype.initRowColPosPoint = function () {
@@ -70,11 +72,12 @@ var BaseRoleVo = /** @class */ (function () {
         var _this = this;
         this.curSkillVo = null;
         this.skillVos.forEach(function (skillVo) {
+            skillVo.isCanUse = skillVo.calCD <= 0;
             if (skillVo.isCanUse) {
                 // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表");
                 _this.curSkillVo = skillVo;
-                _this.skillMainFormula = _this.curSkillVo.skillConfig.formula;
-                _this.skillSubFomula = _this.curSkillVo.skillConfig.subFormula;
+                _this.skillMainFormula["formula" + skillVo.skillMainEffect] = _this.curSkillVo.skillConfig.formula;
+                _this.skillSubFomula["formula" + skillVo.skillAssistantEffect] = _this.curSkillVo.skillConfig.subFormula;
                 // console.log("....",this.skillMainFormula,this.skillSubFomula);
             }
         });
@@ -140,23 +143,7 @@ var BaseRoleVo = /** @class */ (function () {
     BaseRoleVo.prototype.calculationAttribute = function (atkVo, ranksAtk) {
         //技能伤害
         var curSkillVo = atkVo.curSkillVo;
-        if (curSkillVo) { //计时生效效果
-            //主动效果
-            // if(curSkillVo.skillMainEffect == SkillEffect.HURT){
-            //     this.bossBattleRoleData.hurt += FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillHurt());
-            // }
-            // else if(curSkillVo.skillMainEffect == SkillEffect.RECOVERY_BLOOD)
-            // {
-            //     this.bossBattleRoleData.recoveryBlood += FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillHurt());
-            // }
-            // //被动效果
-            // if(curSkillVo.skillAssistantEffect == SkillEffect.HURT){
-            //     this.bossBattleRoleData.hurt += FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillHurt());
-            // }
-            // else if(curSkillVo.skillAssistantEffect == SkillEffect.RECOVERY_BLOOD)
-            // {
-            //     this.bossBattleRoleData.recoveryBlood += FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillHurt());
-            // }
+        if (curSkillVo) {
             //主动效果
             if (this.mainSkillContinuedVo.hurt > 0)
                 this.bossBattleRoleData.hurt = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
@@ -169,7 +156,7 @@ var BaseRoleVo = /** @class */ (function () {
                 this.bossBattleRoleData.bleeding = atkVo.getSkillBleeding();
             }
             if (this.mainSkillContinuedVo.recoveryBlood > 0) {
-                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillRecoverBlood());
             }
             //副效果
             if (this.assiSkillContinuedVo.hurt > 0)
@@ -181,7 +168,7 @@ var BaseRoleVo = /** @class */ (function () {
                 this.bossBattleRoleData.bleeding = atkVo.getSkillBleeding();
             }
             if (this.assiSkillContinuedVo.recoveryBlood > 0) {
-                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillRecoverBlood());
             }
         }
         else {
@@ -232,7 +219,20 @@ var BaseRoleVo = /** @class */ (function () {
     };
     /**得到技能伤害 */
     BaseRoleVo.prototype.getSkillHurt = function () {
-        var tempAry = this.skillMainFormula.split("*");
+        var skillFormula = this.skillMainFormula["formula" + SkillEffect.HURT];
+        var tempAry = skillFormula.split("*");
+        // var tempAry:Array<string> = this.skillMainFormula.split("*");
+        var addString = tempAry[1];
+        tempAry = addString.split("+");
+        var value2 = Number(tempAry[0]);
+        var value3 = Number(tempAry[1]);
+        return Math.ceil(this.realAtk * value2 + value3);
+    };
+    /**得到技能伤害 */
+    BaseRoleVo.prototype.getSkillRecoverBlood = function () {
+        var skillFormula = this.skillMainFormula["formula" + SkillEffect.RECOVERY_BLOOD];
+        var tempAry = skillFormula.split("*");
+        // var tempAry:Array<string> = this.skillMainFormula.split("*");
         var addString = tempAry[1];
         tempAry = addString.split("+");
         var value2 = Number(tempAry[0]);
@@ -241,13 +241,17 @@ var BaseRoleVo = /** @class */ (function () {
     };
     /**流血值 */
     BaseRoleVo.prototype.getSkillBleeding = function () {
-        var tempAry = this.skillSubFomula.split("*");
+        var skillFormula = this.skillSubFomula["formula" + SkillEffect.BLEEDING];
+        var tempAry = skillFormula.split("*");
+        // var tempAry:Array<string> = this.skillSubFomula.split("*");
         var value1 = Number(tempAry[1]);
         return Math.ceil(this.realAtk * value1);
     };
     /**得到增加攻击力值 */
     BaseRoleVo.prototype.getAddAtkValue = function (ranksAtk) {
-        var tempAry = this.skillMainFormula.split("*");
+        var skillFormula = this.skillMainFormula["formula" + SkillEffect.ADD_ATK];
+        var tempAry = skillFormula.split("*");
+        // var tempAry:Array<string> = this.skillMainFormula.split("*");
         var addString = tempAry[1];
         tempAry = addString.split("+");
         var value2 = Number(tempAry[0]);

@@ -70,14 +70,17 @@ var LoopBattleData = /** @class */ (function () {
                 //寻找攻击具体对象
                 for (var j = 0; j < attRoleVo.attEnemyVos.length; j++) {
                     defRoleVo = attRoleVo.attEnemyVos[j];
-                    if (defRoleVo && !defRoleVo.isDeath) {
+                    if (defRoleVo && !defRoleVo.isDeath && attRoleVo.gridY == defRoleVo.gridY) {
                         break;
                     }
+                    defRoleVo = null;
                 }
             }
-            battleTurnVo.attRoleVo = attRoleVo;
-            battleTurnVo.defRoleVo = defRoleVo;
-            ary.push(battleTurnVo);
+            if (attRoleVo && defRoleVo) {
+                battleTurnVo.attRoleVo = attRoleVo;
+                battleTurnVo.defRoleVo = defRoleVo;
+                ary.push(battleTurnVo);
+            }
         }
         return ary;
     };
@@ -90,6 +93,7 @@ var LoopBattleData = /** @class */ (function () {
         // this.checkBattleEnd();
         //攻击次数检测
         this.curBattleTurnVos.forEach(function (battleTurnVo) {
+            // console.log(attRoleVo.name + ","+attRoleVo.roleId,battleTurnVo.attRoleVo.name + ","+battleTurnVo.attRoleVo.roleId);
             if (attRoleVo.roleId == battleTurnVo.attRoleVo.roleId && defRoleVo.roleId == battleTurnVo.defRoleVo.roleId) {
                 battleTurnVo.calculationAttribute();
             }

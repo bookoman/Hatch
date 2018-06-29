@@ -31,6 +31,5 @@ class FormulaUtil{
         return Math.ceil(sumHurt);
     }
     
-
     
 }

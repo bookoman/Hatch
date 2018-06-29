@@ -174,7 +174,6 @@ class LoopBattleEngine{
         var skillVo:SkillVo = attRoleVo.getCanUserSkill();
         if(skillVo)
         {
-            
             //技能释放               
             // var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
             // skill.playSkill(skillVo.modelId,defRole,0,0,0.3);
@@ -202,7 +201,7 @@ class LoopBattleEngine{
         {
             defRole.aniPlay(RoleAniIndex.INJURED,false);
         }
-        defRole.showFloatFont(attRoleVo.atk);
+        defRole.showFloatFont("-"+attRoleVo.atk);
         defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
     }
     // /**
@@ -234,7 +233,6 @@ class LoopBattleEngine{
     }
     private attCompleted():void
     {
-        
         if(this.loopBattleData.isEnd)
         {
             this.endBattle();

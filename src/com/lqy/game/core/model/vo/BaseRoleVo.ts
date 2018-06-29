@@ -72,9 +72,9 @@ class BaseRoleVo{
     /**当前受到伤害数据 */
     public bossBattleRoleData:BossBattleRoleData;
     /**技能主效果公式 */
-    public skillMainFormula:string;
+    public skillMainFormula:any;
     /**技能副效果公式 */
-    public skillSubFomula:string;
+    public skillSubFomula:any;
 
     constructor(isEnemy:boolean){
         this.isEnemy = isEnemy;
@@ -85,6 +85,7 @@ class BaseRoleVo{
         this.mainSkillContinuedVo = new SkillContinuedVo();
         this.assiSkillContinuedVo = new SkillContinuedVo();
         this.bossBattleRoleData = new BossBattleRoleData();
+
 
         this.realAtk = this.atk + this.level * this.upAtk;
         this.realDef = this.def + this.level * this.updef;
@@ -98,6 +99,9 @@ class BaseRoleVo{
 
         this.realAtk = this.atk + this.level * this.upAtk;
         this.realDef = this.def + this.level * this.updef;
+        
+        this.skillMainFormula = {};
+        this.skillSubFomula = {};
     }
 
     /**初始化阵型数据 */
@@ -144,12 +148,13 @@ class BaseRoleVo{
     {   
         this.curSkillVo = null;
         this.skillVos.forEach(skillVo => {
+            skillVo.isCanUse = skillVo.calCD <= 0;
             if(skillVo.isCanUse)
             {
                 // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表");
                 this.curSkillVo =  skillVo;
-                this.skillMainFormula = this.curSkillVo.skillConfig.formula;
-                this.skillSubFomula = this.curSkillVo.skillConfig.subFormula;
+                this.skillMainFormula["formula"+skillVo.skillMainEffect] = this.curSkillVo.skillConfig.formula;
+                this.skillSubFomula["formula"+skillVo.skillAssistantEffect] = this.curSkillVo.skillConfig.subFormula;
                 // console.log("....",this.skillMainFormula,this.skillSubFomula);
             }
         });
@@ -234,7 +239,7 @@ class BaseRoleVo{
             }
             
             if(this.mainSkillContinuedVo.recoveryBlood > 0){
-                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillHurt());
+                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillRecoverBlood());
             }
             //副效果
             if(this.assiSkillContinuedVo.hurt > 0)
@@ -248,7 +253,7 @@ class BaseRoleVo{
             }
            
             if(this.assiSkillContinuedVo.recoveryBlood > 0){
-                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillHurt());
+                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillRecoverBlood());
             }
         }
         else
@@ -313,7 +318,21 @@ class BaseRoleVo{
     /**得到技能伤害 */
     public getSkillHurt():number
     {
-        var tempAry:Array<string> = this.skillMainFormula.split("*");
+        var skillFormula:string = this.skillMainFormula["formula"+SkillEffect.HURT];
+        var tempAry:Array<string> = skillFormula.split("*");
+        // var tempAry:Array<string> = this.skillMainFormula.split("*");
+        var addString:string = tempAry[1];
+        tempAry = addString.split("+");
+        var value2:number = Number(tempAry[0]);
+        var value3:number = Number(tempAry[1]);
+        return Math.ceil(this.realAtk * value2 + value3);
+    }
+    /**得到技能伤害 */
+    public getSkillRecoverBlood():number
+    {
+        var skillFormula:string = this.skillMainFormula["formula"+SkillEffect.RECOVERY_BLOOD];
+        var tempAry:Array<string> = skillFormula.split("*");
+        // var tempAry:Array<string> = this.skillMainFormula.split("*");
         var addString:string = tempAry[1];
         tempAry = addString.split("+");
         var value2:number = Number(tempAry[0]);
@@ -324,14 +343,18 @@ class BaseRoleVo{
     /**流血值 */
     public getSkillBleeding():number
     {
-        var tempAry:Array<string> = this.skillSubFomula.split("*");
+        var skillFormula:string = this.skillSubFomula["formula"+SkillEffect.BLEEDING];
+        var tempAry:Array<string> = skillFormula.split("*");
+        // var tempAry:Array<string> = this.skillSubFomula.split("*");
         var value1:number = Number(tempAry[1]);
         return Math.ceil(this.realAtk * value1);
     }
     /**得到增加攻击力值 */
     public getAddAtkValue(ranksAtk:number):number
     {
-        var tempAry:Array<string> = this.skillMainFormula.split("*");
+        var skillFormula:string = this.skillMainFormula["formula"+SkillEffect.ADD_ATK];
+        var tempAry:Array<string> = skillFormula.split("*");
+        // var tempAry:Array<string> = this.skillMainFormula.split("*");
         var addString:string = tempAry[1];
         tempAry = addString.split("+");
         var value2:number = Number(tempAry[0]);

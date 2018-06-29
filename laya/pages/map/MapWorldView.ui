@@ -297,20 +297,6 @@
                 ],
             "$LOCKED":true,
             "$HIDDEN":true
-        },
-        {
-            "x":15,
-            "type":"UIView",
-            "source":"map/RightFunctionView.ui",
-            "props":{"y":511,"x":750,"var":"rightFunctionView"},
-            "nodeParent":1,
-            "label":"UIView(rightFunctionView)",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":35,
-            "child":[
-                ]
         }],
     "animations":[
         {

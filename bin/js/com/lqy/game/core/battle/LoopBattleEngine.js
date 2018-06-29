@@ -168,7 +168,7 @@ var LoopBattleEngine = /** @class */ (function () {
         else {
             defRole.aniPlay(RoleAniIndex.INJURED, false);
         }
-        defRole.showFloatFont(attRoleVo.atk);
+        defRole.showFloatFont("-" + attRoleVo.atk);
         defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
     };
     // /**

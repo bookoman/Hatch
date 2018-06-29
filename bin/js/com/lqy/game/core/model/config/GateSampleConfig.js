@@ -11,9 +11,20 @@ var GateSampleConfig = /** @class */ (function () {
     GateSampleConfig.prototype.getHangUpMastersAry = function () {
         return this.hangUpMasters.split(";");
     };
+    /**得到真打怪物 */
+    GateSampleConfig.prototype.getMastersAry = function () {
+        return this.masters.split(";");
+    };
     /**随机怪物key */
-    GateSampleConfig.prototype.getRandowHandUpMasters = function (masterCount) {
-        var tempAry = this.getHangUpMastersAry();
+    GateSampleConfig.prototype.getRandowHandUpMasters = function (masterCount, isTureBattle) {
+        isTureBattle = isTureBattle === undefined ? false : isTureBattle;
+        var tempAry = this.getMastersAry();
+        if (isTureBattle) {
+            tempAry = this.getMastersAry();
+        }
+        else {
+            tempAry = this.getHangUpMastersAry();
+        }
         var masterKeys = [];
         var percents = [];
         for (var i = 0; i < tempAry.length; i++) {

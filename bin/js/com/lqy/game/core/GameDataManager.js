@@ -141,7 +141,7 @@ var GameDataManager = /** @class */ (function () {
         this.bossData = new EnemyData();
         this.bossData.masterVos = [];
         var gateSampleConfig = ConfigManager.ins.getGateSampleConfig(this.hangGateKey);
-        var keys = gateSampleConfig.getRandowHandUpMasters(5);
+        var keys = gateSampleConfig.getRandowHandUpMasters(5, true);
         var masterVo;
         for (var i = 0; i < keys.length; i++) {
             masterVo = new MasterVo();
