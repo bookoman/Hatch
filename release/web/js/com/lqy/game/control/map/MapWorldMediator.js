@@ -42,6 +42,7 @@ var MapWorldMediator = /** @class */ (function (_super) {
         this.view.visible = true;
         _super.prototype.initView.call(this);
         this.worldmapEffect();
+        RightFunctionButtons.ins.show(this.view);
     };
     MapWorldMediator.prototype.addEvents = function () {
         this.view.panelBlock.on(Laya.Event.MOUSE_DOWN, this, this.onViewMouseEvent);
@@ -65,7 +66,6 @@ var MapWorldMediator = /** @class */ (function (_super) {
         Tween.to(this.view.panelBlock, { x: 0, y: 0, scaleX: 1.0, scaleY: 1.0 }, 1000, null, null, 1000);
         //选中当前打的地图板块
         this.view.imgBlock0.filters = [this.glowFilter];
-        this.rightFunctionMediator = new RightFunctionMediator(null, this.view.rightFunctionView);
     };
     MapWorldMediator.prototype.yunMoveComplete = function (disImg) {
         if (disImg) {
@@ -148,13 +148,10 @@ var MapWorldMediator = /** @class */ (function (_super) {
         this.lastMoveX = this.view.panelBlock.mouseX;
     };
     MapWorldMediator.prototype.dispose = function () {
+        RightFunctionButtons.ins.hide();
         if (this.gateListMediator) {
             this.gateListMediator.dispose();
             this.gateListMediator = null;
-        }
-        if (this.rightFunctionMediator) {
-            this.rightFunctionMediator.dispose();
-            this.rightFunctionMediator = null;
         }
         _super.prototype.dispose.call(this);
     };

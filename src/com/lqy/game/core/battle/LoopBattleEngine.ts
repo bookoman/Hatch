@@ -171,15 +171,15 @@ class LoopBattleEngine{
     {
         var attRoleVo:BaseRoleVo = attRole.baseRoleVo;
         var defRoleVo:BaseRoleVo = defRole.baseRoleVo;
-        var skillVo:SkillVo = attRoleVo.getCanUserSkill();
-        if(skillVo)
-        {
+        // var skillVo:SkillVo = attRoleVo.getCanUserSkill();
+        // if(skillVo)
+        // {
             //技能释放               
             // var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
             // skill.playSkill(skillVo.modelId,defRole,0,0,0.3);
-        }
-        else
-        {
+        // }
+        // else
+        // {
             //远攻，近攻击
             // if(attRoleVo.attFar == 1)
             // {
@@ -189,7 +189,7 @@ class LoopBattleEngine{
             // {
             //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
             // }
-        }
+        // }
         attRole.aniPlay(RoleAniIndex.ATTACK,true,this,this.moveBackLineupComplete,defRole);
         this.loopBattleData.calculationAttribute(attRoleVo,defRoleVo);
         if(defRoleVo.isDeath)

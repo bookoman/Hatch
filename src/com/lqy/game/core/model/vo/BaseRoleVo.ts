@@ -72,9 +72,9 @@ class BaseRoleVo{
     /**当前受到伤害数据 */
     public bossBattleRoleData:BossBattleRoleData;
     /**技能主效果公式 */
-    public skillMainFormula:any;
+    public skillMainFormula:Object = {};
     /**技能副效果公式 */
-    public skillSubFomula:any;
+    public skillSubFomula:Object = {};
 
     constructor(isEnemy:boolean){
         this.isEnemy = isEnemy;
@@ -153,8 +153,8 @@ class BaseRoleVo{
             {
                 // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表");
                 this.curSkillVo =  skillVo;
-                this.skillMainFormula["formula"+skillVo.skillMainEffect] = this.curSkillVo.skillConfig.formula;
-                this.skillSubFomula["formula"+skillVo.skillAssistantEffect] = this.curSkillVo.skillConfig.subFormula;
+                this.skillMainFormula["formula"+skillVo.skillMainEffect] = skillVo.skillConfig.formula;
+                this.skillSubFomula["formula"+skillVo.skillAssistantEffect] = skillVo.skillConfig.formula;
                 // console.log("....",this.skillMainFormula,this.skillSubFomula);
             }
         });
