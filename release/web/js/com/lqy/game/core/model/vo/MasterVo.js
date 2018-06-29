@@ -42,6 +42,7 @@ var MasterVo = /** @class */ (function (_super) {
         if (bool) {
             this.skillVos.push(skillVo);
         }
+        _super.prototype.initBaseData.call(this);
     };
     return MasterVo;
 }(BaseRoleVo));

@@ -29,7 +29,7 @@ class GameMediator extends BaseMediator{
         this.view.btnLineup.on(Laya.Event.CLICK,this,this.onBtnLineup);
         this.view.btnBattle.on(Laya.Event.CLICK,this,this.onBtnBattle);
         this.view.btnHero.on(Laya.Event.CLICK,this,this.onBtnHero);
-        this.view.btnEquip.on(Laya.Event.CLICK,this,this.onBtnEquip);
+        this.view.btnBag.on(Laya.Event.CLICK,this,this.onBtnBag);
 
         EventManager.ins.addEvent(EventManager.CHOICE_CHALLEGEN_GATE,this,this.choiceChanllegeGate);
 
@@ -48,7 +48,7 @@ class GameMediator extends BaseMediator{
         this.view.btnLineup.off(Laya.Event.CLICK,this,this.onBtnLineup);
         this.view.btnBattle.off(Laya.Event.CLICK,this,this.onBtnBattle);
         this.view.btnHero.off(Laya.Event.CLICK,this,this.onBtnHero);
-        this.view.btnEquip.off(Laya.Event.CLICK,this,this.onBtnEquip);
+        this.view.btnBag.off(Laya.Event.CLICK,this,this.onBtnBag);
 
         EventManager.ins.removeEvent(EventManager.CHOICE_CHALLEGEN_GATE,this.choiceChanllegeGate);
 
@@ -180,7 +180,7 @@ class GameMediator extends BaseMediator{
         GameDataManager.showModuleViewInd = GameButtomTabIndex.HERO;
     }
      /**战斗系统*/ 
-    private onBtnEquip(e):void
+    private onBtnBag(e):void
     {
         if(GameDataManager.showModuleViewInd == GameButtomTabIndex.EQUIP)
         {
@@ -191,7 +191,11 @@ class GameMediator extends BaseMediator{
             this.curMediator.dispose();
             this.curMediator = null;
         }
-        this.curMediator = new EquipMediator();
+        var resAry:Array<Object> = [
+            {url:"unpack/bag/itemjiatu.png",type:Loader.IMAGE},
+            {url:"res/atlas/bag.atlas",type:Loader.ATLAS}
+        ];
+        this.curMediator = new BagMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.EQUIP;
     }
     /**挂机战斗*/ 

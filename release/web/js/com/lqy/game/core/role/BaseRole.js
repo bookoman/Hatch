@@ -24,6 +24,12 @@ var BaseRole = /** @class */ (function (_super) {
         _this.roleBloodBar = null;
         _this.showPriority = 0;
         _this.showBloodBar = false;
+        _this.clipShadow = new Laya.Image("comp/img_shadow.png");
+        _this.clipShadow.height = 30;
+        _this.clipShadow.x = -_this.clipShadow.width / 2;
+        _this.clipShadow.y = -_this.clipShadow.height / 2;
+        _this.clipShadow.alpha = 0.2;
+        _this.addChild(_this.clipShadow);
         return _this;
         // EventManager.ins.addEvent(EventManager.TEST_CHANGE_ROLE_SCALE,this,this.testScale);
     }
@@ -41,12 +47,6 @@ var BaseRole = /** @class */ (function (_super) {
     //     }
     // }
     BaseRole.prototype.initRole = function (baseRoleVo, showPriority, scale, parentDis, showBloodBar) {
-        this.clipShadow = new Laya.Image("comp/img_shadow.png");
-        this.clipShadow.height = 30;
-        this.clipShadow.x = -this.clipShadow.width / 2;
-        this.clipShadow.y = -this.clipShadow.height / 2;
-        this.clipShadow.alpha = 0.2;
-        this.addChild(this.clipShadow);
         this.baseRoleVo = baseRoleVo;
         this.showPriority = showPriority;
         this.showBloodBar = showBloodBar === undefined ? false : showBloodBar;
@@ -69,11 +69,12 @@ var BaseRole = /** @class */ (function (_super) {
         }
         this.visible = true;
     };
-    BaseRole.prototype.showFloatFont = function (blood) {
+    BaseRole.prototype.showFloatFont = function (tipString) {
+        tipString = tipString === undefined ? "" : tipString;
         var floatFontTip = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
         if (floatFontTip) {
             floatFontTip.setAttribute(40, "#ff0000");
-            floatFontTip.show("-" + blood, this, -30, -200, 0.5, 40, 80, this.baseRoleVo.isEnemy);
+            floatFontTip.show(tipString, this, -30, -200, 0.5, 40, 80, this.baseRoleVo.isEnemy);
         }
     };
     /**
@@ -92,7 +93,7 @@ var BaseRole = /** @class */ (function (_super) {
             //>= aniCount默认播放第一个动画
             if (this.skeletonAni) {
                 Laya.loader.on(/*laya.events.Event.ERROR*/ "error", this, this.skeletonLoadError);
-                // this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted,[defRole,caller,method]);
+                // console.log("前........",this.baseRoleVo.name,aniID);
                 this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted);
                 this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID, loop);
@@ -100,12 +101,21 @@ var BaseRole = /** @class */ (function (_super) {
             }
         }
         else {
-            // Laya.timer.frameOnce(this.showPriority * 6,this,this.skeletonAniLoad,[aniID,loop,caller,method],false);
             Laya.timer.frameOnce(this.showPriority * 6, this, this.skeletonAniLoad, null, false);
         }
     };
+    BaseRole.prototype.getSkillEffectInd = function () {
+        if (this.skeletonAni) {
+            return this.getChildIndex(this.skeletonAni);
+        }
+        return 0;
+    };
     /**播放一次动画回调 */
     BaseRole.prototype.onPlayCompleted = function () {
+        // console.log("后........",this.baseRoleVo.name,this.aniId);
+        if (this.aniId == RoleAniIndex.ATTACK) {
+            SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+        }
         this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.onPlayCompleted);
         if (this.caller && this.method) {
             // console.log(this.roleVo.name);
@@ -144,7 +154,9 @@ var BaseRole = /** @class */ (function (_super) {
         // this.aniHeight = bound.height + Math.abs(bound.y);
         // console.log(this.baseRoleVo.name,bound);
         //血条
-        this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
+        // this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
+        this.roleBloodBar = new RoleBloodBar();
+        this.roleBloodBar.visible = true;
         this.roleBloodBar.scaleX = 0.5;
         this.roleBloodBar.x = -60;
         this.roleBloodBar.y = -180;
@@ -176,6 +188,7 @@ var BaseRole = /** @class */ (function (_super) {
         this.aniPlay(RoleAniIndex.MOVE);
     };
     BaseRole.prototype.setVisible = function (bool) {
+        // Laya.timer.once(1000 / GameConfig.BATTLE_ADDSPEED_TIMES,this, this.setVis,[bool]);
         Laya.timer.once(1000, this, this.setVis, [bool]);
     };
     BaseRole.prototype.setVis = function (bool) {
@@ -194,10 +207,12 @@ var BaseRole = /** @class */ (function (_super) {
         this.skeletonAni = null;
         if (this.LblName) {
             this.LblName.removeSelf();
+            this.LblName = null;
         }
         if (this.roleBloodBar) {
             this.roleBloodBar.removeSelf();
-            ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR, this.roleBloodBar);
+            this.roleBloodBar = null;
+            // ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR,this.roleBloodBar);
         }
         this.baseRoleVo = null;
     };

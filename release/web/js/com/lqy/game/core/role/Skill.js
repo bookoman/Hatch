@@ -7,7 +7,7 @@ var Skill = /** @class */ (function () {
         this.frameAni = null;
     }
     Skill.prototype.playSkill = function (skillModelId, parentDis, tx, ty, scale) {
-        this.frameAni = new FrameAnimation(parentDis, tx, ty, scale);
+        this.frameAni = new FrameAnimation(parentDis, tx, ty, true, scale);
         this.frameAni.playAni(skillModelId, false, this, this.playSkillComplete);
     };
     Skill.prototype.playSkillComplete = function () {

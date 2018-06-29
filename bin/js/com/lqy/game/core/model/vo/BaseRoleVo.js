@@ -159,37 +159,42 @@ var BaseRoleVo = /** @class */ (function () {
             // }
             //主动效果
             if (this.mainSkillContinuedVo.hurt > 0)
-                this.bossBattleRoleData.hurt += FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
-            if (this.mainSkillContinuedVo.addAtk > 0)
+                this.bossBattleRoleData.hurt = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+            if (this.mainSkillContinuedVo.addAtk > 0) {
                 this.bossBattleRoleData.addAtk += atkVo.getAddAtkValue(ranksAtk);
+            }
             else
                 this.realAtk = this.atk + this.level * this.upAtk;
-            if (this.mainSkillContinuedVo.bleeding > 0)
-                this.bossBattleRoleData.bleeding += atkVo.getSkillBleeding();
-            if (this.mainSkillContinuedVo.recoveryBlood > 0)
-                this.bossBattleRoleData.recoveryBlood += FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+            if (this.mainSkillContinuedVo.bleeding > 0) {
+                this.bossBattleRoleData.bleeding = atkVo.getSkillBleeding();
+            }
+            if (this.mainSkillContinuedVo.recoveryBlood > 0) {
+                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+            }
             //副效果
             if (this.assiSkillContinuedVo.hurt > 0)
-                this.bossBattleRoleData.hurt += FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
-            if (this.assiSkillContinuedVo.addAtk > 0)
-                this.bossBattleRoleData.addAtk += atkVo.getAddAtkValue(ranksAtk);
-            if (this.assiSkillContinuedVo.bleeding > 0)
-                this.bossBattleRoleData.bleeding += atkVo.getSkillBleeding();
-            if (this.assiSkillContinuedVo.recoveryBlood > 0)
-                this.bossBattleRoleData.recoveryBlood += FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+                this.bossBattleRoleData.hurt = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+            if (this.assiSkillContinuedVo.addAtk > 0) {
+                this.bossBattleRoleData.addAtk = atkVo.getAddAtkValue(ranksAtk);
+            }
+            if (this.assiSkillContinuedVo.bleeding > 0) {
+                this.bossBattleRoleData.bleeding = atkVo.getSkillBleeding();
+            }
+            if (this.assiSkillContinuedVo.recoveryBlood > 0) {
+                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+            }
         }
         else {
             if (atkVo.isEnemy != this.isEnemy) {
                 this.bossBattleRoleData.hurt = FormulaUtil.realDamageValue(atkVo, this);
             }
         }
-        //战斗血量
-        this.realAtk += this.bossBattleRoleData.addAtk;
-        this.battleHP += this.bossBattleRoleData.recoveryBlood;
-        if (this.battleHP > this.hp)
-            this.battleHP = this.hp;
         this.battleHP -= this.bossBattleRoleData.hurt;
         this.isDeath = this.battleHP <= 0;
+        // if(this.name == "美颌龙")
+        // {
+        //     console.log(".........",this.battleHP,this.bossBattleRoleData.hurt);
+        // }
     };
     /**计算持续效果 */
     BaseRoleVo.prototype.calculationContinueEffect = function () {
@@ -200,8 +205,8 @@ var BaseRoleVo = /** @class */ (function () {
         }
         if (this.mainSkillContinuedVo.bleeding <= 0 && this.assiSkillContinuedVo.bleeding <= 0)
             this.bossBattleRoleData.bleeding == 0;
-        // if(this.mainSkillContinuedVo.hurt <= 0 && this.assiSkillContinuedVo.hurt <= 0)
-        //     this.bossBattleRoleData.hurt == 0;
+        if (this.mainSkillContinuedVo.hurt <= 0 && this.assiSkillContinuedVo.hurt <= 0)
+            this.bossBattleRoleData.hurt = 0;
         if (this.mainSkillContinuedVo.recoveryBlood <= 0 && this.assiSkillContinuedVo.recoveryBlood <= 0)
             this.bossBattleRoleData.recoveryBlood = 0;
         //战斗血量
@@ -210,7 +215,12 @@ var BaseRoleVo = /** @class */ (function () {
         if (this.battleHP > this.hp)
             this.battleHP = this.hp;
         this.battleHP -= this.bossBattleRoleData.hurt;
+        this.battleHP -= this.bossBattleRoleData.bleeding;
         this.isDeath = this.battleHP <= 0;
+        // if(this.name == "美颌龙")
+        // {
+        //     console.log(".........",this.battleHP,this.bossBattleRoleData.hurt,this.bossBattleRoleData.bleeding);
+        // }
     };
     /**是否显示一次效果 */
     BaseRoleVo.prototype.isShowOnceSkill = function (mainValue, assiValue, atkRoleVo) {

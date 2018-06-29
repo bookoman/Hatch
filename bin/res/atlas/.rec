@@ -1,5 +1,10 @@
 D .
 D ani
+D bag
+P 12740C40 bagtitle.png
+P 64F84F48 xiaohao.png
+P 7FC0A0F9 zhangwen.png
+P 5DCC64E6 zhuangbei.png
 D challengeboss
 D comp
 P D12221A9 bg.png
@@ -23,6 +28,7 @@ P 318D6271 clip_qulity7.png
 P F7B6B7D7 clip_selectBox.png
 P 755271AE clip_tree_arrow.png
 P 859FD34C clip_tree_folder.png
+P 72195558 close.png
 P A0E3B8F9 combobox.png
 P 9EDA959E hscroll$bar.png
 P 1AB768D4 hscroll$down.png
@@ -34,11 +40,19 @@ P 5EDC128C html.png
 P ACFFCCCF image.png
 P B804ADB3 img_shadow.png
 P A3066B81 img_tick.png
+P 35BBD554 itembox.png
 P EF5C6C0E l_yezhi_1.png
 P 5EDC128C label.png
 P 5EDC128C linkbutton.png
 P 9E4DD730 progress$bar.png
 P 3FD78E12 progress.png
+P 0361C2BD q_1.png
+P ACD8826E q_2.png
+P A90B0D56 q_3.png
+P 9DB72EEA q_4.png
+P 7BCC05E3 q_5.png
+P A8498A56 q_6.png
+P 6946C5A2 q_7.png
 P BF898D6A radio.png
 P BF898D6A radiogroup.png
 P 3985DB7C skill_bg003.png
@@ -51,6 +65,23 @@ P B9680947 vscroll$up.png
 P 7E990267 vscroll.png
 P E466EB1C vslider$bar.png
 P 2BFF7046 vslider.png
+D farm
+P E1739AED bgnumber.png
+P 6C9CE206 bigmogu.png
+P 92AD6EB9 canshouhuo.png
+P FA22B5AC chishu.png
+P 5163980F frame.png
+P 94EEF012 jia.png
+P A9A7350C mogu.png
+P 12487567 tiancai.png
+P 91F303D7 tip-zhongzhi.png
+P 3B954C83 tip-zhongzi.png
+D graphtag
+P EF30CF34 atk.png
+P 792B2123 checkDef.png
+P 7081B0E0 checkedAtk.png
+P 759C83B7 def.png
+P 63D92342 graptitle.png
 D hero
 D main
 P A7FC63D9 bag.png
@@ -175,8 +206,21 @@ P C37820CA icon-007.png
 P BDF6A9E9 icon-008.png
 P 86DC8C1C icon-009.png
 P F30CC7E9 icon-010.png
+D unpack/bag
+R 30A44D11 itemjiatu.png
 D unpack/challengeboss
 R 888F93F0 bg.png
+D unpack/comp
+R 45BD7FF8 dibanbg.png
+R B07D3FD3 line.png
+R C8E1D92A mainbg.png
+D unpack/farm
+R 2BFEA787 bg.png
+R 5F3A3E86 bgzhongzhi.png
+R BADD0016 caijimap.png
+R 19BA4FF9 huawen.png
+D unpack/graphtag
+R 0ADFE7C5 grahtagjiatu.png
 D unpack/lineup
 R 1E93072A bg.png
 R 0FCDCA25 juese_bg.png

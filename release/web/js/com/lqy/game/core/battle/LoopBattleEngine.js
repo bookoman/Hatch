@@ -26,6 +26,8 @@ var LoopBattleEngine = /** @class */ (function () {
         if (this.timeCount == this.battleTimeInterval) {
             this.enemyRuntoBallte();
         }
+        //假战斗无技能
+        // this.loopBattleData.runRoleSkillCD();
         //战场下雨特效
         if (GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE) {
             this.rainShowCount++;
@@ -39,7 +41,6 @@ var LoopBattleEngine = /** @class */ (function () {
         else {
             AnimationManager.ins.removeBattleRainEffect();
         }
-        this.loopBattleData.runRoleSkillCD();
     };
     /**
      * 敌人跑去战斗
@@ -141,11 +142,11 @@ var LoopBattleEngine = /** @class */ (function () {
     LoopBattleEngine.prototype.playAttackAni = function (attRole, defRole) {
         var attRoleVo = attRole.baseRoleVo;
         var defRoleVo = defRole.baseRoleVo;
-        var skillModelId = attRoleVo.getCanUserSkill();
-        if (skillModelId) {
+        var skillVo = attRoleVo.getCanUserSkill();
+        if (skillVo) {
             //技能释放               
-            var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillModelId, defRole, 0, 0, 0.2);
+            // var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+            // skill.playSkill(skillVo.modelId,defRole,0,0,0.3);
         }
         else {
             //远攻，近攻击
@@ -166,8 +167,8 @@ var LoopBattleEngine = /** @class */ (function () {
         }
         else {
             defRole.aniPlay(RoleAniIndex.INJURED, false);
-            defRole.showFloatFont(attRoleVo.atk);
         }
+        defRole.showFloatFont(attRoleVo.atk);
         defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
     };
     // /**
@@ -201,6 +202,9 @@ var LoopBattleEngine = /** @class */ (function () {
         else {
             this.attack();
         }
+    };
+    /****************技能相关 */
+    LoopBattleEngine.prototype.playSkill = function () {
     };
     return LoopBattleEngine;
 }());

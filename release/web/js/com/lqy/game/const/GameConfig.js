@@ -163,34 +163,59 @@ var GameButtomTabIndex;
 /**技能释放目标 自身,我方一个,我方所有,敌方一个,敌方所有,我方一个包括自身,我方百分比血量最少,敌方百分比血量最少*/
 var SkillTarget;
 (function (SkillTarget) {
+    /**自身*/
     SkillTarget[SkillTarget["SELF"] = 1] = "SELF";
+    /**我方一个不包括自身 */
     SkillTarget[SkillTarget["WE_ONE"] = 2] = "WE_ONE";
+    /**我方所有 */
     SkillTarget[SkillTarget["WE_ALL"] = 3] = "WE_ALL";
+    /**敌方一个*/
     SkillTarget[SkillTarget["ENEMY_ONE"] = 4] = "ENEMY_ONE";
+    /**敌方所有 */
     SkillTarget[SkillTarget["ENEMY_ALL"] = 5] = "ENEMY_ALL";
+    /**我方一个包括自身*/
     SkillTarget[SkillTarget["WE_ONE_SELF"] = 6] = "WE_ONE_SELF";
+    /**我方百分比血量最少 */
     SkillTarget[SkillTarget["WE_LEAST_PERCENT_BLOOD"] = 7] = "WE_LEAST_PERCENT_BLOOD";
-    SkillTarget[SkillTarget["ENEMY_LEAST_PERCENT_BLOOD"] = 8] = "ENEMY_LEAST_PERCENT_BLOOD"; //敌方百分比血量最少
+    /**敌方百分比血量最少 */
+    SkillTarget[SkillTarget["ENEMY_LEAST_PERCENT_BLOOD"] = 8] = "ENEMY_LEAST_PERCENT_BLOOD";
 })(SkillTarget || (SkillTarget = {}));
 /**技能效果  伤害,流血,中毒,吸血,恢复,遗忘,混乱,愤怒,增加攻击力,增加防御力,增加速度,增加血量上限,回血,解除负面效果,解除正面效果,增加免伤,减少对方治疗量*/
 var SkillEffect;
 (function (SkillEffect) {
+    /**伤害 */
     SkillEffect[SkillEffect["HURT"] = 1] = "HURT";
+    /**流血 */
     SkillEffect[SkillEffect["BLEEDING"] = 2] = "BLEEDING";
+    /**中毒 */
     SkillEffect[SkillEffect["POISONING"] = 3] = "POISONING";
-    SkillEffect[SkillEffect["LOOD_SUCKING"] = 4] = "LOOD_SUCKING";
+    /**吸血 */
+    SkillEffect[SkillEffect["BLOOD_SUCKING"] = 4] = "BLOOD_SUCKING";
+    /**恢复 */
     SkillEffect[SkillEffect["RECOVERY"] = 5] = "RECOVERY";
+    /**遗忘 */
     SkillEffect[SkillEffect["FORGET"] = 6] = "FORGET";
+    /**混乱 */
     SkillEffect[SkillEffect["CONFUSION"] = 7] = "CONFUSION";
+    /**愤怒 */
     SkillEffect[SkillEffect["ANGER"] = 8] = "ANGER";
+    /**增加攻击力 */
     SkillEffect[SkillEffect["ADD_ATK"] = 9] = "ADD_ATK";
+    /**增加防御力 */
     SkillEffect[SkillEffect["ADD_DEF"] = 10] = "ADD_DEF";
+    /**增加速度 */
     SkillEffect[SkillEffect["ADD_SPEED"] = 11] = "ADD_SPEED";
+    /**增加血量上限 */
     SkillEffect[SkillEffect["ADD_BLOOD_UP_LIMIT"] = 12] = "ADD_BLOOD_UP_LIMIT";
+    /**回血 */
     SkillEffect[SkillEffect["RECOVERY_BLOOD"] = 13] = "RECOVERY_BLOOD";
+    /**解除负面效果 */
     SkillEffect[SkillEffect["ELIMINATE_NEGATIVE_EFFECT"] = 14] = "ELIMINATE_NEGATIVE_EFFECT";
+    /**解除正面效果 */
     SkillEffect[SkillEffect["ELIMINATE_POSITIVE_EFFECT"] = 15] = "ELIMINATE_POSITIVE_EFFECT";
+    /**增加免伤 */
     SkillEffect[SkillEffect["ADD_INJURY_FREE"] = 16] = "ADD_INJURY_FREE";
-    SkillEffect[SkillEffect["REDUCE_ENEMY_TREATMENT"] = 17] = "REDUCE_ENEMY_TREATMENT"; //减少对方治疗量
+    /**减少对方治疗量 */
+    SkillEffect[SkillEffect["REDUCE_ENEMY_TREATMENT"] = 17] = "REDUCE_ENEMY_TREATMENT";
 })(SkillEffect || (SkillEffect = {}));
 //# sourceMappingURL=GameConfig.js.map

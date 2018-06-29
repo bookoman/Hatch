@@ -61360,24 +61360,27 @@ var FormulaUtil = /** @class */ (function () {
     function FormulaUtil() {
     }
     /**
-     * 真实伤害公式
+     * 普通伤害真实伤害公式
      * @param attVo
      * @param defVo
      */
-    FormulaUtil.realDamageValue = function (atkVo, defVo, skillKey) {
-        var realAtk = atkVo.atk + atkVo.level * atkVo.upAtk;
-        var realDef = defVo.def + defVo.level * defVo.updef;
+    FormulaUtil.realDamageValue = function (atkVo, defVo, skillHurt) {
+        skillHurt = skillHurt === undefined ? 1 : skillHurt;
+        var realAtk = atkVo.realAtk;
+        var realDef = atkVo.realDef;
         //暴击概率
         var doubleValue = Math.random() < atkVo.doubleAtk ? 1 : 0;
         //真实暴击比例
         var realDoubleProport = Math.max(1, atkVo.hurt - defVo.tenacity);
         /**技能伤害 */
-        skillKey = "SK_0021";
-        var skillConfig = ConfigManager.ins.getHeroSkillSampleConfig(skillKey);
-        var skillHurt = skillConfig ? skillConfig.getSkillHurt(realAtk) : 1;
+        // var skillHurt:number = atkVo.skillMainFormula ? atkVo.getSkillHurt(realAtk) : 1;
+        // skillKey = "SK_0021";
+        // var skillConfig:HeroSkillSampleConfig = ConfigManager.ins.getHeroSkillSampleConfig(skillKey);
+        // var skillHurt:number = skillConfig ? skillConfig.getSkillHurt(realAtk) : 1;
         //realDamage=（技能基础伤害+技能实际公式运算）*(1-(0.07*ln(int((realDef/100)+1）+0.01)))*(1+是否暴击*真实暴击比例*暴击控制参数)*random(0.9,1.1)*总控制参数
+        var atkValue = skillHurt == 1 ? realAtk : skillHurt;
         var rundowValue = 0.9 + Math.random() * (1.1 - 0.9);
-        var sumHurt = skillHurt * (1 - 0.07 * Math.log(Math.ceil(realDef / 100) + 0.01)) * (1 + doubleValue * realDoubleProport * 1) * rundowValue * 1;
+        var sumHurt = atkValue * (1 - 0.07 * Math.log(Math.ceil(realDef / 100) + 0.01)) * (1 + doubleValue * realDoubleProport * 1) * rundowValue * 1;
         return Math.ceil(sumHurt);
     };
     return FormulaUtil;
@@ -61969,7 +61972,7 @@ var Skill = /** @class */ (function () {
         this.frameAni = null;
     }
     Skill.prototype.playSkill = function (skillModelId, parentDis, tx, ty, scale) {
-        this.frameAni = new FrameAnimation(parentDis, tx, ty, scale);
+        this.frameAni = new FrameAnimation(parentDis, tx, ty, true, scale);
         this.frameAni.playAni(skillModelId, false, this, this.playSkillComplete);
     };
     Skill.prototype.playSkillComplete = function () {
@@ -62266,11 +62269,15 @@ var SkillVo = /** @class */ (function () {
     /**初始化数据 */
     SkillVo.prototype.initData = function (skillKey) {
         this.key = skillKey;
-        var config = ConfigManager.ins.getHeroSkillSampleConfig(this.key);
-        if (config) {
-            this.name = config.name;
-            this.cd = config.skillCD;
-            this.modelId = config.modelId;
+        this.skillConfig = ConfigManager.ins.getHeroSkillSampleConfig(this.key);
+        if (this.skillConfig) {
+            this.name = this.skillConfig.name;
+            this.cd = this.skillConfig.skillCD;
+            this.modelId = this.skillConfig.modelId;
+            this.skillTargetType = this.skillConfig.skillTargetType;
+            this.skillMainEffect = this.skillConfig.skillMainEffect;
+            this.skillAssistantEffect = this.skillConfig.skillAssistantEffect;
+            this.skillContinued = this.skillConfig.skillContinued;
             return true;
         }
         return false;
@@ -62288,12 +62295,144 @@ var SkillVo = /** @class */ (function () {
                     this.isCanUse = true;
                 }
             }
-            // console.log(this.name + "cd时间："+this.calCD);
+            console.log(this.name + "cd时间：" + this.calCD);
         }
+    };
+    /**重置cd */
+    SkillVo.prototype.resetCD = function () {
+        this.isCanUse = false;
+        this.calCD = this.cd;
     };
     return SkillVo;
 }());
 //# sourceMappingURL=SkillVo.js.map
+/*
+* 技能持续Vo
+*/
+var SkillContinuedVo = /** @class */ (function () {
+    function SkillContinuedVo() {
+        this.resetData();
+    }
+    /**设置数据 */
+    SkillContinuedVo.prototype.setData = function (config, isAssistantEffect) {
+        isAssistantEffect = isAssistantEffect === undefined ? false : isAssistantEffect;
+        var effectType = isAssistantEffect ? config.skillMainEffect : config.skillAssistantEffect;
+        switch (effectType) {
+            case SkillEffect.HURT:
+                this.hurt = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.BLEEDING:
+                this.bleeding = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.POISONING:
+                this.poisoning = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.RECOVERY:
+                this.recovery = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.FORGET:
+                this.forget = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.CONFUSION:
+                this.confusion = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.ANGER:
+                this.anger = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.ADD_ATK:
+                this.addAtk = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.ADD_DEF:
+                this.addDef = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.ADD_SPEED:
+                this.addSpeed = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.ADD_BLOOD_UP_LIMIT:
+                this.addBloodUpLimit = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.RECOVERY_BLOOD:
+                this.recoveryBlood = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.ELIMINATE_NEGATIVE_EFFECT:
+                this.eliminateNegativeEffect = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.ADD_INJURY_FREE:
+                this.addInjuryFree = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+            case SkillEffect.REDUCE_ENEMY_TREATMENT:
+                this.reduceEnemyTreatment = config.skillContinued === undefined ? 1 : config.skillContinued;
+                break;
+        }
+    };
+    /**重置数据 */
+    SkillContinuedVo.prototype.resetData = function () {
+        // for (var key in this) {
+        //     if (this.hasOwnProperty(key) &&  typeof this[key] === "number") {
+        //         this[String(key)] = 0;
+        //     }
+        // }
+        this.hurt = 0;
+        this.bleeding = 0;
+        this.poisoning = 0;
+        this.recovery = 0;
+        this.forget = 0;
+        this.confusion = 0;
+        this.anger = 0;
+        this.addAtk = 0;
+        this.addDef = 0;
+        this.addSpeed = 0;
+        this.addBloodUpLimit = 0;
+        this.recoveryBlood = 0;
+        this.eliminateNegativeEffect = 0;
+        this.addInjuryFree = 0;
+        this.reduceEnemyTreatment = 0;
+    };
+    /**跑轮数 */
+    SkillContinuedVo.prototype.runEffectTurnCD = function () {
+        // for (var key in this) {
+        //     if (this.hasOwnProperty(key) &&  typeof this[key] === "number") {
+        //         var value:number = this[String(key)];
+        //         if(value > 0)
+        //         {
+        //             value--;
+        //         }
+        //     }
+        // }
+        if (this.hurt > 0)
+            this.hurt--;
+        if (this.bleeding > 0)
+            this.bleeding--;
+        if (this.poisoning > 0)
+            this.poisoning--;
+        if (this.recovery > 0)
+            this.recovery--;
+        if (this.forget > 0)
+            this.forget--;
+        if (this.confusion > 0)
+            this.confusion--;
+        if (this.anger > 0)
+            this.anger--;
+        if (this.addAtk > 0)
+            this.addAtk--;
+        if (this.addDef > 0)
+            this.addDef--;
+        if (this.addSpeed > 0)
+            this.addSpeed--;
+        if (this.addBloodUpLimit > 0)
+            this.addBloodUpLimit--;
+        if (this.recoveryBlood > 0)
+            this.recoveryBlood--;
+        if (this.eliminateNegativeEffect > 0)
+            this.eliminateNegativeEffect--;
+        if (this.addInjuryFree > 0)
+            this.addInjuryFree--;
+        if (this.reduceEnemyTreatment > 0)
+            this.reduceEnemyTreatment--;
+    };
+    return SkillContinuedVo;
+}());
+//# sourceMappingURL=SkillContinuedVo.js.map
 /*
 * 服务器信息
 */
@@ -62399,9 +62538,27 @@ var BaseRoleVo = /** @class */ (function () {
         this.level = 1;
         /**是否死亡 */
         this.isDeath = true;
+        /**当前释放技能 */
+        this.curSkillVo = null;
+        /**当前技能主效果持续回合 */
+        this.mainSkillContinuedVo = null;
+        /**当前技能副果持续回合 */
+        this.assiSkillContinuedVo = null;
         this.isEnemy = isEnemy;
     }
     BaseRoleVo.prototype.initBaseData = function () {
+        this.mainSkillContinuedVo = new SkillContinuedVo();
+        this.assiSkillContinuedVo = new SkillContinuedVo();
+        this.bossBattleRoleData = new BossBattleRoleData();
+        this.realAtk = this.atk + this.level * this.upAtk;
+        this.realDef = this.def + this.level * this.updef;
+    };
+    BaseRoleVo.prototype.initBattleData = function () {
+        this.mainSkillContinuedVo = new SkillContinuedVo();
+        this.assiSkillContinuedVo = new SkillContinuedVo();
+        this.bossBattleRoleData = new BossBattleRoleData();
+        this.realAtk = this.atk + this.level * this.upAtk;
+        this.realDef = this.def + this.level * this.updef;
     };
     /**初始化阵型数据 */
     BaseRoleVo.prototype.initRowColPosPoint = function () {
@@ -62426,7 +62583,8 @@ var BaseRoleVo = /** @class */ (function () {
     /**重置技能CD */
     BaseRoleVo.prototype.resetSkillCD = function () {
         this.skillVos.forEach(function (skillVo) {
-            skillVo.calCD = skillVo.cd;
+            // skillVo.calCD = skillVo.cd;
+            skillVo.resetCD();
         });
     };
     /**cd计时跑起来 */
@@ -62438,15 +62596,191 @@ var BaseRoleVo = /** @class */ (function () {
     /**得到可用技能 ，自动释放技能*/
     BaseRoleVo.prototype.getCanUserSkill = function () {
         var _this = this;
-        var skillModelId = null;
+        this.curSkillVo = null;
         this.skillVos.forEach(function (skillVo) {
             if (skillVo.isCanUse) {
-                console.log(_this.name + "】使用了" + skillVo.name + "技能，伤害爆表");
-                skillVo.isCanUse = false;
-                skillModelId = skillVo.modelId;
+                // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表");
+                _this.curSkillVo = skillVo;
+                _this.skillMainFormula = _this.curSkillVo.skillConfig.formula;
+                _this.skillSubFomula = _this.curSkillVo.skillConfig.subFormula;
+                // console.log("....",this.skillMainFormula,this.skillSubFomula);
             }
         });
-        return skillModelId;
+        return this.curSkillVo;
+    };
+    /**技能效果轮CD */
+    BaseRoleVo.prototype.runSkillEffectCD = function () {
+        this.mainSkillContinuedVo.runEffectTurnCD();
+        this.assiSkillContinuedVo.runEffectTurnCD();
+    };
+    /**重置技能效果CD */
+    // public resetSkillEffectCD():void
+    // {
+    //     this.mainSkillContinuedVo.resetData();
+    //     this.assiSkillContinuedVo.resetData();
+    // }
+    /**添加技能效果CD */
+    BaseRoleVo.prototype.addSkillEffectCDs = function (skillVo) {
+        this.addSkillEffectCD(skillVo, true);
+        this.addSkillEffectCD(skillVo, false);
+    };
+    /**添加技能效果CD */
+    BaseRoleVo.prototype.addSkillEffectCD = function (skillVo, isMain) {
+        var skillContinuedVo = isMain ? this.mainSkillContinuedVo : this.assiSkillContinuedVo;
+        var effectType = isMain ? skillVo.skillMainEffect : skillVo.skillAssistantEffect;
+        if (effectType == SkillEffect.HURT)
+            skillContinuedVo.hurt = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.BLEEDING)
+            skillContinuedVo.bleeding = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.POISONING)
+            skillContinuedVo.poisoning = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.BLOOD_SUCKING)
+            skillContinuedVo.bloodSucking = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.RECOVERY)
+            skillContinuedVo.recovery = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.FORGET)
+            skillContinuedVo.forget = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.CONFUSION)
+            skillContinuedVo.confusion = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.ANGER)
+            skillContinuedVo.anger = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.ADD_ATK)
+            skillContinuedVo.addAtk = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.ADD_DEF)
+            skillContinuedVo.addDef = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.ADD_SPEED)
+            skillContinuedVo.addSpeed = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.ADD_BLOOD_UP_LIMIT)
+            skillContinuedVo.addBloodUpLimit = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.RECOVERY_BLOOD)
+            skillContinuedVo.recoveryBlood = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.ELIMINATE_NEGATIVE_EFFECT)
+            skillContinuedVo.eliminateNegativeEffect = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.ELIMINATE_POSITIVE_EFFECT)
+            skillContinuedVo.eliminatePositiveEffect = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.ADD_INJURY_FREE)
+            skillContinuedVo.addInjuryFree = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+        else if (effectType == SkillEffect.REDUCE_ENEMY_TREATMENT)
+            skillContinuedVo.reduceEnemyTreatment = skillVo.skillContinued == -1 ? 1 : skillVo.skillContinued;
+    };
+    /**计算伤害 */
+    // public calculationAttribute(atkVo:BaseRoleVo):void
+    BaseRoleVo.prototype.calculationAttribute = function (atkVo, ranksAtk) {
+        //技能伤害
+        var curSkillVo = atkVo.curSkillVo;
+        if (curSkillVo) { //计时生效效果
+            //主动效果
+            // if(curSkillVo.skillMainEffect == SkillEffect.HURT){
+            //     this.bossBattleRoleData.hurt += FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillHurt());
+            // }
+            // else if(curSkillVo.skillMainEffect == SkillEffect.RECOVERY_BLOOD)
+            // {
+            //     this.bossBattleRoleData.recoveryBlood += FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillHurt());
+            // }
+            // //被动效果
+            // if(curSkillVo.skillAssistantEffect == SkillEffect.HURT){
+            //     this.bossBattleRoleData.hurt += FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillHurt());
+            // }
+            // else if(curSkillVo.skillAssistantEffect == SkillEffect.RECOVERY_BLOOD)
+            // {
+            //     this.bossBattleRoleData.recoveryBlood += FormulaUtil.realDamageValue(atkVo,this,atkVo.getSkillHurt());
+            // }
+            //主动效果
+            if (this.mainSkillContinuedVo.hurt > 0)
+                this.bossBattleRoleData.hurt = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+            if (this.mainSkillContinuedVo.addAtk > 0) {
+                this.bossBattleRoleData.addAtk += atkVo.getAddAtkValue(ranksAtk);
+            }
+            else
+                this.realAtk = this.atk + this.level * this.upAtk;
+            if (this.mainSkillContinuedVo.bleeding > 0) {
+                this.bossBattleRoleData.bleeding = atkVo.getSkillBleeding();
+            }
+            if (this.mainSkillContinuedVo.recoveryBlood > 0) {
+                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+            }
+            //副效果
+            if (this.assiSkillContinuedVo.hurt > 0)
+                this.bossBattleRoleData.hurt = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+            if (this.assiSkillContinuedVo.addAtk > 0) {
+                this.bossBattleRoleData.addAtk = atkVo.getAddAtkValue(ranksAtk);
+            }
+            if (this.assiSkillContinuedVo.bleeding > 0) {
+                this.bossBattleRoleData.bleeding = atkVo.getSkillBleeding();
+            }
+            if (this.assiSkillContinuedVo.recoveryBlood > 0) {
+                this.bossBattleRoleData.recoveryBlood = FormulaUtil.realDamageValue(atkVo, this, atkVo.getSkillHurt());
+            }
+        }
+        else {
+            if (atkVo.isEnemy != this.isEnemy) {
+                this.bossBattleRoleData.hurt = FormulaUtil.realDamageValue(atkVo, this);
+            }
+        }
+        this.battleHP -= this.bossBattleRoleData.hurt;
+        this.isDeath = this.battleHP <= 0;
+        // if(this.name == "美颌龙")
+        // {
+        //     console.log(".........",this.battleHP,this.bossBattleRoleData.hurt);
+        // }
+    };
+    /**计算持续效果 */
+    BaseRoleVo.prototype.calculationContinueEffect = function () {
+        //主动效果
+        if (this.mainSkillContinuedVo.addAtk <= 0 && this.assiSkillContinuedVo.addAtk <= 0) {
+            this.bossBattleRoleData.addAtk = 0;
+            this.realAtk = this.atk + this.level * this.upAtk;
+        }
+        if (this.mainSkillContinuedVo.bleeding <= 0 && this.assiSkillContinuedVo.bleeding <= 0)
+            this.bossBattleRoleData.bleeding == 0;
+        if (this.mainSkillContinuedVo.hurt <= 0 && this.assiSkillContinuedVo.hurt <= 0)
+            this.bossBattleRoleData.hurt = 0;
+        if (this.mainSkillContinuedVo.recoveryBlood <= 0 && this.assiSkillContinuedVo.recoveryBlood <= 0)
+            this.bossBattleRoleData.recoveryBlood = 0;
+        //战斗血量
+        this.realAtk += this.bossBattleRoleData.addAtk;
+        this.battleHP += this.bossBattleRoleData.recoveryBlood;
+        if (this.battleHP > this.hp)
+            this.battleHP = this.hp;
+        this.battleHP -= this.bossBattleRoleData.hurt;
+        this.battleHP -= this.bossBattleRoleData.bleeding;
+        this.isDeath = this.battleHP <= 0;
+        // if(this.name == "美颌龙")
+        // {
+        //     console.log(".........",this.battleHP,this.bossBattleRoleData.hurt,this.bossBattleRoleData.bleeding);
+        // }
+    };
+    /**是否显示一次效果 */
+    BaseRoleVo.prototype.isShowOnceSkill = function (mainValue, assiValue, atkRoleVo) {
+        var bool = false;
+        if (atkRoleVo && atkRoleVo.curSkillVo && (mainValue == atkRoleVo.curSkillVo.skillContinued || assiValue == atkRoleVo.curSkillVo.skillContinued)) {
+            bool = true;
+        }
+        return bool;
+    };
+    /**得到技能伤害 */
+    BaseRoleVo.prototype.getSkillHurt = function () {
+        var tempAry = this.skillMainFormula.split("*");
+        var addString = tempAry[1];
+        tempAry = addString.split("+");
+        var value2 = Number(tempAry[0]);
+        var value3 = Number(tempAry[1]);
+        return Math.ceil(this.realAtk * value2 + value3);
+    };
+    /**流血值 */
+    BaseRoleVo.prototype.getSkillBleeding = function () {
+        var tempAry = this.skillSubFomula.split("*");
+        var value1 = Number(tempAry[1]);
+        return Math.ceil(this.realAtk * value1);
+    };
+    /**得到增加攻击力值 */
+    BaseRoleVo.prototype.getAddAtkValue = function (ranksAtk) {
+        var tempAry = this.skillMainFormula.split("*");
+        var addString = tempAry[1];
+        tempAry = addString.split("+");
+        var value2 = Number(tempAry[0]);
+        var value3 = Number(tempAry[1]);
+        return Math.ceil(ranksAtk * value2 + value3);
     };
     return BaseRoleVo;
 }());
@@ -62552,15 +62886,6 @@ var HeroTypeSampleConfig = /** @class */ (function () {
 var HeroSkillSampleConfig = /** @class */ (function () {
     function HeroSkillSampleConfig() {
     }
-    /**得到技能伤害 */
-    HeroSkillSampleConfig.prototype.getSkillHurt = function (atk) {
-        var tempAry = this.formula.split("*");
-        var addString = tempAry[1];
-        tempAry = addString.split("+");
-        var value2 = Number(tempAry[0]);
-        var value3 = Number(tempAry[1]);
-        return atk * value2 + value3;
-    };
     return HeroSkillSampleConfig;
 }());
 //# sourceMappingURL=HeroSkillSampleConfig.js.map
@@ -62781,7 +63106,8 @@ var MapManager = /** @class */ (function () {
         this.calSquintAngleGrid();
         GameDataManager.ins.calMapRowColPosPoint();
         //声音
-        SoundsManager.ins.playMusic("res/outside/sound/bg/zhou.mp3", 1000);
+        var soundUrl = mapID >= 10000 ? "res/outside/sound/bg/zzd.mp3" : "res/outside/sound/bg/jzd.mp3";
+        SoundsManager.ins.playMusic(soundUrl, 1000);
     };
     MapManager.prototype.backLoopMap = function () {
         this.enterMap("res/map", this.curLoopMapId, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
@@ -63666,6 +63992,8 @@ var LoopBattleEngine = /** @class */ (function () {
         if (this.timeCount == this.battleTimeInterval) {
             this.enemyRuntoBallte();
         }
+        //假战斗无技能
+        // this.loopBattleData.runRoleSkillCD();
         //战场下雨特效
         if (GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE) {
             this.rainShowCount++;
@@ -63679,7 +64007,6 @@ var LoopBattleEngine = /** @class */ (function () {
         else {
             AnimationManager.ins.removeBattleRainEffect();
         }
-        this.loopBattleData.runRoleSkillCD();
     };
     /**
      * 敌人跑去战斗
@@ -63781,11 +64108,11 @@ var LoopBattleEngine = /** @class */ (function () {
     LoopBattleEngine.prototype.playAttackAni = function (attRole, defRole) {
         var attRoleVo = attRole.baseRoleVo;
         var defRoleVo = defRole.baseRoleVo;
-        var skillModelId = attRoleVo.getCanUserSkill();
-        if (skillModelId) {
+        var skillVo = attRoleVo.getCanUserSkill();
+        if (skillVo) {
             //技能释放               
-            var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillModelId, defRole, 0, 0, 0.2);
+            // var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+            // skill.playSkill(skillVo.modelId,defRole,0,0,0.3);
         }
         else {
             //远攻，近攻击
@@ -63806,8 +64133,8 @@ var LoopBattleEngine = /** @class */ (function () {
         }
         else {
             defRole.aniPlay(RoleAniIndex.INJURED, false);
-            defRole.showFloatFont(attRoleVo.atk);
         }
+        defRole.showFloatFont(attRoleVo.atk);
         defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
     };
     // /**
@@ -63841,6 +64168,9 @@ var LoopBattleEngine = /** @class */ (function () {
         else {
             this.attack();
         }
+    };
+    /****************技能相关 */
+    LoopBattleEngine.prototype.playSkill = function () {
     };
     return LoopBattleEngine;
 }());
@@ -64097,6 +64427,30 @@ var BattleTurnVo = /** @class */ (function () {
 }());
 //# sourceMappingURL=LoopBattleData.js.map
 /*
+* boss战斗轮数据
+*/
+var BossBattleRoleData = /** @class */ (function () {
+    function BossBattleRoleData() {
+        this.hurt = 0;
+        this.bleeding = 0;
+        this.poisoning = 0;
+        this.recovery = 0;
+        this.forget = 0;
+        this.confusion = 0;
+        this.anger = 0;
+        this.addAtk = 0;
+        this.addDef = 0;
+        this.addSpeed = 0;
+        this.addBloodUpLimit = 0;
+        this.recoveryBlood = 0;
+        this.eliminateNegativeEffect = 0;
+        this.addInjuryFree = 0;
+        this.reduceEnemyTreatment = 0;
+    }
+    return BossBattleRoleData;
+}());
+//# sourceMappingURL=BossBattleRoleData.js.map
+/*
 * name;
 */
 var BossBattleEngine = /** @class */ (function () {
@@ -64106,7 +64460,7 @@ var BossBattleEngine = /** @class */ (function () {
         this.bossBattleData = null;
     }
     BossBattleEngine.prototype.runUpdate = function () {
-        this.bossBattleData.runRoleSkillCD();
+        // this.bossBattleData.runRoleSkillCD();
     };
     /**得到参战英雄 */
     BossBattleEngine.prototype.getJoinBattleHeroVo = function (herosAry) {
@@ -64143,18 +64497,186 @@ var BossBattleEngine = /** @class */ (function () {
             this.attack();
         }
     };
+    /**
+     * 技能目标大于1个远功，技能效果加血，远攻
+     *
+     */
     BossBattleEngine.prototype.attack = function () {
+        var _this = this;
         this.bossBattleData.startAtt();
-        this.battleAtt(this.bossBattleData.curAttRoleVo, this.bossBattleData.curDefRoleVo);
+        if (this.bossBattleData.curAttRoleVo == null) {
+            this.attCompleted();
+            return;
+        }
+        //寻找攻击，防御显示对象BaseRole
+        var tempAry = this.heroRoles.concat(this.enemyRoles);
+        this.defRoles = [];
+        tempAry.forEach(function (roleView) {
+            if (roleView) {
+                if (roleView.baseRoleVo.roleId == _this.bossBattleData.curAttRoleVo.roleId) {
+                    _this.attRole = roleView;
+                }
+                _this.bossBattleData.curDefRoleVos.forEach(function (defRoleVo) {
+                    if (roleView.baseRoleVo.roleId == defRoleVo.roleId) {
+                        _this.defRoles.push(roleView);
+                    }
+                });
+            }
+        });
+        this.atkPreAbnormalStatus();
         // console.log("战斗，防御："+this.battleDataMgr.curAttRoleVo,this.battleDataMgr.curDefRoleVo);
     };
+    /**攻击前异常buff检测 */
+    BossBattleEngine.prototype.atkPreAbnormalStatus = function () {
+        var isNoBuff = true;
+        var baseRoleVo = this.attRole.baseRoleVo;
+        baseRoleVo.calculationContinueEffect();
+        //流血
+        if (baseRoleVo.bossBattleRoleData.bleeding > 0) {
+            isNoBuff = false;
+            this.attRole.aniPlay(RoleAniIndex.INJURED, true, this, this.battleAtt);
+            this.attRole.showFloatFont("流血-" + baseRoleVo.bossBattleRoleData.bleeding);
+            this.attRole.setBlood(1 - baseRoleVo.battleHP / baseRoleVo.hp);
+        }
+        if (baseRoleVo.bossBattleRoleData.recoveryBlood > 0) {
+            this.attRole.showFloatFont("血量+" + baseRoleVo.bossBattleRoleData.recoveryBlood);
+        }
+        if (baseRoleVo.bossBattleRoleData.addAtk > 0) {
+            // console.log("加攻击局数...."+baseRoleVo.mainSkillContinuedVo.addAtk,baseRoleVo.assiSkillContinuedVo.addAtk,baseRoleVo.bossBattleRoleData.addAtk);
+            this.attRole.showFloatFont("攻击力+" + baseRoleVo.bossBattleRoleData.addAtk);
+        }
+        if (baseRoleVo.isDeath) {
+            this.attRole.aniPlay(RoleAniIndex.DEATH, false);
+            this.attRole.setVisible(false);
+            this.attack();
+            return;
+        }
+        if (isNoBuff) {
+            this.battleAtt();
+        }
+    };
+    /**
+     * 一对一战斗
+     * @param attRoleVo
+     * @param defRoleVo
+     */
+    // public battleAtt(attRoleVo:BaseRoleVo,defRoleVos:Array<BaseRoleVo>):void
+    BossBattleEngine.prototype.battleAtt = function () {
+        var _this = this;
+        if (this.attRole && this.defRoles) {
+            //远攻
+            var isFar = false;
+            var skillVo = this.attRole.baseRoleVo.curSkillVo;
+            if (skillVo) {
+                isFar = (this.defRoles.length > 1 || skillVo.skillMainEffect == SkillEffect.RECOVERY_BLOOD || skillVo.skillMainEffect == SkillEffect.ANGER);
+            }
+            if (isFar) {
+                this.defRoles.forEach(function (baseRole) {
+                    _this.playAttackAni(baseRole);
+                });
+                // SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+            }
+            else { //近攻               
+                var defRole = this.defRoles[0];
+                var defRoleVo = defRole.baseRoleVo;
+                this.attRole.aniPlay(RoleAniIndex.MOVE);
+                var tempX = defRoleVo.isEnemy ? 200 : -200;
+                Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.playAttackAni, [defRole], true), 0, true);
+                // SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+            }
+        }
+    };
+    /**
+     * 移动到敌方攻击
+     * @param data
+     */
+    BossBattleEngine.prototype.playAttackAni = function (defRole) {
+        var attRoleVo = this.attRole.baseRoleVo;
+        var defRoleVo = defRole.baseRoleVo;
+        var skillVo = attRoleVo.curSkillVo;
+        if (skillVo) {
+            //技能释放
+            this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineup, defRole);
+            var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+            skill.playSkill(skillVo.modelId, defRole);
+            TipsManager.ins.showFloatMsg(skillVo.name, 30, "#00ff00", this.attRole, 0, 0, 1, 0, 200);
+        }
+        else {
+            //远攻，近攻击
+            if (attRoleVo.attFar == 1) {
+                this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
+            }
+            else {
+                this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineup, defRole);
+            }
+        }
+        // var hurt:number = this.bossBattleData.calculationAttribute();
+        defRoleVo.calculationAttribute(attRoleVo, this.bossBattleData.getRankAtk(attRoleVo.isEnemy));
+        //本次伤害
+        var bossBattleRoleData = defRoleVo.bossBattleRoleData;
+        if (bossBattleRoleData.hurt > 0) {
+            defRole.showFloatFont("-" + bossBattleRoleData.hurt);
+            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+        }
+        //+攻击力
+        if (bossBattleRoleData.addAtk > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.addAtk, defRoleVo.assiSkillContinuedVo.addAtk, attRoleVo)) {
+            defRole.baseRoleVo.realAtk += bossBattleRoleData.addAtk;
+            defRole.showFloatFont("攻击力+" + bossBattleRoleData.addAtk);
+        }
+        if (bossBattleRoleData.recoveryBlood > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.recoveryBlood, defRoleVo.assiSkillContinuedVo.recoveryBlood, attRoleVo)) {
+            defRole.baseRoleVo.battleHP += bossBattleRoleData.recoveryBlood;
+            //战斗血量
+            if (defRole.baseRoleVo.battleHP > defRole.baseRoleVo.hp)
+                defRole.baseRoleVo.battleHP = defRole.baseRoleVo.hp;
+            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+            defRole.showFloatFont("血量+" + bossBattleRoleData.recoveryBlood);
+        }
+        if (bossBattleRoleData.bleeding > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.bleeding, defRoleVo.assiSkillContinuedVo.bleeding, attRoleVo)) {
+            defRole.baseRoleVo.battleHP -= bossBattleRoleData.bleeding;
+            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+            defRole.showFloatFont("流血-" + bossBattleRoleData.bleeding);
+        }
+        // if(defRoleVo.name == "美颌龙")
+        // {
+        //     console.log(".........",defRoleVo.battleHP,bossBattleRoleData.bleeding);
+        // }
+        if (defRoleVo.isDeath) {
+            defRole.aniPlay(RoleAniIndex.DEATH, false);
+            defRole.setVisible(false);
+        }
+        else {
+            if (defRole.baseRoleVo.isEnemy != this.attRole.baseRoleVo.isEnemy)
+                defRole.aniPlay(RoleAniIndex.INJURED, false);
+        }
+    };
+    /**
+     * 攻击完移动回阵型
+     */
+    BossBattleEngine.prototype.moveBackLineup = function (defRole) {
+        var attRoleVo = this.attRole.baseRoleVo;
+        Laya.Tween.to(this.attRole, { x: attRoleVo.posPoint.x, y: attRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / 2 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.moveBackLineupComplete, [defRole], true), 0, true);
+    };
+    /**
+     * 移动回阵型完成
+     */
+    BossBattleEngine.prototype.moveBackLineupComplete = function (roles) {
+        var atkRole = roles[0];
+        var defRole = roles[1];
+        // DebugViewUtil.log("攻击返回",this.attRole.baseRoleVo.name);
+        this.attRole.aniPlay(RoleAniIndex.STAND);
+        if (!defRole.baseRoleVo.isDeath) {
+            defRole.aniPlay(RoleAniIndex.STAND);
+        }
+        this.attCompleted();
+    };
     BossBattleEngine.prototype.attCompleted = function () {
-        // this.battleDataMgr.calculationAttribute();
+        this.bossBattleData.checkBattleEnd();
         if (this.bossBattleData.isEnd) {
-            this.endBattle();
+            Laya.timer.once(1000, this, this.endBattle);
         }
         else {
             this.attack();
+            // console.log("..."+this.bossBattleData.turnCount);
         }
     };
     /**结束战斗 */
@@ -64169,90 +64691,6 @@ var BossBattleEngine = /** @class */ (function () {
         //回到假战斗
         BattleEngine.ins.loopBattleRun();
     };
-    /**
-     * 战斗
-     * @param attRoleVo
-     * @param defRoleVo
-     */
-    BossBattleEngine.prototype.battleAtt = function (attRoleVo, defRoleVo) {
-        var _this = this;
-        var tempAry = this.heroRoles.concat(this.enemyRoles);
-        tempAry.forEach(function (roleView) {
-            if (roleView) {
-                if (roleView.baseRoleVo.roleId == attRoleVo.roleId) {
-                    _this.attRole = roleView;
-                }
-                else if (roleView.baseRoleVo.roleId == defRoleVo.roleId) {
-                    _this.defRole = roleView;
-                }
-            }
-        });
-        if (this.attRole && this.defRole) {
-            //远攻
-            if (this.attRole.baseRoleVo.attFar == 1) {
-                this.playAttackAni();
-                SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
-            }
-            else { //近攻               
-                this.attRole.aniPlay(RoleAniIndex.MOVE);
-                var tempX = defRoleVo.isEnemy ? 200 : -200;
-                Laya.Tween.to(this.attRole, { x: defRoleVo.posPoint.x - tempX, y: defRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.playAttackAni, [attRoleVo, defRoleVo], true), 0, true);
-                SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
-            }
-        }
-    };
-    /**
-     * 移动到敌方攻击
-     * @param data
-     */
-    BossBattleEngine.prototype.playAttackAni = function () {
-        var attRoleVo = this.attRole.baseRoleVo;
-        var defRoleVo = this.defRole.baseRoleVo;
-        var skillModelID = attRoleVo.getCanUserSkill();
-        if (skillModelID) {
-            //技能释放
-            this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineup);
-            var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillModelID, this.defRole, -200, -200);
-        }
-        else {
-            //远攻，近攻击
-            if (attRoleVo.attFar == 1) {
-                this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete);
-            }
-            else {
-                this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineup);
-            }
-        }
-        this.bossBattleData.calculationAttribute();
-        if (defRoleVo.isDeath) {
-            this.defRole.aniPlay(RoleAniIndex.DEATH, false);
-            this.defRole.setVisible(false);
-        }
-        else {
-            this.defRole.aniPlay(RoleAniIndex.INJURED, false);
-            this.defRole.showFloatFont(attRoleVo.atk);
-        }
-        this.defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
-    };
-    /**
-     * 攻击完移动回阵型
-     */
-    BossBattleEngine.prototype.moveBackLineup = function () {
-        var attRoleVo = this.attRole.baseRoleVo;
-        Laya.Tween.to(this.attRole, { x: attRoleVo.posPoint.x, y: attRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / 2 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.moveBackLineupComplete, null, true), 0, true);
-    };
-    /**
-     * 移动回阵型完成
-     */
-    BossBattleEngine.prototype.moveBackLineupComplete = function () {
-        // DebugViewUtil.log("攻击返回",this.attRole.baseRoleVo.name);
-        this.attRole.aniPlay(RoleAniIndex.STAND);
-        if (!this.defRole.baseRoleVo.isDeath) {
-            this.defRole.aniPlay(RoleAniIndex.STAND);
-        }
-        this.attCompleted();
-    };
     return BossBattleEngine;
 }());
 //# sourceMappingURL=BossBattleEngine.js.map
@@ -64262,12 +64700,15 @@ var BossBattleEngine = /** @class */ (function () {
 var BossBattleData = /** @class */ (function () {
     function BossBattleData() {
         this.curAttCamp = 0;
+        this.turnCount = 0;
     }
     BossBattleData.prototype.initData = function () {
+        this.turnCount = 0;
         this.attHeroVos = this.getJoinBattleHeroVo();
         this.attEnemyVos = GameDataManager.ins.bossData.masterVos;
         this.attHeroVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
+            roleVo.initBattleData();
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
             roleVo.isAtted = false;
@@ -64275,6 +64716,7 @@ var BossBattleData = /** @class */ (function () {
         });
         this.attEnemyVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
+            roleVo.initBattleData();
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
             roleVo.isAtted = false;
@@ -64309,43 +64751,85 @@ var BossBattleData = /** @class */ (function () {
         else if (this.curAttCamp == BattleAttCampType.ENEMY) {
             this.curAttRoleVo = this.getAttRoleVo(this.attEnemyVos);
         }
-        //寻找攻击具体对象
-        for (var i = 0; i < this.curAttRoleVo.attEnemyVos.length; i++) {
-            this.curDefRoleVo = this.curAttRoleVo.attEnemyVos[i];
-            if (!this.curDefRoleVo.isDeath) {
-                break;
+        if (this.curAttRoleVo == null) {
+            return;
+        }
+        this.curDefRoleVos = [];
+        /**得到技能 */
+        var skillVo = this.curAttRoleVo.getCanUserSkill();
+        if (skillVo && skillVo.isCanUse) {
+            skillVo.resetCD();
+            //技能攻击对象
+            this.seekSkillAtkTarget(skillVo);
+        }
+        else {
+            //嘲讽
+            var tempVo = this.enemySkillSeekTarget(this.curAttRoleVo.attEnemyVos);
+            if (tempVo) {
+                this.curDefRoleVos.push(tempVo);
+                return;
+            }
+            //寻找攻击具体对象
+            for (var i = 0; i < this.curAttRoleVo.attEnemyVos.length; i++) {
+                tempVo = this.curAttRoleVo.attEnemyVos[i];
+                if (!tempVo.isDeath) {
+                    this.curDefRoleVos.push(tempVo);
+                    break;
+                }
             }
         }
     };
     /**计算属性 */
-    BossBattleData.prototype.calculationAttribute = function () {
-        var readHurt = FormulaUtil.realDamageValue(this.curAttRoleVo, this.curDefRoleVo);
-        this.curDefRoleVo.battleHP -= readHurt;
-        // this.curDefRoleVo.battleHP -= this.curAttRoleVo.atk;
-        this.curDefRoleVo.isDeath = this.curDefRoleVo.battleHP <= 0;
-        this.curAttRoleVo.isAtted = true;
-        this.checkBattleEnd();
-        if (this.curAttCamp == BattleAttCampType.ENEMY) {
-            //DebugViewUtil.log("战斗日记：","....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVo.name + "("+ this.curDefRoleVo.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVo.battleHP);
-            // console.log("....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVo.name + "("+ this.curDefRoleVo.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVo.battleHP);
-        }
-    };
+    // public calculationAttribute():number
+    // {
+    //     var readHurt:number = 0;
+    //     var curRoleVo:BaseRoleVo;
+    //     for(var i = 0;i < this.curDefRoleVos.length;i++)
+    //     {
+    //         curRoleVo = this.curDefRoleVos[i];
+    //         curRoleVo.calculationAttribute(this.curAttRoleVo);
+    //         //自身加成
+    //         if(this.curAttCamp == BattleAttCampType.HERO && !curRoleVo.isEnemy || this.curAttCamp == BattleAttCampType.ENEMY && curRoleVo.isEnemy)
+    //         {
+    //         }
+    //         else
+    //         {
+    //             readHurt = FormulaUtil.realDamageValue(this.curAttRoleVo,curRoleVo);
+    //             curRoleVo.battleHP -= readHurt;
+    //             curRoleVo.isDeath = curRoleVo.battleHP <= 0;
+    //         }
+    //     }
+    //     this.curAttRoleVo.isAtted = true;
+    //     this.checkBattleEnd();
+    //     if(this.curAttCamp == BattleAttCampType.ENEMY)
+    //     {
+    //         //DebugViewUtil.log("战斗日记：","....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVos.name + "("+ this.curDefRoleVos.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVos.battleHP);
+    //         // console.log("....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVos.name + "("+ this.curDefRoleVos.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVos.battleHP);
+    //     }
+    //     return readHurt;
+    // }
     /**
      * 检测战斗结束
      */
     BossBattleData.prototype.checkBattleEnd = function () {
         var _this = this;
+        if (this.curAttRoleVo)
+            this.curAttRoleVo.isAtted = true;
         //检测战斗结束，玩家英雄阵营没有活的对象战斗失败，反之战斗胜利
         //英雄检测
         this.isEnd = true;
         var isChangeAttStatus = true;
+        var liveRoleCount = 0;
         this.attHeroVos.forEach(function (roleVo) {
             if (!roleVo.isDeath) {
+                liveRoleCount++;
                 _this.isEnd = false;
                 if (!roleVo.isAtted) {
                     isChangeAttStatus = false;
                 }
             }
+            // else
+            // console.log("我方：" ,roleVo.name,roleVo.battleHP);
         });
         if (this.isEnd) {
             this.isWin = false;
@@ -64362,11 +64846,14 @@ var BossBattleData = /** @class */ (function () {
         this.isEnd = true;
         this.attEnemyVos.forEach(function (roleVo) {
             if (!roleVo.isDeath) {
+                liveRoleCount++;
                 _this.isEnd = false;
                 if (!roleVo.isAtted) {
                     isChangeAttStatus = false;
                 }
             }
+            // else
+            // console.log("敌方：" ,roleVo.name,roleVo.battleHP);
         });
         if (this.isEnd) {
             this.isWin = true;
@@ -64377,6 +64864,13 @@ var BossBattleData = /** @class */ (function () {
             this.attEnemyVos.forEach(function (roleVo) {
                 roleVo.isAtted = false;
             });
+        }
+        this.turnCount++;
+        //轮数跑技能CD
+        if (this.turnCount > liveRoleCount) {
+            this.turnCount = 0;
+            this.runRoleSkillCD();
+            console.log(this.turnCount, liveRoleCount);
         }
         //改变阵营
         if (this.curAttCamp == BattleAttCampType.HERO) {
@@ -64395,10 +64889,10 @@ var BossBattleData = /** @class */ (function () {
         for (var i = 0; i < baseRoleVos.length; i++) {
             baseRoleVo = baseRoleVos[i];
             if (!baseRoleVo.isDeath && !baseRoleVo.isAtted) {
-                break;
+                return baseRoleVo;
             }
         }
-        return baseRoleVo;
+        return null;
     };
     /**
      * 寻找攻击目标
@@ -64452,6 +64946,7 @@ var BossBattleData = /** @class */ (function () {
             }
         }
     };
+    /*******************技能相关 */
     /**
      * 跑角色技能cd
      */
@@ -64459,13 +64954,144 @@ var BossBattleData = /** @class */ (function () {
         if (this.attHeroVos) {
             this.attHeroVos.forEach(function (baseRoleVo) {
                 baseRoleVo.runCD();
+                baseRoleVo.runSkillEffectCD();
             });
         }
         if (this.attEnemyVos) {
             this.attEnemyVos.forEach(function (baseRoleVo) {
                 baseRoleVo.runCD();
+                baseRoleVo.runSkillEffectCD();
             });
         }
+    };
+    /**技能攻击目标 */
+    BossBattleData.prototype.seekSkillAtkTarget = function (skillVo) {
+        var i;
+        var attVos = this.curAttRoleVo.isEnemy ? this.attEnemyVos : this.attHeroVos;
+        var defVos = this.curAttRoleVo.isEnemy ? this.attHeroVos : this.attEnemyVos;
+        var tempVo;
+        var tempAry = [];
+        var skillTargetType = Number(skillVo.skillConfig.skillTargetType);
+        switch (skillTargetType) {
+            case SkillTarget.SELF:
+                this.curAttRoleVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(this.curAttRoleVo);
+                break;
+            case SkillTarget.WE_ONE:
+                for (i = 0; i < attVos.length; i++) {
+                    tempVo = attVos[i];
+                    if (tempVo.roleId != this.curAttRoleVo.roleId && !tempVo.isDeath) {
+                        tempAry.push(tempVo);
+                    }
+                }
+                var ind = Math.ceil(Math.random() * tempAry.length) - 1;
+                tempVo = tempAry[ind];
+                tempVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(tempVo);
+                break;
+            case SkillTarget.WE_ALL:
+                this.curDefRoleVos = attVos;
+                this.curDefRoleVos.forEach(function (baseRoleVo) {
+                    baseRoleVo.addSkillEffectCDs(skillVo);
+                });
+                break;
+            case SkillTarget.ENEMY_ONE:
+                for (i = 0; i < defVos.length; i++) {
+                    tempVo = defVos[i];
+                    if (!tempVo.isDeath) {
+                        tempAry.push(tempVo);
+                    }
+                }
+                //嘲讽
+                var tempVo = this.enemySkillSeekTarget(tempAry);
+                if (tempVo) {
+                    this.curDefRoleVos.push(tempVo);
+                    return;
+                }
+                var ind = Math.ceil(Math.random() * tempAry.length) - 1;
+                tempVo = tempAry[ind];
+                tempVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(tempVo);
+                break;
+            case SkillTarget.ENEMY_ALL:
+                this.curDefRoleVos = defVos;
+                this.curDefRoleVos.forEach(function (baseRoleVo) {
+                    baseRoleVo.addSkillEffectCDs(skillVo);
+                });
+                break;
+            case SkillTarget.WE_ONE_SELF:
+                for (i = 0; i < attVos.length; i++) {
+                    tempVo = attVos[i];
+                    if (!tempVo.isDeath) {
+                        tempAry.push(tempVo);
+                    }
+                }
+                var ind = Math.ceil(Math.random() * tempAry.length) - 1;
+                tempVo = tempAry[ind];
+                tempVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(tempVo);
+                break;
+            case SkillTarget.WE_LEAST_PERCENT_BLOOD:
+                for (i = 0; i < attVos.length; i++) {
+                    tempVo = attVos[i];
+                    if (!tempVo.isDeath) {
+                        tempAry.push(tempVo);
+                    }
+                }
+                tempAry.sort(function (vo1, vo2) {
+                    var per1 = vo1.battleHP / vo1.hp;
+                    var per2 = vo2.battleHP / vo2.hp;
+                    return per1 < per2 ? 1 : -1;
+                });
+                tempVo = tempAry[0];
+                tempVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(tempVo);
+                break;
+            case SkillTarget.ENEMY_LEAST_PERCENT_BLOOD:
+                for (i = 0; i < defVos.length; i++) {
+                    tempVo = defVos[i];
+                    if (!tempVo.isDeath) {
+                        tempAry.push(tempVo);
+                    }
+                }
+                tempAry.sort(function (vo1, vo2) {
+                    var per1 = vo1.battleHP / vo1.hp;
+                    var per2 = vo2.battleHP / vo2.hp;
+                    return per1 < per2 ? 1 : -1;
+                });
+                tempVo = tempAry[0];
+                tempVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(tempVo);
+                break;
+        }
+    };
+    /**
+     * 敌方技能选取优先攻击
+     * @param baseRoleVos
+     */
+    BossBattleData.prototype.enemySkillSeekTarget = function (baseRoleVos) {
+        var tempVo;
+        var curSkillVo;
+        for (var i = 0; i < baseRoleVos.length; i++) {
+            tempVo = baseRoleVos[i];
+            if (!tempVo.isDeath) {
+                if (tempVo.mainSkillContinuedVo.anger > 0 || tempVo.assiSkillContinuedVo.anger > 0) { //嘲讽技能
+                    return tempVo;
+                }
+            }
+        }
+        return null;
+    };
+    /**得到队伍攻击力 */
+    BossBattleData.prototype.getRankAtk = function (isEnemy) {
+        var ary = isEnemy ? this.attEnemyVos : this.attHeroVos;
+        var ranksAtk = 0;
+        ary.forEach(function (roleVo) {
+            if (!roleVo.isDeath) {
+                ranksAtk += roleVo.realAtk;
+            }
+        });
+        return ranksAtk;
     };
     /**动画加载准备完毕 */
     BossBattleData.curLoadNum = 0;
@@ -64597,59 +65223,6 @@ var AnimationManager = /** @class */ (function () {
     return AnimationManager;
 }());
 //# sourceMappingURL=AnimationManager.js.map
-/*
-* name;
-*/
-var BaseMediator = /** @class */ (function () {
-    function BaseMediator(assetsUrl, view) {
-        this.view = null;
-        this.assetsUrl = assetsUrl;
-        this.view = view;
-        if (this.assetsUrl) {
-            ModuleLoadingView.ins.show();
-            Laya.loader.load(this.assetsUrl, new Laya.Handler(this, this.onLoaded), new Laya.Handler(this, this.onLoadProgress));
-        }
-        else {
-            this.initView();
-        }
-    }
-    /**资源加载完成 */
-    BaseMediator.prototype.onLoaded = function (data) {
-        this.initView();
-        ModuleLoadingView.ins.setProgress(1);
-    };
-    /**资源加载进度 */
-    BaseMediator.prototype.onLoadProgress = function (data) {
-        ModuleLoadingView.ins.setProgress(data);
-    };
-    BaseMediator.prototype.initView = function () {
-        this.addEvents();
-    };
-    BaseMediator.prototype.addEvents = function () {
-    };
-    BaseMediator.prototype.removeEvents = function () {
-    };
-    BaseMediator.prototype.dispose = function () {
-        if (this.assetsUrl) {
-            if (this.assetsUrl) {
-                this.assetsUrl.forEach(function (element) {
-                    Laya.loader.clearRes(element.url);
-                });
-            }
-            else {
-                Laya.loader.clearRes(this.assetsUrl);
-            }
-            this.assetsUrl = null;
-        }
-        if (this.view) {
-            this.removeEvents();
-            this.view.removeSelf();
-        }
-        this.view = null;
-    };
-    return BaseMediator;
-}());
-//# sourceMappingURL=BaseMediator.js.map
 /*
 * 游戏配置
 */
@@ -64815,48 +65388,84 @@ var GameButtomTabIndex;
 /**技能释放目标 自身,我方一个,我方所有,敌方一个,敌方所有,我方一个包括自身,我方百分比血量最少,敌方百分比血量最少*/
 var SkillTarget;
 (function (SkillTarget) {
+    /**自身*/
     SkillTarget[SkillTarget["SELF"] = 1] = "SELF";
+    /**我方一个不包括自身 */
     SkillTarget[SkillTarget["WE_ONE"] = 2] = "WE_ONE";
+    /**我方所有 */
     SkillTarget[SkillTarget["WE_ALL"] = 3] = "WE_ALL";
+    /**敌方一个*/
     SkillTarget[SkillTarget["ENEMY_ONE"] = 4] = "ENEMY_ONE";
+    /**敌方所有 */
     SkillTarget[SkillTarget["ENEMY_ALL"] = 5] = "ENEMY_ALL";
+    /**我方一个包括自身*/
     SkillTarget[SkillTarget["WE_ONE_SELF"] = 6] = "WE_ONE_SELF";
+    /**我方百分比血量最少 */
     SkillTarget[SkillTarget["WE_LEAST_PERCENT_BLOOD"] = 7] = "WE_LEAST_PERCENT_BLOOD";
-    SkillTarget[SkillTarget["ENEMY_LEAST_PERCENT_BLOOD"] = 8] = "ENEMY_LEAST_PERCENT_BLOOD"; //敌方百分比血量最少
+    /**敌方百分比血量最少 */
+    SkillTarget[SkillTarget["ENEMY_LEAST_PERCENT_BLOOD"] = 8] = "ENEMY_LEAST_PERCENT_BLOOD";
 })(SkillTarget || (SkillTarget = {}));
 /**技能效果  伤害,流血,中毒,吸血,恢复,遗忘,混乱,愤怒,增加攻击力,增加防御力,增加速度,增加血量上限,回血,解除负面效果,解除正面效果,增加免伤,减少对方治疗量*/
 var SkillEffect;
 (function (SkillEffect) {
+    /**伤害 */
     SkillEffect[SkillEffect["HURT"] = 1] = "HURT";
+    /**流血 */
     SkillEffect[SkillEffect["BLEEDING"] = 2] = "BLEEDING";
+    /**中毒 */
     SkillEffect[SkillEffect["POISONING"] = 3] = "POISONING";
-    SkillEffect[SkillEffect["LOOD_SUCKING"] = 4] = "LOOD_SUCKING";
+    /**吸血 */
+    SkillEffect[SkillEffect["BLOOD_SUCKING"] = 4] = "BLOOD_SUCKING";
+    /**恢复 */
     SkillEffect[SkillEffect["RECOVERY"] = 5] = "RECOVERY";
+    /**遗忘 */
     SkillEffect[SkillEffect["FORGET"] = 6] = "FORGET";
+    /**混乱 */
     SkillEffect[SkillEffect["CONFUSION"] = 7] = "CONFUSION";
+    /**愤怒 */
     SkillEffect[SkillEffect["ANGER"] = 8] = "ANGER";
+    /**增加攻击力 */
     SkillEffect[SkillEffect["ADD_ATK"] = 9] = "ADD_ATK";
+    /**增加防御力 */
     SkillEffect[SkillEffect["ADD_DEF"] = 10] = "ADD_DEF";
+    /**增加速度 */
     SkillEffect[SkillEffect["ADD_SPEED"] = 11] = "ADD_SPEED";
+    /**增加血量上限 */
     SkillEffect[SkillEffect["ADD_BLOOD_UP_LIMIT"] = 12] = "ADD_BLOOD_UP_LIMIT";
+    /**回血 */
     SkillEffect[SkillEffect["RECOVERY_BLOOD"] = 13] = "RECOVERY_BLOOD";
+    /**解除负面效果 */
     SkillEffect[SkillEffect["ELIMINATE_NEGATIVE_EFFECT"] = 14] = "ELIMINATE_NEGATIVE_EFFECT";
+    /**解除正面效果 */
     SkillEffect[SkillEffect["ELIMINATE_POSITIVE_EFFECT"] = 15] = "ELIMINATE_POSITIVE_EFFECT";
+    /**增加免伤 */
     SkillEffect[SkillEffect["ADD_INJURY_FREE"] = 16] = "ADD_INJURY_FREE";
-    SkillEffect[SkillEffect["REDUCE_ENEMY_TREATMENT"] = 17] = "REDUCE_ENEMY_TREATMENT"; //减少对方治疗量
+    /**减少对方治疗量 */
+    SkillEffect[SkillEffect["REDUCE_ENEMY_TREATMENT"] = 17] = "REDUCE_ENEMY_TREATMENT";
 })(SkillEffect || (SkillEffect = {}));
 //# sourceMappingURL=GameConfig.js.map
 /*
 * 帧动画
 */
 var FrameAnimation = /** @class */ (function () {
-    function FrameAnimation(disParent, tx, ty, scale) {
+    function FrameAnimation(disParent, tx, ty, isSkill, scale) {
         this.isLoop = false;
         this.scale = 1;
-        this.scale = scale;
+        this.isSkill = false;
+        this.scale = scale === undefined ? 1 : scale;
+        this.isSkill = isSkill === undefined ? false : isSkill;
         this.animation = new Laya.Animation;
+        tx = tx === undefined ? 0 : tx;
+        ty = ty === undefined ? 0 : ty;
         this.animation.pos(tx, ty);
         this.animation.scale(this.scale, this.scale);
+        // if(isSkill){
+        //     var ind:number = (disParent as BaseRole).getSkillEffectInd();
+        //     disParent.addChildAt(this.animation,ind);
+        // }
+        // else{
+        //     disParent.addChild(this.animation);
+        // }
         disParent.addChild(this.animation);
         this.isLoaded = false;
         Laya.loader.on("error" /**Laya.Event.ERROR*/, this, this.onLoadAniError);
@@ -64866,8 +65475,12 @@ var FrameAnimation = /** @class */ (function () {
         this.modelId = modelId;
         this.caller = caller;
         this.callBack = callBack;
+        //测试技能
+        // if(this.isSkill == true)
+        //     this.modelId = "SK_0101";
         if (this.isLoaded) {
-            this.animation.loadAnimation("res/ani/" + this.modelId + ".ani");
+            var aniUrl = this.isSkill == true ? "res/ani/skills/" + this.modelId + ".ani" : "res/ani/" + this.modelId + ".ani";
+            this.animation.loadAnimation(aniUrl);
             this.animation.play();
         }
         else {
@@ -64879,6 +65492,8 @@ var FrameAnimation = /** @class */ (function () {
     };
     FrameAnimation.prototype.dispose = function () {
         Laya.loader.off("error" /**Laya.Event.ERROR*/, this, this.onLoadAniError);
+        this.caller = null;
+        this.callBack = null;
         // if(this.animation)
         // {
         this.animation.off("complete", this, this.onOncePlayComplete);
@@ -64898,15 +65513,16 @@ var FrameAnimation = /** @class */ (function () {
         }
     };
     FrameAnimation.prototype.onOncePlayComplete = function (e) {
-        this.dispose();
         if (this.caller && this.callBack) {
             this.callBack.call(this.caller);
         }
+        this.dispose();
     };
     FrameAnimation.prototype.onLoadAniError = function (e) {
         // console.log("。。。。。。。。。。"+ e);
         if (e.indexOf(this.modelId + ".ani") != -1) {
             this.modelId = "SK_0101";
+            var aniUrl = this.isSkill == true ? "res/ani/skills/" + this.modelId + ".ani" : "res/ani/" + this.modelId + ".ani";
             this.animation.loadAtlas("res/atlas/ani/" + this.modelId + ".atlas", Laya.Handler.create(this, this.onLoaded));
         }
     };
@@ -65030,6 +65646,24 @@ var View = laya.ui.View;
 var Dialog = laya.ui.Dialog;
 var ui;
 (function (ui) {
+    var bag;
+    (function (bag) {
+        var BagViewUI = /** @class */ (function (_super) {
+            __extends(BagViewUI, _super);
+            function BagViewUI() {
+                return _super.call(this) || this;
+            }
+            BagViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.bag.BagViewUI.uiView);
+            };
+            BagViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "skin": "unpack/comp/mainbg.png" } }, { "type": "Panel", "props": { "y": 204, "x": 755, "width": 734, "var": "bagPanel", "height": 953 }, "child": [{ "type": "Image", "props": { "skin": "unpack/comp/dibanbg.png" } }, { "type": "Button", "props": { "y": -9, "x": 673, "visible": false, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png" } }, { "type": "Image", "props": { "y": 0, "x": 10, "var": "atkImage", "skin": "bag/xiaohao.png" } }, { "type": "Image", "props": { "y": 121, "x": 9, "var": "defImage", "skin": "bag/zhuangbei.png" } }, { "type": "Image", "props": { "y": 58, "x": 100, "skin": "unpack/comp/line.png" } }, { "type": "Image", "props": { "y": 885, "x": 98, "skin": "unpack/comp/line.png" } }, { "type": "Image", "props": { "y": 87, "x": 115, "skin": "unpack/bag/itemjiatu.png" } }, { "type": "Image", "props": { "y": 234, "x": 9, "skin": "bag/zhangwen.png" } }] }, { "type": "Image", "props": { "y": 35, "x": -224, "var": "bagTitleImage", "skin": "bag/bagtitle.png" } }] };
+            return BagViewUI;
+        }(View));
+        bag.BagViewUI = BagViewUI;
+    })(bag = ui.bag || (ui.bag = {}));
+})(ui || (ui = {}));
+(function (ui) {
     var BattleReportViewUI = /** @class */ (function (_super) {
         __extends(BattleReportViewUI, _super);
         function BattleReportViewUI() {
@@ -65140,6 +65774,24 @@ var ui;
     ui.EquipViewUI = EquipViewUI;
 })(ui || (ui = {}));
 (function (ui) {
+    var farm;
+    (function (farm) {
+        var FarmViewUI = /** @class */ (function (_super) {
+            __extends(FarmViewUI, _super);
+            function FarmViewUI() {
+                return _super.call(this) || this;
+            }
+            FarmViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.farm.FarmViewUI.uiView);
+            };
+            FarmViewUI.uiView = { "type": "View", "props": { "y": 0, "x": 0, "width": 750, "height": 1334 }, "child": [{ "type": "Panel", "props": { "y": 0, "x": 0, "width": 750, "var": "farmPanel", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "var": "bg", "skin": "unpack/farm/bg.png" } }, { "type": "Image", "props": { "y": 1197, "x": 29, "skin": "unpack/farm/huawen.png" } }, { "type": "Panel", "props": { "y": 159, "x": -32, "width": 1383, "var": "zhiwuPanel", "height": 671 }, "child": [{ "type": "Image", "props": { "y": 12, "x": -265, "skin": "unpack/farm/caijimap.png" } }] }, { "type": "Image", "props": { "y": 37, "x": -1, "skin": "farm/tip-zhongzi.png" } }, { "type": "Panel", "props": { "y": 827, "x": 24, "width": 703, "height": 354 }, "child": [{ "type": "Image", "props": { "skin": "unpack/farm/bgzhongzhi.png" } }, { "type": "Image", "props": { "skin": "farm/tip-zhongzhi.png" } }, { "type": "List", "props": { "width": 491, "var": "zhongzhiList", "spaceY": 10, "spaceX": 10, "selectEnable": false, "repeatY": 1, "repeatX": 3, "renderType": "render", "name": "zhongzhiList", "height": 210, "centerY": 0, "centerX": 0 }, "child": [{ "type": "VScrollBar", "props": { "y": 10, "x": -48, "width": 1, "name": "scrollBar", "height": 338 } }, { "type": "VBox", "props": { "x": 2, "width": 152, "top": 10, "space": 15, "renderType": "render", "bottom": 5, "align": "center" }, "child": [{ "type": "Panel", "props": { "y": -51, "x": -28, "width": 104, "height": 102, "anchorY": 0, "anchorX": 0 }, "child": [{ "type": "Image", "props": { "y": 51, "x": 52, "width": 104, "var": "zhongzhiBg", "skin": "farm/frame.png", "name": "zhongzhiBg", "height": 102, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 53, "x": 50, "var": "ZhongZhiIcon", "skin": "farm/bigmogu.png", "name": "ZhongZhiIcon", "anchorY": 0.5, "anchorX": 0.5 } }] }, { "type": "Label", "props": { "y": 59, "x": -29, "var": "zhongzhiName", "text": "毒蘑菇花花", "name": "zhongzhiName", "fontSize": 20, "color": "#f2d778", "bold": true, "align": "center" } }, { "type": "Label", "props": { "y": 59, "x": -53, "text": "已使用：（2/3）", "name": "zhongzhiName", "fontSize": 20, "color": "#563610", "bold": true, "align": "center" } }] }] }] }, { "type": "Panel", "props": { "y": 783, "x": 428, "width": 290, "height": 38 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "farm/bgnumber.png" } }, { "type": "Button", "props": { "y": 1, "x": 255, "stateNum": 1, "skin": "farm/jia.png" } }, { "type": "Label", "props": { "y": 6, "x": 187, "var": "shengyuCount", "text": "3", "name": "shengyuCount", "fontSize": 25, "color": "#f6ed94", "bold": true } }, { "type": "Image", "props": { "y": 2, "x": 8, "skin": "farm/chishu.png" } }] }, { "type": "Image", "props": { "y": -298, "x": -1420, "width": 2182, "var": "wumai", "skin": "worldmap/wumai.png", "height": 823 } }] }, { "type": "Button", "props": { "y": 41, "x": 649, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png" } }] };
+            return FarmViewUI;
+        }(View));
+        farm.FarmViewUI = FarmViewUI;
+    })(farm = ui.farm || (ui.farm = {}));
+})(ui || (ui = {}));
+(function (ui) {
     var GameViewUI = /** @class */ (function (_super) {
         __extends(GameViewUI, _super);
         function GameViewUI() {
@@ -65150,10 +65802,28 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.GameViewUI.uiView);
         };
-        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "mouseThrough": true, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 17, "x": 706, "width": 34, "var": "btnOpen", "stateNum": 1, "skin": "main/laba.png", "sizeGrid": "-10,0,-6,-14", "labelStrokeColor": "#f88508", "labelSize": 32, "height": 31, "alpha": 0.6 } }, { "type": "Image", "props": { "y": 1215, "x": 0, "width": 750, "skin": "unpack/main/diban.png", "height": 119 } }, { "type": "Image", "props": { "y": 1320, "x": 0, "width": 750, "skin": "main/img_blood.png", "height": 14 } }, { "type": "Tab", "props": { "y": 1214, "x": 2, "width": 746, "height": 124 }, "child": [{ "type": "Button", "props": { "y": -7, "x": -1, "width": 145, "var": "btnMap", "stateNum": 1, "skin": "main/huic.png", "labelSize": 40, "height": 102 } }, { "type": "Button", "props": { "y": 0, "x": 435, "width": 148, "var": "btnHero", "stateNum": 1, "skin": "main/juese.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 145, "width": 148, "var": "btnLineup", "stateNum": 1, "skin": "main/tansuo.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 590, "width": 148, "var": "btnEquip", "stateNum": 1, "skin": "main/bag.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": 0, "x": 292, "width": 148, "var": "btnBattle", "stateNum": 1, "skin": "main/zuoz.png", "labelSize": 40, "height": 100 } }] }, { "type": "TestAniScaleView", "props": { "y": 1, "x": 253, "visible": false, "var": "viewAniScale", "runtime": "ui.test.TestAniScaleViewUI" } }] };
+        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "mouseThrough": true, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 17, "x": 706, "width": 34, "var": "btnOpen", "stateNum": 1, "skin": "main/laba.png", "sizeGrid": "-10,0,-6,-14", "labelStrokeColor": "#f88508", "labelSize": 32, "height": 31, "alpha": 0.6 } }, { "type": "Image", "props": { "y": 1215, "x": 0, "width": 750, "skin": "unpack/main/diban.png", "height": 119 } }, { "type": "Image", "props": { "y": 1320, "x": 0, "width": 750, "skin": "main/img_blood.png", "height": 14 } }, { "type": "Tab", "props": { "y": 1214, "x": 2, "width": 746, "height": 124 }, "child": [{ "type": "Button", "props": { "y": -7, "x": -1, "width": 145, "var": "btnMap", "stateNum": 1, "skin": "main/huic.png", "labelSize": 40, "height": 102 } }, { "type": "Button", "props": { "y": 0, "x": 435, "width": 148, "var": "btnHero", "stateNum": 1, "skin": "main/juese.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 145, "width": 148, "var": "btnLineup", "stateNum": 1, "skin": "main/tansuo.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 590, "width": 148, "var": "btnBag", "stateNum": 1, "skin": "main/bag.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": 0, "x": 292, "width": 148, "var": "btnBattle", "stateNum": 1, "skin": "main/zuoz.png", "labelSize": 40, "height": 100 } }] }, { "type": "TestAniScaleView", "props": { "y": 1, "x": 253, "visible": false, "var": "viewAniScale", "runtime": "ui.test.TestAniScaleViewUI" } }] };
         return GameViewUI;
     }(View));
     ui.GameViewUI = GameViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var graphtag;
+    (function (graphtag) {
+        var GraphtagViewUI = /** @class */ (function (_super) {
+            __extends(GraphtagViewUI, _super);
+            function GraphtagViewUI() {
+                return _super.call(this) || this;
+            }
+            GraphtagViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.graphtag.GraphtagViewUI.uiView);
+            };
+            GraphtagViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "skin": "unpack/comp/mainbg.png" } }, { "type": "Panel", "props": { "y": 204, "x": 755, "width": 734, "var": "graphtagPanel", "height": 953 }, "child": [{ "type": "Image", "props": { "skin": "unpack/comp/dibanbg.png" } }, { "type": "Button", "props": { "y": -9, "x": 676, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png" } }, { "type": "Image", "props": { "y": 0, "x": 10, "var": "atkImage", "skin": "graphtag/atk.png" } }, { "type": "Image", "props": { "y": 121, "x": 9, "var": "defImage", "skin": "graphtag/checkDef.png" } }, { "type": "Image", "props": { "y": 58, "x": 100, "skin": "unpack/comp/line.png" } }, { "type": "Image", "props": { "y": 885, "x": 98, "skin": "unpack/comp/line.png" } }, { "type": "Image", "props": { "y": 87, "x": 85, "skin": "unpack/graphtag/grahtagjiatu.png" } }] }, { "type": "Image", "props": { "y": 35, "x": -227, "var": "graptitleImage", "skin": "graphtag/graptitle.png" } }] };
+            return GraphtagViewUI;
+        }(View));
+        graphtag.GraphtagViewUI = GraphtagViewUI;
+    })(graphtag = ui.graphtag || (ui.graphtag = {}));
 })(ui || (ui = {}));
 (function (ui) {
     var HeroViewUI = /** @class */ (function (_super) {
@@ -65358,13 +66028,32 @@ var ui;
                 return _super.call(this) || this;
             }
             MapWorldViewUI.prototype.createChildren = function () {
+                View.regComponent("ui.map.RightFunctionViewUI", ui.map.RightFunctionViewUI);
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.map.MapWorldViewUI.uiView);
             };
-            MapWorldViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Panel", "props": { "y": 59, "x": -348, "width": 1699, "var": "panelBlock", "scaleY": 0.9, "scaleX": 0.8, "name": "panelBlock", "height": 1351 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/worldmap/bg.png" } }, { "type": "Image", "props": { "y": -13, "x": 537, "var": "imgBlock3", "skin": "unpack/worldmap/p7.png" }, "child": [{ "type": "Poly", "props": { "y": 13, "x": 54, "renderType": "hit", "points": "-13,479,-35,136,41,-5,344,20,396,223,754,227,689,503,265,767", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 194, "x": 1222, "var": "imgBlock6", "skin": "unpack/worldmap/p2.png" }, "child": [{ "type": "Poly", "props": { "y": 11, "x": -197, "renderType": "hit", "points": "368,572,212,486,228,186,346,68,513,33,668,84,667,697", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 595, "x": 683, "var": "imgBlock4", "skin": "unpack/worldmap/p1.png" }, "child": [{ "type": "Poly", "props": { "y": 110, "x": 164, "renderType": "hit", "points": "6,328,-178,245,-110,121,178,-43,375,-87,555,179,277,362", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 891, "x": 1210, "var": "imgBlock5", "skin": "unpack/worldmap/p3.png" }, "child": [{ "type": "Poly", "props": { "y": 41, "x": 79, "renderType": "hit", "points": "7,382,-76,238,-18,11,184,-37,409,-24,399,265,326,384", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 102, "x": 28, "var": "imgBlock2", "skin": "unpack/worldmap/p5.png" }, "child": [{ "type": "Poly", "props": { "y": 61, "x": 31, "renderType": "hit", "points": "533,566,65,301,-39,58,106,-37,328,-35,450,51,566,447", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 531, "x": 136, "var": "imgBlock1", "skin": "unpack/worldmap/p4.png" }, "child": [{ "type": "Poly", "props": { "y": 37, "x": 46, "renderType": "hit", "points": "61,304,-41,204,-6.5,17,171.5,20.5,242,60.5,465,283,342,371", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 893, "x": 67, "var": "imgBlock0", "skin": "unpack/worldmap/p6.png" }, "child": [{ "type": "Poly", "props": { "y": 50, "x": 73, "renderType": "hit", "points": "-71,424,-28,289,-39,32,184,-37,385.5,-3.5,622,60,675,421", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }] }, { "type": "Image", "props": { "y": 446, "x": -775, "width": 3078, "var": "wumaiImage", "skin": "worldmap/wumai.png", "name": "wumaiImage", "height": 1204, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": -263, "x": -370, "width": 1623, "var": "yun1", "skin": "unpack/worldmap/yun1.png", "height": 959 } }, { "type": "Image", "props": { "y": 805, "x": -1009, "width": 1597, "var": "yun2", "skin": "unpack/worldmap/yun2.png", "height": 711 } }, { "type": "Image", "props": { "y": 180, "x": -1068, "width": 1599, "var": "yun3", "skin": "unpack/worldmap/yun3.png", "height": 1027 } }, { "type": "Image", "props": { "y": 711, "x": 13, "width": 1032, "var": "yun4", "skin": "unpack/worldmap/yun4.png", "height": 824 } }] };
+            MapWorldViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Panel", "props": { "y": 59, "x": -348, "width": 1699, "var": "panelBlock", "scaleY": 0.9, "scaleX": 0.8, "name": "panelBlock", "height": 1351 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/worldmap/bg.png" } }, { "type": "Image", "props": { "y": -13, "x": 537, "var": "imgBlock3", "skin": "unpack/worldmap/p7.png" }, "child": [{ "type": "Poly", "props": { "y": 13, "x": 54, "renderType": "hit", "points": "-13,479,-35,136,41,-5,344,20,396,223,754,227,689,503,265,767", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 194, "x": 1222, "var": "imgBlock6", "skin": "unpack/worldmap/p2.png" }, "child": [{ "type": "Poly", "props": { "y": 11, "x": -197, "renderType": "hit", "points": "368,572,212,486,228,186,346,68,513,33,668,84,667,697", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 595, "x": 683, "var": "imgBlock4", "skin": "unpack/worldmap/p1.png" }, "child": [{ "type": "Poly", "props": { "y": 110, "x": 164, "renderType": "hit", "points": "6,328,-178,245,-110,121,178,-43,375,-87,555,179,277,362", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 891, "x": 1210, "var": "imgBlock5", "skin": "unpack/worldmap/p3.png" }, "child": [{ "type": "Poly", "props": { "y": 41, "x": 79, "renderType": "hit", "points": "7,382,-76,238,-18,11,184,-37,409,-24,399,265,326,384", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 102, "x": 28, "var": "imgBlock2", "skin": "unpack/worldmap/p5.png" }, "child": [{ "type": "Poly", "props": { "y": 61, "x": 31, "renderType": "hit", "points": "533,566,65,301,-39,58,106,-37,328,-35,450,51,566,447", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 531, "x": 136, "var": "imgBlock1", "skin": "unpack/worldmap/p4.png" }, "child": [{ "type": "Poly", "props": { "y": 37, "x": 46, "renderType": "hit", "points": "61,304,-41,204,-6.5,17,171.5,20.5,242,60.5,465,283,342,371", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 893, "x": 67, "var": "imgBlock0", "skin": "unpack/worldmap/p6.png" }, "child": [{ "type": "Poly", "props": { "y": 50, "x": 73, "renderType": "hit", "points": "-71,424,-28,289,-39,32,184,-37,385.5,-3.5,622,60,675,421", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }] }, { "type": "Image", "props": { "y": 446, "x": -775, "width": 3078, "var": "wumaiImage", "skin": "worldmap/wumai.png", "name": "wumaiImage", "height": 1204, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": -263, "x": -370, "width": 1623, "var": "yun1", "skin": "unpack/worldmap/yun1.png", "height": 959 } }, { "type": "Image", "props": { "y": 805, "x": -1009, "width": 1597, "var": "yun2", "skin": "unpack/worldmap/yun2.png", "height": 711 } }, { "type": "Image", "props": { "y": 180, "x": -1068, "width": 1599, "var": "yun3", "skin": "unpack/worldmap/yun3.png", "height": 1027 } }, { "type": "Image", "props": { "y": 711, "x": 13, "width": 1032, "var": "yun4", "skin": "unpack/worldmap/yun4.png", "height": 824 } }, { "type": "RightFunctionView", "props": { "y": 511, "x": 750, "var": "rightFunctionView", "runtime": "ui.map.RightFunctionViewUI" } }] };
             return MapWorldViewUI;
         }(View));
         map.MapWorldViewUI = MapWorldViewUI;
+    })(map = ui.map || (ui.map = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var map;
+    (function (map) {
+        var RightFunctionViewUI = /** @class */ (function (_super) {
+            __extends(RightFunctionViewUI, _super);
+            function RightFunctionViewUI() {
+                return _super.call(this) || this;
+            }
+            RightFunctionViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.map.RightFunctionViewUI.uiView);
+            };
+            RightFunctionViewUI.uiView = { "type": "View", "props": {}, "child": [{ "type": "Button", "props": { "y": 1, "x": 0, "width": 71, "var": "btnGraphtag", "skin": "comp/button.png", "labelSize": 30, "label": "图鉴", "height": 63 } }, { "type": "Button", "props": { "y": 69, "x": 0, "width": 71, "var": "btnFarm", "skin": "comp/button.png", "labelSize": 30, "label": "农场", "height": 63 } }, { "type": "Button", "props": { "y": 139, "x": 1, "width": 71, "var": "btnOpen", "skin": "comp/button.png", "labelSize": 30, "label": "+", "height": 63 } }] };
+            return RightFunctionViewUI;
+        }(View));
+        map.RightFunctionViewUI = RightFunctionViewUI;
     })(map = ui.map || (ui.map = {}));
 })(ui || (ui = {}));
 (function (ui) {
@@ -65915,6 +66604,40 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 /*
+* name;
+*/
+var RightFunctionButtons = /** @class */ (function (_super) {
+    __extends(RightFunctionButtons, _super);
+    function RightFunctionButtons() {
+        return _super.call(this) || this;
+    }
+    Object.defineProperty(RightFunctionButtons, "ins", {
+        get: function () {
+            if (this._ins == null) {
+                this._ins = new RightFunctionButtons();
+            }
+            return this._ins;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    RightFunctionButtons.prototype.initComponets = function () {
+    };
+    RightFunctionButtons._ins = null;
+    return RightFunctionButtons;
+}(Laya.Sprite));
+//# sourceMappingURL=RightFunctionButtons.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
 * 血条
 */
 var RoleBloodBar = /** @class */ (function (_super) {
@@ -66027,6 +66750,102 @@ var SkillView = /** @class */ (function (_super) {
     return SkillView;
 }(Laya.Sprite));
 //# sourceMappingURL=SkillView.js.map
+/*
+* name;
+*/
+var BaseMediator = /** @class */ (function () {
+    function BaseMediator(assetsUrl, view) {
+        this.view = null;
+        this.assetsUrl = assetsUrl;
+        this.view = view;
+        if (this.assetsUrl) {
+            ModuleLoadingView.ins.show();
+            Laya.loader.load(this.assetsUrl, new Laya.Handler(this, this.onLoaded), new Laya.Handler(this, this.onLoadProgress));
+        }
+        else {
+            this.initView();
+        }
+    }
+    /**资源加载完成 */
+    BaseMediator.prototype.onLoaded = function (data) {
+        this.initView();
+        ModuleLoadingView.ins.setProgress(1);
+    };
+    /**资源加载进度 */
+    BaseMediator.prototype.onLoadProgress = function (data) {
+        ModuleLoadingView.ins.setProgress(data);
+    };
+    BaseMediator.prototype.initView = function () {
+        this.addEvents();
+    };
+    BaseMediator.prototype.addEvents = function () {
+    };
+    BaseMediator.prototype.removeEvents = function () {
+    };
+    BaseMediator.prototype.dispose = function () {
+        if (this.assetsUrl) {
+            if (this.assetsUrl) {
+                this.assetsUrl.forEach(function (element) {
+                    Laya.loader.clearRes(element.url);
+                });
+            }
+            else {
+                Laya.loader.clearRes(this.assetsUrl);
+            }
+            this.assetsUrl = null;
+        }
+        if (this.view) {
+            this.removeEvents();
+            this.view.removeSelf();
+        }
+        this.view = null;
+    };
+    return BaseMediator;
+}());
+//# sourceMappingURL=BaseMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 背包
+*/
+var BagMediator = /** @class */ (function (_super) {
+    __extends(BagMediator, _super);
+    function BagMediator(assetsUrl, view, caller) {
+        return _super.call(this, assetsUrl, view) || this;
+    }
+    BagMediator.prototype.initView = function () {
+        this.view = new ui.bag.BagViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
+        _super.prototype.initView.call(this);
+        //入场动画
+        Tween.to(this.view.bagTitleImage, { x: 0 }, 500, Ease.backInOut);
+        Tween.to(this.view.bagPanel, { x: 9 }, 500, Ease.backInOut);
+    };
+    BagMediator.prototype.addEvents = function () {
+        // this.view.closeBth.on(Laya.Event.CLICK, this,this.onCloseBtnClick);
+    };
+    BagMediator.prototype.removeEvents = function () {
+    };
+    BagMediator.prototype.onCloseBtnClick = function (e) {
+        Tween.to(this.view.bagTitleImage, { x: -227 }, 100);
+        Tween.to(this.view.bagPanel, { x: 755 }, 100, null, Handler.create(this, this.dispose));
+    };
+    BagMediator.prototype.dispose = function () {
+        Laya.Tween.clearAll(this.view.bagTitleImage);
+        Laya.Tween.clearAll(this.view.bagPanel);
+        _super.prototype.dispose.call(this);
+    };
+    return BagMediator;
+}(BaseMediator));
+//# sourceMappingURL=BagMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -66468,6 +67287,51 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 /*
+* 农场
+*/
+var FarmMediator = /** @class */ (function (_super) {
+    __extends(FarmMediator, _super);
+    function FarmMediator(assetsUrl, view, caller) {
+        return _super.call(this, assetsUrl, view) || this;
+    }
+    FarmMediator.prototype.initView = function () {
+        this.view = new ui.farm.FarmViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
+        console.log(this.view.mouseThrough, this.view.mouseEnabled);
+        _super.prototype.initView.call(this);
+        //var spr:Sprite;
+        //spr.mouseEnabled
+        //入场动画
+    };
+    FarmMediator.prototype.addEvents = function () {
+        this.view.btnClose.on(Laya.Event.CLICK, this, this.onCloseBtnClick);
+    };
+    FarmMediator.prototype.removeEvents = function () {
+        this.view.btnClose.off(Laya.Event.CLICK, this, this.onCloseBtnClick);
+    };
+    FarmMediator.prototype.onCloseBtnClick = function (e) {
+        this.dispose();
+        // console.log(e.target);
+    };
+    FarmMediator.prototype.dispose = function () {
+        if (this.view) {
+        }
+        _super.prototype.dispose.call(this);
+    };
+    return FarmMediator;
+}(BaseMediator));
+//# sourceMappingURL=FarmMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
 * 游戏主界面代理器
 */
 var GameMediator = /** @class */ (function (_super) {
@@ -66493,7 +67357,7 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnLineup.on(Laya.Event.CLICK, this, this.onBtnLineup);
         this.view.btnBattle.on(Laya.Event.CLICK, this, this.onBtnBattle);
         this.view.btnHero.on(Laya.Event.CLICK, this, this.onBtnHero);
-        this.view.btnEquip.on(Laya.Event.CLICK, this, this.onBtnEquip);
+        this.view.btnBag.on(Laya.Event.CLICK, this, this.onBtnBag);
         EventManager.ins.addEvent(EventManager.CHOICE_CHALLEGEN_GATE, this, this.choiceChanllegeGate);
         WebSocketManager.ins.registerHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, new GetHeroInfosHanlder(this, this.getHeroInfosHandler));
         WebSocketManager.ins.registerHandler(Protocol.GATE, Protocol.GATE_INFO, new GetGateInfoHandler(this, this.gateInfoHanlder));
@@ -66508,7 +67372,7 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnLineup.off(Laya.Event.CLICK, this, this.onBtnLineup);
         this.view.btnBattle.off(Laya.Event.CLICK, this, this.onBtnBattle);
         this.view.btnHero.off(Laya.Event.CLICK, this, this.onBtnHero);
-        this.view.btnEquip.off(Laya.Event.CLICK, this, this.onBtnEquip);
+        this.view.btnBag.off(Laya.Event.CLICK, this, this.onBtnBag);
         EventManager.ins.removeEvent(EventManager.CHOICE_CHALLEGEN_GATE, this.choiceChanllegeGate);
         WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, this);
         WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_INFO, this);
@@ -66614,7 +67478,7 @@ var GameMediator = /** @class */ (function (_super) {
         GameDataManager.showModuleViewInd = GameButtomTabIndex.HERO;
     };
     /**战斗系统*/
-    GameMediator.prototype.onBtnEquip = function (e) {
+    GameMediator.prototype.onBtnBag = function (e) {
         if (GameDataManager.showModuleViewInd == GameButtomTabIndex.EQUIP) {
             return;
         }
@@ -66622,7 +67486,11 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
-        this.curMediator = new EquipMediator();
+        var resAry = [
+            { url: "unpack/bag/itemjiatu.png", type: Loader.IMAGE },
+            { url: "res/atlas/bag.atlas", type: Loader.ATLAS }
+        ];
+        this.curMediator = new BagMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.EQUIP;
     };
     /**挂机战斗*/
@@ -66649,6 +67517,52 @@ var GameMediator = /** @class */ (function (_super) {
     return GameMediator;
 }(BaseMediator));
 //# sourceMappingURL=GameMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 图鉴
+*/
+var GraphtagMediator = /** @class */ (function (_super) {
+    __extends(GraphtagMediator, _super);
+    function GraphtagMediator(assetsUrl, view, caller) {
+        return _super.call(this, assetsUrl, view) || this;
+    }
+    GraphtagMediator.prototype.initView = function () {
+        this.view = new ui.graphtag.GraphtagViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
+        _super.prototype.initView.call(this);
+        //入场动画
+        Tween.to(this.view.graptitleImage, { x: 0 }, 500, Ease.backInOut);
+        Tween.to(this.view.graphtagPanel, { x: 9 }, 500, Ease.backInOut);
+    };
+    GraphtagMediator.prototype.addEvents = function () {
+        this.view.btnClose.on(Laya.Event.CLICK, this, this.onCloseBtnClick);
+    };
+    GraphtagMediator.prototype.removeEvents = function () {
+        this.view.btnClose.off(Laya.Event.CLICK, this, this.onCloseBtnClick);
+    };
+    GraphtagMediator.prototype.onCloseBtnClick = function (e) {
+        Tween.to(this.view.graptitleImage, { x: -227 }, 100);
+        Tween.to(this.view.graphtagPanel, { x: 755 }, 100, null, Handler.create(this, this.dispose));
+    };
+    GraphtagMediator.prototype.dispose = function () {
+        if (this.view) {
+            Laya.Tween.clearAll(this.view.graptitleImage);
+            Laya.Tween.clearAll(this.view.graphtagPanel);
+        }
+        _super.prototype.dispose.call(this);
+    };
+    return GraphtagMediator;
+}(BaseMediator));
+//# sourceMappingURL=GraphtagMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -67550,6 +68464,7 @@ var MapWorldMediator = /** @class */ (function (_super) {
         Tween.to(this.view.panelBlock, { x: 0, y: 0, scaleX: 1.0, scaleY: 1.0 }, 1000, null, null, 1000);
         //选中当前打的地图板块
         this.view.imgBlock0.filters = [this.glowFilter];
+        this.rightFunctionMediator = new RightFunctionMediator(null, this.view.rightFunctionView);
     };
     MapWorldMediator.prototype.yunMoveComplete = function (disImg) {
         if (disImg) {
@@ -67632,14 +68547,88 @@ var MapWorldMediator = /** @class */ (function (_super) {
         this.lastMoveX = this.view.panelBlock.mouseX;
     };
     MapWorldMediator.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
         if (this.gateListMediator) {
             this.gateListMediator.dispose();
+            this.gateListMediator = null;
         }
+        if (this.rightFunctionMediator) {
+            this.rightFunctionMediator.dispose();
+            this.rightFunctionMediator = null;
+        }
+        _super.prototype.dispose.call(this);
     };
     return MapWorldMediator;
 }(BaseMediator));
 //# sourceMappingURL=MapWorldMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 地图右边功能视图
+*/
+var RightFunctionMediator = /** @class */ (function (_super) {
+    __extends(RightFunctionMediator, _super);
+    function RightFunctionMediator(assetsUrl, view) {
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.curMediator = null;
+        return _this;
+    }
+    RightFunctionMediator.prototype.initView = function () {
+        Laya.Tween.to(this.view, { x: this.view.x - this.view.width }, 500);
+        _super.prototype.initView.call(this);
+    };
+    RightFunctionMediator.prototype.addEvents = function () {
+        this.view.btnGraphtag.on(Laya.Event.CLICK, this, this.onBtnGraptag);
+        this.view.btnFarm.on(Laya.Event.CLICK, this, this.onBtnFarm);
+    };
+    RightFunctionMediator.prototype.removeEvents = function () {
+        this.view.btnGraphtag.off(Laya.Event.CLICK, this, this.onBtnGraptag);
+        this.view.btnFarm.off(Laya.Event.CLICK, this, this.onBtnFarm);
+    };
+    RightFunctionMediator.prototype.onBtnGraptag = function () {
+        if (this.curMediator) {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        //显示地图界面
+        var resAry = [
+            { url: "unpack/graphtag/grahtagjiatu.png", type: Loader.IMAGE },
+            { url: "res/atlas/graphtag.atlas", type: Loader.ATLAS }
+        ];
+        this.curMediator = new GraphtagMediator(resAry);
+    };
+    RightFunctionMediator.prototype.onBtnFarm = function () {
+        if (this.curMediator) {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        //显示地图界面
+        var resAry = [
+            { url: "unpack/farm/bg.png", type: Loader.IMAGE },
+            { url: "unpack/farm/bgzhongzhi.png", type: Loader.IMAGE },
+            { url: "unpack/farm/caijimap.png", type: Loader.IMAGE },
+            { url: "unpack/farm/huawen.png", type: Loader.IMAGE },
+            { url: "res/atlas/farm.atlas", type: Loader.ATLAS }
+        ];
+        this.curMediator = new FarmMediator(resAry);
+    };
+    RightFunctionMediator.prototype.dispose = function () {
+        if (this.curMediator) {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        _super.prototype.dispose.call(this);
+    };
+    return RightFunctionMediator;
+}(BaseMediator));
+//# sourceMappingURL=RightFunctionMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -68530,9 +69519,23 @@ var HeroVo = /** @class */ (function (_super) {
         this.skillVos = [];
         var skillVo = new SkillVo();
         var bool = skillVo.initData(config.skillKey);
+        //流血buff测试
+        if (this.name == "美颌龙") {
+            //流血技能
+            bool = skillVo.initData("SK_0096");
+            //单个加血技能
+            // bool = skillVo.initData("SK_0061");
+            //提升攻击力技能
+            // bool = skillVo.initData("SK_0012");
+            //嘲讽
+            // bool = skillVo.initData("SK_0241");
+            skillVo.cd = 3;
+            skillVo.skillContinued = 2;
+        }
         if (bool) {
             this.skillVos.push(skillVo);
         }
+        _super.prototype.initBaseData.call(this);
     };
     return HeroVo;
 }(BaseRoleVo));
@@ -68628,6 +69631,7 @@ var MasterVo = /** @class */ (function (_super) {
         if (bool) {
             this.skillVos.push(skillVo);
         }
+        _super.prototype.initBaseData.call(this);
     };
     return MasterVo;
 }(BaseRoleVo));
@@ -69074,6 +70078,12 @@ var BaseRole = /** @class */ (function (_super) {
         _this.roleBloodBar = null;
         _this.showPriority = 0;
         _this.showBloodBar = false;
+        _this.clipShadow = new Laya.Image("comp/img_shadow.png");
+        _this.clipShadow.height = 30;
+        _this.clipShadow.x = -_this.clipShadow.width / 2;
+        _this.clipShadow.y = -_this.clipShadow.height / 2;
+        _this.clipShadow.alpha = 0.2;
+        _this.addChild(_this.clipShadow);
         return _this;
         // EventManager.ins.addEvent(EventManager.TEST_CHANGE_ROLE_SCALE,this,this.testScale);
     }
@@ -69091,12 +70101,6 @@ var BaseRole = /** @class */ (function (_super) {
     //     }
     // }
     BaseRole.prototype.initRole = function (baseRoleVo, showPriority, scale, parentDis, showBloodBar) {
-        this.clipShadow = new Laya.Image("comp/img_shadow.png");
-        this.clipShadow.height = 30;
-        this.clipShadow.x = -this.clipShadow.width / 2;
-        this.clipShadow.y = -this.clipShadow.height / 2;
-        this.clipShadow.alpha = 0.2;
-        this.addChild(this.clipShadow);
         this.baseRoleVo = baseRoleVo;
         this.showPriority = showPriority;
         this.showBloodBar = showBloodBar === undefined ? false : showBloodBar;
@@ -69119,11 +70123,12 @@ var BaseRole = /** @class */ (function (_super) {
         }
         this.visible = true;
     };
-    BaseRole.prototype.showFloatFont = function (blood) {
+    BaseRole.prototype.showFloatFont = function (tipString) {
+        tipString = tipString === undefined ? "" : tipString;
         var floatFontTip = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
         if (floatFontTip) {
             floatFontTip.setAttribute(40, "#ff0000");
-            floatFontTip.show("-" + blood, this, -30, -200, 0.5, 40, 80, this.baseRoleVo.isEnemy);
+            floatFontTip.show(tipString, this, -30, -200, 0.5, 40, 80, this.baseRoleVo.isEnemy);
         }
     };
     /**
@@ -69142,7 +70147,7 @@ var BaseRole = /** @class */ (function (_super) {
             //>= aniCount默认播放第一个动画
             if (this.skeletonAni) {
                 Laya.loader.on(/*laya.events.Event.ERROR*/ "error", this, this.skeletonLoadError);
-                // this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted,[defRole,caller,method]);
+                // console.log("前........",this.baseRoleVo.name,aniID);
                 this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted);
                 this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID, loop);
@@ -69150,12 +70155,21 @@ var BaseRole = /** @class */ (function (_super) {
             }
         }
         else {
-            // Laya.timer.frameOnce(this.showPriority * 6,this,this.skeletonAniLoad,[aniID,loop,caller,method],false);
             Laya.timer.frameOnce(this.showPriority * 6, this, this.skeletonAniLoad, null, false);
         }
     };
+    BaseRole.prototype.getSkillEffectInd = function () {
+        if (this.skeletonAni) {
+            return this.getChildIndex(this.skeletonAni);
+        }
+        return 0;
+    };
     /**播放一次动画回调 */
     BaseRole.prototype.onPlayCompleted = function () {
+        // console.log("后........",this.baseRoleVo.name,this.aniId);
+        if (this.aniId == RoleAniIndex.ATTACK) {
+            SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+        }
         this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.onPlayCompleted);
         if (this.caller && this.method) {
             // console.log(this.roleVo.name);
@@ -69194,7 +70208,9 @@ var BaseRole = /** @class */ (function (_super) {
         // this.aniHeight = bound.height + Math.abs(bound.y);
         // console.log(this.baseRoleVo.name,bound);
         //血条
-        this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
+        // this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
+        this.roleBloodBar = new RoleBloodBar();
+        this.roleBloodBar.visible = true;
         this.roleBloodBar.scaleX = 0.5;
         this.roleBloodBar.x = -60;
         this.roleBloodBar.y = -180;
@@ -69226,6 +70242,7 @@ var BaseRole = /** @class */ (function (_super) {
         this.aniPlay(RoleAniIndex.MOVE);
     };
     BaseRole.prototype.setVisible = function (bool) {
+        // Laya.timer.once(1000 / GameConfig.BATTLE_ADDSPEED_TIMES,this, this.setVis,[bool]);
         Laya.timer.once(1000, this, this.setVis, [bool]);
     };
     BaseRole.prototype.setVis = function (bool) {
@@ -69244,10 +70261,12 @@ var BaseRole = /** @class */ (function (_super) {
         this.skeletonAni = null;
         if (this.LblName) {
             this.LblName.removeSelf();
+            this.LblName = null;
         }
         if (this.roleBloodBar) {
             this.roleBloodBar.removeSelf();
-            ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR, this.roleBloodBar);
+            this.roleBloodBar = null;
+            // ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR,this.roleBloodBar);
         }
         this.baseRoleVo = null;
     };
@@ -69454,12 +70473,16 @@ var PreLoadScene = /** @class */ (function (_super) {
         var resAry = [
             // {url:"res/atlas/comp.atlas",type:Loader.ATLAS,size:45,priority:2},
             { url: "res/outside/sound/effect/fit.wav", type: Loader.SOUND, size: 20, priority: 1 },
-            { url: "res/outside/sound/bg/zhou.mp3", type: Loader.SOUND, size: 10, priority: 1 },
+            { url: "res/outside/sound/bg/jzd.mp3", type: Loader.SOUND, size: 10, priority: 1 },
+            { url: "res/outside/sound/bg/zzd.mp3", type: Loader.SOUND, size: 10, priority: 1 },
             { url: "res/atlas/worldmap.atlas", type: Loader.ATLAS, size: 10, priority: 1 },
             { url: "res/atlas/main.atlas", type: Loader.ATLAS, size: 10, priority: 1 },
             { url: "unpack/login/logo.png", type: Loader.IMAGE },
             { url: "unpack/main/main.jpg", type: Loader.IMAGE },
             { url: "unpack/main/role.jpg", type: Loader.IMAGE },
+            { url: "unpack/comp/dibanbg.png", type: Loader.IMAGE },
+            { url: "unpack/comp/line.png", type: Loader.IMAGE },
+            { url: "unpack/comp/mainbg.png", type: Loader.IMAGE },
             // {url:"unpack/worldmap/p1.png",type:Loader.IMAGE},
             // {url:"unpack/worldmap/p2.png",type:Loader.IMAGE},
             // {url:"unpack/worldmap/p3.png",type:Loader.IMAGE},
@@ -69524,9 +70547,7 @@ var Game = /** @class */ (function () {
         DebugViewUtil.init();
         LG.parse(Laya.loader.getRes("res/config/language.txt"));
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
-        // var ani:FrameAnimation = new FrameAnimation(Laya.stage,0,0);
-        // ani.animation.pivotX = 150;
-        // ani.animation.pivotY = 150;
+        // var ani:FrameAnimation = new FrameAnimation(Laya.stage,GameConfig.STAGE_WIDTH/2,GameConfig.STAGE_HEIGHT/2,true);
         // ani.playAni("SK_0101",true);
     };
     /**资源加载进度 */

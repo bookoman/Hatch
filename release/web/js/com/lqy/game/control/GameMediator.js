@@ -34,7 +34,7 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnLineup.on(Laya.Event.CLICK, this, this.onBtnLineup);
         this.view.btnBattle.on(Laya.Event.CLICK, this, this.onBtnBattle);
         this.view.btnHero.on(Laya.Event.CLICK, this, this.onBtnHero);
-        this.view.btnEquip.on(Laya.Event.CLICK, this, this.onBtnEquip);
+        this.view.btnBag.on(Laya.Event.CLICK, this, this.onBtnBag);
         EventManager.ins.addEvent(EventManager.CHOICE_CHALLEGEN_GATE, this, this.choiceChanllegeGate);
         WebSocketManager.ins.registerHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, new GetHeroInfosHanlder(this, this.getHeroInfosHandler));
         WebSocketManager.ins.registerHandler(Protocol.GATE, Protocol.GATE_INFO, new GetGateInfoHandler(this, this.gateInfoHanlder));
@@ -49,7 +49,7 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnLineup.off(Laya.Event.CLICK, this, this.onBtnLineup);
         this.view.btnBattle.off(Laya.Event.CLICK, this, this.onBtnBattle);
         this.view.btnHero.off(Laya.Event.CLICK, this, this.onBtnHero);
-        this.view.btnEquip.off(Laya.Event.CLICK, this, this.onBtnEquip);
+        this.view.btnBag.off(Laya.Event.CLICK, this, this.onBtnBag);
         EventManager.ins.removeEvent(EventManager.CHOICE_CHALLEGEN_GATE, this.choiceChanllegeGate);
         WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, this);
         WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_INFO, this);
@@ -155,7 +155,7 @@ var GameMediator = /** @class */ (function (_super) {
         GameDataManager.showModuleViewInd = GameButtomTabIndex.HERO;
     };
     /**战斗系统*/
-    GameMediator.prototype.onBtnEquip = function (e) {
+    GameMediator.prototype.onBtnBag = function (e) {
         if (GameDataManager.showModuleViewInd == GameButtomTabIndex.EQUIP) {
             return;
         }
@@ -163,7 +163,11 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
-        this.curMediator = new EquipMediator();
+        var resAry = [
+            { url: "unpack/bag/itemjiatu.png", type: Loader.IMAGE },
+            { url: "res/atlas/bag.atlas", type: Loader.ATLAS }
+        ];
+        this.curMediator = new BagMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.EQUIP;
     };
     /**挂机战斗*/

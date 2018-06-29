@@ -19,9 +19,7 @@ var Game = /** @class */ (function () {
         DebugViewUtil.init();
         LG.parse(Laya.loader.getRes("res/config/language.txt"));
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
-        // var ani:FrameAnimation = new FrameAnimation(Laya.stage,0,0);
-        // ani.animation.pivotX = 150;
-        // ani.animation.pivotY = 150;
+        // var ani:FrameAnimation = new FrameAnimation(Laya.stage,GameConfig.STAGE_WIDTH/2,GameConfig.STAGE_HEIGHT/2,true);
         // ani.playAni("SK_0101",true);
     };
     /**资源加载进度 */

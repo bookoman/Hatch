@@ -154,7 +154,9 @@ var BaseRole = /** @class */ (function (_super) {
         // this.aniHeight = bound.height + Math.abs(bound.y);
         // console.log(this.baseRoleVo.name,bound);
         //血条
-        this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
+        // this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
+        this.roleBloodBar = new RoleBloodBar();
+        this.roleBloodBar.visible = true;
         this.roleBloodBar.scaleX = 0.5;
         this.roleBloodBar.x = -60;
         this.roleBloodBar.y = -180;
@@ -186,6 +188,7 @@ var BaseRole = /** @class */ (function (_super) {
         this.aniPlay(RoleAniIndex.MOVE);
     };
     BaseRole.prototype.setVisible = function (bool) {
+        // Laya.timer.once(1000 / GameConfig.BATTLE_ADDSPEED_TIMES,this, this.setVis,[bool]);
         Laya.timer.once(1000, this, this.setVis, [bool]);
     };
     BaseRole.prototype.setVis = function (bool) {
@@ -204,10 +207,12 @@ var BaseRole = /** @class */ (function (_super) {
         this.skeletonAni = null;
         if (this.LblName) {
             this.LblName.removeSelf();
+            this.LblName = null;
         }
         if (this.roleBloodBar) {
             this.roleBloodBar.removeSelf();
-            ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR, this.roleBloodBar);
+            this.roleBloodBar = null;
+            // ObjectPoolUtil.stillObject(ObjectPoolUtil.ROLE_BLOOD_BAR,this.roleBloodBar);
         }
         this.baseRoleVo = null;
     };

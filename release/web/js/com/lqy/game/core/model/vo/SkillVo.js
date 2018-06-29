@@ -9,11 +9,15 @@ var SkillVo = /** @class */ (function () {
     /**初始化数据 */
     SkillVo.prototype.initData = function (skillKey) {
         this.key = skillKey;
-        var config = ConfigManager.ins.getHeroSkillSampleConfig(this.key);
-        if (config) {
-            this.name = config.name;
-            this.cd = config.skillCD;
-            this.modelId = config.modelId;
+        this.skillConfig = ConfigManager.ins.getHeroSkillSampleConfig(this.key);
+        if (this.skillConfig) {
+            this.name = this.skillConfig.name;
+            this.cd = this.skillConfig.skillCD;
+            this.modelId = this.skillConfig.modelId;
+            this.skillTargetType = this.skillConfig.skillTargetType;
+            this.skillMainEffect = this.skillConfig.skillMainEffect;
+            this.skillAssistantEffect = this.skillConfig.skillAssistantEffect;
+            this.skillContinued = this.skillConfig.skillContinued;
             return true;
         }
         return false;
@@ -31,8 +35,13 @@ var SkillVo = /** @class */ (function () {
                     this.isCanUse = true;
                 }
             }
-            // console.log(this.name + "cd时间："+this.calCD);
+            console.log(this.name + "cd时间：" + this.calCD);
         }
+    };
+    /**重置cd */
+    SkillVo.prototype.resetCD = function () {
+        this.isCanUse = false;
+        this.calCD = this.cd;
     };
     return SkillVo;
 }());

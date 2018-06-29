@@ -52,6 +52,10 @@ var BossBattleEngine = /** @class */ (function () {
     BossBattleEngine.prototype.attack = function () {
         var _this = this;
         this.bossBattleData.startAtt();
+        if (this.bossBattleData.curAttRoleVo == null) {
+            this.attCompleted();
+            return;
+        }
         //寻找攻击，防御显示对象BaseRole
         var tempAry = this.heroRoles.concat(this.enemyRoles);
         this.defRoles = [];
@@ -86,8 +90,14 @@ var BossBattleEngine = /** @class */ (function () {
             this.attRole.showFloatFont("血量+" + baseRoleVo.bossBattleRoleData.recoveryBlood);
         }
         if (baseRoleVo.bossBattleRoleData.addAtk > 0) {
-            console.log("加攻击局数...." + baseRoleVo.mainSkillContinuedVo.addAtk, baseRoleVo.assiSkillContinuedVo.addAtk, baseRoleVo.bossBattleRoleData.addAtk);
+            // console.log("加攻击局数...."+baseRoleVo.mainSkillContinuedVo.addAtk,baseRoleVo.assiSkillContinuedVo.addAtk,baseRoleVo.bossBattleRoleData.addAtk);
             this.attRole.showFloatFont("攻击力+" + baseRoleVo.bossBattleRoleData.addAtk);
+        }
+        if (baseRoleVo.isDeath) {
+            this.attRole.aniPlay(RoleAniIndex.DEATH, false);
+            this.attRole.setVisible(false);
+            this.attack();
+            return;
         }
         if (isNoBuff) {
             this.battleAtt();
@@ -150,14 +160,6 @@ var BossBattleEngine = /** @class */ (function () {
         }
         // var hurt:number = this.bossBattleData.calculationAttribute();
         defRoleVo.calculationAttribute(attRoleVo, this.bossBattleData.getRankAtk(attRoleVo.isEnemy));
-        if (defRoleVo.isDeath) {
-            defRole.aniPlay(RoleAniIndex.DEATH, false);
-            defRole.setVisible(false);
-        }
-        else {
-            if (defRole.baseRoleVo.isEnemy != this.attRole.baseRoleVo.isEnemy)
-                defRole.aniPlay(RoleAniIndex.INJURED, false);
-        }
         //本次伤害
         var bossBattleRoleData = defRoleVo.bossBattleRoleData;
         if (bossBattleRoleData.hurt > 0) {
@@ -166,13 +168,33 @@ var BossBattleEngine = /** @class */ (function () {
         }
         //+攻击力
         if (bossBattleRoleData.addAtk > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.addAtk, defRoleVo.assiSkillContinuedVo.addAtk, attRoleVo)) {
+            defRole.baseRoleVo.realAtk += bossBattleRoleData.addAtk;
             defRole.showFloatFont("攻击力+" + bossBattleRoleData.addAtk);
         }
         if (bossBattleRoleData.recoveryBlood > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.recoveryBlood, defRoleVo.assiSkillContinuedVo.recoveryBlood, attRoleVo)) {
+            defRole.baseRoleVo.battleHP += bossBattleRoleData.recoveryBlood;
+            //战斗血量
+            if (defRole.baseRoleVo.battleHP > defRole.baseRoleVo.hp)
+                defRole.baseRoleVo.battleHP = defRole.baseRoleVo.hp;
+            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
             defRole.showFloatFont("血量+" + bossBattleRoleData.recoveryBlood);
         }
         if (bossBattleRoleData.bleeding > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.bleeding, defRoleVo.assiSkillContinuedVo.bleeding, attRoleVo)) {
-            defRole.showFloatFont("流血+" + bossBattleRoleData.bleeding);
+            defRole.baseRoleVo.battleHP -= bossBattleRoleData.bleeding;
+            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+            defRole.showFloatFont("流血-" + bossBattleRoleData.bleeding);
+        }
+        // if(defRoleVo.name == "美颌龙")
+        // {
+        //     console.log(".........",defRoleVo.battleHP,bossBattleRoleData.bleeding);
+        // }
+        if (defRoleVo.isDeath) {
+            defRole.aniPlay(RoleAniIndex.DEATH, false);
+            defRole.setVisible(false);
+        }
+        else {
+            if (defRole.baseRoleVo.isEnemy != this.attRole.baseRoleVo.isEnemy)
+                defRole.aniPlay(RoleAniIndex.INJURED, false);
         }
     };
     /**
@@ -198,7 +220,7 @@ var BossBattleEngine = /** @class */ (function () {
     BossBattleEngine.prototype.attCompleted = function () {
         this.bossBattleData.checkBattleEnd();
         if (this.bossBattleData.isEnd) {
-            this.endBattle();
+            Laya.timer.once(1000, this, this.endBattle);
         }
         else {
             this.attack();

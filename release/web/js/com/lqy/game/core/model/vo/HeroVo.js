@@ -35,9 +35,23 @@ var HeroVo = /** @class */ (function (_super) {
         this.skillVos = [];
         var skillVo = new SkillVo();
         var bool = skillVo.initData(config.skillKey);
+        //流血buff测试
+        if (this.name == "美颌龙") {
+            //流血技能
+            bool = skillVo.initData("SK_0096");
+            //单个加血技能
+            // bool = skillVo.initData("SK_0061");
+            //提升攻击力技能
+            // bool = skillVo.initData("SK_0012");
+            //嘲讽
+            // bool = skillVo.initData("SK_0241");
+            skillVo.cd = 3;
+            skillVo.skillContinued = 2;
+        }
         if (bool) {
             this.skillVos.push(skillVo);
         }
+        _super.prototype.initBaseData.call(this);
     };
     return HeroVo;
 }(BaseRoleVo));

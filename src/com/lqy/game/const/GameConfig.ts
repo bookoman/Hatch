@@ -41,7 +41,7 @@ class GameConfig{
     /**战斗攻击需要时间(s) */
     public static BATTLE_ATT_TIME:number = 0.3;
     /**战斗加速倍数*/
-    public static BATTLE_ADDSPEED_TIMES:number = 2;
+    public static BATTLE_ADDSPEED_TIMES:number = 1;
 
     /**调试视图开关 */
     public static DEBUG_VIEW_SWITCH:boolean = false;

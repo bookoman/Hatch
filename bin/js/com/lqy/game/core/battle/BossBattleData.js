@@ -55,6 +55,9 @@ var BossBattleData = /** @class */ (function () {
         else if (this.curAttCamp == BattleAttCampType.ENEMY) {
             this.curAttRoleVo = this.getAttRoleVo(this.attEnemyVos);
         }
+        if (this.curAttRoleVo == null) {
+            return;
+        }
         this.curDefRoleVos = [];
         /**得到技能 */
         var skillVo = this.curAttRoleVo.getCanUserSkill();
@@ -114,7 +117,8 @@ var BossBattleData = /** @class */ (function () {
      */
     BossBattleData.prototype.checkBattleEnd = function () {
         var _this = this;
-        this.curAttRoleVo.isAtted = true;
+        if (this.curAttRoleVo)
+            this.curAttRoleVo.isAtted = true;
         //检测战斗结束，玩家英雄阵营没有活的对象战斗失败，反之战斗胜利
         //英雄检测
         this.isEnd = true;
@@ -128,8 +132,8 @@ var BossBattleData = /** @class */ (function () {
                     isChangeAttStatus = false;
                 }
             }
-            else
-                console.log("我方：", roleVo.name, roleVo.battleHP);
+            // else
+            // console.log("我方：" ,roleVo.name,roleVo.battleHP);
         });
         if (this.isEnd) {
             this.isWin = false;
@@ -141,7 +145,6 @@ var BossBattleData = /** @class */ (function () {
                 roleVo.isAtted = false;
             });
         }
-        console.log("............");
         //敌人检测
         isChangeAttStatus = true;
         this.isEnd = true;
@@ -153,8 +156,8 @@ var BossBattleData = /** @class */ (function () {
                     isChangeAttStatus = false;
                 }
             }
-            else
-                console.log("敌方：", roleVo.name, roleVo.battleHP);
+            // else
+            // console.log("敌方：" ,roleVo.name,roleVo.battleHP);
         });
         if (this.isEnd) {
             this.isWin = true;
@@ -190,10 +193,10 @@ var BossBattleData = /** @class */ (function () {
         for (var i = 0; i < baseRoleVos.length; i++) {
             baseRoleVo = baseRoleVos[i];
             if (!baseRoleVo.isDeath && !baseRoleVo.isAtted) {
-                break;
+                return baseRoleVo;
             }
         }
-        return baseRoleVo;
+        return null;
     };
     /**
      * 寻找攻击目标

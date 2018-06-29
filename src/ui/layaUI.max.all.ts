@@ -1,6 +1,26 @@
 
 import View=laya.ui.View;
 import Dialog=laya.ui.Dialog;
+module ui.bag {
+    export class BagViewUI extends View {
+		public bagPanel:Laya.Panel;
+		public btnClose:Laya.Button;
+		public atkImage:Laya.Image;
+		public defImage:Laya.Image;
+		public bagTitleImage:Laya.Image;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"skin":"unpack/comp/mainbg.png"}},{"type":"Panel","props":{"y":204,"x":755,"width":734,"var":"bagPanel","height":953},"child":[{"type":"Image","props":{"skin":"unpack/comp/dibanbg.png"}},{"type":"Button","props":{"y":-9,"x":673,"visible":false,"var":"btnClose","stateNum":1,"skin":"comp/close.png"}},{"type":"Image","props":{"y":0,"x":10,"var":"atkImage","skin":"bag/xiaohao.png"}},{"type":"Image","props":{"y":121,"x":9,"var":"defImage","skin":"bag/zhuangbei.png"}},{"type":"Image","props":{"y":58,"x":100,"skin":"unpack/comp/line.png"}},{"type":"Image","props":{"y":885,"x":98,"skin":"unpack/comp/line.png"}},{"type":"Image","props":{"y":87,"x":115,"skin":"unpack/bag/itemjiatu.png"}},{"type":"Image","props":{"y":234,"x":9,"skin":"bag/zhangwen.png"}}]},{"type":"Image","props":{"y":35,"x":-224,"var":"bagTitleImage","skin":"bag/bagtitle.png"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.bag.BagViewUI.uiView);
+
+        }
+
+    }
+}
+
 module ui {
     export class BattleReportViewUI extends View {
 		public texaArea:Laya.TextArea;
@@ -124,23 +144,68 @@ module ui {
     }
 }
 
+module ui.farm {
+    export class FarmViewUI extends View {
+		public farmPanel:Laya.Panel;
+		public bg:Laya.Image;
+		public zhiwuPanel:Laya.Panel;
+		public zhongzhiList:Laya.List;
+		public zhongzhiBg:Laya.Image;
+		public ZhongZhiIcon:Laya.Image;
+		public zhongzhiName:Laya.Label;
+		public shengyuCount:Laya.Label;
+		public wumai:Laya.Image;
+		public btnClose:Laya.Button;
+
+        public static  uiView:any ={"type":"View","props":{"y":0,"x":0,"width":750,"height":1334},"child":[{"type":"Panel","props":{"y":0,"x":0,"width":750,"var":"farmPanel","height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"var":"bg","skin":"unpack/farm/bg.png"}},{"type":"Image","props":{"y":1197,"x":29,"skin":"unpack/farm/huawen.png"}},{"type":"Panel","props":{"y":159,"x":-32,"width":1383,"var":"zhiwuPanel","height":671},"child":[{"type":"Image","props":{"y":12,"x":-265,"skin":"unpack/farm/caijimap.png"}}]},{"type":"Image","props":{"y":37,"x":-1,"skin":"farm/tip-zhongzi.png"}},{"type":"Panel","props":{"y":827,"x":24,"width":703,"height":354},"child":[{"type":"Image","props":{"skin":"unpack/farm/bgzhongzhi.png"}},{"type":"Image","props":{"skin":"farm/tip-zhongzhi.png"}},{"type":"List","props":{"width":491,"var":"zhongzhiList","spaceY":10,"spaceX":10,"selectEnable":false,"repeatY":1,"repeatX":3,"renderType":"render","name":"zhongzhiList","height":210,"centerY":0,"centerX":0},"child":[{"type":"VScrollBar","props":{"y":10,"x":-48,"width":1,"name":"scrollBar","height":338}},{"type":"VBox","props":{"x":2,"width":152,"top":10,"space":15,"renderType":"render","bottom":5,"align":"center"},"child":[{"type":"Panel","props":{"y":-51,"x":-28,"width":104,"height":102,"anchorY":0,"anchorX":0},"child":[{"type":"Image","props":{"y":51,"x":52,"width":104,"var":"zhongzhiBg","skin":"farm/frame.png","name":"zhongzhiBg","height":102,"anchorY":0.5,"anchorX":0.5}},{"type":"Image","props":{"y":53,"x":50,"var":"ZhongZhiIcon","skin":"farm/bigmogu.png","name":"ZhongZhiIcon","anchorY":0.5,"anchorX":0.5}}]},{"type":"Label","props":{"y":59,"x":-29,"var":"zhongzhiName","text":"毒蘑菇花花","name":"zhongzhiName","fontSize":20,"color":"#f2d778","bold":true,"align":"center"}},{"type":"Label","props":{"y":59,"x":-53,"text":"已使用：（2/3）","name":"zhongzhiName","fontSize":20,"color":"#563610","bold":true,"align":"center"}}]}]}]},{"type":"Panel","props":{"y":783,"x":428,"width":290,"height":38},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"farm/bgnumber.png"}},{"type":"Button","props":{"y":1,"x":255,"stateNum":1,"skin":"farm/jia.png"}},{"type":"Label","props":{"y":6,"x":187,"var":"shengyuCount","text":"3","name":"shengyuCount","fontSize":25,"color":"#f6ed94","bold":true}},{"type":"Image","props":{"y":2,"x":8,"skin":"farm/chishu.png"}}]},{"type":"Image","props":{"y":-298,"x":-1420,"width":2182,"var":"wumai","skin":"worldmap/wumai.png","height":823}}]},{"type":"Button","props":{"y":41,"x":649,"var":"btnClose","stateNum":1,"skin":"comp/close.png"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.farm.FarmViewUI.uiView);
+
+        }
+
+    }
+}
+
 module ui {
     export class GameViewUI extends View {
 		public btnOpen:Laya.Button;
 		public btnMap:Laya.Button;
 		public btnHero:Laya.Button;
 		public btnLineup:Laya.Button;
-		public btnEquip:Laya.Button;
+		public btnBag:Laya.Button;
 		public btnBattle:Laya.Button;
 		public viewAniScale:ui.test.TestAniScaleViewUI;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"mouseThrough":true,"height":1334},"child":[{"type":"Button","props":{"y":17,"x":706,"width":34,"var":"btnOpen","stateNum":1,"skin":"main/laba.png","sizeGrid":"-10,0,-6,-14","labelStrokeColor":"#f88508","labelSize":32,"height":31,"alpha":0.6}},{"type":"Image","props":{"y":1215,"x":0,"width":750,"skin":"unpack/main/diban.png","height":119}},{"type":"Image","props":{"y":1320,"x":0,"width":750,"skin":"main/img_blood.png","height":14}},{"type":"Tab","props":{"y":1214,"x":2,"width":746,"height":124},"child":[{"type":"Button","props":{"y":-7,"x":-1,"width":145,"var":"btnMap","stateNum":1,"skin":"main/huic.png","labelSize":40,"height":102}},{"type":"Button","props":{"y":0,"x":435,"width":148,"var":"btnHero","stateNum":1,"skin":"main/juese.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":145,"width":148,"var":"btnLineup","stateNum":1,"skin":"main/tansuo.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":590,"width":148,"var":"btnEquip","stateNum":1,"skin":"main/bag.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":0,"x":292,"width":148,"var":"btnBattle","stateNum":1,"skin":"main/zuoz.png","labelSize":40,"height":100}}]},{"type":"TestAniScaleView","props":{"y":1,"x":253,"visible":false,"var":"viewAniScale","runtime":"ui.test.TestAniScaleViewUI"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"mouseThrough":true,"height":1334},"child":[{"type":"Button","props":{"y":17,"x":706,"width":34,"var":"btnOpen","stateNum":1,"skin":"main/laba.png","sizeGrid":"-10,0,-6,-14","labelStrokeColor":"#f88508","labelSize":32,"height":31,"alpha":0.6}},{"type":"Image","props":{"y":1215,"x":0,"width":750,"skin":"unpack/main/diban.png","height":119}},{"type":"Image","props":{"y":1320,"x":0,"width":750,"skin":"main/img_blood.png","height":14}},{"type":"Tab","props":{"y":1214,"x":2,"width":746,"height":124},"child":[{"type":"Button","props":{"y":-7,"x":-1,"width":145,"var":"btnMap","stateNum":1,"skin":"main/huic.png","labelSize":40,"height":102}},{"type":"Button","props":{"y":0,"x":435,"width":148,"var":"btnHero","stateNum":1,"skin":"main/juese.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":145,"width":148,"var":"btnLineup","stateNum":1,"skin":"main/tansuo.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":590,"width":148,"var":"btnBag","stateNum":1,"skin":"main/bag.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":0,"x":292,"width":148,"var":"btnBattle","stateNum":1,"skin":"main/zuoz.png","labelSize":40,"height":100}}]},{"type":"TestAniScaleView","props":{"y":1,"x":253,"visible":false,"var":"viewAniScale","runtime":"ui.test.TestAniScaleViewUI"}}]};
         constructor(){ super()}
         createChildren():void {
         			View.regComponent("ui.test.TestAniScaleViewUI",ui.test.TestAniScaleViewUI);
 
             super.createChildren();
             this.createView(ui.GameViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.graphtag {
+    export class GraphtagViewUI extends View {
+		public graphtagPanel:Laya.Panel;
+		public btnClose:Laya.Button;
+		public atkImage:Laya.Image;
+		public defImage:Laya.Image;
+		public graptitleImage:Laya.Image;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"skin":"unpack/comp/mainbg.png"}},{"type":"Panel","props":{"y":204,"x":755,"width":734,"var":"graphtagPanel","height":953},"child":[{"type":"Image","props":{"skin":"unpack/comp/dibanbg.png"}},{"type":"Button","props":{"y":-9,"x":676,"var":"btnClose","stateNum":1,"skin":"comp/close.png"}},{"type":"Image","props":{"y":0,"x":10,"var":"atkImage","skin":"graphtag/atk.png"}},{"type":"Image","props":{"y":121,"x":9,"var":"defImage","skin":"graphtag/checkDef.png"}},{"type":"Image","props":{"y":58,"x":100,"skin":"unpack/comp/line.png"}},{"type":"Image","props":{"y":885,"x":98,"skin":"unpack/comp/line.png"}},{"type":"Image","props":{"y":87,"x":85,"skin":"unpack/graphtag/grahtagjiatu.png"}}]},{"type":"Image","props":{"y":35,"x":-227,"var":"graptitleImage","skin":"graphtag/graptitle.png"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.graphtag.GraphtagViewUI.uiView);
 
         }
 
@@ -350,13 +415,33 @@ module ui.map {
 		public yun2:Laya.Image;
 		public yun3:Laya.Image;
 		public yun4:Laya.Image;
+		public rightFunctionView:ui.map.RightFunctionViewUI;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Panel","props":{"y":59,"x":-348,"width":1699,"var":"panelBlock","scaleY":0.9,"scaleX":0.8,"name":"panelBlock","height":1351},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/worldmap/bg.png"}},{"type":"Image","props":{"y":-13,"x":537,"var":"imgBlock3","skin":"unpack/worldmap/p7.png"},"child":[{"type":"Poly","props":{"y":13,"x":54,"renderType":"hit","points":"-13,479,-35,136,41,-5,344,20,396,223,754,227,689,503,265,767","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":194,"x":1222,"var":"imgBlock6","skin":"unpack/worldmap/p2.png"},"child":[{"type":"Poly","props":{"y":11,"x":-197,"renderType":"hit","points":"368,572,212,486,228,186,346,68,513,33,668,84,667,697","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":595,"x":683,"var":"imgBlock4","skin":"unpack/worldmap/p1.png"},"child":[{"type":"Poly","props":{"y":110,"x":164,"renderType":"hit","points":"6,328,-178,245,-110,121,178,-43,375,-87,555,179,277,362","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":891,"x":1210,"var":"imgBlock5","skin":"unpack/worldmap/p3.png"},"child":[{"type":"Poly","props":{"y":41,"x":79,"renderType":"hit","points":"7,382,-76,238,-18,11,184,-37,409,-24,399,265,326,384","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":102,"x":28,"var":"imgBlock2","skin":"unpack/worldmap/p5.png"},"child":[{"type":"Poly","props":{"y":61,"x":31,"renderType":"hit","points":"533,566,65,301,-39,58,106,-37,328,-35,450,51,566,447","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":531,"x":136,"var":"imgBlock1","skin":"unpack/worldmap/p4.png"},"child":[{"type":"Poly","props":{"y":37,"x":46,"renderType":"hit","points":"61,304,-41,204,-6.5,17,171.5,20.5,242,60.5,465,283,342,371","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":893,"x":67,"var":"imgBlock0","skin":"unpack/worldmap/p6.png"},"child":[{"type":"Poly","props":{"y":50,"x":73,"renderType":"hit","points":"-71,424,-28,289,-39,32,184,-37,385.5,-3.5,622,60,675,421","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]}]},{"type":"Image","props":{"y":446,"x":-775,"width":3078,"var":"wumaiImage","skin":"worldmap/wumai.png","name":"wumaiImage","height":1204,"anchorY":0.5,"anchorX":0.5}},{"type":"Image","props":{"y":-263,"x":-370,"width":1623,"var":"yun1","skin":"unpack/worldmap/yun1.png","height":959}},{"type":"Image","props":{"y":805,"x":-1009,"width":1597,"var":"yun2","skin":"unpack/worldmap/yun2.png","height":711}},{"type":"Image","props":{"y":180,"x":-1068,"width":1599,"var":"yun3","skin":"unpack/worldmap/yun3.png","height":1027}},{"type":"Image","props":{"y":711,"x":13,"width":1032,"var":"yun4","skin":"unpack/worldmap/yun4.png","height":824}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Panel","props":{"y":59,"x":-348,"width":1699,"var":"panelBlock","scaleY":0.9,"scaleX":0.8,"name":"panelBlock","height":1351},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/worldmap/bg.png"}},{"type":"Image","props":{"y":-13,"x":537,"var":"imgBlock3","skin":"unpack/worldmap/p7.png"},"child":[{"type":"Poly","props":{"y":13,"x":54,"renderType":"hit","points":"-13,479,-35,136,41,-5,344,20,396,223,754,227,689,503,265,767","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":194,"x":1222,"var":"imgBlock6","skin":"unpack/worldmap/p2.png"},"child":[{"type":"Poly","props":{"y":11,"x":-197,"renderType":"hit","points":"368,572,212,486,228,186,346,68,513,33,668,84,667,697","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":595,"x":683,"var":"imgBlock4","skin":"unpack/worldmap/p1.png"},"child":[{"type":"Poly","props":{"y":110,"x":164,"renderType":"hit","points":"6,328,-178,245,-110,121,178,-43,375,-87,555,179,277,362","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":891,"x":1210,"var":"imgBlock5","skin":"unpack/worldmap/p3.png"},"child":[{"type":"Poly","props":{"y":41,"x":79,"renderType":"hit","points":"7,382,-76,238,-18,11,184,-37,409,-24,399,265,326,384","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":102,"x":28,"var":"imgBlock2","skin":"unpack/worldmap/p5.png"},"child":[{"type":"Poly","props":{"y":61,"x":31,"renderType":"hit","points":"533,566,65,301,-39,58,106,-37,328,-35,450,51,566,447","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":531,"x":136,"var":"imgBlock1","skin":"unpack/worldmap/p4.png"},"child":[{"type":"Poly","props":{"y":37,"x":46,"renderType":"hit","points":"61,304,-41,204,-6.5,17,171.5,20.5,242,60.5,465,283,342,371","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":893,"x":67,"var":"imgBlock0","skin":"unpack/worldmap/p6.png"},"child":[{"type":"Poly","props":{"y":50,"x":73,"renderType":"hit","points":"-71,424,-28,289,-39,32,184,-37,385.5,-3.5,622,60,675,421","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]}]},{"type":"Image","props":{"y":446,"x":-775,"width":3078,"var":"wumaiImage","skin":"worldmap/wumai.png","name":"wumaiImage","height":1204,"anchorY":0.5,"anchorX":0.5}},{"type":"Image","props":{"y":-263,"x":-370,"width":1623,"var":"yun1","skin":"unpack/worldmap/yun1.png","height":959}},{"type":"Image","props":{"y":805,"x":-1009,"width":1597,"var":"yun2","skin":"unpack/worldmap/yun2.png","height":711}},{"type":"Image","props":{"y":180,"x":-1068,"width":1599,"var":"yun3","skin":"unpack/worldmap/yun3.png","height":1027}},{"type":"Image","props":{"y":711,"x":13,"width":1032,"var":"yun4","skin":"unpack/worldmap/yun4.png","height":824}},{"type":"RightFunctionView","props":{"y":511,"x":750,"var":"rightFunctionView","runtime":"ui.map.RightFunctionViewUI"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        			View.regComponent("ui.map.RightFunctionViewUI",ui.map.RightFunctionViewUI);
+
+            super.createChildren();
+            this.createView(ui.map.MapWorldViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.map {
+    export class RightFunctionViewUI extends View {
+		public btnGraphtag:Laya.Button;
+		public btnFarm:Laya.Button;
+		public btnOpen:Laya.Button;
+
+        public static  uiView:any ={"type":"View","props":{},"child":[{"type":"Button","props":{"y":1,"x":0,"width":71,"var":"btnGraphtag","skin":"comp/button.png","labelSize":30,"label":"图鉴","height":63}},{"type":"Button","props":{"y":69,"x":0,"width":71,"var":"btnFarm","skin":"comp/button.png","labelSize":30,"label":"农场","height":63}},{"type":"Button","props":{"y":139,"x":1,"width":71,"var":"btnOpen","skin":"comp/button.png","labelSize":30,"label":"+","height":63}}]};
         constructor(){ super()}
         createChildren():void {
         
             super.createChildren();
-            this.createView(ui.map.MapWorldViewUI.uiView);
+            this.createView(ui.map.RightFunctionViewUI.uiView);
 
         }
 
