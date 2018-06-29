@@ -11,7 +11,7 @@ var LoopBattleData = /** @class */ (function () {
         this.attHeroVos.forEach(function (heroVo) {
             heroVo.battleHP = heroVo.hp;
             heroVo.battleDieAttTimes = heroVo.dieAttTimes;
-            // heroVo.resetSkillCD();
+            heroVo.resetSkillCD();
             heroVo.isDeath = false;
             heroVo.isAtted = false;
             heroVo.attEnemyVos = [];
@@ -19,7 +19,7 @@ var LoopBattleData = /** @class */ (function () {
         this.attEnemyVos.forEach(function (masterNpcVo) {
             masterNpcVo.battleHP = masterNpcVo.hp;
             masterNpcVo.battleDieAttTimes = masterNpcVo.dieAttTimes;
-            // masterNpcVo.resetSkillCD();
+            masterNpcVo.resetSkillCD();
             masterNpcVo.isDeath = false;
             masterNpcVo.isAtted = false;
             masterNpcVo.attEnemyVos = [];

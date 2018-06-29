@@ -17,7 +17,6 @@ var GameMediator = /** @class */ (function (_super) {
         var _this = _super.call(this, assetsUrl, view) || this;
         _this.curMediator = null;
         _this.mapBattleMediator = null;
-        _this.showViewIndex = -1;
         return _this;
     }
     GameMediator.prototype.initView = function () {
@@ -93,7 +92,7 @@ var GameMediator = /** @class */ (function (_super) {
     };
     /**地图系统 */
     GameMediator.prototype.onBtnMap = function (e) {
-        if (this.showViewIndex == GameButtomTabIndex.MAP_BATTLE) {
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.MAP_BATTLE) {
             return;
         }
         if (this.curMediator) {
@@ -119,7 +118,7 @@ var GameMediator = /** @class */ (function (_super) {
             { url: "res/atlas/worldmap.atlas", type: Loader.ATLAS }
         ];
         this.curMediator = new MapWorldMediator(resAry);
-        this.showViewIndex = GameButtomTabIndex.MAP_BATTLE;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.MAP_BATTLE;
     };
     /**选择挑战关卡 */
     GameMediator.prototype.choiceChanllegeGate = function () {
@@ -127,7 +126,7 @@ var GameMediator = /** @class */ (function (_super) {
     };
     /**阵型系统 */
     GameMediator.prototype.onBtnLineup = function (e) {
-        if (this.showViewIndex == GameButtomTabIndex.LINEUP) {
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.LINEUP) {
             return;
         }
         if (this.curMediator) {
@@ -138,11 +137,11 @@ var GameMediator = /** @class */ (function (_super) {
             { url: "res/atlas/lineup.atlas", type: Loader.ATLAS }
         ];
         this.curMediator = new LineupMediator(resAry);
-        this.showViewIndex = GameButtomTabIndex.LINEUP;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.LINEUP;
     };
     /**英雄系统*/
     GameMediator.prototype.onBtnHero = function (e) {
-        if (this.showViewIndex == GameButtomTabIndex.HERO) {
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.HERO) {
             return;
         }
         if (this.curMediator) {
@@ -153,11 +152,11 @@ var GameMediator = /** @class */ (function (_super) {
             { url: "res/atlas/hero.atlas", type: Loader.ATLAS }
         ];
         this.curMediator = new HeroMediator(resAry);
-        this.showViewIndex = GameButtomTabIndex.HERO;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.HERO;
     };
     /**战斗系统*/
     GameMediator.prototype.onBtnEquip = function (e) {
-        if (this.showViewIndex == GameButtomTabIndex.EQUIP) {
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.EQUIP) {
             return;
         }
         if (this.curMediator) {
@@ -165,11 +164,11 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator = null;
         }
         this.curMediator = new EquipMediator();
-        this.showViewIndex = GameButtomTabIndex.EQUIP;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.EQUIP;
     };
     /**挂机战斗*/
     GameMediator.prototype.onBtnBattle = function (e) {
-        if (this.showViewIndex == GameButtomTabIndex.BATTLE) {
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE) {
             return;
         }
         if (GameDataManager.ins.hangGateKey == null) {
@@ -184,7 +183,7 @@ var GameMediator = /** @class */ (function (_super) {
             this.mapBattleMediator = new MapBattleMediator();
             this.mapBattleMediator.enterMapBattle();
         }
-        this.showViewIndex = GameButtomTabIndex.BATTLE;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.BATTLE;
     };
     GameMediator.prototype.dispose = function () {
     };

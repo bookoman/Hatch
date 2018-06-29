@@ -12,6 +12,8 @@ class LoginMediator extends BaseMediator{
         LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,true,false,true);
 
         super.initView();
+
+        // TankUtil.stageShake(this.view,10);
     }
     protected addEvents():void
     {

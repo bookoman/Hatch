@@ -32,7 +32,7 @@
                     "keyframes":{
                         "y":[
                             {
-                                "value":-250,
+                                "value":-410,
                                 "tweenMethod":"linearNone",
                                 "tween":true,
                                 "target":2,
@@ -40,12 +40,20 @@
                                 "index":0
                             },
                             {
-                                "value":-250,
+                                "value":-410,
                                 "tweenMethod":"linearNone",
                                 "tween":true,
                                 "target":2,
                                 "key":"y",
                                 "index":1
+                            },
+                            {
+                                "value":-410,
+                                "tweenMethod":"linearNone",
+                                "tween":true,
+                                "target":2,
+                                "key":"y",
+                                "index":6
                             }],
                         "x":[
                             {
@@ -193,14 +201,6 @@
                                 "target":2,
                                 "key":"skin",
                                 "index":16
-                            },
-                            {
-                                "value":"ani/common_buff/common_buff/buff_16.png",
-                                "tweenMethod":"linearNone",
-                                "tween":false,
-                                "target":2,
-                                "key":"skin",
-                                "index":17
                             }],
                         "alpha":[
                             {

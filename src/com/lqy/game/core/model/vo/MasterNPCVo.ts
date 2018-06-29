@@ -22,6 +22,15 @@ class MasterNPCVo extends BaseRoleVo{
         this.atk = config.atk;
         this.speed = config.speed;
         this.level = 1;
+
+        /**技能数据 */
+        this.skillVos = [];
+        var skillVo:SkillVo = new SkillVo();
+        var bool:boolean = skillVo.initData(config.skillKeys);
+        if(bool){
+            this.skillVos.push(skillVo);
+        }
+
     }
 
     

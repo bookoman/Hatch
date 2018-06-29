@@ -9,7 +9,7 @@ class LoopBattleData{
     public isWin:boolean;
     public isEnd:boolean;
     constructor(){
-
+        
     }
     public initData():void
     {
@@ -18,7 +18,7 @@ class LoopBattleData{
         this.attHeroVos.forEach(heroVo => {
             heroVo.battleHP = heroVo.hp;
             heroVo.battleDieAttTimes = heroVo.dieAttTimes;
-            // heroVo.resetSkillCD();
+            heroVo.resetSkillCD();
             heroVo.isDeath = false;
             heroVo.isAtted = false;
             heroVo.attEnemyVos = [];
@@ -26,7 +26,7 @@ class LoopBattleData{
         this.attEnemyVos.forEach(masterNpcVo => {
             masterNpcVo.battleHP = masterNpcVo.hp;
             masterNpcVo.battleDieAttTimes = masterNpcVo.dieAttTimes;
-            // masterNpcVo.resetSkillCD();
+            masterNpcVo.resetSkillCD();
             masterNpcVo.isDeath = false;
             masterNpcVo.isAtted = false;
             masterNpcVo.attEnemyVos = [];

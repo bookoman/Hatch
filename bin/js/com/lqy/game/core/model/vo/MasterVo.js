@@ -35,6 +35,14 @@ var MasterVo = /** @class */ (function (_super) {
         this.level = 0;
         this.upAtk = 0;
         this.updef = 0;
+        /**技能数据 */
+        this.skillVos = [];
+        var skillVo = new SkillVo();
+        var bool = skillVo.initData(config.skillKeys);
+        if (bool) {
+            this.skillVos.push(skillVo);
+        }
+        _super.prototype.initBaseData.call(this);
     };
     return MasterVo;
 }(BaseRoleVo));

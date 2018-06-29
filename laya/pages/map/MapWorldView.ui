@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":34,
+    "selecteID":27,
     "props":{"width":750,"sceneColor":"#000000","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -226,7 +226,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":446,"x":-775,"width":3078,"var":"wumaiImage","skin":"unpack/worldmap/wumai.png","name":"wumaiImage","height":1204,"anchorY":0.5,"anchorX":0.5},
+            "props":{"y":446,"x":-775,"width":3078,"var":"wumaiImage","skin":"worldmap/wumai.png","name":"wumaiImage","height":1204,"anchorY":0.5,"anchorX":0.5},
             "nodeParent":1,
             "label":"Image(wumaiImage)",
             "isDirectory":false,

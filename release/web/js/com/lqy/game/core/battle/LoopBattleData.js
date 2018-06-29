@@ -7,22 +7,22 @@ var LoopBattleData = /** @class */ (function () {
     }
     LoopBattleData.prototype.initData = function () {
         this.attHeroVos = this.getJoinBattleHeroVo();
-        this.attEnemyVos = GameDataManager.ins.enemyData.roleVoAry;
-        this.attHeroVos.forEach(function (roleVo) {
-            roleVo.battleHP = roleVo.hp;
-            roleVo.battleDieAttTimes = roleVo.dieAttTimes;
-            roleVo.resetSkillCD();
-            roleVo.isDeath = false;
-            roleVo.isAtted = false;
-            roleVo.attEnemyVos = [];
+        this.attEnemyVos = GameDataManager.ins.enemyData.masterNPCVos;
+        this.attHeroVos.forEach(function (heroVo) {
+            heroVo.battleHP = heroVo.hp;
+            heroVo.battleDieAttTimes = heroVo.dieAttTimes;
+            heroVo.resetSkillCD();
+            heroVo.isDeath = false;
+            heroVo.isAtted = false;
+            heroVo.attEnemyVos = [];
         });
-        this.attEnemyVos.forEach(function (roleVo) {
-            roleVo.battleHP = roleVo.hp;
-            roleVo.battleDieAttTimes = roleVo.dieAttTimes;
-            roleVo.resetSkillCD();
-            roleVo.isDeath = false;
-            roleVo.isAtted = false;
-            roleVo.attEnemyVos = [];
+        this.attEnemyVos.forEach(function (masterNpcVo) {
+            masterNpcVo.battleHP = masterNpcVo.hp;
+            masterNpcVo.battleDieAttTimes = masterNpcVo.dieAttTimes;
+            masterNpcVo.resetSkillCD();
+            masterNpcVo.isDeath = false;
+            masterNpcVo.isAtted = false;
+            masterNpcVo.attEnemyVos = [];
         });
         this.seekAttTarget(this.attHeroVos, this.attEnemyVos);
         this.seekAttTarget(this.attEnemyVos, this.attHeroVos);
@@ -31,8 +31,8 @@ var LoopBattleData = /** @class */ (function () {
     /**得到参战英雄RoleVo */
     LoopBattleData.prototype.getJoinBattleHeroVo = function () {
         var tempAry = new Array();
-        GameDataManager.ins.selfPlayerData.roleVoAry.forEach(function (roleVo) {
-            tempAry.push(roleVo);
+        GameDataManager.ins.selfPlayerData.upHeroVos.forEach(function (heroVo) {
+            tempAry.push(heroVo);
         });
         tempAry.sort(function (vo1, vo2) {
             return vo1.gridX > vo2.gridX ? -1 : 1;
@@ -90,7 +90,7 @@ var LoopBattleData = /** @class */ (function () {
         // this.checkBattleEnd();
         //攻击次数检测
         this.curBattleTurnVos.forEach(function (battleTurnVo) {
-            if (attRoleVo.id == battleTurnVo.attRoleVo.id && defRoleVo.id == battleTurnVo.defRoleVo.id) {
+            if (attRoleVo.roleId == battleTurnVo.attRoleVo.roleId && defRoleVo.roleId == battleTurnVo.defRoleVo.roleId) {
                 battleTurnVo.calculationAttribute();
             }
         });
@@ -163,23 +163,35 @@ var LoopBattleData = /** @class */ (function () {
      * @param defAry
      */
     LoopBattleData.prototype.seekAttTarget = function (attAry, defAry) {
-        var reduceAry = [];
-        var plusAry = [];
+        // var reduceAry:Array<BaseRoleVo> = [];
+        // var plusAry:Array<BaseRoleVo> = [];
+        var endAry;
         var attRoleVo;
         var defRoleVo;
         for (var i = 0; i < attAry.length; i++) {
             attRoleVo = attAry[i];
+            endAry = [];
+            endAry[0] = null;
             for (var j = 0; j < defAry.length; j++) {
                 defRoleVo = defAry[j];
                 var attInd = attRoleVo.gridY - defRoleVo.gridY;
-                if (attInd < 0) {
-                    reduceAry[Math.abs(attInd)] = defRoleVo;
+                if (attInd == 0) {
+                    endAry[0] = defRoleVo;
                 }
                 else {
-                    plusAry[attInd] = defRoleVo;
+                    endAry.push(defRoleVo);
                 }
+                // if(attInd < 0)
+                // {
+                //     reduceAry[Math.abs(attInd)] = defRoleVo;
+                // }
+                // else
+                // {
+                //     plusAry[attInd] = defRoleVo;   
+                // }
             }
-            attRoleVo.attEnemyVos = plusAry.concat(reduceAry);
+            // attRoleVo.attEnemyVos = plusAry.concat(reduceAry);
+            attRoleVo.attEnemyVos = endAry;
         }
     };
     /**
@@ -232,6 +244,7 @@ var BattleTurnVo = /** @class */ (function () {
         this.defRoleVo.battleDieAttTimes--;
         this.defRoleVo.isDeath = this.defRoleVo.battleDieAttTimes <= 0;
         this.defRoleVo.isAtted = true;
+        // console.log(this.defRoleVo.name ,this.defRoleVo.battleDieAttTimes);
     };
     return BattleTurnVo;
 }());

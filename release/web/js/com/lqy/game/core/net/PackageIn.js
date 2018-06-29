@@ -27,7 +27,7 @@ var PackageIn = /** @class */ (function (_super) {
         var len = this.getInt32();
         //包头
         this.module = this.getInt32();
-        var cmd = this.getInt32();
+        this.cmd = this.getInt32();
         var type = this.getByte();
         var format = this.getByte();
         //数据

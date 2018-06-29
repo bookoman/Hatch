@@ -11,6 +11,8 @@ class MasterVo extends BaseRoleVo{
     }
     public initBaseData(masKey?:string):void
     {
+        
+
         this.scale = 1;
         this.key = masKey ? masKey : this.masterKey;
         this.roleId = this.key + "_"+ this.lineupGrid;
@@ -32,6 +34,14 @@ class MasterVo extends BaseRoleVo{
         this.upAtk = 0;
         this.updef = 0;
         
+        /**技能数据 */
+        this.skillVos = [];
+        var skillVo:SkillVo = new SkillVo();
+        var bool:boolean = skillVo.initData(config.skillKeys);
+        if(bool){
+            this.skillVos.push(skillVo);
+        }
         
+        super.initBaseData();
     }
 }

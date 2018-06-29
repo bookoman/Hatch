@@ -16,12 +16,13 @@ var GameMediator = /** @class */ (function (_super) {
     function GameMediator(assetsUrl, view) {
         var _this = _super.call(this, assetsUrl, view) || this;
         _this.curMediator = null;
-        _this.showViewIndex = -1;
+        _this.mapBattleMediator = null;
         return _this;
     }
     GameMediator.prototype.initView = function () {
+        ClientSender.getHeroInfoReq(1);
         ObjectPoolUtil.init();
-        GameDataManager.ins.initData();
+        // GameDataManager.ins.initData();
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.TOP_LAYER, false, false, true);
         _super.prototype.initView.call(this);
@@ -31,9 +32,13 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnOpen.on(Laya.Event.CLICK, this, this.onBtnOpen);
         this.view.btnMap.on(Laya.Event.CLICK, this, this.onBtnMap);
         this.view.btnLineup.on(Laya.Event.CLICK, this, this.onBtnLineup);
+        this.view.btnBattle.on(Laya.Event.CLICK, this, this.onBtnBattle);
         this.view.btnHero.on(Laya.Event.CLICK, this, this.onBtnHero);
         this.view.btnEquip.on(Laya.Event.CLICK, this, this.onBtnEquip);
-        this.view.btnHome.on(Laya.Event.CLICK, this, this.onBtnHome);
+        EventManager.ins.addEvent(EventManager.CHOICE_CHALLEGEN_GATE, this, this.choiceChanllegeGate);
+        WebSocketManager.ins.registerHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, new GetHeroInfosHanlder(this, this.getHeroInfosHandler));
+        WebSocketManager.ins.registerHandler(Protocol.GATE, Protocol.GATE_INFO, new GetGateInfoHandler(this, this.gateInfoHanlder));
+        WebSocketManager.ins.registerHandler(Protocol.GATE, Protocol.GATE_HANDUP_STATE, new GateHangupStateHandler(this, this.gateInfoHanlder));
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = new Handler(this,this.onListAniScaleRender);
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = new Handler(this,this.onListMouseHandler);
         // EventManager.ins.addEvent(EventManager.TEST_LIST_SCRALE_RENDER,this,this.listScraleInit);
@@ -42,9 +47,13 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnOpen.off(Laya.Event.CLICK, this, this.onBtnOpen);
         this.view.btnMap.off(Laya.Event.CLICK, this, this.onBtnMap);
         this.view.btnLineup.off(Laya.Event.CLICK, this, this.onBtnLineup);
+        this.view.btnBattle.off(Laya.Event.CLICK, this, this.onBtnBattle);
         this.view.btnHero.off(Laya.Event.CLICK, this, this.onBtnHero);
         this.view.btnEquip.off(Laya.Event.CLICK, this, this.onBtnEquip);
-        this.view.btnHome.off(Laya.Event.CLICK, this, this.onBtnHome);
+        EventManager.ins.removeEvent(EventManager.CHOICE_CHALLEGEN_GATE, this.choiceChanllegeGate);
+        WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, this);
+        WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_INFO, this);
+        WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_HANDUP_STATE, this);
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = null;
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = null;
     };
@@ -55,6 +64,9 @@ var GameMediator = /** @class */ (function (_super) {
     //     var ary = GameDataManager.ins.selfPlayerData.roleVoAry.concat(GameDataManager.ins.bossData.roleVoAry);
     //     (this.view.viewAniScale.listAniScale as Laya.List).array = ary;
     // }
+    /**得到宠物信息 */
+    GameMediator.prototype.getHeroInfosHandler = function () {
+    };
     GameMediator.prototype.onListAniScaleRender = function (cell, index) {
         if (cell && cell.dataSource) {
             cell.getChildByName("lblRoleName").text = cell.dataSource.name;
@@ -80,19 +92,41 @@ var GameMediator = /** @class */ (function (_super) {
     };
     /**地图系统 */
     GameMediator.prototype.onBtnMap = function (e) {
-        if (this.showViewIndex == GameButtomTabIndex.MAP_BATTLE) {
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.MAP_BATTLE) {
             return;
         }
         if (this.curMediator) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
-        this.curMediator = new MapBattleMediator();
-        this.showViewIndex = GameButtomTabIndex.MAP_BATTLE;
+        ClientSender.gateGateInfoReq();
+    };
+    GameMediator.prototype.gateInfoHanlder = function () {
+        //显示地图界面
+        var resAry = [
+            { url: "unpack/worldmap/p1.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p2.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p3.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p4.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p5.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p6.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p7.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/bg.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_gatebg.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_listbg.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_listgraybg.png", type: Loader.IMAGE },
+            { url: "res/atlas/worldmap.atlas", type: Loader.ATLAS }
+        ];
+        this.curMediator = new MapWorldMediator(resAry);
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.MAP_BATTLE;
+    };
+    /**选择挑战关卡 */
+    GameMediator.prototype.choiceChanllegeGate = function () {
+        this.onBtnBattle(null);
     };
     /**阵型系统 */
     GameMediator.prototype.onBtnLineup = function (e) {
-        if (this.showViewIndex == GameButtomTabIndex.LINEUP) {
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.LINEUP) {
             return;
         }
         if (this.curMediator) {
@@ -103,11 +137,11 @@ var GameMediator = /** @class */ (function (_super) {
             { url: "res/atlas/lineup.atlas", type: Loader.ATLAS }
         ];
         this.curMediator = new LineupMediator(resAry);
-        this.showViewIndex = GameButtomTabIndex.LINEUP;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.LINEUP;
     };
     /**英雄系统*/
     GameMediator.prototype.onBtnHero = function (e) {
-        if (this.showViewIndex == GameButtomTabIndex.HERO) {
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.HERO) {
             return;
         }
         if (this.curMediator) {
@@ -118,11 +152,11 @@ var GameMediator = /** @class */ (function (_super) {
             { url: "res/atlas/hero.atlas", type: Loader.ATLAS }
         ];
         this.curMediator = new HeroMediator(resAry);
-        this.showViewIndex = GameButtomTabIndex.HERO;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.HERO;
     };
     /**战斗系统*/
     GameMediator.prototype.onBtnEquip = function (e) {
-        if (this.showViewIndex == GameButtomTabIndex.EQUIP) {
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.EQUIP) {
             return;
         }
         if (this.curMediator) {
@@ -130,19 +164,26 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator = null;
         }
         this.curMediator = new EquipMediator();
-        this.showViewIndex = GameButtomTabIndex.EQUIP;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.EQUIP;
     };
-    /**家园系统*/
-    GameMediator.prototype.onBtnHome = function (e) {
-        if (this.showViewIndex == GameButtomTabIndex.HOME) {
+    /**挂机战斗*/
+    GameMediator.prototype.onBtnBattle = function (e) {
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE) {
+            return;
+        }
+        if (GameDataManager.ins.hangGateKey == null) {
+            console.log("请先选择关卡信息");
             return;
         }
         if (this.curMediator) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
-        this.curMediator = new HomeMediator();
-        this.showViewIndex = GameButtomTabIndex.HOME;
+        if (this.mapBattleMediator == null) {
+            this.mapBattleMediator = new MapBattleMediator();
+            this.mapBattleMediator.enterMapBattle();
+        }
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.BATTLE;
     };
     GameMediator.prototype.dispose = function () {
     };

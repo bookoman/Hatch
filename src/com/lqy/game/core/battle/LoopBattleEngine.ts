@@ -9,6 +9,8 @@ class LoopBattleEngine{
     private enemyRoles:Array<BaseRole> = null;
     private loopBattleData:LoopBattleData = null;
     private roleMgr:RoleManager;
+    /**雨显示计数 */
+    private rainShowCount:number = 20;
     constructor(){
         this.init();
     }
@@ -30,7 +32,24 @@ class LoopBattleEngine{
         {
             this.enemyRuntoBallte();
         }
+        //假战斗无技能
         // this.loopBattleData.runRoleSkillCD();
+        //战场下雨特效
+        if(GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE)
+        {
+            this.rainShowCount++;
+            if(this.rainShowCount > GameConfig.RAIN_SHOW_LIMIT_TIME)
+            {
+                var time:number = Math.random() > 0.5 ? GameConfig.RAIN_SHOW_LIMIT_TIME / 2 : 0;
+                var time:number =  GameConfig.RAIN_SHOW_LIMIT_TIME;
+                AnimationManager.ins.addBattleRainEffect(time);
+                this.rainShowCount = 0;
+            }
+        }
+        else
+        {
+            AnimationManager.ins.removeBattleRainEffect();
+        }
     }
     
     /**
@@ -152,12 +171,13 @@ class LoopBattleEngine{
     {
         var attRoleVo:BaseRoleVo = attRole.baseRoleVo;
         var defRoleVo:BaseRoleVo = defRole.baseRoleVo;
-        var skillID:number = attRoleVo.getCanUserSkill();
-        if(skillID > 0)
+        var skillVo:SkillVo = attRoleVo.getCanUserSkill();
+        if(skillVo)
         {
+            
             //技能释放               
-            var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillID,defRole);
+            // var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+            // skill.playSkill(skillVo.modelId,defRole,0,0,0.3);
         }
         else
         {
@@ -181,8 +201,8 @@ class LoopBattleEngine{
         else
         {
             defRole.aniPlay(RoleAniIndex.INJURED,false);
-            defRole.showFloatFont(attRoleVo.atk);
         }
+        defRole.showFloatFont(attRoleVo.atk);
         defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
     }
     // /**
@@ -223,5 +243,11 @@ class LoopBattleEngine{
         {
             this.attack();
         }
+    }
+
+    /****************技能相关 */
+    private playSkill():void
+    {
+
     }
 }

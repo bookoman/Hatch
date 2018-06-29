@@ -19,7 +19,7 @@ var GameScene = /** @class */ (function (_super) {
     }
     GameScene.prototype.enter = function () {
         // super.enter();
-        new GameMediator([{ url: "res/atlas/main.atlas", type: Loader.ATLAS }]);
+        new GameMediator();
         // new GameMediator("res/atlas/main.atlas");
     };
     GameScene.prototype.leave = function () {

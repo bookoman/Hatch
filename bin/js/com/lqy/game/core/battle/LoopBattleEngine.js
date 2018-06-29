@@ -9,6 +9,8 @@ var LoopBattleEngine = /** @class */ (function () {
         this.heroRoles = null;
         this.enemyRoles = null;
         this.loopBattleData = null;
+        /**雨显示计数 */
+        this.rainShowCount = 20;
         this.init();
     }
     LoopBattleEngine.prototype.init = function () {
@@ -24,7 +26,21 @@ var LoopBattleEngine = /** @class */ (function () {
         if (this.timeCount == this.battleTimeInterval) {
             this.enemyRuntoBallte();
         }
+        //假战斗无技能
         // this.loopBattleData.runRoleSkillCD();
+        //战场下雨特效
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE) {
+            this.rainShowCount++;
+            if (this.rainShowCount > GameConfig.RAIN_SHOW_LIMIT_TIME) {
+                var time = Math.random() > 0.5 ? GameConfig.RAIN_SHOW_LIMIT_TIME / 2 : 0;
+                var time = GameConfig.RAIN_SHOW_LIMIT_TIME;
+                AnimationManager.ins.addBattleRainEffect(time);
+                this.rainShowCount = 0;
+            }
+        }
+        else {
+            AnimationManager.ins.removeBattleRainEffect();
+        }
     };
     /**
      * 敌人跑去战斗
@@ -126,11 +142,11 @@ var LoopBattleEngine = /** @class */ (function () {
     LoopBattleEngine.prototype.playAttackAni = function (attRole, defRole) {
         var attRoleVo = attRole.baseRoleVo;
         var defRoleVo = defRole.baseRoleVo;
-        var skillID = attRoleVo.getCanUserSkill();
-        if (skillID > 0) {
+        var skillVo = attRoleVo.getCanUserSkill();
+        if (skillVo) {
             //技能释放               
-            var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillID, defRole);
+            // var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+            // skill.playSkill(skillVo.modelId,defRole,0,0,0.3);
         }
         else {
             //远攻，近攻击
@@ -151,8 +167,8 @@ var LoopBattleEngine = /** @class */ (function () {
         }
         else {
             defRole.aniPlay(RoleAniIndex.INJURED, false);
-            defRole.showFloatFont(attRoleVo.atk);
         }
+        defRole.showFloatFont(attRoleVo.atk);
         defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
     };
     // /**
@@ -186,6 +202,9 @@ var LoopBattleEngine = /** @class */ (function () {
         else {
             this.attack();
         }
+    };
+    /****************技能相关 */
+    LoopBattleEngine.prototype.playSkill = function () {
     };
     return LoopBattleEngine;
 }());

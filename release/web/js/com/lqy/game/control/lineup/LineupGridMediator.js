@@ -31,25 +31,26 @@ var LineupGridMediator = /** @class */ (function (_super) {
     LineupGridMediator.prototype.getView = function () {
         return this.view;
     };
-    LineupGridMediator.prototype.setUpHero = function (roleID, iconView) {
-        if (roleID == this.roleID) {
+    LineupGridMediator.prototype.setUpHero = function (heroId, iconView) {
+        if (heroId == this.heroId) {
             return;
         }
         if (this.iconView) {
             this.iconView.setSelect(false);
         }
-        this.roleID = roleID;
+        this.heroId = heroId;
         this.iconView = iconView;
+        var heroVo = GameDataManager.ins.getHeroVoByHeroId(this.heroId);
         if (this.uiRole == null) {
-            this.uiRole = new UIRole(this.roleID);
+            this.uiRole = new UIRole(heroVo.heroKey);
             this.uiRole.addParent(this.view, this.view.clipShadow.width / 2, this.view.clipShadow.height / 2);
         }
         else {
-            this.uiRole.updateRole(this.roleID);
+            this.uiRole.updateRole(heroVo.heroKey);
         }
     };
     LineupGridMediator.prototype.revokeUpHero = function () {
-        this.roleID = null;
+        this.heroId = null;
         if (this.uiRole) {
             this.uiRole.dispose();
             this.uiRole = null;

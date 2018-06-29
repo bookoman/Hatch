@@ -32,13 +32,13 @@ var SignMediator = /** @class */ (function (_super) {
         this.view.btnRechargeExit.off(Laya.Event.CLICK, this, this.onBtnRechargeExit);
     };
     SignMediator.prototype.onBtnClose = function (e) {
-        console.log("功能暂时关闭" + this.view.inputName.text);
+        LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, false);
     };
     SignMediator.prototype.onBtnRecharge = function (e) {
         console.log("功能暂时关闭" + this.view.inputName.text);
     };
     SignMediator.prototype.onBtnRechargeExit = function (e) {
-        console.log("功能暂时关闭" + this.view.inputName.text);
+        LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, false);
     };
     return SignMediator;
 }(BaseMediator));

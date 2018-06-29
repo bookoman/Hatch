@@ -71,6 +71,8 @@ var EventManager = /** @class */ (function () {
     EventManager.SERVER_CONNECTED = "SERVER_CONNECTED";
     EventManager.TEST_CHANGE_ROLE_SCALE = "TEST_CHANGE_ROLE_SCALE";
     EventManager.TEST_LIST_SCRALE_RENDER = "TEST_LIST_SCRALE_RENDER";
+    /**选择挑战关卡 */
+    EventManager.CHOICE_CHALLEGEN_GATE = "CHOICE_CHALLEGEN_GATE";
     EventManager._ins = null;
     return EventManager;
 }());

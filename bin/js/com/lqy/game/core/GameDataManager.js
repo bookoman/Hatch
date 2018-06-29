@@ -179,6 +179,8 @@ var GameDataManager = /** @class */ (function () {
             baseROleVo.initRowColPosPoint();
         });
     };
+    /**显示模块视图索引 */
+    GameDataManager.showModuleViewInd = -1;
     GameDataManager._ins = null;
     return GameDataManager;
 }());

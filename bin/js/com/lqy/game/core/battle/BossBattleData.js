@@ -4,12 +4,15 @@
 var BossBattleData = /** @class */ (function () {
     function BossBattleData() {
         this.curAttCamp = 0;
+        this.turnCount = 0;
     }
     BossBattleData.prototype.initData = function () {
+        this.turnCount = 0;
         this.attHeroVos = this.getJoinBattleHeroVo();
         this.attEnemyVos = GameDataManager.ins.bossData.masterVos;
         this.attHeroVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
+            roleVo.initBattleData();
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
             roleVo.isAtted = false;
@@ -17,6 +20,7 @@ var BossBattleData = /** @class */ (function () {
         });
         this.attEnemyVos.forEach(function (roleVo) {
             roleVo.battleHP = roleVo.hp;
+            roleVo.initBattleData();
             roleVo.resetSkillCD();
             roleVo.isDeath = false;
             roleVo.isAtted = false;
@@ -51,43 +55,81 @@ var BossBattleData = /** @class */ (function () {
         else if (this.curAttCamp == BattleAttCampType.ENEMY) {
             this.curAttRoleVo = this.getAttRoleVo(this.attEnemyVos);
         }
-        //寻找攻击具体对象
-        for (var i = 0; i < this.curAttRoleVo.attEnemyVos.length; i++) {
-            this.curDefRoleVo = this.curAttRoleVo.attEnemyVos[i];
-            if (!this.curDefRoleVo.isDeath) {
-                break;
+        this.curDefRoleVos = [];
+        /**得到技能 */
+        var skillVo = this.curAttRoleVo.getCanUserSkill();
+        if (skillVo && skillVo.isCanUse) {
+            skillVo.resetCD();
+            //技能攻击对象
+            this.seekSkillAtkTarget(skillVo);
+        }
+        else {
+            //嘲讽
+            var tempVo = this.enemySkillSeekTarget(this.curAttRoleVo.attEnemyVos);
+            if (tempVo) {
+                this.curDefRoleVos.push(tempVo);
+                return;
+            }
+            //寻找攻击具体对象
+            for (var i = 0; i < this.curAttRoleVo.attEnemyVos.length; i++) {
+                tempVo = this.curAttRoleVo.attEnemyVos[i];
+                if (!tempVo.isDeath) {
+                    this.curDefRoleVos.push(tempVo);
+                    break;
+                }
             }
         }
     };
     /**计算属性 */
-    BossBattleData.prototype.calculationAttribute = function () {
-        var readHurt = FormulaUtil.realDamageValue(this.curAttRoleVo, this.curDefRoleVo);
-        this.curDefRoleVo.battleHP -= readHurt;
-        // this.curDefRoleVo.battleHP -= this.curAttRoleVo.atk;
-        this.curDefRoleVo.isDeath = this.curDefRoleVo.battleHP <= 0;
-        this.curAttRoleVo.isAtted = true;
-        this.checkBattleEnd();
-        if (this.curAttCamp == BattleAttCampType.ENEMY) {
-            //DebugViewUtil.log("战斗日记：","....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVo.name + "("+ this.curDefRoleVo.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVo.battleHP);
-            // console.log("....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVo.name + "("+ this.curDefRoleVo.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVo.battleHP);
-        }
-    };
+    // public calculationAttribute():number
+    // {
+    //     var readHurt:number = 0;
+    //     var curRoleVo:BaseRoleVo;
+    //     for(var i = 0;i < this.curDefRoleVos.length;i++)
+    //     {
+    //         curRoleVo = this.curDefRoleVos[i];
+    //         curRoleVo.calculationAttribute(this.curAttRoleVo);
+    //         //自身加成
+    //         if(this.curAttCamp == BattleAttCampType.HERO && !curRoleVo.isEnemy || this.curAttCamp == BattleAttCampType.ENEMY && curRoleVo.isEnemy)
+    //         {
+    //         }
+    //         else
+    //         {
+    //             readHurt = FormulaUtil.realDamageValue(this.curAttRoleVo,curRoleVo);
+    //             curRoleVo.battleHP -= readHurt;
+    //             curRoleVo.isDeath = curRoleVo.battleHP <= 0;
+    //         }
+    //     }
+    //     this.curAttRoleVo.isAtted = true;
+    //     this.checkBattleEnd();
+    //     if(this.curAttCamp == BattleAttCampType.ENEMY)
+    //     {
+    //         //DebugViewUtil.log("战斗日记：","....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVos.name + "("+ this.curDefRoleVos.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVos.battleHP);
+    //         // console.log("....."+ this.curAttRoleVo.name + "("+ this.curAttRoleVo.id+")"+"对"+ this.curDefRoleVos.name + "("+ this.curDefRoleVos.id+")发动了攻击，后者受到伤害:"+this.curAttRoleVo.att + ",剩下血量:"+this.curDefRoleVos.battleHP);
+    //     }
+    //     return readHurt;
+    // }
     /**
      * 检测战斗结束
      */
     BossBattleData.prototype.checkBattleEnd = function () {
         var _this = this;
+        this.curAttRoleVo.isAtted = true;
         //检测战斗结束，玩家英雄阵营没有活的对象战斗失败，反之战斗胜利
         //英雄检测
         this.isEnd = true;
         var isChangeAttStatus = true;
+        var liveRoleCount = 0;
         this.attHeroVos.forEach(function (roleVo) {
             if (!roleVo.isDeath) {
+                liveRoleCount++;
                 _this.isEnd = false;
                 if (!roleVo.isAtted) {
                     isChangeAttStatus = false;
                 }
             }
+            else
+                console.log("我方：", roleVo.name, roleVo.battleHP);
         });
         if (this.isEnd) {
             this.isWin = false;
@@ -99,16 +141,20 @@ var BossBattleData = /** @class */ (function () {
                 roleVo.isAtted = false;
             });
         }
+        console.log("............");
         //敌人检测
         isChangeAttStatus = true;
         this.isEnd = true;
         this.attEnemyVos.forEach(function (roleVo) {
             if (!roleVo.isDeath) {
+                liveRoleCount++;
                 _this.isEnd = false;
                 if (!roleVo.isAtted) {
                     isChangeAttStatus = false;
                 }
             }
+            else
+                console.log("敌方：", roleVo.name, roleVo.battleHP);
         });
         if (this.isEnd) {
             this.isWin = true;
@@ -119,6 +165,13 @@ var BossBattleData = /** @class */ (function () {
             this.attEnemyVos.forEach(function (roleVo) {
                 roleVo.isAtted = false;
             });
+        }
+        this.turnCount++;
+        //轮数跑技能CD
+        if (this.turnCount > liveRoleCount) {
+            this.turnCount = 0;
+            this.runRoleSkillCD();
+            console.log(this.turnCount, liveRoleCount);
         }
         //改变阵营
         if (this.curAttCamp == BattleAttCampType.HERO) {
@@ -194,6 +247,7 @@ var BossBattleData = /** @class */ (function () {
             }
         }
     };
+    /*******************技能相关 */
     /**
      * 跑角色技能cd
      */
@@ -201,13 +255,144 @@ var BossBattleData = /** @class */ (function () {
         if (this.attHeroVos) {
             this.attHeroVos.forEach(function (baseRoleVo) {
                 baseRoleVo.runCD();
+                baseRoleVo.runSkillEffectCD();
             });
         }
         if (this.attEnemyVos) {
             this.attEnemyVos.forEach(function (baseRoleVo) {
                 baseRoleVo.runCD();
+                baseRoleVo.runSkillEffectCD();
             });
         }
+    };
+    /**技能攻击目标 */
+    BossBattleData.prototype.seekSkillAtkTarget = function (skillVo) {
+        var i;
+        var attVos = this.curAttRoleVo.isEnemy ? this.attEnemyVos : this.attHeroVos;
+        var defVos = this.curAttRoleVo.isEnemy ? this.attHeroVos : this.attEnemyVos;
+        var tempVo;
+        var tempAry = [];
+        var skillTargetType = Number(skillVo.skillConfig.skillTargetType);
+        switch (skillTargetType) {
+            case SkillTarget.SELF:
+                this.curAttRoleVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(this.curAttRoleVo);
+                break;
+            case SkillTarget.WE_ONE:
+                for (i = 0; i < attVos.length; i++) {
+                    tempVo = attVos[i];
+                    if (tempVo.roleId != this.curAttRoleVo.roleId && !tempVo.isDeath) {
+                        tempAry.push(tempVo);
+                    }
+                }
+                var ind = Math.ceil(Math.random() * tempAry.length) - 1;
+                tempVo = tempAry[ind];
+                tempVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(tempVo);
+                break;
+            case SkillTarget.WE_ALL:
+                this.curDefRoleVos = attVos;
+                this.curDefRoleVos.forEach(function (baseRoleVo) {
+                    baseRoleVo.addSkillEffectCDs(skillVo);
+                });
+                break;
+            case SkillTarget.ENEMY_ONE:
+                for (i = 0; i < defVos.length; i++) {
+                    tempVo = defVos[i];
+                    if (!tempVo.isDeath) {
+                        tempAry.push(tempVo);
+                    }
+                }
+                //嘲讽
+                var tempVo = this.enemySkillSeekTarget(tempAry);
+                if (tempVo) {
+                    this.curDefRoleVos.push(tempVo);
+                    return;
+                }
+                var ind = Math.ceil(Math.random() * tempAry.length) - 1;
+                tempVo = tempAry[ind];
+                tempVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(tempVo);
+                break;
+            case SkillTarget.ENEMY_ALL:
+                this.curDefRoleVos = defVos;
+                this.curDefRoleVos.forEach(function (baseRoleVo) {
+                    baseRoleVo.addSkillEffectCDs(skillVo);
+                });
+                break;
+            case SkillTarget.WE_ONE_SELF:
+                for (i = 0; i < attVos.length; i++) {
+                    tempVo = attVos[i];
+                    if (!tempVo.isDeath) {
+                        tempAry.push(tempVo);
+                    }
+                }
+                var ind = Math.ceil(Math.random() * tempAry.length) - 1;
+                tempVo = tempAry[ind];
+                tempVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(tempVo);
+                break;
+            case SkillTarget.WE_LEAST_PERCENT_BLOOD:
+                for (i = 0; i < attVos.length; i++) {
+                    tempVo = attVos[i];
+                    if (!tempVo.isDeath) {
+                        tempAry.push(tempVo);
+                    }
+                }
+                tempAry.sort(function (vo1, vo2) {
+                    var per1 = vo1.battleHP / vo1.hp;
+                    var per2 = vo2.battleHP / vo2.hp;
+                    return per1 < per2 ? 1 : -1;
+                });
+                tempVo = tempAry[0];
+                tempVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(tempVo);
+                break;
+            case SkillTarget.ENEMY_LEAST_PERCENT_BLOOD:
+                for (i = 0; i < defVos.length; i++) {
+                    tempVo = defVos[i];
+                    if (!tempVo.isDeath) {
+                        tempAry.push(tempVo);
+                    }
+                }
+                tempAry.sort(function (vo1, vo2) {
+                    var per1 = vo1.battleHP / vo1.hp;
+                    var per2 = vo2.battleHP / vo2.hp;
+                    return per1 < per2 ? 1 : -1;
+                });
+                tempVo = tempAry[0];
+                tempVo.addSkillEffectCDs(skillVo);
+                this.curDefRoleVos.push(tempVo);
+                break;
+        }
+    };
+    /**
+     * 敌方技能选取优先攻击
+     * @param baseRoleVos
+     */
+    BossBattleData.prototype.enemySkillSeekTarget = function (baseRoleVos) {
+        var tempVo;
+        var curSkillVo;
+        for (var i = 0; i < baseRoleVos.length; i++) {
+            tempVo = baseRoleVos[i];
+            if (!tempVo.isDeath) {
+                if (tempVo.mainSkillContinuedVo.anger > 0 || tempVo.assiSkillContinuedVo.anger > 0) { //嘲讽技能
+                    return tempVo;
+                }
+            }
+        }
+        return null;
+    };
+    /**得到队伍攻击力 */
+    BossBattleData.prototype.getRankAtk = function (isEnemy) {
+        var ary = isEnemy ? this.attEnemyVos : this.attHeroVos;
+        var ranksAtk = 0;
+        ary.forEach(function (roleVo) {
+            if (!roleVo.isDeath) {
+                ranksAtk += roleVo.realAtk;
+            }
+        });
+        return ranksAtk;
     };
     /**动画加载准备完毕 */
     BossBattleData.curLoadNum = 0;

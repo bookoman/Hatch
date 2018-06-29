@@ -2,6 +2,9 @@
 * 游戏数据管理器
 */
 class GameDataManager{
+     /**显示模块视图索引 */
+    public static showModuleViewInd:number = -1;
+
     /**登录认证 */
     public loginAuthentication:string;
     /**登录token */
@@ -23,6 +26,7 @@ class GameDataManager{
     public gateMapInfoObj:Object = null;
     /**当前挂机关卡 */
     public hangGateKey:string = null;
+   
     
     constructor(){
         

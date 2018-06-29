@@ -13,8 +13,8 @@ var GameConfig = /** @class */ (function () {
     // public static MAP_BLOCK_WIDTH:number = 200;
     // public static MAP_BLOCK_HEIGHT:number = 200;
     // public static MAP_NEAR_TYPE:number = 1;
-    /**场景地图出事化Y坐标 */
-    GameConfig.MAP_INIT_Y = 600;
+    /**战斗初始化Y坐标 */
+    GameConfig.BATTLE_INIT_Y = 0;
     /**战斗场景与场景地图偏移 */
     GameConfig.BATTLE_SCENE_OFFSET_Y = 40;
     /**主场景战斗场景高度 */
@@ -45,8 +45,15 @@ var GameConfig = /** @class */ (function () {
     GameConfig.DEBUG_VIEW_SWITCH = false;
     /**场景战斗开关 */
     GameConfig.SCENE_BATTLE_SWITCH = true;
+    //**************************默认数据 */
+    /**没有资源时，英雄默认资源模型ID */
+    GameConfig.HERO_DEFAULT_ANI_MODELID = "baolong001";
     /**单机游戏 */
     GameConfig.SINGLE_GAME = false;
+    /**挂机关卡地图key数据 */
+    GameConfig.GATE_MAP_KEYS = [];
+    /**雨出现时间间隔 s */
+    GameConfig.RAIN_SHOW_LIMIT_TIME = 20;
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {
@@ -60,8 +67,28 @@ var HTTPReqType = /** @class */ (function () {
 var Protocol = /** @class */ (function () {
     function Protocol() {
     }
+    /**登录模块 */
     Protocol.USER_LOGIN = 1000;
+    /**登录 */
     Protocol.USER_LOGIN_CMD = 1;
+    /**英雄模块 */
+    Protocol.HERO = 1001;
+    /**获取英雄信息 */
+    Protocol.HERO_GET_INFOS = 1;
+    /**更新阵型 */
+    Protocol.HERO_UPDATE_FORMATION = 2;
+    /**关卡模块 */
+    Protocol.GATE = 1002;
+    /**获取玩家关卡信息 */
+    Protocol.GATE_INFO = 1;
+    /**返回玩家关卡信息 */
+    Protocol.GATE_HANDUP_STATE = 2;
+    /**切换挂机关卡 */
+    Protocol.GATE_SWITCH_HANG_GATE = 3;
+    /**挑战关卡 */
+    Protocol.GATE_BATTLE = 4;
+    /**扫荡关卡 */
+    Protocol.GATE_SCAN = 5;
     return Protocol;
 }());
 /**http请求地址 */
@@ -108,25 +135,13 @@ var MapType;
 /**角色动画枚举 */
 var RoleAniIndex;
 (function (RoleAniIndex) {
-    RoleAniIndex[RoleAniIndex["STAND"] = 0] = "STAND";
+    // STAND = 0,INJURED,DEATH,ATTACK,MOVE,SKILL1,SKILL2,SKILL3,SKILL4
+    RoleAniIndex[RoleAniIndex["ATTACK"] = 0] = "ATTACK";
     RoleAniIndex[RoleAniIndex["INJURED"] = 1] = "INJURED";
     RoleAniIndex[RoleAniIndex["DEATH"] = 2] = "DEATH";
-    RoleAniIndex[RoleAniIndex["ATTACK"] = 3] = "ATTACK";
-    RoleAniIndex[RoleAniIndex["MOVE"] = 4] = "MOVE";
-    RoleAniIndex[RoleAniIndex["SKILL1"] = 5] = "SKILL1";
-    RoleAniIndex[RoleAniIndex["SKILL2"] = 6] = "SKILL2";
-    RoleAniIndex[RoleAniIndex["SKILL3"] = 7] = "SKILL3";
-    RoleAniIndex[RoleAniIndex["SKILL4"] = 8] = "SKILL4";
+    RoleAniIndex[RoleAniIndex["MOVE"] = 3] = "MOVE";
+    RoleAniIndex[RoleAniIndex["STAND"] = 4] = "STAND";
 })(RoleAniIndex || (RoleAniIndex = {}));
-/**新角色动画枚举 */
-var NewRoleAniIndex;
-(function (NewRoleAniIndex) {
-    NewRoleAniIndex[NewRoleAniIndex["ATTACK"] = 0] = "ATTACK";
-    NewRoleAniIndex[NewRoleAniIndex["INJURED"] = 1] = "INJURED";
-    NewRoleAniIndex[NewRoleAniIndex["DEATH"] = 2] = "DEATH";
-    NewRoleAniIndex[NewRoleAniIndex["MOVE"] = 3] = "MOVE";
-    NewRoleAniIndex[NewRoleAniIndex["STAND"] = 4] = "STAND";
-})(NewRoleAniIndex || (NewRoleAniIndex = {}));
 /**
  * 战斗攻击阵营
  */
@@ -141,8 +156,41 @@ var GameButtomTabIndex;
 (function (GameButtomTabIndex) {
     GameButtomTabIndex[GameButtomTabIndex["MAP_BATTLE"] = 0] = "MAP_BATTLE";
     GameButtomTabIndex[GameButtomTabIndex["LINEUP"] = 1] = "LINEUP";
-    GameButtomTabIndex[GameButtomTabIndex["HERO"] = 2] = "HERO";
-    GameButtomTabIndex[GameButtomTabIndex["EQUIP"] = 3] = "EQUIP";
-    GameButtomTabIndex[GameButtomTabIndex["HOME"] = 4] = "HOME";
+    GameButtomTabIndex[GameButtomTabIndex["BATTLE"] = 2] = "BATTLE";
+    GameButtomTabIndex[GameButtomTabIndex["HERO"] = 3] = "HERO";
+    GameButtomTabIndex[GameButtomTabIndex["EQUIP"] = 4] = "EQUIP";
 })(GameButtomTabIndex || (GameButtomTabIndex = {}));
+/**技能释放目标 自身,我方一个,我方所有,敌方一个,敌方所有,我方一个包括自身,我方百分比血量最少,敌方百分比血量最少*/
+var SkillTarget;
+(function (SkillTarget) {
+    SkillTarget[SkillTarget["SELF"] = 1] = "SELF";
+    SkillTarget[SkillTarget["WE_ONE"] = 2] = "WE_ONE";
+    SkillTarget[SkillTarget["WE_ALL"] = 3] = "WE_ALL";
+    SkillTarget[SkillTarget["ENEMY_ONE"] = 4] = "ENEMY_ONE";
+    SkillTarget[SkillTarget["ENEMY_ALL"] = 5] = "ENEMY_ALL";
+    SkillTarget[SkillTarget["WE_ONE_SELF"] = 6] = "WE_ONE_SELF";
+    SkillTarget[SkillTarget["WE_LEAST_PERCENT_BLOOD"] = 7] = "WE_LEAST_PERCENT_BLOOD";
+    SkillTarget[SkillTarget["ENEMY_LEAST_PERCENT_BLOOD"] = 8] = "ENEMY_LEAST_PERCENT_BLOOD"; //敌方百分比血量最少
+})(SkillTarget || (SkillTarget = {}));
+/**技能效果  伤害,流血,中毒,吸血,恢复,遗忘,混乱,愤怒,增加攻击力,增加防御力,增加速度,增加血量上限,回血,解除负面效果,解除正面效果,增加免伤,减少对方治疗量*/
+var SkillEffect;
+(function (SkillEffect) {
+    SkillEffect[SkillEffect["HURT"] = 1] = "HURT";
+    SkillEffect[SkillEffect["BLEEDING"] = 2] = "BLEEDING";
+    SkillEffect[SkillEffect["POISONING"] = 3] = "POISONING";
+    SkillEffect[SkillEffect["LOOD_SUCKING"] = 4] = "LOOD_SUCKING";
+    SkillEffect[SkillEffect["RECOVERY"] = 5] = "RECOVERY";
+    SkillEffect[SkillEffect["FORGET"] = 6] = "FORGET";
+    SkillEffect[SkillEffect["CONFUSION"] = 7] = "CONFUSION";
+    SkillEffect[SkillEffect["ANGER"] = 8] = "ANGER";
+    SkillEffect[SkillEffect["ADD_ATK"] = 9] = "ADD_ATK";
+    SkillEffect[SkillEffect["ADD_DEF"] = 10] = "ADD_DEF";
+    SkillEffect[SkillEffect["ADD_SPEED"] = 11] = "ADD_SPEED";
+    SkillEffect[SkillEffect["ADD_BLOOD_UP_LIMIT"] = 12] = "ADD_BLOOD_UP_LIMIT";
+    SkillEffect[SkillEffect["RECOVERY_BLOOD"] = 13] = "RECOVERY_BLOOD";
+    SkillEffect[SkillEffect["ELIMINATE_NEGATIVE_EFFECT"] = 14] = "ELIMINATE_NEGATIVE_EFFECT";
+    SkillEffect[SkillEffect["ELIMINATE_POSITIVE_EFFECT"] = 15] = "ELIMINATE_POSITIVE_EFFECT";
+    SkillEffect[SkillEffect["ADD_INJURY_FREE"] = 16] = "ADD_INJURY_FREE";
+    SkillEffect[SkillEffect["REDUCE_ENEMY_TREATMENT"] = 17] = "REDUCE_ENEMY_TREATMENT"; //减少对方治疗量
+})(SkillEffect || (SkillEffect = {}));
 //# sourceMappingURL=GameConfig.js.map

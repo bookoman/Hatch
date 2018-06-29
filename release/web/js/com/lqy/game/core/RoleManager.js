@@ -22,38 +22,37 @@ var RoleManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**初始化角色 */
     RoleManager.prototype.initHeros = function () {
-        // this.clearRole();
         if (this.heroRoles == null) {
             this.heroRoles = new Array();
         }
         var playerData = GameDataManager.ins.selfPlayerData;
-        var roleVo;
+        var heroVo;
         var hero;
-        for (var i = 0; i < playerData.roleVoAry.length; i++) {
-            roleVo = playerData.roleVoAry[i];
+        if (!playerData.upHeroVos) {
+            console.log("请上阵英雄");
+            return;
+        }
+        for (var i = 0; i < playerData.upHeroVos.length; i++) {
+            heroVo = playerData.upHeroVos[i];
             hero = null;
             this.heroRoles.forEach(function (heroView) {
-                if (heroView.roleVo.id == roleVo.id) {
+                if (heroView.baseRoleVo.roleId == heroVo.roleId) {
                     hero = heroView;
                     hero.setBlood(0);
                 }
             });
             if (hero == null) {
                 hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-                if (roleVo.id == "10006" || roleVo.id == "10007") {
-                    hero.initRole(roleVo, i, 0.8);
-                }
-                else {
-                    hero.initRole(roleVo, i, 1);
-                }
+                hero.initRole(heroVo, i, -1);
                 this.heroRoles.push(hero);
             }
             hero.aniPlay(RoleAniIndex.MOVE);
         }
         //显示层级排序
         this.heroRoles.sort(function (hero1, hero2) {
-            return hero1.roleVo.gridY > hero2.roleVo.gridY ? 1 : -1;
+            return hero1.baseRoleVo.gridY > hero2.baseRoleVo.gridY ? 1 : -1;
         });
         for (i = 0; i < this.heroRoles.length; i++) {
             this.heroRoles[i].setShowIndex(i);
@@ -64,7 +63,7 @@ var RoleManager = /** @class */ (function () {
      */
     RoleManager.prototype.resetRolePoint = function () {
         this.heroRoles.forEach(function (heroView) {
-            Laya.Tween.to(heroView, { x: heroView.roleVo.posPoint.x, y: heroView.roleVo.posPoint.y }, 200);
+            Laya.Tween.to(heroView, { x: heroView.baseRoleVo.posPoint.x, y: heroView.baseRoleVo.posPoint.y }, 200);
         });
     };
     /**生产敌人 */
@@ -74,17 +73,17 @@ var RoleManager = /** @class */ (function () {
         this.enemyRoles = new Array();
         //怪物显示对象
         var enemy;
-        var roleVo;
-        for (var i = 0; i < enemyData.roleVoAry.length; i++) {
-            roleVo = enemyData.roleVoAry[i];
+        var masterNPCVo;
+        for (var i = 0; i < enemyData.masterNPCVos.length; i++) {
+            masterNPCVo = enemyData.masterNPCVos[i];
             enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
-            enemy.initRole(roleVo, i, 1);
+            enemy.initRole(masterNPCVo, i, 1);
             this.enemyRoles.push(enemy);
             enemy.aniPlay(RoleAniIndex.STAND);
         }
         //显示层级排序
         this.enemyRoles.sort(function (enemy1, enemy2) {
-            return enemy1.roleVo.gridY > enemy2.roleVo.gridY ? 1 : -1;
+            return enemy1.baseRoleVo.gridY > enemy2.baseRoleVo.gridY ? 1 : -1;
         });
         for (i = 0; i < this.enemyRoles.length; i++) {
             this.enemyRoles[i].setShowIndex(this.heroRoles.length + i);
@@ -130,10 +129,10 @@ var RoleManager = /** @class */ (function () {
         if (this.heroRoles) {
             var lastHeros = [];
             this.heroRoles.forEach(function (role) {
-                role.roleVo.isDeath = false;
+                role.baseRoleVo.isDeath = false;
                 Laya.Tween.clearAll(role);
                 //只移除死掉英雄
-                if (role.roleVo.isDeath) {
+                if (role.baseRoleVo.isDeath) {
                     ObjectPoolUtil.stillObject(ObjectPoolUtil.HERO_ROLE, role);
                     role.dispose();
                 }

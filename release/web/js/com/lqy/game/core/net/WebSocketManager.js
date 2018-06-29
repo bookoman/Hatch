@@ -24,7 +24,8 @@ var WebSocketManager = /** @class */ (function () {
         this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
         //加载协议
-        var protoBufUrls = ["res/outside/proto/login.proto", "res/outside/proto/role.proto", "res/outside/proto/hero.proto"];
+        var protoBufUrls = ["res/outside/proto/login.proto", "res/outside/proto/role.proto", "res/outside/proto/hero.proto",
+            "res/outside/proto/gate.proto"];
         Laya.Browser.window.protobuf.load(protoBufUrls, this.protoLoadComplete);
     };
     WebSocketManager.prototype.protoLoadComplete = function (error, root) {
@@ -36,13 +37,14 @@ var WebSocketManager = /** @class */ (function () {
         EventManager.ins.dispatchEvent(EventManager.SERVER_CONNECTED);
     };
     WebSocketManager.prototype.webSocketMessage = function (data) {
-        console.log("websocket msg...");
         var packageIn = new PackageIn();
         packageIn.read(data);
-        var socketHanlder = this.socketHanlderDic.get(packageIn.module);
-        if (socketHanlder) {
+        console.log("websocket msg...", packageIn.module, packageIn.cmd);
+        var key = packageIn.module + "_" + packageIn.cmd;
+        var handlers = this.socketHanlderDic.get(key);
+        handlers.forEach(function (socketHanlder) {
             socketHanlder.explain(packageIn.body);
-        }
+        });
     };
     WebSocketManager.prototype.webSocketClose = function () {
         console.log("websocket close...");
@@ -69,21 +71,32 @@ var WebSocketManager = /** @class */ (function () {
         return this.protoRoot.lookup(classStr);
     };
     /**注册 */
-    WebSocketManager.prototype.registerHandler = function (protocol, handler) {
-        var handlers = this.socketHanlderDic.get(protocol);
+    WebSocketManager.prototype.registerHandler = function (protocol, cmd, handler) {
+        var key = protocol + "_" + cmd;
+        var handlers = this.socketHanlderDic.get(key);
         if (!handlers) {
-            handlers = new Array();
-            this.socketHanlderDic.set(protocol, handler);
+            handlers = [];
+            handlers.push(handler);
+            this.socketHanlderDic.set(key, handlers);
         }
-        handlers.push(handler);
+        else {
+            handlers.push(handler);
+        }
     };
     /**删除 */
-    WebSocketManager.prototype.unregisterHandler = function (protocol, handler) {
-        var handlers = this.socketHanlderDic.get(protocol);
+    WebSocketManager.prototype.unregisterHandler = function (protocol, cmd, caller) {
+        var key = protocol + "_" + cmd;
+        var handlers = this.socketHanlderDic.get(key);
         if (handlers) {
-            handlers.splice(handlers.indexOf(handler), 1);
+            var handler;
+            for (var i = handlers.length - 1; i >= 0; i--) {
+                handler = handlers[i];
+                if (handler.caller === caller) {
+                    handlers.splice(i, 1);
+                }
+            }
             if (handlers.length == 0) {
-                this.socketHanlderDic.remove(protocol);
+                this.socketHanlderDic.remove(key);
             }
         }
     };

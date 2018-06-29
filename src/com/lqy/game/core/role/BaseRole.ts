@@ -25,6 +25,14 @@ class BaseRole extends Laya.Sprite{
     private showBloodBar:boolean = false;
     constructor(){
         super();
+
+        this.clipShadow = new Laya.Image("comp/img_shadow.png");
+        this.clipShadow.height = 30;
+        this.clipShadow.x = -this.clipShadow.width / 2;
+        this.clipShadow.y = -this.clipShadow.height / 2;
+        this.clipShadow.alpha = 0.2;
+        this.addChild(this.clipShadow);
+
         // EventManager.ins.addEvent(EventManager.TEST_CHANGE_ROLE_SCALE,this,this.testScale);
     }
     // private testScale(ary):void
@@ -42,12 +50,7 @@ class BaseRole extends Laya.Sprite{
     // }
     public initRole(baseRoleVo:BaseRoleVo,showPriority:number,scale?:number,parentDis?:Laya.Sprite,showBloodBar?:boolean):void
     {
-        this.clipShadow = new Laya.Image("comp/img_shadow.png");
-        this.clipShadow.height = 30;
-        this.clipShadow.x = -this.clipShadow.width / 2;
-        this.clipShadow.y = -this.clipShadow.height / 2;
-        this.clipShadow.alpha = 0.2;
-        this.addChild(this.clipShadow)
+        
 
         this.baseRoleVo = baseRoleVo;
         this.showPriority = showPriority;
@@ -81,13 +84,14 @@ class BaseRole extends Laya.Sprite{
         
     }
     
-    public showFloatFont(blood:number):void
+    public showFloatFont(tipString:string):void
     {
+        tipString = tipString === undefined ? "" : tipString;
         var floatFontTip:FloatFontTips = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
         if(floatFontTip)
         {
             floatFontTip.setAttribute(40,"#ff0000");
-            floatFontTip.show("-"+blood,this,-30,-200,0.5,40,80,this.baseRoleVo.isEnemy);
+            floatFontTip.show(tipString,this,-30,-200,0.5,40,80,this.baseRoleVo.isEnemy);
         }
     }
     
@@ -113,7 +117,7 @@ class BaseRole extends Laya.Sprite{
             if(this.skeletonAni)
             {
                 Laya.loader.on(/*laya.events.Event.ERROR*/"error",this,this.skeletonLoadError);
-                // this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted,[defRole,caller,method]);
+                // console.log("前........",this.baseRoleVo.name,aniID);
                 this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted);
                 this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID,loop);
@@ -124,14 +128,27 @@ class BaseRole extends Laya.Sprite{
         }
         else
         {
-            // Laya.timer.frameOnce(this.showPriority * 6,this,this.skeletonAniLoad,[aniID,loop,caller,method],false);
             Laya.timer.frameOnce(this.showPriority * 6,this,this.skeletonAniLoad,null,false);
         }
+    }
+    public getSkillEffectInd():number
+    {
+        if(this.skeletonAni)
+        {
+            return this.getChildIndex(this.skeletonAni);
+        }
+        return 0;
     }
     
     /**播放一次动画回调 */
     private onPlayCompleted():void
     {
+        // console.log("后........",this.baseRoleVo.name,this.aniId);
+        if(this.aniId == RoleAniIndex.ATTACK)
+        {
+            SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
+        }
+
         this.skeletonAni.player.off(Laya.Event.COMPLETE,this,this.onPlayCompleted);
         if(this.caller && this.method)
         {
@@ -171,7 +188,6 @@ class BaseRole extends Laya.Sprite{
             if(this.showBloodBar){
                 this.initComponets();
             }
-            
         }
     }
     private initComponets():void

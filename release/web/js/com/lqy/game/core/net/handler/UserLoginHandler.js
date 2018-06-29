@@ -13,9 +13,9 @@ var __extends = (this && this.__extends) || (function () {
 */
 var UserLoginHandler = /** @class */ (function (_super) {
     __extends(UserLoginHandler, _super);
-    function UserLoginHandler(module, caller, callback) {
+    function UserLoginHandler(caller, callback) {
         if (callback === void 0) { callback = null; }
-        return _super.call(this, module, caller, callback) || this;
+        return _super.call(this, caller, callback) || this;
     }
     UserLoginHandler.prototype.explain = function (data) {
         var LoginResponse = WebSocketManager.ins.defineProtoClass("LoginResponse");

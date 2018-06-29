@@ -4,7 +4,7 @@
 class GameMediator extends BaseMediator{
     private curMediator:BaseMediator = null;
     private mapBattleMediator:MapBattleMediator = null;
-    private showViewIndex:number = -1;
+    
     constructor(assetsUrl?:any,view?:any){
         super(assetsUrl,view);
     }
@@ -107,7 +107,7 @@ class GameMediator extends BaseMediator{
     /**地图系统 */
     private onBtnMap(e?:Laya.Event):void
     {
-        if(this.showViewIndex == GameButtomTabIndex.MAP_BATTLE)
+        if(GameDataManager.showModuleViewInd == GameButtomTabIndex.MAP_BATTLE)
         {
             return;
         }
@@ -136,7 +136,7 @@ class GameMediator extends BaseMediator{
             {url:"res/atlas/worldmap.atlas",type:Loader.ATLAS}
         ];
         this.curMediator = new MapWorldMediator(resAry);
-        this.showViewIndex = GameButtomTabIndex.MAP_BATTLE;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.MAP_BATTLE;
     }
     /**选择挑战关卡 */
     private choiceChanllegeGate():void
@@ -146,7 +146,7 @@ class GameMediator extends BaseMediator{
     /**阵型系统 */
     private onBtnLineup(e?:Laya.Event):void
     {
-        if(this.showViewIndex == GameButtomTabIndex.LINEUP)
+        if(GameDataManager.showModuleViewInd == GameButtomTabIndex.LINEUP)
         {
             return;
         }
@@ -159,12 +159,12 @@ class GameMediator extends BaseMediator{
             {url:"res/atlas/lineup.atlas",type:Loader.ATLAS}
         ];
         this.curMediator = new LineupMediator(resAry);
-        this.showViewIndex = GameButtomTabIndex.LINEUP;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.LINEUP;
     }
     /**英雄系统*/ 
     private onBtnHero(e):void
     {
-        if(this.showViewIndex == GameButtomTabIndex.HERO)
+        if(GameDataManager.showModuleViewInd == GameButtomTabIndex.HERO)
         {
             return;
         }
@@ -177,12 +177,12 @@ class GameMediator extends BaseMediator{
             {url:"res/atlas/hero.atlas",type:Loader.ATLAS}
         ];
         this.curMediator = new HeroMediator(resAry);
-        this.showViewIndex = GameButtomTabIndex.HERO;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.HERO;
     }
      /**战斗系统*/ 
     private onBtnEquip(e):void
     {
-        if(this.showViewIndex == GameButtomTabIndex.EQUIP)
+        if(GameDataManager.showModuleViewInd == GameButtomTabIndex.EQUIP)
         {
             return;
         }
@@ -192,12 +192,12 @@ class GameMediator extends BaseMediator{
             this.curMediator = null;
         }
         this.curMediator = new EquipMediator();
-        this.showViewIndex = GameButtomTabIndex.EQUIP;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.EQUIP;
     }
     /**挂机战斗*/ 
     private onBtnBattle(e):void
     {
-        if(this.showViewIndex == GameButtomTabIndex.BATTLE)
+        if(GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE)
         {
             return;
         }
@@ -216,7 +216,7 @@ class GameMediator extends BaseMediator{
             this.mapBattleMediator = new MapBattleMediator();
             this.mapBattleMediator.enterMapBattle();
         }
-        this.showViewIndex = GameButtomTabIndex.BATTLE;
+        GameDataManager.showModuleViewInd = GameButtomTabIndex.BATTLE;
     }
     
     public dispose():void

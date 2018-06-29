@@ -38,55 +38,56 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
     ChallegenBossMediator.prototype.initRoles = function () {
         BossBattleData.curLoadNum = 0;
         //英雄
-        this.heroRoles = new Array();
-        var playerData = GameDataManager.ins.selfPlayerData;
-        playerData.roleVoAry.forEach(function (roleVo) {
-            roleVo.initRowColPosPoint();
-        });
-        var roleVo;
-        var hero;
-        for (var i = 0; i < playerData.roleVoAry.length; i++) {
-            roleVo = playerData.roleVoAry[i];
-            hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-            if (roleVo.id == "10006" || roleVo.id == "10007")
-                hero.initRole(roleVo, i, 0.8, this.roleLayer);
-            else
-                hero.initRole(roleVo, i, 1, this.roleLayer);
-            // hero.setBlood(0);
-            hero.aniPlay(RoleAniIndex.STAND);
-            this.heroRoles.push(hero);
-        }
-        // this.heroRoles.forEach(heroView =>{
-        //     heroView.setShowIndex(heroView.roleVo.lineupGrid - 1);
+        // this.heroRoles = new Array();
+        // var playerData:PlayerData = GameDataManager.ins.selfPlayerData;
+        // playerData.roleVoAry.forEach(roleVo => {
+        //     roleVo.initRowColPosPoint();
         // });
-        //显示层级排序
-        this.heroRoles.sort(function (hero1, hero2) {
-            return hero1.roleVo.gridY > hero2.roleVo.gridY ? 1 : -1;
-        });
-        for (i = 0; i < this.heroRoles.length; i++) {
-            this.heroRoles[i].setShowIndex(i);
-        }
-        //敌人
-        this.enemyRoles = new Array();
-        var bossData = GameDataManager.ins.bossData;
-        //怪物显示对象
-        var enemy;
-        for (i = 0; i < bossData.roleVoAry.length; i++) {
-            roleVo = bossData.roleVoAry[i];
-            enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
-            enemy.initRole(roleVo, i, 1, this.roleLayer);
-            enemy.aniPlay(RoleAniIndex.STAND);
-            this.enemyRoles.push(enemy);
-        }
-        //显示层级排序
-        this.enemyRoles.sort(function (enemy1, enemy2) {
-            return enemy1.roleVo.gridY > enemy2.roleVo.gridY ? 1 : -1;
-        });
-        for (i = 0; i < this.enemyRoles.length; i++) {
-            this.enemyRoles[i].setShowIndex(this.heroRoles.length + i);
-        }
-        BossBattleData.loadSum = this.heroRoles.length + this.enemyRoles.length;
-        BattleEngine.ins.challegenBoss(this.heroRoles, this.enemyRoles);
+        // var roleVo:RoleVo;
+        // var hero:Hero;
+        // for(var i = 0;i < playerData.roleVoAry.length;i++)
+        // {
+        //     roleVo = playerData.roleVoAry[i];
+        //     hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
+        //     if(roleVo.id == "10006" || roleVo.id == "10007")
+        //         hero.initRole(roleVo,i,0.8,this.roleLayer);
+        //     else
+        //         hero.initRole(roleVo,i,1,this.roleLayer);
+        //     // hero.setBlood(0);
+        //     hero.aniPlay(RoleAniIndex.STAND);
+        //     this.heroRoles.push(hero);
+        // }
+        // //显示层级排序
+        // this.heroRoles.sort(function(hero1,hero2):number{
+        //     return hero1.roleVo.gridY > hero2.roleVo.gridY ? 1 : -1;
+        // })
+        // for(i = 0;i < this.heroRoles.length;i++)
+        // {
+        //     this.heroRoles[i].setShowIndex(i);
+        // }
+        // //敌人
+        // this.enemyRoles = new Array();
+        // var bossData:EnemyData = GameDataManager.ins.bossData;    
+        // //怪物显示对象
+        // var enemy:Enemy;
+        // for(i = 0;i < bossData.roleVoAry.length;i++)
+        // {
+        //     roleVo = bossData.roleVoAry[i];
+        //     enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
+        //     enemy.initRole(roleVo,i,1,this.roleLayer);
+        //     enemy.aniPlay(RoleAniIndex.STAND);
+        //     this.enemyRoles.push(enemy);
+        // }
+        //  //显示层级排序
+        // this.enemyRoles.sort(function(enemy1,enemy2):number{
+        //     return enemy1.roleVo.gridY > enemy2.roleVo.gridY ? 1 : -1;
+        // })
+        // for(i = 0;i < this.enemyRoles.length;i++)
+        // {
+        //     this.enemyRoles[i].setShowIndex(this.heroRoles.length + i); 
+        // }
+        // BossBattleData.loadSum = this.heroRoles.length + this.enemyRoles.length;
+        // BattleEngine.ins.challegenBoss(this.heroRoles,this.enemyRoles);
     };
     /**
      * 快速结束
@@ -102,7 +103,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
             var lastHeros = [];
             this.heroRoles.forEach(function (role) {
                 Laya.Tween.clearAll(role);
-                role.roleVo.isDeath = false;
+                role.baseRoleVo.isDeath = false;
                 ObjectPoolUtil.stillObject(ObjectPoolUtil.HERO_ROLE, role);
                 role.dispose();
             });

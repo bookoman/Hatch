@@ -17,7 +17,7 @@ var BossBattleEngine = /** @class */ (function () {
             tempAry.push(hero);
         });
         tempAry.sort(function (vo1, vo2) {
-            return vo1.roleVo.gridX > vo2.roleVo.gridX ? -1 : 1;
+            return vo1.baseRoleVo.gridX > vo2.baseRoleVo.gridX ? -1 : 1;
         });
         tempAry = tempAry.slice(0, GameConfig.BATTLE_BOSS_HERO_SUM);
         return tempAry;
@@ -81,17 +81,17 @@ var BossBattleEngine = /** @class */ (function () {
         var tempAry = this.heroRoles.concat(this.enemyRoles);
         tempAry.forEach(function (roleView) {
             if (roleView) {
-                if (roleView.roleVo.id == attRoleVo.id) {
+                if (roleView.baseRoleVo.roleId == attRoleVo.roleId) {
                     _this.attRole = roleView;
                 }
-                else if (roleView.roleVo.id == defRoleVo.id) {
+                else if (roleView.baseRoleVo.roleId == defRoleVo.roleId) {
                     _this.defRole = roleView;
                 }
             }
         });
         if (this.attRole && this.defRole) {
             //远攻
-            if (this.attRole.roleVo.attFar == 1) {
+            if (this.attRole.baseRoleVo.attFar == 1) {
                 this.playAttackAni();
                 SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
             }
@@ -108,14 +108,14 @@ var BossBattleEngine = /** @class */ (function () {
      * @param data
      */
     BossBattleEngine.prototype.playAttackAni = function () {
-        var attRoleVo = this.attRole.roleVo;
-        var defRoleVo = this.defRole.roleVo;
-        var skillID = attRoleVo.getCanUserSkill();
-        if (skillID > 0) {
+        var attRoleVo = this.attRole.baseRoleVo;
+        var defRoleVo = this.defRole.baseRoleVo;
+        var skillModelID = attRoleVo.getCanUserSkill();
+        if (skillModelID) {
             //技能释放
             this.attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineup);
             var skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            skill.playSkill(skillID, this.defRole);
+            skill.playSkill(skillModelID, this.defRole, -200, -200);
         }
         else {
             //远攻，近攻击
@@ -133,7 +133,7 @@ var BossBattleEngine = /** @class */ (function () {
         }
         else {
             this.defRole.aniPlay(RoleAniIndex.INJURED, false);
-            this.defRole.showFloatFont(attRoleVo.att);
+            this.defRole.showFloatFont(attRoleVo.atk);
         }
         this.defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
     };
@@ -141,16 +141,16 @@ var BossBattleEngine = /** @class */ (function () {
      * 攻击完移动回阵型
      */
     BossBattleEngine.prototype.moveBackLineup = function () {
-        var attRoleVo = this.attRole.roleVo;
+        var attRoleVo = this.attRole.baseRoleVo;
         Laya.Tween.to(this.attRole, { x: attRoleVo.posPoint.x, y: attRoleVo.posPoint.y }, GameConfig.BATTLE_ATT_TIME * 1000 / 2 / GameConfig.BATTLE_ADDSPEED_TIMES, null, new Handler(this, this.moveBackLineupComplete, null, true), 0, true);
     };
     /**
      * 移动回阵型完成
      */
     BossBattleEngine.prototype.moveBackLineupComplete = function () {
-        DebugViewUtil.log("攻击返回", this.attRole.roleVo.name);
+        // DebugViewUtil.log("攻击返回",this.attRole.baseRoleVo.name);
         this.attRole.aniPlay(RoleAniIndex.STAND);
-        if (!this.defRole.roleVo.isDeath) {
+        if (!this.defRole.baseRoleVo.isDeath) {
             this.defRole.aniPlay(RoleAniIndex.STAND);
         }
         this.attCompleted();

@@ -4,8 +4,9 @@
 class MapBattleMediator extends BaseMediator{
     private battleReportMediator:BattleReportMediator = null;
     private challegenBossMediator:ChallegenBossMediator = null;
-    /**世界地图 */
-    private mapWorldMediator:MapWorldMediator = null;
+    
+    
+    
     constructor(assetsUrl?:any,view?:any){
         super(assetsUrl,view);
     }
@@ -14,7 +15,6 @@ class MapBattleMediator extends BaseMediator{
         this.view = new ui.map.MapBattleViewUI();
         LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,true,true);
         super.initView();
-
     }
     protected addEvents():void
     {

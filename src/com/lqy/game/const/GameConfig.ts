@@ -41,7 +41,7 @@ class GameConfig{
     /**战斗攻击需要时间(s) */
     public static BATTLE_ATT_TIME:number = 0.3;
     /**战斗加速倍数*/
-    public static BATTLE_ADDSPEED_TIMES:number = 1;
+    public static BATTLE_ADDSPEED_TIMES:number = 2;
 
     /**调试视图开关 */
     public static DEBUG_VIEW_SWITCH:boolean = false;
@@ -57,6 +57,8 @@ class GameConfig{
     /**挂机关卡地图key数据 */
     public static GATE_MAP_KEYS:Array<string> = [];
     
+    /**雨出现时间间隔 s */
+    public static RAIN_SHOW_LIMIT_TIME:number = 20;
 }
 
 class HTTPReqType{
@@ -151,4 +153,60 @@ enum BattleAttCampType
 enum GameButtomTabIndex
 {
     MAP_BATTLE = 0,LINEUP,BATTLE,HERO,EQUIP
+}
+/**技能释放目标 自身,我方一个,我方所有,敌方一个,敌方所有,我方一个包括自身,我方百分比血量最少,敌方百分比血量最少*/
+enum SkillTarget{
+    /**自身*/
+    SELF = 1,
+    /**我方一个不包括自身 */
+    WE_ONE,
+    /**我方所有 */
+    WE_ALL,
+    /**敌方一个*/
+    ENEMY_ONE,
+    /**敌方所有 */
+    ENEMY_ALL,
+    /**我方一个包括自身*/
+    WE_ONE_SELF,
+    /**我方百分比血量最少 */
+    WE_LEAST_PERCENT_BLOOD,
+    /**敌方百分比血量最少 */
+    ENEMY_LEAST_PERCENT_BLOOD
+}
+/**技能效果  伤害,流血,中毒,吸血,恢复,遗忘,混乱,愤怒,增加攻击力,增加防御力,增加速度,增加血量上限,回血,解除负面效果,解除正面效果,增加免伤,减少对方治疗量*/
+enum SkillEffect{
+    /**伤害 */
+    HURT=1,
+    /**流血 */
+    BLEEDING,
+    /**中毒 */
+    POISONING,
+    /**吸血 */
+    BLOOD_SUCKING,
+    /**恢复 */
+    RECOVERY,
+    /**遗忘 */
+    FORGET,
+    /**混乱 */
+    CONFUSION,
+    /**愤怒 */
+    ANGER,
+    /**增加攻击力 */
+    ADD_ATK,
+    /**增加防御力 */
+    ADD_DEF,
+    /**增加速度 */
+    ADD_SPEED,
+    /**增加血量上限 */
+    ADD_BLOOD_UP_LIMIT,
+    /**回血 */
+    RECOVERY_BLOOD,
+    /**解除负面效果 */
+    ELIMINATE_NEGATIVE_EFFECT,
+    /**解除正面效果 */
+    ELIMINATE_POSITIVE_EFFECT,
+    /**增加免伤 */
+    ADD_INJURY_FREE,
+    /**减少对方治疗量 */
+    REDUCE_ENEMY_TREATMENT
 }

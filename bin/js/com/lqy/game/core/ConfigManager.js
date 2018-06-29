@@ -325,8 +325,8 @@ var ConfigManager = /** @class */ (function () {
                         // console.log(value,"=",obj[value]);
                     }
                 }
-                // console.log(obj);
                 dic.set(obj[keyPro], obj);
+                // console.log(obj.modelId,obj.key,obj.name);
             }
         }
     };

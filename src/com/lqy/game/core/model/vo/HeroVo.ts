@@ -23,6 +23,8 @@ class HeroVo extends BaseRoleVo{
 
     public initBaseData():void
     {
+        
+
         this.roleId = this.heroId;
         this.scale = -1;
         this.key = this.heroKey;
@@ -38,6 +40,30 @@ class HeroVo extends BaseRoleVo{
         var qualityConfig:QualitySampleConfig = ConfigManager.ins.getQualitySampleConfig(this.qualityKey);
         this.upAtk = qualityConfig.aktMin;
         this.updef = qualityConfig.defMin;
+
+        /**技能数据 */
+        this.skillVos = [];
+        var skillVo:SkillVo = new SkillVo();
+
+        var bool:boolean = skillVo.initData(config.skillKey);
+        //流血buff测试
+        if(this.name == "美颌龙"){
+            //流血技能
+            bool = skillVo.initData("SK_0096");
+            //单个加血技能
+            // bool = skillVo.initData("SK_0061");
+            //提升攻击力技能
+            // bool = skillVo.initData("SK_0012");
+            //嘲讽
+            // bool = skillVo.initData("SK_0241");
+            skillVo.cd = 3;
+            skillVo.skillContinued = 2;
+        }
+        if(bool){
+            this.skillVos.push(skillVo);
+        }
+
+        super.initBaseData();
 
     }
     

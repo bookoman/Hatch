@@ -33,4 +33,11 @@
    <item name="unpack/moduleload/prebg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/moduleload/效果.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/moduleload/clip_load.png" type="Clip" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="ani/rain" type="" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="ani/rain_01/yu2.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="ani/rain_01/yu3.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="ani/rain_01/yu4.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="ani/rain_01/yu5.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="ani/rain_01/yu6.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="ani/rain_01/yu7.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
 </res>

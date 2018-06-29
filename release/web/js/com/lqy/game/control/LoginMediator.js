@@ -20,6 +20,7 @@ var LoginMediator = /** @class */ (function (_super) {
         this.view = new ui.LoginViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, true, false, true);
         _super.prototype.initView.call(this);
+        // TankUtil.stageShake(this.view,10);
     };
     LoginMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);

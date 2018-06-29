@@ -123,8 +123,8 @@ var MyLayer = /** @class */ (function (_super) {
     __extends(MyLayer, _super);
     function MyLayer() {
         var _this = _super.call(this) || this;
-        _this.maskCount = 0;
         _this.maskSprite = null;
+        _this.maskCount = 0;
         _this.viewObj = {};
         _this.curView = null;
         return _this;

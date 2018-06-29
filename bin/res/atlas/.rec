@@ -82,6 +82,7 @@ P C7F0F903 img_lbl6.png
 P 712B0160 img_map.png
 P 6EB1262C img_notice.png
 P B268763D img_reward.png
+P 8E8E545E wumai.png
 D ani/common_buff
 P 757EBDE8 buff_1.png
 P C274C787 buff_10.png
@@ -99,7 +100,25 @@ P 5C8EC553 buff_6.png
 P 949D71D8 buff_7.png
 P E339C1FB buff_8.png
 P E0F6B3FC buff_9.png
-D ani/sk_siyao
+D ani/rain_01
+P A06D6842 yu2.png
+P 4712FE31 yu3.png
+P B5328399 yu4.png
+P 1CA2FF7F yu5.png
+P 13AEAA55 yu6.png
+P 62FC2F17 yu7.png
+D ani/SK_0041
+P 0F74E5CB touchui_1.png
+P C8002D6F touchui_10.png
+P 5574F99E touchui_2.png
+P 84CA13CD touchui_3.png
+P BABDFCE8 touchui_4.png
+P 28F1D255 touchui_5.png
+P 82C295D5 touchui_6.png
+P 00C78B3A touchui_7.png
+P A3414FEB touchui_8.png
+P 45DAD1BF touchui_9.png
+D ani/SK_0081
 P FF726BE8 siyao_1.png
 P B7C387BF siyao_2.png
 P 3C97BEBF siyao_3.png
@@ -107,6 +126,44 @@ P 0CF8E072 siyao_4.png
 P AD8BB1BC siyao_5.png
 P 9859BB5E siyao_6.png
 P 5885B9CD siyao_7.png
+D ani/SK_0101
+P 073DC3A9 saowei_1.png
+P B0FEC01A saowei_10.png
+P 859773BD saowei_11.png
+P 4789354C saowei_2.png
+P BA322FD4 saowei_3.png
+P 164C4542 saowei_4.png
+P 554AFC6E saowei_5.png
+P 90C7BE63 saowei_6.png
+P EE7E7E9A saowei_7.png
+P 5398DE6F saowei_8.png
+P B010187E saowei_9.png
+D ani/SK_0121
+P 0B27D2B5 zhendi_1.png
+P CB9006F9 zhendi_10.png
+P 50CFCE83 zhendi_11.png
+P B9D09E0B zhendi_12.png
+P 4FD7B963 zhendi_13.png
+P 895F2A95 zhendi_2.png
+P 14AECD84 zhendi_3.png
+P EEEF12F2 zhendi_4.png
+P 4806E906 zhendi_5.png
+P D137FEDD zhendi_6.png
+P 70E9A64B zhendi_7.png
+P E576A0A2 zhendi_8.png
+P B3010B72 zhendi_9.png
+D ani/SK_0221
+P 963BBDEB scl_yao_1.png
+P C35611B0 scl_yao_10.png
+P 196329E7 scl_yao_11.png
+P 37CB5960 scl_yao_2.png
+P BE2B0780 scl_yao_3.png
+P BB5434B3 scl_yao_4.png
+P 0A11E47E scl_yao_5.png
+P 76FCD2D2 scl_yao_6.png
+P 56926307 scl_yao_7.png
+P 0FB343F0 scl_yao_8.png
+P A81E39D9 scl_yao_9.png
 D hero/icon
 P 077E0592 icon-001.png
 P 4FC42E68 icon-002.png
@@ -119,7 +176,7 @@ P BDF6A9E9 icon-008.png
 P 86DC8C1C icon-009.png
 P F30CC7E9 icon-010.png
 D unpack/challengeboss
-R BC8B24AE bg.png
+R 888F93F0 bg.png
 D unpack/lineup
 R 1E93072A bg.png
 R 0FCDCA25 juese_bg.png
@@ -163,7 +220,6 @@ R 66060124 p4.png
 R B420CDF7 p5.png
 R A8B7EA2C p6.png
 R 09186987 p7.png
-P 8E8E545E wumai.png
 R 5831344A yun1.png
 R A8357BE4 yun2.png
 R 2964B51E yun3.png

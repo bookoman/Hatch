@@ -161,7 +161,7 @@
                             }],
                         "skin":[
                             {
-                                "value":"ani/sk_siyao/siyao_1.png",
+                                "value":"ani/SK_0081/siyao_1.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":7,
@@ -348,7 +348,7 @@
                             }],
                         "skin":[
                             {
-                                "value":"ani/sk_siyao/siyao_2.png",
+                                "value":"ani/SK_0081/siyao_2.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":8,
@@ -550,7 +550,7 @@
                             }],
                         "skin":[
                             {
-                                "value":"ani/sk_siyao/siyao_3.png",
+                                "value":"ani/SK_0081/siyao_3.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":9,
@@ -752,7 +752,7 @@
                             }],
                         "skin":[
                             {
-                                "value":"ani/sk_siyao/siyao_4.png",
+                                "value":"ani/SK_0081/siyao_4.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":10,
@@ -1002,7 +1002,7 @@
                             }],
                         "skin":[
                             {
-                                "value":"ani/sk_siyao/siyao_5.png",
+                                "value":"ani/SK_0081/siyao_5.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":11,
@@ -1244,7 +1244,7 @@
                             }],
                         "skin":[
                             {
-                                "value":"ani/sk_siyao/siyao_6.png",
+                                "value":"ani/SK_0081/siyao_6.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":12,
@@ -1494,7 +1494,7 @@
                             }],
                         "skin":[
                             {
-                                "value":"ani/sk_siyao/siyao_7.png",
+                                "value":"ani/SK_0081/siyao_7.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":13,

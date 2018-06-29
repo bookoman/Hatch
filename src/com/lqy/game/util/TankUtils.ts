@@ -40,9 +40,45 @@ class TankUtil {
      * @param node 
      */
     public static shake(node: any): void {
-        Tween.to(node, { y: node.y + 100 }, 100, null, Handler.create(this, function () {
-            Tween.to(this.battleMap, { y: node.y - 100 }, 1000, Ease.elasticOut);
+        Laya.Tween.to(node, { y: node.y + 100 }, 100, null, Handler.create(this, function () {
+            Laya.Tween.to(node, { y: node.y - 100 }, 1000, Ease.elasticOut);
         }));
     }
+    public static isShake:boolean = false;
+    /**
+   * 震动屏幕 
+   * @param callBack
+   * @param times
+   * @param offset
+   * @param speed
+   *
+   */  
+  public static stageShake(view:Laya.Sprite, times:number = 2, offset:number = 12, speed:number = 32,caller?:any,callBack?:Function = null):void
+  {
+        if(this.isShake){
+                return;
+        }
+        
+        this.isShake = true;
+        var num:number = 0;
+        var offsetArr:Array<number> = [0, 0];
+        var point:Point = new Point(view.x, view.y);
+        Laya.stage.timerLoop(speed, this, shakeObject);
+        
+        function shakeObject(args:Array<any> = null, frameNum:number = 1, frameTime:number=0):void{
+            var count:number = (num++) % 4;
+            offsetArr[num % 2] = count < 2 ? 0 : offset;
+            view.x = offsetArr[0] + point.x;
+            view.y = offsetArr[1] + point.y;
+            if(num > (times * 4 + 1)){
+                Laya.stage.clearTimer(this, shakeObject);
+                num = 0;
+                this.isShake = false;
+                if(callBack != null)
+                {
+                    callBack.call(caller);
+                }
+            }
+        }
 
 }
