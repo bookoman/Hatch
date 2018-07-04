@@ -22,6 +22,7 @@ var IconView = /** @class */ (function (_super) {
         this.heroId = data.heroId;
         this.lineupId = data.lineupId;
         this.clipBG.skin = "comp/clip_qulity" + data.quality + ".png";
+        this.clipBG.skin = "comp/q_" + data.quality + ".png";
         this.imgIcon.skin = "res/outside/icons/heros/" + data.iconName + ".png";
         if (data.select) {
             this.setSelect(true);
@@ -51,11 +52,11 @@ var IconView = /** @class */ (function (_super) {
         Laya.stage.off(Laya.Event.MOUSE_UP, this, this.onMouseUP);
     };
     IconView.prototype.onMouseDown = function (e) {
-        this.clipBG.index = 1;
+        // this.clipBG.index = 1;
         this.scale(1.2, 1.2);
     };
     IconView.prototype.onMouseUP = function (e) {
-        this.clipBG.index = 0;
+        // this.clipBG.index = 0;
         this.scale(1, 1);
     };
     return IconView;

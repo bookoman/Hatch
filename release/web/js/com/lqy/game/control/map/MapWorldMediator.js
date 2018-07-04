@@ -128,7 +128,7 @@ var MapWorldMediator = /** @class */ (function (_super) {
                 return;
             }
             if (tweenX != 0) {
-                Laya.Tween.to(this.view.panelBlock, { x: tweenX }, 200, Laya.Ease.circIn);
+                Laya.Tween.to(this.view.panelBlock, { x: tweenX }, 200, Laya.Ease.backOut);
             }
             // console.log("mouseUp：",this.view.panelBlock.mouseX);
         }

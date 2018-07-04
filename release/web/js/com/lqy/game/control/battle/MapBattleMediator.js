@@ -20,7 +20,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
         return _this;
     }
     MapBattleMediator.prototype.initView = function () {
-        this.view = new ui.map.MapBattleViewUI();
+        this.view = new ui.battle.MapBattleViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
         _super.prototype.initView.call(this);
     };
@@ -66,6 +66,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
             resAry.push({ url: "res/outside/spine/role/" + baseRoleVo.modelId + "/" + baseRoleVo.modelId + ".sk", type: /*laya.net.Loader.BUFFER*/ "arraybuffer" });
         });
         this.challegenBossMediator = new ChallegenBossMediator(resAry);
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.TURE_BATTLE, 1000);
     };
     MapBattleMediator.prototype.dispose = function () {
     };

@@ -6,6 +6,7 @@ class MapWorldMediator extends BaseMediator{
     private lastMoveX:number = 0;
     private mouseDownX:number = 0;
     private mouseUpX:number = 0;
+    private distanceX:number;
     //颜色滤镜矩阵,灰色
     private grayFilter:Laya.ColorFilter = new Laya.ColorFilter([
             0.3086, 0.6094, 0.0820, 0, 0,  //R
@@ -149,13 +150,13 @@ class MapWorldMediator extends BaseMediator{
             }
             if(tweenX != 0)
             {
-                Laya.Tween.to(this.view.panelBlock,{x:tweenX},200,Laya.Ease.circIn);
+                Laya.Tween.to(this.view.panelBlock,{x:tweenX},200,Laya.Ease.backOut);
             }
 
             // console.log("mouseUp：",this.view.panelBlock.mouseX);
         }
     }
-    private distanceX:number;
+    
     private onMouseMove(e:Laya.Event):void
     {
         this.distanceX = 0;

@@ -18,7 +18,7 @@ class GateSwitchHangupHandler extends SocketHanlder{
         // var jsonObj = JSON.parse(message.roleGateInfo);
         // GameDataManager.ins.saveGateInfoVoDic(jsonObj);
         // console.log(message);
-        
+        GameDataManager.ins.hangGateKey = message.gateKey;
         super.success(message.gateKey);
     }
 }

@@ -14,6 +14,7 @@ class IconView extends ui.comp.IconViewUI{
         this.lineupId = data.lineupId;
 
         this.clipBG.skin = "comp/clip_qulity"+data.quality+".png";
+        this.clipBG.skin = "comp/q_"+data.quality+".png";
         this.imgIcon.skin = "res/outside/icons/heros/"+data.iconName +".png";
         if(data.select)
         {
@@ -54,12 +55,12 @@ class IconView extends ui.comp.IconViewUI{
 
     private onMouseDown(e):void
     {
-        this.clipBG.index = 1;
+        // this.clipBG.index = 1;
         this.scale(1.2,1.2);
     }
     private onMouseUP(e):void
     {
-        this.clipBG.index = 0;
+        // this.clipBG.index = 0;
         this.scale(1,1);
     }
     

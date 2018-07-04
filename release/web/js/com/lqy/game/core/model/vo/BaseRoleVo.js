@@ -16,6 +16,10 @@ var BaseRoleVo = /** @class */ (function () {
         this.mainSkillContinuedVo = null;
         /**当前技能副果持续回合 */
         this.assiSkillContinuedVo = null;
+        /**技能主效果公式 */
+        this.skillMainFormula = {};
+        /**技能副效果公式 */
+        this.skillSubFomula = {};
         this.isEnemy = isEnemy;
     }
     BaseRoleVo.prototype.initBaseData = function () {
@@ -76,8 +80,8 @@ var BaseRoleVo = /** @class */ (function () {
             if (skillVo.isCanUse) {
                 // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表");
                 _this.curSkillVo = skillVo;
-                _this.skillMainFormula["formula" + skillVo.skillMainEffect] = _this.curSkillVo.skillConfig.formula;
-                _this.skillSubFomula["formula" + skillVo.skillAssistantEffect] = _this.curSkillVo.skillConfig.subFormula;
+                _this.skillMainFormula["formula" + skillVo.skillMainEffect] = skillVo.skillConfig.formula;
+                _this.skillSubFomula["formula" + skillVo.skillAssistantEffect] = skillVo.skillConfig.formula;
                 // console.log("....",this.skillMainFormula,this.skillSubFomula);
             }
         });

@@ -61152,7 +61152,6 @@ var TankUtil = /** @class */ (function () {
         if (times === void 0) { times = 2; }
         if (offset === void 0) { offset = 12; }
         if (speed === void 0) { speed = 32; }
-        if (callBack === void 0) { callBack = null; }
         if (this.isShake) {
             return;
         }
@@ -61503,6 +61502,22 @@ var LayaSoundManager = Laya.SoundManager;
 */
 var SoundsManager = /** @class */ (function () {
     function SoundsManager() {
+        this.musicsConfig = [
+            { "url": "res/outside/sound/bg/jzd.mp3", "desc": "假战斗背景" },
+            { "url": "res/outside/sound/bg/zzd.mp3", "desc": "真战斗背景" },
+            { "url": "res/outside/sound/bg/ui-map.ogg", "desc": "大地图背景" },
+            { "url": "res/outside/sound/bg/ui-bjyy.mp3", "desc": "UI背景" },
+            { "url": "res/outside/sound/bg/ui_dl.mp3", "desc": "登录背景" }
+        ];
+        this.soundsConfig = [
+            { "url": "res/outside/sound/effect/ui_dj.wav", "desc": "点击音效" },
+            { "url": "res/outside/sound/effect/ui_gb.mp3", "desc": "关闭音效" },
+            { "url": "res/outside/sound/effect/ui_dl.mp3", "desc": "报错音效" },
+            { "url": "res/outside/sound/effect/ui_gold.wav", "desc": "消耗金币音效" },
+            { "url": "res/outside/sound/effect/ui_dl.mp3", "desc": "收获音效" },
+            { "url": "res/outside/sound/effect/sl.ogg", "desc": "战斗胜利音效" },
+            { "url": "res/outside/sound/effect/sb.ogg", "desc": "战斗失败音效" }
+        ];
         this.soundChannelDic = new Dictionary();
     }
     Object.defineProperty(SoundsManager, "ins", {
@@ -61588,34 +61603,26 @@ var SoundsManager = /** @class */ (function () {
     SoundsManager.prototype.removeChannel = function (channel) {
         LayaSoundManager.removeChannel(channel);
     };
+    /**播放背景音乐 */
+    SoundsManager.prototype.playerMusicByEnum = function (eId, loops, complete, startTime) {
+        if (loops === void 0) { loops = 0; }
+        if (complete === void 0) { complete = null; }
+        if (startTime === void 0) { startTime = 0; }
+        var config = this.musicsConfig[eId];
+        this.playMusic(config.url, loops, complete, startTime);
+    };
+    /**播放背景音乐 */
+    SoundsManager.prototype.playerSoundByEnum = function (eId, loops, complete, startTime) {
+        if (loops === void 0) { loops = 0; }
+        if (complete === void 0) { complete = null; }
+        if (startTime === void 0) { startTime = 0; }
+        var config = this.soundsConfig[eId];
+        this.playSound(config.url, loops, complete, startTime);
+    };
     SoundsManager._ins = null;
     return SoundsManager;
 }());
 //# sourceMappingURL=SoundsManager.js.map
-/*
-* 声音管理器
-*/
-var SoundManager = /** @class */ (function () {
-    function SoundManager() {
-    }
-    Object.defineProperty(SoundManager, "ins", {
-        get: function () {
-            if (this._ins == null) {
-                this._ins = new SoundManager();
-            }
-            return this._ins;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    SoundManager.prototype.soundPlay = function () {
-    };
-    SoundManager.prototype.soundParse = function () {
-    };
-    SoundManager._ins = null;
-    return SoundManager;
-}());
-//# sourceMappingURL=SoundManager.js.map
 /*
 * 场景管理器
 */
@@ -61919,7 +61926,7 @@ var UIRole = /** @class */ (function () {
             //>= aniCount默认播放第一个动画
             if (this.skeletonAni) {
                 this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted);
-                this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
+                // this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID, loop);
             }
         }
@@ -62491,7 +62498,7 @@ var RoleVo = /** @class */ (function () {
             if (skillVo.isCanUse) {
                 // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表"+skillVo.id);
                 skillVo.isCanUse = false;
-                skillID = Number(skillVo.id);
+                // skillID =  Number(skillVo.id);
             }
         });
         return skillID;
@@ -62523,6 +62530,50 @@ var GateInfoVo = /** @class */ (function () {
 var BattleReportVo = /** @class */ (function () {
     function BattleReportVo() {
     }
+    /**
+     * 战报字符串
+     */
+    BattleReportVo.prototype.getReportDataHtml = function () {
+        var html = "";
+        switch (this.type) {
+            case BattleReportDataType.HURT:
+                html = "<span style='fontSize:24;color:#009900'>[" + this.atkName + "]</span>"
+                    + "<span style='fontSize:24;color:#000000'> 攻击 </span>"
+                    + "<span style='fontSize:24;color:#009900'>[" + this.defName + "]</span>"
+                    + "<span style='fontSize:24;color:#000000'> 造成了 </span>"
+                    + "<span style='fontSize:24;color:#ff0000'>" + this.hurt + "</span>"
+                    + "<span style='fontSize:24;color:#000000'> 点伤害 </span>";
+                return html;
+            case BattleReportDataType.BATTLE_DIE:
+                html = "<span style='fontSize:24;color:#009900'>[" + this.atkName + "]</span>"
+                    + "<span style='fontSize:24;color:#000000'> 最后一击打出 </span>"
+                    + "<span style='fontSize:24;color:#ff0000'>" + this.hurt + "</span>"
+                    + "<span style='fontSize:24;color:#000000'> 点伤害，成功击杀了</span>"
+                    + "<span style='fontSize:24;color:#009900'>[" + this.defName + "]</span>";
+                return html;
+            case BattleReportDataType.REWARD:
+                html = "<span style='fontSize:24;color:#000000'> 战斗结束，获得奖励 </span>";
+                var itemKey;
+                var itemNum;
+                var ind = Math.ceil(Math.random() * GameConfig.QUALITY_COLORS.length) - 1;
+                ind = 2;
+                var qualityColor = GameConfig.QUALITY_COLORS[ind];
+                for (var i = 0; i < this.rewardDatas.length; i++) {
+                    itemKey = this.rewardDatas[i][0];
+                    itemNum = Number(this.rewardDatas[i][1]);
+                    var itemConfig = ConfigManager.ins.getItemSampleConfig(itemKey);
+                    if (!itemConfig)
+                        continue;
+                    html += "<span style='fontSize:24;color:" + qualityColor + "'>[" + itemConfig.itemName + "]</span>" + "<span style='fontSize:24;color:#ff0000'>X" + itemNum;
+                    if (i < this.rewardDatas.length - 1)
+                        html += ";</span>";
+                    else
+                        html += "</span>";
+                }
+                return html;
+        }
+        return html;
+    };
     return BattleReportVo;
 }());
 //# sourceMappingURL=BattleReportVo.js.map
@@ -62544,6 +62595,10 @@ var BaseRoleVo = /** @class */ (function () {
         this.mainSkillContinuedVo = null;
         /**当前技能副果持续回合 */
         this.assiSkillContinuedVo = null;
+        /**技能主效果公式 */
+        this.skillMainFormula = {};
+        /**技能副效果公式 */
+        this.skillSubFomula = {};
         this.isEnemy = isEnemy;
     }
     BaseRoleVo.prototype.initBaseData = function () {
@@ -62604,8 +62659,8 @@ var BaseRoleVo = /** @class */ (function () {
             if (skillVo.isCanUse) {
                 // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表");
                 _this.curSkillVo = skillVo;
-                _this.skillMainFormula["formula" + skillVo.skillMainEffect] = _this.curSkillVo.skillConfig.formula;
-                _this.skillSubFomula["formula" + skillVo.skillAssistantEffect] = _this.curSkillVo.skillConfig.subFormula;
+                _this.skillMainFormula["formula" + skillVo.skillMainEffect] = skillVo.skillConfig.formula;
+                _this.skillSubFomula["formula" + skillVo.skillAssistantEffect] = skillVo.skillConfig.formula;
                 // console.log("....",this.skillMainFormula,this.skillSubFomula);
             }
         });
@@ -63032,7 +63087,44 @@ var GateMapSampleConfig = /** @class */ (function () {
 */
 var BattleReportData = /** @class */ (function () {
     function BattleReportData() {
+        this.reportVos = [];
     }
+    Object.defineProperty(BattleReportData, "ins", {
+        get: function () {
+            if (this._ins == null) {
+                this._ins = new BattleReportData();
+            }
+            return this._ins;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    /**添加战报数据 */
+    BattleReportData.prototype.addBattleReportVo = function (type, atkName, defName, hurt, rewardDatas) {
+        if (this.reportVos.length > BattleReportData.REPORT_SUM_LIMIT) {
+            this.reportVos.shift();
+        }
+        var vo = new BattleReportVo();
+        vo.type = type;
+        if (type == BattleReportDataType.HURT) {
+            vo.atkName = atkName;
+            vo.defName = defName;
+            vo.hurt = hurt;
+        }
+        else if (type == BattleReportDataType.BATTLE_DIE) {
+            vo.atkName = atkName;
+            vo.defName = defName;
+            vo.hurt = hurt;
+        }
+        else if (type == BattleReportDataType.REWARD) {
+            // vo.rewardName = rewardName;
+            // vo.rewardNum = rewardNum;
+            vo.rewardDatas = rewardDatas;
+        }
+        EventManager.ins.dispatchEvent(EventManager.REPORT_DATA_UPDATE, vo);
+    };
+    BattleReportData.REPORT_SUM_LIMIT = 100;
+    BattleReportData._ins = null;
     return BattleReportData;
 }());
 //# sourceMappingURL=BattleReportData.js.map
@@ -63121,8 +63213,8 @@ var MapManager = /** @class */ (function () {
         this.calSquintAngleGrid();
         GameDataManager.ins.calMapRowColPosPoint();
         //声音
-        var soundUrl = mapID >= 10000 ? "res/outside/sound/bg/zzd.mp3" : "res/outside/sound/bg/jzd.mp3";
-        SoundsManager.ins.playMusic(soundUrl, 1000);
+        // var soundUrl:string = mapID >= 10000 ?"res/outside/sound/bg/zzd.mp3" : "res/outside/sound/bg/jzd.mp3";
+        // SoundsManager.ins.playMusic(soundUrl,1000);
     };
     MapManager.prototype.backLoopMap = function () {
         this.enterMap("res/map", this.curLoopMapId, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
@@ -63639,6 +63731,8 @@ var EventManager = /** @class */ (function () {
     EventManager.TEST_LIST_SCRALE_RENDER = "TEST_LIST_SCRALE_RENDER";
     /**选择挑战关卡 */
     EventManager.CHOICE_CHALLEGEN_GATE = "CHOICE_CHALLEGEN_GATE";
+    /**战报数据更新 */
+    EventManager.REPORT_DATA_UPDATE = "REPORT_DATA_UPDATE";
     EventManager._ins = null;
     return EventManager;
 }());
@@ -63648,6 +63742,9 @@ var EventManager = /** @class */ (function () {
 */
 var ConfigManager = /** @class */ (function () {
     function ConfigManager() {
+        //测试数据
+        // this.roleConfigDic = new Dictionary();
+        // this.skillConfigDic = new Dictionary();
         /*********测试配置数据 */
         this.roleConfigAry = [
             { "id": "10000", modelId: "role10000", name: "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10006", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 10, "attFar": 1 },
@@ -63698,11 +63795,8 @@ var ConfigManager = /** @class */ (function () {
         this.masterHeroSampleDic = null;
         /**道具 */
         this.itemSampleDic = null;
-        //测试数据
-        this.roleConfigDic = new Dictionary();
-        this.skillConfigDic = new Dictionary();
-        this.parseSkillConfig();
-        this.parseRoleConfig();
+        // this.parseSkillConfig();
+        // this.parseRoleConfig();
     }
     Object.defineProperty(ConfigManager, "ins", {
         get: function () {
@@ -63717,53 +63811,53 @@ var ConfigManager = /** @class */ (function () {
     /**
      * 解析角色配资
      */
-    ConfigManager.prototype.parseRoleConfig = function () {
-        var _this = this;
-        var rectAry;
-        var roleVo;
-        var ax, ay, bx, by;
-        this.roleConfigAry.forEach(function (roleConfig) {
-            roleVo = new RoleVo();
-            roleVo.id = roleConfig.id;
-            roleVo.modelId = roleConfig.modelId;
-            roleVo.name = roleConfig.name;
-            roleVo.skillVos = [];
-            var skillAry = roleConfig.skillIDs == "" ? [] : roleConfig.skillIDs.split(",");
-            skillAry.forEach(function (skillId) {
-                roleVo.skillVos.push(_this.getSkillVoByID(skillId));
-            });
-            roleVo.scaleX = roleConfig.scaleX;
-            roleVo.runWidth = roleConfig.runWidth;
-            roleVo.runHeight = roleConfig.runHeight;
-            var rectAry = roleConfig.attackRect.split(",");
-            ax = rectAry[0];
-            ay = rectAry[1];
-            bx = rectAry[2];
-            by = rectAry[3];
-            roleVo.attackRange = new Rectangle(ax, ay, bx - ax, by - ay);
-            roleVo.hp = roleConfig.hp;
-            roleVo.dieAttTimes = roleConfig.dieAttTimes;
-            roleVo.att = roleConfig.att;
-            roleVo.atts = roleConfig.atts;
-            roleVo.attFar = roleConfig.attFar;
-            _this.roleConfigDic.set(roleVo.id, roleVo);
-        });
-    };
+    // public parseRoleConfig():void
+    // {
+    //     var rectAry:Array<number>;
+    //     var roleVo:RoleVo;
+    //     var ax:number,ay:number,bx:number,by:number;
+    //     this.roleConfigAry.forEach(roleConfig => {
+    //         roleVo = new RoleVo();
+    //         roleVo.id = roleConfig.id;
+    //         roleVo.modelId = roleConfig.modelId;
+    //         roleVo.name = roleConfig.name;
+    //         roleVo.skillVos = [];
+    //         var skillAry:Array<string> = roleConfig.skillIDs == "" ? [] : roleConfig.skillIDs.split(",");
+    //         skillAry.forEach(skillId =>{
+    //             roleVo.skillVos.push(this.getSkillVoByID(skillId));
+    //         });
+    //         roleVo.scaleX = roleConfig.scaleX;
+    //         roleVo.runWidth = roleConfig.runWidth;
+    //         roleVo.runHeight = roleConfig.runHeight; 
+    //         var rectAry = roleConfig.attackRect.split(",");
+    //         ax = rectAry[0];
+    //         ay = rectAry[1];
+    //         bx = rectAry[2];
+    //         by = rectAry[3];
+    //         roleVo.attackRange = new Rectangle(ax,ay,bx-ax,by-ay);
+    //         roleVo.hp = roleConfig.hp;
+    //         roleVo.dieAttTimes = roleConfig.dieAttTimes;
+    //         roleVo.att = roleConfig.att;
+    //         roleVo.atts = roleConfig.atts;
+    //         roleVo.attFar = roleConfig.attFar;
+    //         this.roleConfigDic.set(roleVo.id,roleVo);
+    //     });
+    // }
     /**
      *解析技能配置
      */
-    ConfigManager.prototype.parseSkillConfig = function () {
-        var _this = this;
-        var skillVo;
-        var skillConfig;
-        this.skillConfigAry.forEach(function (skillConfig) {
-            skillVo = new SkillVo();
-            skillVo.id = skillConfig.id;
-            skillVo.name = skillConfig.name;
-            skillVo.cd = skillConfig.cd;
-            _this.skillConfigDic.set(skillVo.id, skillVo);
-        });
-    };
+    // public parseSkillConfig():void
+    // {
+    //     var skillVo:SkillVo;
+    //     var skillConfig:Object;
+    //     this.skillConfigAry.forEach(skillConfig => {
+    //         skillVo = new SkillVo();
+    //         skillVo.key = skillConfig.id;
+    //         skillVo.name = skillConfig.name;
+    //         skillVo.cd = skillConfig.cd;
+    //         this.skillConfigDic.set(skillVo.key,skillVo);
+    //     });
+    // }
     /**解析预加载配置表 */
     ConfigManager.prototype.parsePreLoadConfigs = function () {
         this.parseQualitySample();
@@ -64123,23 +64217,25 @@ var LoopBattleEngine = /** @class */ (function () {
     LoopBattleEngine.prototype.playAttackAni = function (attRole, defRole) {
         var attRoleVo = attRole.baseRoleVo;
         var defRoleVo = defRole.baseRoleVo;
-        var skillVo = attRoleVo.getCanUserSkill();
-        if (skillVo) {
-            //技能释放               
-            // var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            // skill.playSkill(skillVo.modelId,defRole,0,0,0.3);
-        }
-        else {
-            //远攻，近攻击
-            // if(attRoleVo.attFar == 1)
-            // {
-            //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineupComplete);
-            // }
-            // else
-            // {
-            //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
-            // }
-        }
+        // var skillVo:SkillVo = attRoleVo.getCanUserSkill();
+        // if(skillVo)
+        // {
+        //技能释放               
+        // var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+        // skill.playSkill(skillVo.modelId,defRole,0,0,0.3);
+        // }
+        // else
+        // {
+        //远攻，近攻击
+        // if(attRoleVo.attFar == 1)
+        // {
+        //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineupComplete);
+        // }
+        // else
+        // {
+        //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
+        // }
+        // }
         attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
         this.loopBattleData.calculationAttribute(attRoleVo, defRoleVo);
         if (defRoleVo.isDeath) {
@@ -64332,6 +64428,7 @@ var LoopBattleData = /** @class */ (function () {
         });
         if (this.isEnd) {
             this.isWin = true;
+            this.productRewards();
             // console.log("战斗结束"+this.isWin);
             return;
         }
@@ -64347,6 +64444,11 @@ var LoopBattleData = /** @class */ (function () {
         else if (this.curAttCamp == BattleAttCampType.ENEMY) {
             this.curAttCamp = BattleAttCampType.HERO;
         }
+    };
+    LoopBattleData.prototype.productRewards = function () {
+        var gateConfig = ConfigManager.ins.getGateSampleConfig(GameDataManager.ins.hangGateKey);
+        var rewards = gateConfig.getRandowRewards();
+        BattleReportData.ins.addBattleReportVo(BattleReportDataType.REWARD, null, null, null, rewards);
     };
     /**
      * 寻找攻击目标
@@ -64440,6 +64542,11 @@ var BattleTurnVo = /** @class */ (function () {
         this.defRoleVo.battleDieAttTimes--;
         this.defRoleVo.isDeath = this.defRoleVo.battleDieAttTimes <= 0;
         this.defRoleVo.isAtted = true;
+        //添加战报数据
+        if (this.defRoleVo.isDeath)
+            BattleReportData.ins.addBattleReportVo(BattleReportDataType.BATTLE_DIE, this.attRoleVo.name, this.defRoleVo.name, this.attRoleVo.atk);
+        else
+            BattleReportData.ins.addBattleReportVo(BattleReportDataType.HURT, this.attRoleVo.name, this.defRoleVo.name, this.attRoleVo.atk);
         // console.log(this.defRoleVo.name ,this.defRoleVo.battleDieAttTimes);
     };
     return BattleTurnVo;
@@ -64691,7 +64798,8 @@ var BossBattleEngine = /** @class */ (function () {
     BossBattleEngine.prototype.attCompleted = function () {
         this.bossBattleData.checkBattleEnd();
         if (this.bossBattleData.isEnd) {
-            Laya.timer.once(1000, this, this.endBattle);
+            // Laya.timer.once(1000,this,this.endBattle);
+            this.showBattleResultView(this.bossBattleData.isWin);
         }
         else {
             this.attack();
@@ -64709,6 +64817,30 @@ var BossBattleEngine = /** @class */ (function () {
         EventManager.ins.dispatchEvent(EventManager.CHALLENGE_BOSS, [true]);
         //回到假战斗
         BattleEngine.ins.loopBattleRun();
+    };
+    BossBattleEngine.prototype.showBattleResultView = function (isSuccess) {
+        var resAry;
+        var baseMediator;
+        if (isSuccess) {
+            resAry = [
+                { url: "unpack/battlesuccess/img_bg.png", type: Loader.IMAGE },
+                { url: "unpack/battlesuccess/img_blue.png", type: Loader.IMAGE },
+                { url: "unpack/battlesuccess/img_bluebg.png", type: Loader.IMAGE },
+                { url: "unpack/battlesuccess/img_success.png", type: Loader.IMAGE },
+                { url: "res/atlas/battlesuccess.atlas", type: Loader.ATLAS }
+            ];
+            baseMediator = new BattleSuccessMediator(resAry);
+        }
+        else {
+            resAry = [
+                { url: "unpack/battlefail/img_bg.png", type: Loader.IMAGE },
+                { url: "unpack/battlefail/img_fail.png", type: Loader.IMAGE },
+                { url: "unpack/battlefail/img_graybg.png", type: Loader.IMAGE },
+                { url: "unpack/battlefail/img_grayfillter.png", type: Loader.IMAGE },
+                { url: "res/atlas/battlefail.atlas", type: Loader.ATLAS }
+            ];
+            baseMediator = new BattleFailMediator(resAry);
+        }
     };
     return BossBattleEngine;
 }());
@@ -65238,6 +65370,20 @@ var AnimationManager = /** @class */ (function () {
             this.rainFrameAni = null;
         }
     };
+    /**添加鼠标点击特效 */
+    AnimationManager.prototype.addMouseClickEffect = function () {
+        var layer = LayerManager.ins.getLayer(LayerManager.TIP_LAYER);
+        if (this.mouseClickAni == null) {
+            this.mouseClickAni = new Laya.Animation();
+            this.mouseClickAni.loadAnimation("res/ani/click.ani");
+            this.mouseClickAni.on("complete" /**Laya.Event.COMPLETE*/, this, function (e) {
+                this.mouseClickAni.removeSelf();
+            });
+        }
+        this.mouseClickAni.pos(layer.mouseX, layer.mouseY);
+        layer.addChild(this.mouseClickAni);
+        this.mouseClickAni.play();
+    };
     AnimationManager._ins = null;
     return AnimationManager;
 }());
@@ -65278,13 +65424,13 @@ var GameConfig = /** @class */ (function () {
     GameConfig.LINEUP_GRID_HEIGHT = 100;
     /**战斗配置 */
     /**战斗时间间隔(S) */
-    GameConfig.BATTLE_INTERVAL_TIME = 1;
+    GameConfig.BATTLE_INTERVAL_TIME = 2;
     /**战斗跑到阵型需要时间(s) */
     GameConfig.BATTLE_RUN_TIME = 0.5;
     /**战斗攻击需要时间(s) */
     GameConfig.BATTLE_ATT_TIME = 0.3;
     /**战斗加速倍数*/
-    GameConfig.BATTLE_ADDSPEED_TIMES = 3;
+    GameConfig.BATTLE_ADDSPEED_TIMES = 1;
     /**调试视图开关 */
     GameConfig.DEBUG_VIEW_SWITCH = false;
     /**场景战斗开关 */
@@ -65298,6 +65444,8 @@ var GameConfig = /** @class */ (function () {
     GameConfig.GATE_MAP_KEYS = [];
     /**雨出现时间间隔 s */
     GameConfig.RAIN_SHOW_LIMIT_TIME = 20;
+    /**品质color */
+    GameConfig.QUALITY_COLORS = ["#00ff00", "#003366", "#FF9933"];
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {
@@ -65340,11 +65488,11 @@ var HTTPRequestUrl = /** @class */ (function () {
     function HTTPRequestUrl() {
     }
     /**测试登录 get*/
-    HTTPRequestUrl.testLoginURL = "http://192.168.2.126:8080/api/testLogin.do";
+    HTTPRequestUrl.testLoginURL = "http://192.168.2.104:8080/api/testLogin.do";
     /**获取区服列表 get*/
-    HTTPRequestUrl.gameServerURL = "http://192.168.2.126:8080/api/gameserver.do";
+    HTTPRequestUrl.gameServerURL = "http://192.168.2.104:8080/api/gameserver.do";
     /**进入游戏 get*/
-    HTTPRequestUrl.enterGameURL = "http://192.168.2.126:8080/api/entergame.do";
+    HTTPRequestUrl.enterGameURL = "http://192.168.2.104:8080/api/entergame.do";
     return HTTPRequestUrl;
 }());
 /**服务器状态 */
@@ -65462,17 +65610,46 @@ var SkillEffect;
     /**减少对方治疗量 */
     SkillEffect[SkillEffect["REDUCE_ENEMY_TREATMENT"] = 17] = "REDUCE_ENEMY_TREATMENT";
 })(SkillEffect || (SkillEffect = {}));
+/**战报类型 */
+var BattleReportDataType;
+(function (BattleReportDataType) {
+    BattleReportDataType[BattleReportDataType["HURT"] = 1] = "HURT";
+    BattleReportDataType[BattleReportDataType["REWARD"] = 2] = "REWARD";
+    BattleReportDataType[BattleReportDataType["BATTLE_DIE"] = 3] = "BATTLE_DIE";
+})(BattleReportDataType || (BattleReportDataType = {}));
+/**背景音乐枚举 */
+var MusicBGType;
+(function (MusicBGType) {
+    MusicBGType[MusicBGType["SHAM_BATTLE"] = 0] = "SHAM_BATTLE";
+    MusicBGType[MusicBGType["TURE_BATTLE"] = 1] = "TURE_BATTLE";
+    MusicBGType[MusicBGType["WORLD_MAP"] = 2] = "WORLD_MAP";
+    MusicBGType[MusicBGType["UI_BG"] = 3] = "UI_BG";
+    MusicBGType[MusicBGType["LOGIN_BG"] = 4] = "LOGIN_BG";
+})(MusicBGType || (MusicBGType = {}));
+/**音效枚举 */
+var SoundEffectType;
+(function (SoundEffectType) {
+    SoundEffectType[SoundEffectType["CLICK"] = 0] = "CLICK";
+    SoundEffectType[SoundEffectType["CLOSE"] = 1] = "CLOSE";
+    SoundEffectType[SoundEffectType["ERROR"] = 2] = "ERROR";
+    SoundEffectType[SoundEffectType["USE_GOLD"] = 3] = "USE_GOLD";
+    SoundEffectType[SoundEffectType["HARVEST"] = 4] = "HARVEST";
+    SoundEffectType[SoundEffectType["SUCCESS"] = 5] = "SUCCESS";
+    SoundEffectType[SoundEffectType["FAIL"] = 6] = "FAIL";
+})(SoundEffectType || (SoundEffectType = {}));
 //# sourceMappingURL=GameConfig.js.map
 /*
 * 帧动画
 */
 var FrameAnimation = /** @class */ (function () {
-    function FrameAnimation(disParent, tx, ty, isSkill, scale) {
+    // private isAutoRemove:boolean;
+    function FrameAnimation(disParent, tx, ty, isSkill, scale, isAutoRemove) {
         this.isLoop = false;
         this.scale = 1;
         this.isSkill = false;
         this.scale = scale === undefined ? 1 : scale;
         this.isSkill = isSkill === undefined ? false : isSkill;
+        // this.isAutoRemove = isAutoRemove === undefined ? true : isAutoRemove;
         this.animation = new Laya.Animation;
         tx = tx === undefined ? 0 : tx;
         ty = ty === undefined ? 0 : ty;
@@ -65509,6 +65686,11 @@ var FrameAnimation = /** @class */ (function () {
             this.animation.loadAtlas("res/atlas/ani/" + this.modelId + ".atlas", Laya.Handler.create(this, this.onLoaded));
         }
     };
+    FrameAnimation.prototype.setXY = function (tx, ty) {
+        if (this.animation) {
+            this.animation.pos(tx, ty);
+        }
+    };
     FrameAnimation.prototype.dispose = function () {
         Laya.loader.off("error" /**Laya.Event.ERROR*/, this, this.onLoadAniError);
         this.caller = null;
@@ -65535,6 +65717,7 @@ var FrameAnimation = /** @class */ (function () {
         if (this.caller && this.callBack) {
             this.callBack.call(this.caller);
         }
+        // if(this.isAutoRemove)
         this.dispose();
     };
     FrameAnimation.prototype.onLoadAniError = function (e) {
@@ -65683,34 +65866,94 @@ var ui;
     })(bag = ui.bag || (ui.bag = {}));
 })(ui || (ui = {}));
 (function (ui) {
-    var BattleReportViewUI = /** @class */ (function (_super) {
-        __extends(BattleReportViewUI, _super);
-        function BattleReportViewUI() {
-            return _super.call(this) || this;
-        }
-        BattleReportViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.BattleReportViewUI.uiView);
-        };
-        BattleReportViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 375 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/img_reportsbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "TextArea", "props": { "y": 57, "x": 10, "width": 731, "var": "texaArea", "height": 300, "editable": false } }, { "type": "Label", "props": { "y": 15, "x": 322, "width": 85, "text": "战    报", "height": 25, "fontSize": 24, "color": "#000000", "bold": true, "align": "center" } }] };
-        return BattleReportViewUI;
-    }(View));
-    ui.BattleReportViewUI = BattleReportViewUI;
+    var battle;
+    (function (battle) {
+        var BattleFailViewUI = /** @class */ (function (_super) {
+            __extends(BattleFailViewUI, _super);
+            function BattleFailViewUI() {
+                return _super.call(this) || this;
+            }
+            BattleFailViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.battle.BattleFailViewUI.uiView);
+            };
+            BattleFailViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "var": "bg", "skin": "comp/blank.png", "height": 1334 } }, { "type": "Image", "props": { "y": 161, "x": 3, "skin": "unpack/battlefail/img_graybg.png" } }, { "type": "Image", "props": { "y": 565, "x": 381, "var": "imgGray", "skin": "unpack/battlefail/img_grayfillter.png", "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 532, "x": -17, "skin": "unpack/battlefail/img_bg.png" } }, { "type": "Image", "props": { "y": 336, "x": 83, "skin": "unpack/battlefail/img_fail.png" } }, { "type": "Button", "props": { "y": 744, "x": 106, "var": "btnGiveup", "stateNum": 1, "skin": "battlefail/btn_giveup.png" } }, { "type": "Button", "props": { "y": 744, "x": 425, "var": "btnBattleAgain", "stateNum": 1, "skin": "battlefail/btn_battleagain.png" } }] };
+            return BattleFailViewUI;
+        }(View));
+        battle.BattleFailViewUI = BattleFailViewUI;
+    })(battle = ui.battle || (ui.battle = {}));
 })(ui || (ui = {}));
 (function (ui) {
-    var ChallengeBossViewUI = /** @class */ (function (_super) {
-        __extends(ChallengeBossViewUI, _super);
-        function ChallengeBossViewUI() {
-            return _super.call(this) || this;
-        }
-        ChallengeBossViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.ChallengeBossViewUI.uiView);
-        };
-        ChallengeBossViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/bg.png" } }, { "type": "Button", "props": { "y": 1111, "x": 277, "width": 195, "var": "btnFast", "skin": "comp/button.png", "labelSize": 30, "label": "快速结束", "height": 71 } }] };
-        return ChallengeBossViewUI;
-    }(View));
-    ui.ChallengeBossViewUI = ChallengeBossViewUI;
+    var battle;
+    (function (battle) {
+        var BattleReportViewUI = /** @class */ (function (_super) {
+            __extends(BattleReportViewUI, _super);
+            function BattleReportViewUI() {
+                return _super.call(this) || this;
+            }
+            BattleReportViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.battle.BattleReportViewUI.uiView);
+            };
+            BattleReportViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 375 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/img_reportsbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "Panel", "props": { "y": 68, "x": 20, "width": 715, "var": "panelMask", "vScrollBarSkin": "comp/vscroll.png", "height": 200 } }, { "type": "Image", "props": { "y": 15, "x": 314, "skin": "main/img_battlereport.png" } }] };
+            return BattleReportViewUI;
+        }(View));
+        battle.BattleReportViewUI = BattleReportViewUI;
+    })(battle = ui.battle || (ui.battle = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var battle;
+    (function (battle) {
+        var BattleSuccessViewUI = /** @class */ (function (_super) {
+            __extends(BattleSuccessViewUI, _super);
+            function BattleSuccessViewUI() {
+                return _super.call(this) || this;
+            }
+            BattleSuccessViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.battle.BattleSuccessViewUI.uiView);
+            };
+            BattleSuccessViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "var": "bg", "skin": "comp/blank.png", "height": 1334 } }, { "type": "Image", "props": { "y": 150, "x": 0, "skin": "unpack/battlesuccess/img_bluebg.png" } }, { "type": "Image", "props": { "y": 550, "x": 378, "var": "imgGray", "skin": "unpack/battlesuccess/img_blue.png", "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 521, "x": -8, "skin": "unpack/battlesuccess/img_bg.png" } }, { "type": "Image", "props": { "y": 325, "x": 80, "skin": "unpack/battlesuccess/img_success.png" } }, { "type": "Image", "props": { "y": 676, "x": 146, "skin": "battlesuccess/img_rewards.png" } }] };
+            return BattleSuccessViewUI;
+        }(View));
+        battle.BattleSuccessViewUI = BattleSuccessViewUI;
+    })(battle = ui.battle || (ui.battle = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var battle;
+    (function (battle) {
+        var ChallengeBossViewUI = /** @class */ (function (_super) {
+            __extends(ChallengeBossViewUI, _super);
+            function ChallengeBossViewUI() {
+                return _super.call(this) || this;
+            }
+            ChallengeBossViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.battle.ChallengeBossViewUI.uiView);
+            };
+            ChallengeBossViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/img_battlebg.png" } }, { "type": "Button", "props": { "y": 1111, "x": 277, "width": 195, "visible": false, "var": "btnFast", "skin": "comp/button.png", "labelSize": 30, "label": "快速结束", "height": 71 } }, { "type": "Sprite", "props": { "var": "sprRole" } }, { "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/img_battlepre.png" } }, { "type": "Button", "props": { "y": 1121, "x": 337, "width": 83, "var": "btnTimes", "stateNum": 1, "skin": "comp/btn_comp.png", "labelSize": 30, "labelFont": "SimHei", "labelColors": "#46300e", "labelBold": true, "label": "X1", "height": 60, "alpha": 0.9 } }] };
+            return ChallengeBossViewUI;
+        }(View));
+        battle.ChallengeBossViewUI = ChallengeBossViewUI;
+    })(battle = ui.battle || (ui.battle = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var battle;
+    (function (battle) {
+        var MapBattleViewUI = /** @class */ (function (_super) {
+            __extends(MapBattleViewUI, _super);
+            function MapBattleViewUI() {
+                return _super.call(this) || this;
+            }
+            MapBattleViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.battle.MapBattleViewUI.uiView);
+            };
+            MapBattleViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/main/img_fenwei.png" } }, { "type": "Button", "props": { "y": 891, "x": 567, "width": 172, "var": "btnChalleangeBoss", "stateNum": 1, "skin": "comp/btn_comp.png", "labelSize": 30, "labelFont": "SimHei", "labelColors": "#46300e", "labelBold": true, "label": "挑战boss", "height": 60, "alpha": 0.9 } }] };
+            return MapBattleViewUI;
+        }(View));
+        battle.MapBattleViewUI = MapBattleViewUI;
+    })(battle = ui.battle || (ui.battle = {}));
 })(ui || (ui = {}));
 (function (ui) {
     var ChoiceServerViewUI = /** @class */ (function (_super) {
@@ -65739,7 +65982,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.comp.IconViewUI.uiView);
             };
-            IconViewUI.uiView = { "type": "View", "props": { "width": 115, "height": 115 }, "child": [{ "type": "Clip", "props": { "y": 2, "x": 2, "width": 110, "var": "clipBG", "skin": "comp/clip_qulity1.png", "height": 110, "clipY": 2 } }, { "type": "Image", "props": { "y": 10, "x": 10, "width": 95, "var": "imgIcon", "height": 96 } }, { "type": "Image", "props": { "y": 27, "x": 14, "visible": false, "var": "imgTick", "skin": "comp/img_tick.png" } }] };
+            IconViewUI.uiView = { "type": "View", "props": { "width": 115, "height": 115 }, "child": [{ "type": "Clip", "props": { "y": -2, "x": -5, "var": "clipBG", "skin": "comp/q_1.png", "clipY": 1 } }, { "type": "Image", "props": { "y": 9, "x": 9, "width": 95, "var": "imgIcon", "height": 96 } }, { "type": "Image", "props": { "y": 25, "x": -4, "visible": false, "var": "imgTick", "skin": "comp/img_select.png" } }] };
             return IconViewUI;
         }(View));
         comp.IconViewUI = IconViewUI;
@@ -65772,10 +66015,28 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.EnterGameViewUI.uiView);
         };
-        EnterGameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Label", "props": { "y": 28, "x": 31, "text": "当前账号：", "fontSize": 30, "color": "#ffffff" } }, { "type": "Button", "props": { "y": 1082, "x": 269, "width": 211, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 38, "label": "进入游戏", "height": 72 } }, { "type": "Image", "props": { "y": 106, "x": 38, "width": 674, "skin": "unpack/login/logo.png", "height": 422 } }, { "type": "Button", "props": { "y": 21, "x": 593, "width": 140, "var": "btnRegster", "skin": "comp/button.png", "labelStrokeColor": "#ff0905", "labelSize": 30, "label": "切换账户", "height": 45, "alpha": 0.9 } }, { "type": "Text", "props": { "y": 28, "x": 181, "width": 401, "var": "textUser", "text": "325266_asda_10023", "height": 40, "fontSize": 30, "color": "#e3e2e2", "alpha": 0.8, "align": "center" } }, { "type": "Button", "props": { "y": 954, "x": 229, "width": 303, "var": "btnChoice", "height": 63 }, "child": [{ "type": "Line", "props": { "y": 0, "x": 0, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Line", "props": { "y": 60, "x": 0, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Circle", "props": { "y": 30, "x": 10, "radius": 10, "lineWidth": 1, "fillColor": "#f82c2c" } }, { "type": "Text", "props": { "y": 12, "x": 40, "width": 254, "var": "lblServName", "text": "一区丶齐天大圣", "height": 41, "fontSize": 30, "color": "#e3e2e2" } }] }, { "type": "ChoiceServerView", "props": { "y": 0, "x": 0, "visible": false, "var": "serverListView", "runtime": "ui.ChoiceServerViewUI" } }] };
+        EnterGameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbg.png" } }, { "type": "Button", "props": { "y": 965, "x": 235, "var": "btnLogin", "stateNum": 1, "skin": "login/btn_startgame.png", "labelSize": 38 } }, { "type": "Image", "props": { "y": 106, "x": 38, "width": 674, "visible": false, "skin": "unpack/login/logo.png", "height": 422 } }, { "type": "Button", "props": { "y": 42, "x": 593, "width": 140, "var": "btnRegster", "stateNum": 1, "skin": "comp/btn_comp.png", "labelSize": 24, "labelFont": "SimHei", "labelColors": "#46300e", "labelBold": true, "label": "切换账户", "height": 45, "alpha": 0.9 } }, { "type": "Button", "props": { "y": 847, "x": 229, "width": 303, "var": "btnChoice", "height": 63 }, "child": [{ "type": "Line", "props": { "y": 0, "x": 0, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Line", "props": { "y": 60, "x": 0, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Circle", "props": { "y": 30, "x": 10, "radius": 10, "lineWidth": 1, "fillColor": "#f82c2c" } }, { "type": "Text", "props": { "y": 12, "x": 40, "width": 254, "var": "lblServName", "text": "一区丶齐天大圣", "height": 41, "fontSize": 30, "color": "#e3e2e2" } }] }, { "type": "ChoiceServerView", "props": { "y": 0, "x": 0, "visible": false, "var": "serverListView", "runtime": "ui.ChoiceServerViewUI" } }] };
         return EnterGameViewUI;
     }(View));
     ui.EnterGameViewUI = EnterGameViewUI;
+})(ui || (ui = {}));
+(function (ui) {
+    var equip;
+    (function (equip) {
+        var SmeltViewUI = /** @class */ (function (_super) {
+            __extends(SmeltViewUI, _super);
+            function SmeltViewUI() {
+                return _super.call(this) || this;
+            }
+            SmeltViewUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.equip.SmeltViewUI.uiView);
+            };
+            SmeltViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/smelt/smeltbg.png" } }, { "type": "Image", "props": { "y": 69, "x": 6, "var": "smeltTitle", "skin": "smelt/smelt.png" } }, { "type": "Panel", "props": { "y": 343, "x": 66, "width": 652, "var": "smeltPanel", "name": "smeltPanel", "height": 667 }, "child": [{ "type": "Image", "props": { "y": 647, "x": 2, "skin": "unpack/smelt/slidimg.png" } }, { "type": "Image", "props": { "y": 132, "x": 104, "skin": "unpack/comp/zhuangbeijiatu.png" } }, { "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/smelt/boximg.png" } }, { "type": "Image", "props": { "y": 32, "x": 30, "skin": "smelt/lablenum.png" } }, { "type": "Label", "props": { "y": 306, "x": 318, "var": "displylable", "text": "当前熔炼", "fontSize": 30, "color": "#e5f2f3", "bold": true, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Animation", "props": { "y": 336, "x": 160, "width": 1, "visible": false, "var": "ani1", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani1", "height": 1, "autoPlay": true } }, { "type": "Animation", "props": { "y": 491, "x": 160, "visible": false, "var": "ani2", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani2", "autoPlay": true } }, { "type": "Animation", "props": { "y": 184, "x": 490, "visible": false, "var": "ani3", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani3", "autoPlay": true } }, { "type": "Animation", "props": { "y": 339, "x": 490, "visible": false, "var": "ani4", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani4", "autoPlay": true } }, { "type": "Animation", "props": { "y": 501, "x": 490, "visible": false, "var": "ani5", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani5", "autoPlay": true } }, { "type": "Animation", "props": { "y": 181, "x": 160, "visible": false, "var": "ani6", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani6", "autoPlay": true } }] }, { "type": "Image", "props": { "y": 254, "x": 67, "skin": "smelt/daozhao.png" } }, { "type": "Image", "props": { "y": 351, "x": 60, "skin": "unpack/smelt/slidimg.png" } }, { "type": "Image", "props": { "y": 267, "x": 325, "skin": "smelt/skillbth.png" } }, { "type": "Image", "props": { "y": 1031, "x": 193, "skin": "smelt/autoselect.png" } }, { "type": "Image", "props": { "y": 1033, "x": 443, "var": "btnSmelt", "skin": "smelt/smeltbth.png" } }, { "type": "Animation", "props": { "y": 668, "x": 386, "visible": false, "var": "ainrong", "source": "res/ani/ronglian1.ani", "name": "ainrong", "autoPlay": false } }, { "type": "Label", "props": { "y": 671, "x": 348, "visible": false, "var": "smeltNum", "text": "1350", "name": "smeltNum", "fontSize": 30, "color": "#74ef13", "bold": true } }, { "type": "Label", "props": { "y": 671, "x": 348, "visible": true, "var": "displyLable", "text": "2000", "name": "displyLable", "fontSize": 30, "color": "#74ef13", "bold": true } }, { "type": "Button", "props": { "y": 19, "x": 688, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png", "name": "btnClose" } }] };
+            return SmeltViewUI;
+        }(View));
+        equip.SmeltViewUI = SmeltViewUI;
+    })(equip = ui.equip || (ui.equip = {}));
 })(ui || (ui = {}));
 (function (ui) {
     var EquipViewUI = /** @class */ (function (_super) {
@@ -65804,7 +66065,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.farm.FarmViewUI.uiView);
             };
-            FarmViewUI.uiView = { "type": "View", "props": { "y": 0, "x": 0, "width": 750, "height": 1334 }, "child": [{ "type": "Panel", "props": { "y": 0, "x": 0, "width": 750, "var": "farmPanel", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "var": "bg", "skin": "unpack/farm/bg.png" } }, { "type": "Image", "props": { "y": 1197, "x": 29, "skin": "unpack/farm/huawen.png" } }, { "type": "Panel", "props": { "y": 159, "x": -32, "width": 1383, "var": "zhiwuPanel", "height": 671 }, "child": [{ "type": "Image", "props": { "y": 12, "x": -265, "skin": "unpack/farm/caijimap.png" } }] }, { "type": "Image", "props": { "y": 37, "x": -1, "skin": "farm/tip-zhongzi.png" } }, { "type": "Panel", "props": { "y": 827, "x": 24, "width": 703, "height": 354 }, "child": [{ "type": "Image", "props": { "skin": "unpack/farm/bgzhongzhi.png" } }, { "type": "Image", "props": { "skin": "farm/tip-zhongzhi.png" } }, { "type": "List", "props": { "width": 491, "var": "zhongzhiList", "spaceY": 10, "spaceX": 10, "selectEnable": false, "repeatY": 1, "repeatX": 3, "renderType": "render", "name": "zhongzhiList", "height": 210, "centerY": 0, "centerX": 0 }, "child": [{ "type": "VScrollBar", "props": { "y": 10, "x": -48, "width": 1, "name": "scrollBar", "height": 338 } }, { "type": "VBox", "props": { "x": 2, "width": 152, "top": 10, "space": 15, "renderType": "render", "bottom": 5, "align": "center" }, "child": [{ "type": "Panel", "props": { "y": -51, "x": -28, "width": 104, "height": 102, "anchorY": 0, "anchorX": 0 }, "child": [{ "type": "Image", "props": { "y": 51, "x": 52, "width": 104, "var": "zhongzhiBg", "skin": "farm/frame.png", "name": "zhongzhiBg", "height": 102, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 53, "x": 50, "var": "ZhongZhiIcon", "skin": "farm/bigmogu.png", "name": "ZhongZhiIcon", "anchorY": 0.5, "anchorX": 0.5 } }] }, { "type": "Label", "props": { "y": 59, "x": -29, "var": "zhongzhiName", "text": "毒蘑菇花花", "name": "zhongzhiName", "fontSize": 20, "color": "#f2d778", "bold": true, "align": "center" } }, { "type": "Label", "props": { "y": 59, "x": -53, "text": "已使用：（2/3）", "name": "zhongzhiName", "fontSize": 20, "color": "#563610", "bold": true, "align": "center" } }] }] }] }, { "type": "Panel", "props": { "y": 783, "x": 428, "width": 290, "height": 38 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "farm/bgnumber.png" } }, { "type": "Button", "props": { "y": 1, "x": 255, "stateNum": 1, "skin": "farm/jia.png" } }, { "type": "Label", "props": { "y": 6, "x": 187, "var": "shengyuCount", "text": "3", "name": "shengyuCount", "fontSize": 25, "color": "#f6ed94", "bold": true } }, { "type": "Image", "props": { "y": 2, "x": 8, "skin": "farm/chishu.png" } }] }, { "type": "Image", "props": { "y": -298, "x": -1420, "width": 2182, "var": "wumai", "skin": "worldmap/wumai.png", "height": 823 } }] }, { "type": "Button", "props": { "y": 41, "x": 649, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png" } }] };
+            FarmViewUI.uiView = { "type": "View", "props": { "y": 0, "x": 0, "width": 750, "height": 1334 }, "child": [{ "type": "Panel", "props": { "y": 0, "x": 0, "width": 750, "var": "farmPanel", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "var": "bg", "skin": "unpack/farm/bg.png" } }, { "type": "Image", "props": { "y": 1197, "x": 29, "skin": "unpack/farm/huawen.png" } }, { "type": "Panel", "props": { "y": 159, "x": -32, "width": 1383, "var": "panlePlant", "height": 671 }, "child": [{ "type": "Image", "props": { "y": 12, "x": -265, "skin": "unpack/farm/caijimap.png" } }] }, { "type": "Image", "props": { "y": 37, "x": -1, "skin": "farm/tip-zhongzi.png" } }, { "type": "Panel", "props": { "y": 827, "x": 24, "width": 703, "height": 354 }, "child": [{ "type": "Image", "props": { "skin": "unpack/farm/bgzhongzhi.png" } }, { "type": "Image", "props": { "skin": "farm/tip-zhongzhi.png" } }, { "type": "List", "props": { "width": 491, "var": "zhongzhiList", "spaceY": 10, "spaceX": 10, "selectEnable": false, "repeatY": 1, "repeatX": 3, "renderType": "render", "name": "zhongzhiList", "height": 210, "centerY": 0, "centerX": 0 }, "child": [{ "type": "VScrollBar", "props": { "y": 10, "x": -48, "width": 1, "name": "scrollBar", "height": 338 } }, { "type": "VBox", "props": { "x": 2, "width": 152, "top": 10, "space": 15, "renderType": "render", "bottom": 5, "align": "center" }, "child": [{ "type": "Panel", "props": { "y": -51, "x": -28, "width": 104, "height": 102, "anchorY": 0, "anchorX": 0 }, "child": [{ "type": "Image", "props": { "y": 51, "x": 52, "width": 104, "var": "zhongzhiBg", "skin": "farm/frame.png", "name": "zhongzhiBg", "height": 102, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 53, "x": 50, "var": "ZhongZhiIcon", "skin": "farm/bigmogu.png", "name": "ZhongZhiIcon", "anchorY": 0.5, "anchorX": 0.5 } }] }, { "type": "Label", "props": { "y": 59, "x": -29, "var": "zhongzhiName", "text": "毒蘑菇花花", "name": "zhongzhiName", "fontSize": 20, "color": "#f2d778", "bold": true, "align": "center" } }, { "type": "Label", "props": { "y": 59, "x": -53, "text": "已使用：（2/3）", "name": "zhongzhiName", "fontSize": 20, "color": "#563610", "bold": true, "align": "center" } }] }] }] }, { "type": "Panel", "props": { "y": 783, "x": 428, "width": 290, "height": 38 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "farm/bgnumber.png" } }, { "type": "Button", "props": { "y": 1, "x": 255, "stateNum": 1, "skin": "farm/jia.png" } }, { "type": "Label", "props": { "y": 6, "x": 187, "var": "shengyuCount", "text": "3", "name": "shengyuCount", "fontSize": 25, "color": "#f6ed94", "bold": true } }, { "type": "Image", "props": { "y": 2, "x": 8, "skin": "farm/chishu.png" } }] }, { "type": "Image", "props": { "y": -298, "x": -1420, "width": 2182, "var": "wumai", "skin": "worldmap/wumai.png", "height": 823 } }] }, { "type": "Button", "props": { "y": 41, "x": 649, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png", "name": "btnClose" } }] };
             return FarmViewUI;
         }(View));
         farm.FarmViewUI = FarmViewUI;
@@ -65821,7 +66082,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.GameViewUI.uiView);
         };
-        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "mouseThrough": true, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 17, "x": 706, "width": 34, "var": "btnOpen", "stateNum": 1, "skin": "main/laba.png", "sizeGrid": "-10,0,-6,-14", "labelStrokeColor": "#f88508", "labelSize": 32, "height": 31, "alpha": 0.6 } }, { "type": "Image", "props": { "y": 1215, "x": 0, "width": 750, "skin": "unpack/main/diban.png", "height": 119 } }, { "type": "Image", "props": { "y": 1320, "x": 0, "width": 750, "skin": "main/img_blood.png", "height": 14 } }, { "type": "Tab", "props": { "y": 1214, "x": 2, "width": 746, "height": 124 }, "child": [{ "type": "Button", "props": { "y": -7, "x": -1, "width": 145, "var": "btnMap", "stateNum": 1, "skin": "main/huic.png", "labelSize": 40, "height": 102 } }, { "type": "Button", "props": { "y": 0, "x": 435, "width": 148, "var": "btnHero", "stateNum": 1, "skin": "main/juese.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 145, "width": 148, "var": "btnLineup", "stateNum": 1, "skin": "main/tansuo.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": -1, "x": 590, "width": 148, "var": "btnBag", "stateNum": 1, "skin": "main/bag.png", "labelSize": 40, "height": 100 } }, { "type": "Button", "props": { "y": 0, "x": 292, "width": 148, "var": "btnBattle", "stateNum": 1, "skin": "main/zuoz.png", "labelSize": 40, "height": 100 } }] }, { "type": "TestAniScaleView", "props": { "y": 1, "x": 253, "visible": false, "var": "viewAniScale", "runtime": "ui.test.TestAniScaleViewUI" } }] };
+        GameViewUI.uiView = { "type": "View", "props": { "width": 750, "mouseThrough": true, "height": 1334 }, "child": [{ "type": "Button", "props": { "y": 17, "x": 706, "width": 34, "visible": false, "var": "btnOpen", "stateNum": 1, "skin": "main/laba.png", "sizeGrid": "-10,0,-6,-14", "labelStrokeColor": "#f88508", "labelSize": 32, "height": 31, "alpha": 0.6 } }, { "type": "Tab", "props": { "y": 1235, "x": 0, "width": 746, "height": 124 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/main/img_btnbg.png" } }, { "type": "Button", "props": { "y": 98, "x": 94, "var": "btnMap", "stateNum": 1, "skin": "main/btn_map.png", "scaleY": 0.9, "scaleX": 0.9, "pivotY": 130, "pivotX": 76, "labelSize": 40 } }, { "type": "Button", "props": { "y": 98, "x": 545, "var": "btnHero", "stateNum": 1, "skin": "main/btn_hero.png", "scaleY": 0.9, "scaleX": 0.9, "pivotY": 130, "pivotX": 76, "labelSize": 40 } }, { "type": "Button", "props": { "y": 98, "x": 227, "var": "btnLineup", "stateNum": 1, "skin": "main/btn_lineup.png", "scaleY": 0.9, "scaleX": 0.9, "pivotY": 130, "pivotX": 76, "labelSize": 40 } }, { "type": "Button", "props": { "y": 98, "x": 673, "var": "btnBag", "stateNum": 1, "skin": "main/btn_bag.png", "scaleY": 0.9, "scaleX": 0.9, "pivotY": 130, "pivotX": 76, "labelSize": 40 } }, { "type": "Button", "props": { "y": 100, "x": 377, "var": "btnBattle", "stateNum": 1, "skin": "main/btn_battle.png", "pivotY": 130, "pivotX": 76, "labelSize": 40 } }] }, { "type": "TestAniScaleView", "props": { "y": 1, "x": 253, "visible": false, "var": "viewAniScale", "runtime": "ui.test.TestAniScaleViewUI" } }] };
         return GameViewUI;
     }(View));
     ui.GameViewUI = GameViewUI;
@@ -65838,7 +66099,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.graphtag.GraphtagViewUI.uiView);
             };
-            GraphtagViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "skin": "unpack/comp/mainbg.png" } }, { "type": "Panel", "props": { "y": 204, "x": 755, "width": 734, "var": "graphtagPanel", "height": 953 }, "child": [{ "type": "Image", "props": { "skin": "unpack/comp/dibanbg.png" } }, { "type": "Button", "props": { "y": -9, "x": 676, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png" } }, { "type": "Image", "props": { "y": 0, "x": 10, "var": "atkImage", "skin": "graphtag/atk.png" } }, { "type": "Image", "props": { "y": 121, "x": 9, "var": "defImage", "skin": "graphtag/checkDef.png" } }, { "type": "Image", "props": { "y": 58, "x": 100, "skin": "unpack/comp/line.png" } }, { "type": "Image", "props": { "y": 885, "x": 98, "skin": "unpack/comp/line.png" } }, { "type": "Image", "props": { "y": 87, "x": 85, "skin": "unpack/graphtag/grahtagjiatu.png" } }] }, { "type": "Image", "props": { "y": 35, "x": -227, "var": "graptitleImage", "skin": "graphtag/graptitle.png" } }] };
+            GraphtagViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "skin": "unpack/comp/mainbg.png" } }, { "type": "Panel", "props": { "y": 204, "x": 755, "width": 734, "var": "graphtagPanel", "height": 953 }, "child": [{ "type": "Image", "props": { "skin": "unpack/comp/dibanbg.png" } }, { "type": "Button", "props": { "y": -9, "x": 676, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png", "name": "btnClose" } }, { "type": "Image", "props": { "y": 0, "x": 10, "var": "atkImage", "skin": "graphtag/atk.png" } }, { "type": "Image", "props": { "y": 121, "x": 9, "var": "defImage", "skin": "graphtag/checkDef.png" } }, { "type": "Image", "props": { "y": 58, "x": 100, "skin": "unpack/comp/line.png" } }, { "type": "Image", "props": { "y": 885, "x": 98, "skin": "unpack/comp/line.png" } }, { "type": "Image", "props": { "y": 87, "x": 85, "skin": "unpack/graphtag/grahtagjiatu.png" } }] }, { "type": "Image", "props": { "y": 35, "x": -227, "var": "graptitleImage", "skin": "graphtag/graptitle.png" } }] };
             return GraphtagViewUI;
         }(View));
         graphtag.GraphtagViewUI = GraphtagViewUI;
@@ -65942,7 +66203,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.LoginViewUI.uiView);
         };
-        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/main.jpg", "height": 1334 } }, { "type": "Box", "props": { "y": 576, "x": 127, "width": 496, "height": 317 }, "child": [{ "type": "Image", "props": { "width": 496, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 361, "centerY": 0, "centerX": 0 } }, { "type": "TextInput", "props": { "y": 73, "x": 187, "width": 216, "var": "inputAccount", "text": "xielong5", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 72, "x": 95, "width": 100, "text": "帐号：", "height": 38, "fontSize": 30, "color": "#000000" } }, { "type": "TextInput", "props": { "y": 141, "x": 187, "width": 216, "var": "inputPwd", "type": "password", "text": "123456", "skin": "comp/textinput.png", "height": 36, "fontSize": 30 } }, { "type": "Label", "props": { "y": 140, "x": 95, "width": 100, "text": "密码：", "height": 38, "fontSize": 30 } }, { "type": "Button", "props": { "y": 209, "x": 158, "width": 211, "var": "btnLogin", "skin": "comp/button.png", "labelSize": 38, "label": "登  录", "height": 72 } }] }] };
+        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbg.png" } }, { "type": "Image", "props": { "y": -271, "x": 28, "visible": false, "var": "logoImg", "skin": "unpack/login/logo.png" } }, { "type": "Box", "props": { "y": 1355, "x": 105, "var": "boxLogin" }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbox.png" } }, { "type": "Image", "props": { "y": 144, "x": 104, "skin": "login/account.png" } }, { "type": "Image", "props": { "y": 240, "x": 104, "skin": "login/pwdimg.png" } }, { "type": "Button", "props": { "y": 313, "x": 232, "var": "btnLogin", "stateNum": 1, "skin": "login/loginbth.png" } }, { "type": "TextInput", "props": { "y": 142, "x": 189, "width": 284, "var": "inputAccount", "text": "xielong7", "height": 42, "fontSize": 28, "bold": true } }, { "type": "TextInput", "props": { "y": 231, "x": 192, "wordWrap": false, "width": 281, "var": "inputPwd", "type": "password", "text": "123456", "height": 42, "fontSize": 28, "bold": true } }] }] };
         return LoginViewUI;
     }(View));
     ui.LoginViewUI = LoginViewUI;
@@ -66018,24 +66279,6 @@ var ui;
             return GateListViewUI;
         }(View));
         map.GateListViewUI = GateListViewUI;
-    })(map = ui.map || (ui.map = {}));
-})(ui || (ui = {}));
-(function (ui) {
-    var map;
-    (function (map) {
-        var MapBattleViewUI = /** @class */ (function (_super) {
-            __extends(MapBattleViewUI, _super);
-            function MapBattleViewUI() {
-                return _super.call(this) || this;
-            }
-            MapBattleViewUI.prototype.createChildren = function () {
-                _super.prototype.createChildren.call(this);
-                this.createView(ui.map.MapBattleViewUI.uiView);
-            };
-            MapBattleViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/main/img_fenwei.png" } }, { "type": "Button", "props": { "y": 891, "x": 567, "width": 172, "var": "btnChalleangeBoss", "skin": "comp/button.png", "labelSize": 24, "label": "挑战boss", "height": 59 } }] };
-            return MapBattleViewUI;
-        }(View));
-        map.MapBattleViewUI = MapBattleViewUI;
     })(map = ui.map || (ui.map = {}));
 })(ui || (ui = {}));
 (function (ui) {
@@ -66147,6 +66390,7 @@ var IconView = /** @class */ (function (_super) {
         this.heroId = data.heroId;
         this.lineupId = data.lineupId;
         this.clipBG.skin = "comp/clip_qulity" + data.quality + ".png";
+        this.clipBG.skin = "comp/q_" + data.quality + ".png";
         this.imgIcon.skin = "res/outside/icons/heros/" + data.iconName + ".png";
         if (data.select) {
             this.setSelect(true);
@@ -66176,11 +66420,11 @@ var IconView = /** @class */ (function (_super) {
         Laya.stage.off(Laya.Event.MOUSE_UP, this, this.onMouseUP);
     };
     IconView.prototype.onMouseDown = function (e) {
-        this.clipBG.index = 1;
+        // this.clipBG.index = 1;
         this.scale(1.2, 1.2);
     };
     IconView.prototype.onMouseUP = function (e) {
-        this.clipBG.index = 0;
+        // this.clipBG.index = 0;
         this.scale(1, 1);
     };
     return IconView;
@@ -66611,13 +66855,12 @@ var RightFunctionButtons = /** @class */ (function (_super) {
     function RightFunctionButtons() {
         var _this = _super.call(this) || this;
         _this.moveTime = 300;
-        _this.btnW = 70;
-        _this.btnH = 64;
+        _this.btnW = 130;
+        _this.btnH = 130;
         _this.btnPadding = 10;
-        _this.upConfigs = [{ name: "btnFarm", skin: "comp/button.png", lable: "农场" },
-            { name: "btnGraphtag", skin: "comp/button.png", lable: "图鉴" }];
-        _this.leftConfigs = [{ name: "btnLeft0", skin: "comp/button.png", lable: "测试0" },
-            { name: "btnLeft1", skin: "comp/button.png", lable: "测试1" }];
+        _this.upConfigs = [{ name: "btnFarm", skin: "main/btn_farm.png", lable: "农场" },
+            { name: "btnGraphtag", skin: "main/btn_graphtag.png", lable: "图鉴" }];
+        _this.leftConfigs = [{ name: "btnSmelt", skin: "main/btn_smelt.png", lable: "熔炼" }];
         _this.isOpen = false;
         _this.curMediator = null;
         _this.initComponets();
@@ -66640,9 +66883,13 @@ var RightFunctionButtons = /** @class */ (function (_super) {
         var config;
         for (var i = 0; i < this.upConfigs.length; i++) {
             config = this.upConfigs[i];
-            btn = new Button(config.skin, config.lable);
+            btn = new Button(config.skin);
+            btn.stateNum = 1;
+            btn.anchorX = 0.5;
+            btn.anchorY = 0.5;
             btn.name = config.name;
             btn.labelSize = 30;
+            btn.alpha = 0;
             btn.width = this.btnW;
             btn.height = this.btnH;
             this.addChild(btn);
@@ -66650,19 +66897,24 @@ var RightFunctionButtons = /** @class */ (function (_super) {
         }
         for (i = 0; i < this.leftConfigs.length; i++) {
             config = this.leftConfigs[i];
-            btn = new Button(config.skin, config.lable);
+            btn = new Button(config.skin);
+            btn.stateNum = 1;
+            btn.anchorX = 0.5;
+            btn.anchorY = 0.5;
             btn.name = config.name;
             btn.labelSize = 30;
+            btn.alpha = 0;
             btn.width = this.btnW;
             btn.height = this.btnH;
             this.addChild(btn);
             this.leftButtons.push(btn);
         }
-        this.openBtn = new Button("comp/button.png", "+");
+        this.openBtn = new Button("main/btn_open.png");
         this.openBtn.name = "openBtn";
         this.openBtn.labelSize = 30;
-        this.openBtn.width = this.btnW;
-        this.openBtn.height = this.btnH;
+        this.openBtn.stateNum = 1;
+        this.openBtn.anchorX = 0.5;
+        this.openBtn.anchorY = 0.5;
         this.addChild(this.openBtn);
         // this.openBtn.on(Laya.Event.CLICK,this,this.onOpenBtnClick);
         this.on(Laya.Event.CLICK, this, this.onViewClick);
@@ -66680,8 +66932,9 @@ var RightFunctionButtons = /** @class */ (function (_super) {
                 this.onBtnGraptag();
                 // console.log("btnGraphtag");
                 break;
-            case "btnLeft0":
-                console.log("btnLeft0");
+            case "btnSmelt":
+                this.onBtnSmelt();
+                console.log("btnSmelt");
                 break;
             case "btnLeft1":
                 console.log("btnLeft1");
@@ -66691,11 +66944,13 @@ var RightFunctionButtons = /** @class */ (function (_super) {
     RightFunctionButtons.prototype.show = function (disParent) {
         this.upButtons.forEach(function (btn) {
             btn.y = 0;
+            btn.alpha = 0;
         });
         this.leftButtons.forEach(function (btn) {
             btn.x = 0;
+            btn.alpha = 0;
         });
-        this.openBtn.label = "+";
+        // this.openBtn.label = "+";
         this.x = GameConfig.STAGE_WIDTH - this.openBtn.width;
         this.y = GameConfig.STAGE_HEIGHT / 4 * 3;
         disParent.addChild(this);
@@ -66711,13 +66966,13 @@ var RightFunctionButtons = /** @class */ (function (_super) {
         for (var i = 0; i < this.upButtons.length; i++) {
             btn = this.upButtons[i];
             ty = btn.y - (i + 1) * (this.btnH + this.btnPadding);
-            Laya.Tween.to(btn, { y: ty }, this.moveTime);
+            Laya.Tween.to(btn, { y: ty, alpha: 1 }, this.moveTime, Laya.Ease.backOut);
         }
         var tx;
         for (var i = 0; i < this.leftButtons.length; i++) {
             btn = this.leftButtons[i];
             tx = btn.x - (i + 1) * (this.btnW + this.btnPadding);
-            Laya.Tween.to(btn, { x: tx }, this.moveTime);
+            Laya.Tween.to(btn, { x: tx, alpha: 1 }, this.moveTime, Laya.Ease.backOut);
         }
     };
     /**关闭 */
@@ -66725,11 +66980,11 @@ var RightFunctionButtons = /** @class */ (function (_super) {
         var btn;
         for (var i = 0; i < this.upButtons.length; i++) {
             btn = this.upButtons[i];
-            Laya.Tween.to(btn, { y: this.openBtn.y }, this.moveTime);
+            Laya.Tween.to(btn, { y: this.openBtn.y, alpha: 0 }, this.moveTime);
         }
         for (var i = 0; i < this.leftButtons.length; i++) {
             btn = this.leftButtons[i];
-            Laya.Tween.to(btn, { x: this.openBtn.x }, this.moveTime);
+            Laya.Tween.to(btn, { x: this.openBtn.x, alpha: 0 }, this.moveTime);
         }
     };
     RightFunctionButtons.prototype.onOpenBtnClick = function () {
@@ -66738,16 +66993,24 @@ var RightFunctionButtons = /** @class */ (function (_super) {
             this.openBtn.disabled = false;
         });
         this.isOpen = !this.isOpen;
-        var lbl = this.isOpen ? "-" : "+";
         if (this.isOpen) {
-            lbl = "-";
             this.open();
         }
         else {
-            lbl = "+";
             this.close();
         }
-        this.openBtn.label = lbl;
+        // var lbl:string = this.isOpen ? "-" : "+";
+        // if(this.isOpen)
+        // {
+        //     lbl = "-";
+        //     this.open();
+        // }
+        // else
+        // {
+        //     lbl = "+";
+        //     this.close();
+        // }
+        // this.openBtn.label = lbl;
     };
     RightFunctionButtons.prototype.onBtnGraptag = function () {
         if (this.curMediator) {
@@ -66775,6 +67038,23 @@ var RightFunctionButtons = /** @class */ (function (_super) {
             { url: "res/atlas/farm.atlas", type: Loader.ATLAS }
         ];
         this.curMediator = new FarmMediator(resAry);
+    };
+    RightFunctionButtons.prototype.onBtnSmelt = function () {
+        if (this.curMediator) {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        //显示地图界面
+        var resAry = [
+            { url: "unpack/smelt/smeltbg.png", type: Loader.IMAGE },
+            { url: "unpack/smelt/boximg.png", type: Loader.IMAGE },
+            { url: "unpack/smelt/slidimg.png", type: Loader.IMAGE },
+            { url: "unpack/comp/zhuangbeijiatu.png", type: Loader.IMAGE },
+            { url: "res/atlas/ani/fuse.atlas", type: Loader.ATLAS },
+            { url: "res/atlas/ani/ronglian.atlas", type: Loader.ATLAS },
+            { url: "res/atlas/smelt.atlas", type: Loader.ATLAS }
+        ];
+        this.curMediator = new EquipSmeltMediator(resAry);
     };
     RightFunctionButtons.prototype.dispose = function () {
         if (this.curMediator) {
@@ -67016,30 +67296,194 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 /*
+* 战斗失败界面
+*/
+var BattleFailMediator = /** @class */ (function (_super) {
+    __extends(BattleFailMediator, _super);
+    function BattleFailMediator(assetsUrl, view) {
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.angle = 0;
+        return _this;
+    }
+    BattleFailMediator.prototype.initView = function () {
+        this.view = new ui.battle.BattleFailViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.TIP_LAYER, false, true, true);
+        _super.prototype.initView.call(this);
+        SoundsManager.ins.setMusicVolume(0.1);
+        SoundsManager.ins.playerSoundByEnum(SoundEffectType.FAIL, 1, Laya.Handler.create(this, this.soundPlayComplete));
+    };
+    BattleFailMediator.prototype.soundPlayComplete = function () {
+        SoundsManager.ins.setMusicVolume(1);
+    };
+    BattleFailMediator.prototype.addEvents = function () {
+        this.view.bg.on(Laya.Event.CLICK, this, this.onMaskClick);
+        this.view.btnGiveup.on(Laya.Event.CLICK, this, this.onBtnGiveupClick);
+        this.view.btnBattleAgain.on(Laya.Event.CLICK, this, this.onBtnBattleAgain);
+        Laya.timer.loop(20, this, this.rotateGray);
+    };
+    BattleFailMediator.prototype.removeEvents = function () {
+        this.view.bg.off(Laya.Event.CLICK, this, this.onMaskClick);
+        this.view.btnGiveup.off(Laya.Event.CLICK, this, this.onBtnGiveupClick);
+        this.view.btnBattleAgain.off(Laya.Event.CLICK, this, this.onBtnBattleAgain);
+        Laya.timer.clear(this, this.rotateGray);
+    };
+    BattleFailMediator.prototype.onMaskClick = function (e) {
+        this.dispose();
+    };
+    BattleFailMediator.prototype.onBtnGiveupClick = function (e) {
+        this.dispose();
+    };
+    BattleFailMediator.prototype.onBtnBattleAgain = function (e) {
+    };
+    BattleFailMediator.prototype.rotateGray = function () {
+        this.angle++;
+        if (this.angle > 360)
+            this.angle = 0;
+        if (this.view)
+            this.view.imgGray.rotation = this.angle;
+    };
+    BattleFailMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+    };
+    return BattleFailMediator;
+}(BaseMediator));
+//# sourceMappingURL=BattleFailMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var LayaHTMLDivElement = Laya.HTMLDivElement;
+/*
 * 战报视图
 */
 var BattleReportMediator = /** @class */ (function (_super) {
     __extends(BattleReportMediator, _super);
     function BattleReportMediator(assetsUrl, view) {
-        return _super.call(this, assetsUrl, view) || this;
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.linePadding = 5;
+        return _this;
     }
     BattleReportMediator.prototype.initView = function () {
-        this.view = new ui.BattleReportViewUI();
+        this.view = new ui.battle.BattleReportViewUI();
+        this.view.panelMask.vScrollBar.visible = false;
         this.view.x = 0;
         this.view.y = 960;
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, false);
         _super.prototype.initView.call(this);
+        this.items = [];
+        this.maskHeight = this.view.panelMask.height;
     };
     BattleReportMediator.prototype.addEvents = function () {
+        EventManager.ins.addEvent(EventManager.REPORT_DATA_UPDATE, this, this.reportDataUpdate);
     };
     BattleReportMediator.prototype.removeEvents = function () {
+        EventManager.ins.removeEvent(EventManager.REPORT_DATA_UPDATE, this);
+    };
+    /**更新视图 */
+    BattleReportMediator.prototype.reportDataUpdate = function (vo) {
+        var item;
+        if (this.items.length > BattleReportData.REPORT_SUM_LIMIT) {
+            item = this.items.shift();
+            item.removeSelf();
+            for (var i = 0; i < this.items.length; i++) {
+                item = this.items[i];
+                if (i > 0)
+                    item.y = this.items[i - 1].y + this.items[i - 1].contextHeight + 5;
+                else
+                    item.y = 0;
+            }
+        }
+        var preItemHeight = 0;
+        var ty = 0;
+        if (this.items.length > 0) {
+            var preItem = this.items[this.items.length - 1];
+            preItemHeight = preItem.contextHeight + this.linePadding;
+            ty = preItem.y + preItemHeight + this.linePadding;
+        }
+        item = new LayaHTMLDivElement();
+        item.innerHTML = vo.getReportDataHtml();
+        item.width = this.view.panelMask.width;
+        item.y = ty;
+        this.view.panelMask.addChild(item);
+        this.items.push(item);
+        //自动滚动视图
+        if (item.y > this.maskHeight) {
+            this.view.panelMask.scrollTo(0, item.y + item.contextHeight - this.maskHeight);
+        }
     };
     BattleReportMediator.prototype.setVisible = function (bool) {
         this.view.visible = bool;
     };
+    BattleReportMediator.prototype.dispose = function () {
+        this.view.vboxReport.removeChildren();
+        this.items.splice(0, this.items.length);
+        this.items = null;
+        _super.prototype.dispose.call(this);
+    };
     return BattleReportMediator;
 }(BaseMediator));
 //# sourceMappingURL=BattleReportMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 战斗胜利界面
+*/
+var BattleSuccessMediator = /** @class */ (function (_super) {
+    __extends(BattleSuccessMediator, _super);
+    function BattleSuccessMediator(assetsUrl, view) {
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.angle = 0;
+        return _this;
+    }
+    BattleSuccessMediator.prototype.initView = function () {
+        this.view = new ui.battle.BattleSuccessViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.TIP_LAYER, false, true, true);
+        _super.prototype.initView.call(this);
+        SoundsManager.ins.setMusicVolume(0.1);
+        SoundsManager.ins.playerSoundByEnum(SoundEffectType.SUCCESS, 1, Laya.Handler.create(this, this.soundPlayComplete));
+    };
+    BattleSuccessMediator.prototype.soundPlayComplete = function () {
+        SoundsManager.ins.setMusicVolume(1);
+    };
+    BattleSuccessMediator.prototype.addEvents = function () {
+        this.view.bg.on(Laya.Event.CLICK, this, this.onMaskClick);
+        Laya.timer.loop(20, this, this.rotateGray);
+    };
+    BattleSuccessMediator.prototype.removeEvents = function () {
+        this.view.bg.off(Laya.Event.CLICK, this, this.onMaskClick);
+        Laya.timer.loop(20, this, this.rotateGray);
+    };
+    BattleSuccessMediator.prototype.onMaskClick = function (e) {
+        BattleEngine.ins.challegenBossFastEnd();
+        this.dispose();
+    };
+    BattleSuccessMediator.prototype.rotateGray = function () {
+        this.angle++;
+        if (this.angle > 360)
+            this.angle = 0;
+        if (this.view)
+            this.view.imgGray.rotation = this.angle;
+    };
+    BattleSuccessMediator.prototype.dispose = function () {
+        _super.prototype.dispose.call(this);
+    };
+    return BattleSuccessMediator;
+}(BaseMediator));
+//# sourceMappingURL=BattleSuccessMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -67062,19 +67506,20 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         return _this;
     }
     ChallegenBossMediator.prototype.initView = function () {
-        this.view = new ui.ChallengeBossViewUI();
-        this.roleLayer = new Laya.Sprite();
-        this.view.addChild(this.roleLayer);
+        this.view = new ui.battle.ChallengeBossViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
         _super.prototype.initView.call(this);
         this.initRoles();
+        this.view.btnTimes.label = "X" + GameConfig.BATTLE_ADDSPEED_TIMES;
         // EventManager.ins.dispatchEvent(EventManager.TEST_LIST_SCRALE_RENDER);
     };
     ChallegenBossMediator.prototype.addEvents = function () {
         this.view.btnFast.on(Laya.Event.CLICK, this, this.onBtnFast);
+        this.view.btnTimes.on(Laya.Event.CLICK, this, this.onBtnTimes);
     };
     ChallegenBossMediator.prototype.removeEvents = function () {
         this.view.btnFast.off(Laya.Event.CLICK, this, this.onBtnFast);
+        this.view.btnTimes.off(Laya.Event.CLICK, this, this.onBtnTimes);
     };
     /**初始化地图数据 */
     ChallegenBossMediator.prototype.initRoles = function () {
@@ -67090,7 +67535,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         for (var i = 0; i < playerData.upHeroVos.length; i++) {
             baseRoleVo = playerData.upHeroVos[i];
             hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-            hero.initRole(baseRoleVo, i, -1, this.roleLayer, true);
+            hero.initRole(baseRoleVo, i, -1, this.view.sprRole, true);
             // hero.setBlood(0);
             hero.aniPlay(RoleAniIndex.STAND);
             this.heroRoles.push(hero);
@@ -67110,7 +67555,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         for (i = 0; i < bossData.masterVos.length; i++) {
             baseRoleVo = bossData.masterVos[i];
             enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
-            enemy.initRole(baseRoleVo, i, 1, this.roleLayer, true);
+            enemy.initRole(baseRoleVo, i, 1, this.view.sprRole, true);
             enemy.aniPlay(RoleAniIndex.STAND);
             this.enemyRoles.push(enemy);
         }
@@ -67133,6 +67578,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         this.dispose();
     };
     ChallegenBossMediator.prototype.dispose = function () {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.SHAM_BATTLE, 1000);
         /**清除角色对象 */
         if (this.heroRoles) {
             var lastHeros = [];
@@ -67154,6 +67600,13 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         }
         // BattleEngine.ins.endBattle();
         LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, false);
+    };
+    ChallegenBossMediator.prototype.onBtnTimes = function (e) {
+        GameConfig.BATTLE_ADDSPEED_TIMES++;
+        if (GameConfig.BATTLE_ADDSPEED_TIMES > 3) {
+            GameConfig.BATTLE_ADDSPEED_TIMES = 1;
+        }
+        this.view.btnTimes.label = "X" + GameConfig.BATTLE_ADDSPEED_TIMES;
     };
     return ChallegenBossMediator;
 }(BaseMediator));
@@ -67180,7 +67633,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
         return _this;
     }
     MapBattleMediator.prototype.initView = function () {
-        this.view = new ui.map.MapBattleViewUI();
+        this.view = new ui.battle.MapBattleViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
         _super.prototype.initView.call(this);
     };
@@ -67226,6 +67679,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
             resAry.push({ url: "res/outside/spine/role/" + baseRoleVo.modelId + "/" + baseRoleVo.modelId + ".sk", type: /*laya.net.Loader.BUFFER*/ "arraybuffer" });
         });
         this.challegenBossMediator = new ChallegenBossMediator(resAry);
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.TURE_BATTLE, 1000);
     };
     MapBattleMediator.prototype.dispose = function () {
     };
@@ -67376,7 +67830,10 @@ var EnterGameMediator = /** @class */ (function (_super) {
         }
     };
     EnterGameMediator.prototype.onBtnRegster = function (e) {
-        var enterGameMediator = new SignMediator();
+        // var enterGameMediator:SignMediator = new SignMediator();     
+        // window.history.forward();
+        // window.history.back();
+        SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
     };
     EnterGameMediator.prototype.webEnterGameHanlder = function (data) {
         var jsonObj = JSON.parse(data);
@@ -67403,6 +67860,123 @@ var EnterGameMediator = /** @class */ (function (_super) {
     return EnterGameMediator;
 }(BaseMediator));
 //# sourceMappingURL=EnterGameMediator.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 装备熔炼
+*/
+var EquipSmeltMediator = /** @class */ (function (_super) {
+    __extends(EquipSmeltMediator, _super);
+    function EquipSmeltMediator(assetsUrl, view) {
+        if (assetsUrl === void 0) { assetsUrl = null; }
+        if (view === void 0) { view = null; }
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.aniPoss = [new Point(160, 336), new Point(160, 491), new Point(490, 184),
+            new Point(490, 339), new Point(490, 501), new Point(160, 181)];
+        return _this;
+    }
+    EquipSmeltMediator.prototype.initView = function () {
+        this.view = new ui.equip.SmeltViewUI();
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
+        _super.prototype.initView.call(this);
+        // this.ronglian();
+    };
+    EquipSmeltMediator.prototype.addEvents = function () {
+        this.view.btnClose.on(Laya.Event.CLICK, this, this.onBtnCloseClick);
+        this.view.btnSmelt.on(Laya.Event.CLICK, this, this.onBtnSmeltClick);
+    };
+    EquipSmeltMediator.prototype.removeEvents = function () {
+        this.view.btnClose.off(Laya.Event.CLICK, this, this.onBtnCloseClick);
+        this.view.btnSmelt.off(Laya.Event.CLICK, this, this.onBtnSmeltClick);
+    };
+    EquipSmeltMediator.prototype.dispose = function () {
+        if (this.view) {
+            var ani;
+            for (var i = 1; i <= 6; i++) {
+                ani = this.view["ani" + i];
+                Laya.Tween.clearAll(ani);
+            }
+            Laya.Tween.clearAll(this.view.ainrong);
+        }
+        _super.prototype.dispose.call(this);
+    };
+    EquipSmeltMediator.prototype.onBtnCloseClick = function (e) {
+        this.dispose();
+    };
+    EquipSmeltMediator.prototype.onBtnSmeltClick = function (e) {
+        this.ronglian();
+    };
+    EquipSmeltMediator.prototype.ronglian = function () {
+        this.initEffect();
+        var rlX = 318;
+        var rlY = 308;
+        Tween.to(this.view.ani1, { x: rlX, y: rlY }, 500, null, Handler.create(this, function () {
+            // this.view.ani1.removeSelf();
+            this.view.ani1.visible = false;
+        }));
+        Tween.to(this.view.ani2, { x: rlX, y: rlY }, 500, null, Handler.create(this, function () {
+            // this.view.ani2.removeSelf();
+            this.view.ani2.visible = false;
+        }));
+        Tween.to(this.view.ani3, { x: rlX, y: rlY }, 500, null, Handler.create(this, function () {
+            // this.view.ani3.removeSelf();
+            this.view.ani3.visible = false;
+        }));
+        Tween.to(this.view.ani4, { x: rlX, y: rlY }, 500, null, Handler.create(this, function () {
+            // this.view.ani4.removeSelf();
+            this.view.ani4.visible = false;
+        }));
+        Tween.to(this.view.ani5, { x: rlX, y: rlY }, 500, null, Handler.create(this, function () {
+            // this.view.ani5.removeSelf();
+            this.view.ani5.visible = false;
+        }));
+        Tween.to(this.view.ani6, { x: rlX, y: rlY }, 500, null, Handler.create(this, function () {
+            // this.view.ani6.removeSelf();
+            this.view.ani6.visible = false;
+            this.view.ainrong.visible = true;
+            this.view.ainrong.on(Laya.Event.COMPLETE, this, function () {
+                // this.view.ainrong.removeSelf();
+                this.view.ainrong.visible = false;
+                this.addNumber();
+            });
+            this.view.ainrong.play(0, false);
+        }));
+    };
+    EquipSmeltMediator.prototype.initEffect = function () {
+        var ani;
+        var point;
+        for (var i = 1; i <= 6; i++) {
+            ani = this.view["ani" + i];
+            point = this.aniPoss[i - 1];
+            ani.pos(point.x, point.y);
+            ani.visible = true;
+        }
+    };
+    EquipSmeltMediator.prototype.addNumber = function () {
+        this.view.displyLable.text = "2000";
+        this.view.smeltNum.visible = true;
+        this.view.smeltNum.text = "1350";
+        Tween.to(this.view.smeltNum, { y: 101, alpha: 0 }, 1000, null, Handler.create(this, function () {
+            this.view.smeltNum.removeSelf();
+            this.displaySmeltNum();
+        }));
+    };
+    EquipSmeltMediator.prototype.displaySmeltNum = function () {
+        this.view.displyLable.visible = true;
+        this.view.displyLable.color = "#FFFFFF";
+        this.view.displyLable.text = "3350";
+    };
+    return EquipSmeltMediator;
+}(BaseMediator));
+//# sourceMappingURL=EquipSmeltMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -67451,12 +68025,15 @@ var __extends = (this && this.__extends) || (function () {
 var FarmMediator = /** @class */ (function (_super) {
     __extends(FarmMediator, _super);
     function FarmMediator(assetsUrl, view, caller) {
-        return _super.call(this, assetsUrl, view) || this;
+        var _this = _super.call(this, assetsUrl, view) || this;
+        _this.lastMoveX = 0;
+        _this.mouseDownX = 0;
+        _this.mouseUpX = 0;
+        return _this;
     }
     FarmMediator.prototype.initView = function () {
         this.view = new ui.farm.FarmViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
-        console.log(this.view.mouseThrough, this.view.mouseEnabled);
         _super.prototype.initView.call(this);
         //var spr:Sprite;
         //spr.mouseEnabled
@@ -67464,9 +68041,13 @@ var FarmMediator = /** @class */ (function (_super) {
     };
     FarmMediator.prototype.addEvents = function () {
         this.view.btnClose.on(Laya.Event.CLICK, this, this.onCloseBtnClick);
+        this.view.panlePlant.on(Laya.Event.MOUSE_DOWN, this, this.onViewMouseEvent);
+        this.view.panlePlant.on(Laya.Event.MOUSE_UP, this, this.onViewMouseEvent);
     };
     FarmMediator.prototype.removeEvents = function () {
         this.view.btnClose.off(Laya.Event.CLICK, this, this.onCloseBtnClick);
+        this.view.panlePlant.off(Laya.Event.MOUSE_DOWN, this, this.onViewMouseEvent);
+        this.view.panlePlant.off(Laya.Event.MOUSE_UP, this, this.onViewMouseEvent);
     };
     FarmMediator.prototype.onCloseBtnClick = function (e) {
         this.dispose();
@@ -67476,6 +68057,48 @@ var FarmMediator = /** @class */ (function (_super) {
         if (this.view) {
         }
         _super.prototype.dispose.call(this);
+    };
+    FarmMediator.prototype.onViewMouseEvent = function (e) {
+        if (e.type == Laya.Event.MOUSE_DOWN) {
+            this.lastMoveX = this.view.panlePlant.mouseX;
+            this.mouseDownX = this.view.panlePlant.mouseX;
+            this.view.panlePlant.on(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+            // console.log("mouseDwon：",this.view.panlePlant.mouseX);
+            // this.onBtnEnter(null);
+        }
+        else if (e.type == Laya.Event.MOUSE_UP) {
+            this.mouseUpX = this.view.panlePlant.mouseX;
+            this.view.panlePlant.off(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+            //缓缓移动效果
+            var tweenX = 0;
+            if (this.distanceX > 0) {
+                tweenX = this.view.panlePlant.x + 50;
+            }
+            else if (this.distanceX < 0) {
+                tweenX = this.view.panlePlant.x - 50;
+            }
+            if (tweenX > 0 || tweenX < -(this.view.panlePlant.width - GameConfig.STAGE_WIDTH)) {
+                return;
+            }
+            if (tweenX != 0) {
+                Laya.Tween.to(this.view.panlePlant, { x: tweenX }, 200, Laya.Ease.backOut);
+            }
+            // console.log("mouseUp：",this.view.panlePlant.mouseX);
+        }
+    };
+    FarmMediator.prototype.onMouseMove = function (e) {
+        this.distanceX = 0;
+        var tx = this.view.panlePlant.x;
+        if (this.lastMoveX != this.view.panlePlant.mouseX) {
+            this.distanceX = this.view.panlePlant.mouseX - this.lastMoveX;
+            tx += this.distanceX;
+        }
+        if (tx > 0 || tx < -(this.view.panlePlant.width - GameConfig.STAGE_WIDTH)) {
+            this.distanceX = 0;
+            return;
+        }
+        this.view.panlePlant.x = tx;
+        this.lastMoveX = this.view.panlePlant.mouseX;
     };
     return FarmMediator;
 }(BaseMediator));
@@ -67511,12 +68134,22 @@ var GameMediator = /** @class */ (function (_super) {
         this.onBtnMap();
     };
     GameMediator.prototype.addEvents = function () {
-        this.view.btnOpen.on(Laya.Event.CLICK, this, this.onBtnOpen);
-        this.view.btnMap.on(Laya.Event.CLICK, this, this.onBtnMap);
-        this.view.btnLineup.on(Laya.Event.CLICK, this, this.onBtnLineup);
-        this.view.btnBattle.on(Laya.Event.CLICK, this, this.onBtnBattle);
-        this.view.btnHero.on(Laya.Event.CLICK, this, this.onBtnHero);
-        this.view.btnBag.on(Laya.Event.CLICK, this, this.onBtnBag);
+        this.view.btnOpen.on(LayaEvent.CLICK, this, this.onBtnOpen);
+        this.view.btnMap.on(LayaEvent.CLICK, this, this.onBtnMap);
+        this.view.btnLineup.on(LayaEvent.CLICK, this, this.onBtnLineup);
+        this.view.btnBattle.on(LayaEvent.CLICK, this, this.onBtnBattle);
+        this.view.btnHero.on(LayaEvent.CLICK, this, this.onBtnHero);
+        this.view.btnBag.on(LayaEvent.CLICK, this, this.onBtnBag);
+        this.view.btnMap.on(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
+        this.view.btnMap.on(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
+        this.view.btnLineup.on(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
+        this.view.btnLineup.on(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
+        this.view.btnBattle.on(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
+        this.view.btnBattle.on(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
+        this.view.btnHero.on(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
+        this.view.btnHero.on(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
+        this.view.btnBag.on(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
+        this.view.btnBag.on(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
         EventManager.ins.addEvent(EventManager.CHOICE_CHALLEGEN_GATE, this, this.choiceChanllegeGate);
         WebSocketManager.ins.registerHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, new GetHeroInfosHanlder(this, this.getHeroInfosHandler));
         WebSocketManager.ins.registerHandler(Protocol.GATE, Protocol.GATE_INFO, new GetGateInfoHandler(this, this.gateInfoHanlder));
@@ -67532,6 +68165,16 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnBattle.off(Laya.Event.CLICK, this, this.onBtnBattle);
         this.view.btnHero.off(Laya.Event.CLICK, this, this.onBtnHero);
         this.view.btnBag.off(Laya.Event.CLICK, this, this.onBtnBag);
+        this.view.btnMap.off(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
+        this.view.btnMap.off(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
+        this.view.btnLineup.off(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
+        this.view.btnLineup.off(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
+        this.view.btnBattle.off(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
+        this.view.btnBattle.off(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
+        this.view.btnHero.off(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
+        this.view.btnHero.off(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
+        this.view.btnBag.off(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
+        this.view.btnBag.off(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
         EventManager.ins.removeEvent(EventManager.CHOICE_CHALLEGEN_GATE, this.choiceChanllegeGate);
         WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, this);
         WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_INFO, this);
@@ -67601,6 +68244,7 @@ var GameMediator = /** @class */ (function (_super) {
         ];
         this.curMediator = new MapWorldMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.MAP_BATTLE;
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP, 1000);
     };
     /**选择挑战关卡 */
     GameMediator.prototype.choiceChanllegeGate = function () {
@@ -67620,6 +68264,7 @@ var GameMediator = /** @class */ (function (_super) {
         ];
         this.curMediator = new LineupMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.LINEUP;
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG, 1000);
     };
     /**英雄系统*/
     GameMediator.prototype.onBtnHero = function (e) {
@@ -67635,6 +68280,7 @@ var GameMediator = /** @class */ (function (_super) {
         ];
         this.curMediator = new HeroMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.HERO;
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG, 1000);
     };
     /**战斗系统*/
     GameMediator.prototype.onBtnBag = function (e) {
@@ -67651,6 +68297,7 @@ var GameMediator = /** @class */ (function (_super) {
         ];
         this.curMediator = new BagMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.EQUIP;
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG, 1000);
     };
     /**挂机战斗*/
     GameMediator.prototype.onBtnBattle = function (e) {
@@ -67670,6 +68317,25 @@ var GameMediator = /** @class */ (function (_super) {
             this.mapBattleMediator.enterMapBattle();
         }
         GameDataManager.showModuleViewInd = GameButtomTabIndex.BATTLE;
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.SHAM_BATTLE, 1000);
+    };
+    /**按钮选中效果 */
+    GameMediator.prototype.onBtnDownUp = function (e) {
+        var btn = e.target;
+        if (btn === this.view.btnBattle) {
+            if (e.type == LayaEvent.MOUSE_DOWN)
+                btn.scale(1.1, 1.1);
+            else if (e.type == LayaEvent.MOUSE_UP)
+                btn.scale(1, 1);
+        }
+        else {
+            if (e.type == LayaEvent.MOUSE_DOWN)
+                btn.scale(1, 1);
+            else if (e.type == LayaEvent.MOUSE_UP)
+                btn.scale(0.9, 0.9);
+        }
+        if (btn) {
+        }
     };
     GameMediator.prototype.dispose = function () {
     };
@@ -67744,10 +68410,10 @@ var HeroMediator = /** @class */ (function (_super) {
         this.view = new ui.HeroViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         _super.prototype.initView.call(this);
-        // this.uiRole = new UIRole("10006");
-        // var rx:number = this.view.clipShadow.x + this.view.clipShadow.width / 2;
-        // var ry:number = this.view.clipShadow.y + this.view.clipShadow.height / 2;
-        // this.uiRole.addParent(this.view,rx,ry,-0.8,0.8);
+        this.uiRole = new UIRole("Hero_10009");
+        var rx = this.view.clipShadow.x + this.view.clipShadow.width / 2;
+        var ry = this.view.clipShadow.y + this.view.clipShadow.height / 2;
+        this.uiRole.addParent(this.view, rx, ry, -0.8, 0.8);
     };
     HeroMediator.prototype.addEvents = function () {
     };
@@ -68338,6 +69004,9 @@ var LoginMediator = /** @class */ (function (_super) {
         this.view = new ui.LoginViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, true, false, true);
         _super.prototype.initView.call(this);
+        Laya.Tween.to(this.view.logoImg, { y: 110 }, 500, Laya.Ease.backOut);
+        Laya.Tween.to(this.view.boxLogin, { y: 418 }, 500, Laya.Ease.backOut);
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.LOGIN_BG, 1000);
         // TankUtil.stageShake(this.view,10);
     };
     LoginMediator.prototype.addEvents = function () {
@@ -68479,7 +69148,7 @@ var GateListMediator = /** @class */ (function (_super) {
         btnSweep.filters = null;
     };
     GateListMediator.prototype.battleGateResponse = function (gateKey) {
-        GameDataManager.ins.hangGateKey = gateKey;
+        // GameDataManager.ins.hangGateKey = gateKey;
         EventManager.ins.dispatchEvent(EventManager.CHOICE_CHALLEGEN_GATE);
     };
     /**扫荡返回 */
@@ -68504,7 +69173,7 @@ var GateListMediator = /** @class */ (function (_super) {
         TipsManager.ins.showFloatHtmlMsg(html, this.view, this.view.width / 2, this.view.height / 2, 1.0, 200);
     };
     GateListMediator.prototype.switchHangupGateResponse = function (gateKey) {
-        GameDataManager.ins.hangGateKey = gateKey;
+        // GameDataManager.ins.hangGateKey = gateKey;
         EventManager.ins.dispatchEvent(EventManager.CHOICE_CHALLEGEN_GATE);
     };
     GateListMediator.prototype.listGateRender = function (cell, index) {
@@ -68686,7 +69355,7 @@ var MapWorldMediator = /** @class */ (function (_super) {
                 return;
             }
             if (tweenX != 0) {
-                Laya.Tween.to(this.view.panelBlock, { x: tweenX }, 200, Laya.Ease.circIn);
+                Laya.Tween.to(this.view.panelBlock, { x: tweenX }, 200, Laya.Ease.backOut);
             }
             // console.log("mouseUp：",this.view.panelBlock.mouseX);
         }
@@ -69615,9 +70284,9 @@ var HeroVo = /** @class */ (function (_super) {
             //提升攻击力技能
             // bool = skillVo.initData("SK_0012");
             //嘲讽
-            bool = skillVo.initData("SK_0241");
-            skillVo.cd = 0;
-            skillVo.skillContinued = 1;
+            // bool = skillVo.initData("SK_0241");
+            // skillVo.cd = 0;
+            // skillVo.skillContinued = 1;
         }
         if (bool) {
             this.skillVos.push(skillVo);
@@ -69782,6 +70451,7 @@ var BattleGateHandler = /** @class */ (function (_super) {
         // var jsonObj = JSON.parse(message.roleGateInfo);
         // GameDataManager.ins.saveGateInfoVoDic(jsonObj);
         // console.log(message);
+        GameDataManager.ins.hangGateKey = message.gateKey;
         _super.prototype.success.call(this, message.gateKey);
     };
     return BattleGateHandler;
@@ -69852,6 +70522,7 @@ var GateSwitchHangupHandler = /** @class */ (function (_super) {
         // var jsonObj = JSON.parse(message.roleGateInfo);
         // GameDataManager.ins.saveGateInfoVoDic(jsonObj);
         // console.log(message);
+        GameDataManager.ins.hangGateKey = message.gateKey;
         _super.prototype.success.call(this, message.gateKey);
     };
     return GateSwitchHangupHandler;
@@ -70254,7 +70925,7 @@ var BaseRole = /** @class */ (function (_super) {
     /**播放一次动画回调 */
     BaseRole.prototype.onPlayCompleted = function () {
         // console.log("后........",this.baseRoleVo.name,this.aniId);
-        if (this.aniId == RoleAniIndex.ATTACK) {
+        if (this.aniId == RoleAniIndex.ATTACK && GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE) {
             SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
         }
         this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.onPlayCompleted);
@@ -70565,8 +71236,6 @@ var PreLoadScene = /** @class */ (function (_super) {
             { url: "res/atlas/worldmap.atlas", type: Loader.ATLAS, size: 10, priority: 1 },
             { url: "res/atlas/main.atlas", type: Loader.ATLAS, size: 10, priority: 1 },
             { url: "unpack/login/logo.png", type: Loader.IMAGE },
-            { url: "unpack/main/main.jpg", type: Loader.IMAGE },
-            { url: "unpack/main/role.jpg", type: Loader.IMAGE },
             { url: "unpack/comp/dibanbg.png", type: Loader.IMAGE },
             { url: "unpack/comp/line.png", type: Loader.IMAGE },
             { url: "unpack/comp/mainbg.png", type: Loader.IMAGE },
@@ -70624,7 +71293,11 @@ var Game = /** @class */ (function () {
     Game.prototype.init = function () {
         var resAry = [
             { url: "res/atlas/comp.atlas", type: Loader.ATLAS },
-            { url: "unpack/main/main.jpg", type: Loader.IMAGE },
+            { url: "res/atlas/ani/click.atlas", type: Loader.ATLAS },
+            { url: "res/atlas/login.atlas", type: Loader.ATLAS },
+            { url: "unpack/login/loginbg.png", type: Loader.IMAGE },
+            { url: "unpack/login/loginbox.png", type: Loader.IMAGE },
+            { url: "unpack/login/logo.png", type: Loader.IMAGE },
             { url: "res/config/language.txt", type: Loader.TEXT }
         ];
         Laya.loader.load(resAry, new Laya.Handler(this, this.onLoaded), new Laya.Handler(this, this.onLoadProgress));
@@ -70634,8 +71307,19 @@ var Game = /** @class */ (function () {
         DebugViewUtil.init();
         LG.parse(Laya.loader.getRes("res/config/language.txt"));
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
+        Laya.stage.on(Laya.Event.CLICK, this, this.mouseClickStage);
         // var ani:FrameAnimation = new FrameAnimation(Laya.stage,GameConfig.STAGE_WIDTH/2,GameConfig.STAGE_HEIGHT/2,true);
         // ani.playAni("SK_0101",true);
+    };
+    Game.prototype.mouseClickStage = function (e) {
+        // console.log(e.target,e.target.name);
+        if (e.target instanceof Laya.Button) {
+            if (e.target.name == "btnClose")
+                SoundsManager.ins.playerSoundByEnum(SoundEffectType.CLOSE, 1);
+            else
+                SoundsManager.ins.playerSoundByEnum(SoundEffectType.CLICK, 1);
+        }
+        AnimationManager.ins.addMouseClickEffect();
     };
     /**资源加载进度 */
     Game.prototype.onLoadProgress = function (data) {
@@ -70646,7 +71330,7 @@ var Game = /** @class */ (function () {
 Laya.MiniAdpter.init();
 Config.isAntialias = true; //绘图抗锯齿
 Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, Laya.WebGL);
-Laya.Stat.show(0, 0);
+// Laya.Stat.show(0,0);
 Laya.stage.scaleMode = "showAll"; //showall跟showAll不一样。。。。
 Laya.stage.alignH = "center";
 Laya.stage.alignV = "top";

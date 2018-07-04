@@ -140,6 +140,7 @@ var LoopBattleData = /** @class */ (function () {
         });
         if (this.isEnd) {
             this.isWin = true;
+            this.productRewards();
             // console.log("战斗结束"+this.isWin);
             return;
         }
@@ -155,6 +156,11 @@ var LoopBattleData = /** @class */ (function () {
         else if (this.curAttCamp == BattleAttCampType.ENEMY) {
             this.curAttCamp = BattleAttCampType.HERO;
         }
+    };
+    LoopBattleData.prototype.productRewards = function () {
+        var gateConfig = ConfigManager.ins.getGateSampleConfig(GameDataManager.ins.hangGateKey);
+        var rewards = gateConfig.getRandowRewards();
+        BattleReportData.ins.addBattleReportVo(BattleReportDataType.REWARD, null, null, null, rewards);
     };
     /**
      * 寻找攻击目标
@@ -248,6 +254,11 @@ var BattleTurnVo = /** @class */ (function () {
         this.defRoleVo.battleDieAttTimes--;
         this.defRoleVo.isDeath = this.defRoleVo.battleDieAttTimes <= 0;
         this.defRoleVo.isAtted = true;
+        //添加战报数据
+        if (this.defRoleVo.isDeath)
+            BattleReportData.ins.addBattleReportVo(BattleReportDataType.BATTLE_DIE, this.attRoleVo.name, this.defRoleVo.name, this.attRoleVo.atk);
+        else
+            BattleReportData.ins.addBattleReportVo(BattleReportDataType.HURT, this.attRoleVo.name, this.defRoleVo.name, this.attRoleVo.atk);
         // console.log(this.defRoleVo.name ,this.defRoleVo.battleDieAttTimes);
     };
     return BattleTurnVo;

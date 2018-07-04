@@ -142,23 +142,25 @@ var LoopBattleEngine = /** @class */ (function () {
     LoopBattleEngine.prototype.playAttackAni = function (attRole, defRole) {
         var attRoleVo = attRole.baseRoleVo;
         var defRoleVo = defRole.baseRoleVo;
-        var skillVo = attRoleVo.getCanUserSkill();
-        if (skillVo) {
-            //技能释放               
-            // var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
-            // skill.playSkill(skillVo.modelId,defRole,0,0,0.3);
-        }
-        else {
-            //远攻，近攻击
-            // if(attRoleVo.attFar == 1)
-            // {
-            //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineupComplete);
-            // }
-            // else
-            // {
-            //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
-            // }
-        }
+        // var skillVo:SkillVo = attRoleVo.getCanUserSkill();
+        // if(skillVo)
+        // {
+        //技能释放               
+        // var skill:Skill = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.SKILL);
+        // skill.playSkill(skillVo.modelId,defRole,0,0,0.3);
+        // }
+        // else
+        // {
+        //远攻，近攻击
+        // if(attRoleVo.attFar == 1)
+        // {
+        //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineupComplete);
+        // }
+        // else
+        // {
+        //     this.attRole.aniPlay(RoleAniIndex.ATTACK,false,500,this,this.moveBackLineup);
+        // }
+        // }
         attRole.aniPlay(RoleAniIndex.ATTACK, true, this, this.moveBackLineupComplete, defRole);
         this.loopBattleData.calculationAttribute(attRoleVo, defRoleVo);
         if (defRoleVo.isDeath) {

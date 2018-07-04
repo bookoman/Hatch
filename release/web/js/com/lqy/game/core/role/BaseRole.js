@@ -113,7 +113,7 @@ var BaseRole = /** @class */ (function (_super) {
     /**播放一次动画回调 */
     BaseRole.prototype.onPlayCompleted = function () {
         // console.log("后........",this.baseRoleVo.name,this.aniId);
-        if (this.aniId == RoleAniIndex.ATTACK) {
+        if (this.aniId == RoleAniIndex.ATTACK && GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE) {
             SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
         }
         this.skeletonAni.player.off(Laya.Event.COMPLETE, this, this.onPlayCompleted);

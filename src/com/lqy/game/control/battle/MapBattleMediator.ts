@@ -12,7 +12,7 @@ class MapBattleMediator extends BaseMediator{
     }
     protected initView():void
     {
-        this.view = new ui.map.MapBattleViewUI();
+        this.view = new ui.battle.MapBattleViewUI();
         LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,true,true);
         super.initView();
     }
@@ -75,6 +75,8 @@ class MapBattleMediator extends BaseMediator{
             resAry.push({url:"res/outside/spine/role/"+baseRoleVo.modelId+"/"+ baseRoleVo.modelId +".sk",type:/*laya.net.Loader.BUFFER*/"arraybuffer"});
         });
         this.challegenBossMediator = new ChallegenBossMediator(resAry);
+
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.TURE_BATTLE,1000);
     }
     public dispose():void
     {

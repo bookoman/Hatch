@@ -46,7 +46,7 @@ var RoleVo = /** @class */ (function () {
             if (skillVo.isCanUse) {
                 // console.log(this.name + "】使用了"+skillVo.name+"技能，伤害爆表"+skillVo.id);
                 skillVo.isCanUse = false;
-                skillID = Number(skillVo.id);
+                // skillID =  Number(skillVo.id);
             }
         });
         return skillID;

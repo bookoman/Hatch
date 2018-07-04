@@ -3,13 +3,12 @@
 */
 class RightFunctionButtons extends Laya.Sprite{
     private moveTime:number = 300;
-    private btnW:number = 70;
-    private btnH:number = 64;
+    private btnW:number = 130;
+    private btnH:number = 130;
     private btnPadding:number = 10;
-    private upConfigs:Array<any> = [{name:"btnFarm",skin:"comp/button.png",lable:"农场"},
-                                {name:"btnGraphtag",skin:"comp/button.png",lable:"图鉴"}];
-    private leftConfigs:Array<any> = [{name:"btnLeft0",skin:"comp/button.png",lable:"测试0"},
-                                    {name:"btnLeft1",skin:"comp/button.png",lable:"测试1"}];
+    private upConfigs:Array<any> = [{name:"btnFarm",skin:"main/btn_farm.png",lable:"农场"},
+                                {name:"btnGraphtag",skin:"main/btn_graphtag.png",lable:"图鉴"}];
+    private leftConfigs:Array<any> = [{name:"btnSmelt",skin:"main/btn_smelt.png",lable:"熔炼"}];
     private upButtons:Array<Button>;
     private leftButtons:Array<Button>;
     private openBtn:Button;
@@ -39,9 +38,13 @@ class RightFunctionButtons extends Laya.Sprite{
         for(var i = 0;i < this.upConfigs.length;i++)
         {
             config = this.upConfigs[i];
-            btn = new Button(config.skin,config.lable);
+            btn = new Button(config.skin);
+            btn.stateNum = 1;
+            btn.anchorX = 0.5;
+            btn.anchorY = 0.5
             btn.name = config.name;
             btn.labelSize = 30;
+            btn.alpha = 0;
             btn.width = this.btnW;
             btn.height = this.btnH;
             this.addChild(btn);
@@ -50,20 +53,25 @@ class RightFunctionButtons extends Laya.Sprite{
         for(i = 0;i < this.leftConfigs.length;i++)
         {
             config = this.leftConfigs[i];
-            btn = new Button(config.skin,config.lable);
+            btn = new Button(config.skin);
+            btn.stateNum = 1;
+            btn.anchorX = 0.5;
+            btn.anchorY = 0.5
             btn.name = config.name;
             btn.labelSize = 30;
+            btn.alpha = 0;
             btn.width = this.btnW;
             btn.height = this.btnH;
             this.addChild(btn);
             this.leftButtons.push(btn);
         }
 
-        this.openBtn = new Button("comp/button.png","+");
+        this.openBtn = new Button("main/btn_open.png");
         this.openBtn.name = "openBtn";
         this.openBtn.labelSize = 30;
-        this.openBtn.width = this.btnW;
-        this.openBtn.height = this.btnH;
+        this.openBtn.stateNum = 1;
+        this.openBtn.anchorX = 0.5;
+        this.openBtn.anchorY = 0.5
         this.addChild(this.openBtn);
         // this.openBtn.on(Laya.Event.CLICK,this,this.onOpenBtnClick);
         this.on(Laya.Event.CLICK,this,this.onViewClick);
@@ -82,8 +90,9 @@ class RightFunctionButtons extends Laya.Sprite{
                 this.onBtnGraptag();
                 // console.log("btnGraphtag");
                 break;
-            case "btnLeft0":
-                console.log("btnLeft0");
+            case "btnSmelt":
+                this.onBtnSmelt();
+                console.log("btnSmelt");
                 break;
             case "btnLeft1":
                 console.log("btnLeft1");
@@ -96,11 +105,13 @@ class RightFunctionButtons extends Laya.Sprite{
     {
         this.upButtons.forEach(btn => {
             btn.y = 0;
+            btn.alpha = 0;
         });
         this.leftButtons.forEach(btn => {
             btn.x = 0;
+            btn.alpha = 0;
         });
-        this.openBtn.label = "+";
+        // this.openBtn.label = "+";
 
         this.x = GameConfig.STAGE_WIDTH - this.openBtn.width;
         this.y = GameConfig.STAGE_HEIGHT / 4 * 3;
@@ -121,14 +132,14 @@ class RightFunctionButtons extends Laya.Sprite{
         {
             btn = this.upButtons[i];
             ty = btn.y - (i + 1) * (this.btnH + this.btnPadding);
-            Laya.Tween.to(btn,{y:ty},this.moveTime);
+            Laya.Tween.to(btn,{y:ty,alpha:1},this.moveTime,Laya.Ease.backOut);
         }
         var tx:number;
         for(var i = 0;i < this.leftButtons.length;i++)
         {
             btn = this.leftButtons[i];
             tx = btn.x - (i + 1) * (this.btnW + this.btnPadding);
-            Laya.Tween.to(btn,{x:tx},this.moveTime);
+            Laya.Tween.to(btn,{x:tx,alpha:1},this.moveTime,Laya.Ease.backOut);
         }
     }
     /**关闭 */
@@ -138,12 +149,12 @@ class RightFunctionButtons extends Laya.Sprite{
         for(var i = 0;i < this.upButtons.length;i++)
         {
             btn = this.upButtons[i];
-            Laya.Tween.to(btn,{y:this.openBtn.y},this.moveTime);
+            Laya.Tween.to(btn,{y:this.openBtn.y,alpha:0},this.moveTime);
         }
         for(var i = 0;i < this.leftButtons.length;i++)
         {
             btn = this.leftButtons[i];
-            Laya.Tween.to(btn,{x:this.openBtn.x},this.moveTime);
+            Laya.Tween.to(btn,{x:this.openBtn.x,alpha:0},this.moveTime);
         }
     }
     private onOpenBtnClick():void
@@ -153,18 +164,24 @@ class RightFunctionButtons extends Laya.Sprite{
             this.openBtn.disabled = false;
         })
         this.isOpen = !this.isOpen;
-        var lbl:string = this.isOpen ? "-" : "+";
-        if(this.isOpen)
-        {
-            lbl = "-";
+        if(this.isOpen){
             this.open();
         }
-        else
-        {
-            lbl = "+";
+        else{
             this.close();
         }
-        this.openBtn.label = lbl;
+        // var lbl:string = this.isOpen ? "-" : "+";
+        // if(this.isOpen)
+        // {
+        //     lbl = "-";
+        //     this.open();
+        // }
+        // else
+        // {
+        //     lbl = "+";
+        //     this.close();
+        // }
+        // this.openBtn.label = lbl;
     }
 
     private onBtnGraptag():void
@@ -197,6 +214,25 @@ class RightFunctionButtons extends Laya.Sprite{
             {url:"res/atlas/farm.atlas",type:Loader.ATLAS}
         ];
         this.curMediator = new FarmMediator(resAry);
+    }
+    private onBtnSmelt():void
+    {
+        if(this.curMediator)
+        {
+            this.curMediator.dispose();
+            this.curMediator = null;
+        }
+        //显示地图界面
+        var resAry:Array<Object> = [
+            {url:"unpack/smelt/smeltbg.png",type:Loader.IMAGE},
+            {url:"unpack/smelt/boximg.png",type:Loader.IMAGE},
+            {url:"unpack/smelt/slidimg.png",type:Loader.IMAGE},
+            {url:"unpack/comp/zhuangbeijiatu.png",type:Loader.IMAGE},
+            {url:"res/atlas/ani/fuse.atlas",type:Loader.ATLAS},
+            {url:"res/atlas/ani/ronglian.atlas",type:Loader.ATLAS},
+            {url:"res/atlas/smelt.atlas",type:Loader.ATLAS}
+        ];
+        this.curMediator = new EquipSmeltMediator(resAry);
     }
 
     private dispose():void

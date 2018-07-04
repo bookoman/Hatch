@@ -55,7 +55,7 @@
                 {
                     "x":30,
                     "type":"Button",
-                    "props":{"y":-9,"x":676,"var":"btnClose","stateNum":"1","skin":"comp/close.png"},
+                    "props":{"y":-9,"x":676,"var":"btnClose","stateNum":"1","skin":"comp/close.png","name":"btnClose"},
                     "nodeParent":3,
                     "label":"Button(btnClose)",
                     "isOpen":false,

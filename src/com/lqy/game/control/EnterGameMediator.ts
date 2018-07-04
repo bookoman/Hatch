@@ -71,7 +71,10 @@ class EnterGameMediator extends BaseMediator{
     }
 
     private onBtnRegster(e:Laya.Event):void{
-        var enterGameMediator:SignMediator = new SignMediator();     
+        // var enterGameMediator:SignMediator = new SignMediator();     
+        // window.history.forward();
+        // window.history.back();
+        SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
     }
 
 

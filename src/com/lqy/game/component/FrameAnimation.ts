@@ -11,9 +11,11 @@ class FrameAnimation{
     private modelId:string;
     private caller:any;
     private callBack:Function;
-    constructor(disParent:Laya.Sprite,tx:number,ty:number,isSkill?:boolean,scale?:number){
+    // private isAutoRemove:boolean;
+    constructor(disParent:Laya.Sprite,tx:number,ty:number,isSkill?:boolean,scale?:number,isAutoRemove?:boolean){
         this.scale = scale === undefined ? 1 : scale;
         this.isSkill = isSkill === undefined ? false : isSkill;
+        // this.isAutoRemove = isAutoRemove === undefined ? true : isAutoRemove;
         this.animation = new Laya.Animation;
         tx = tx === undefined ? 0 : tx;
         ty = ty === undefined ? 0 : ty;
@@ -59,7 +61,13 @@ class FrameAnimation{
             this.animation.loadAtlas("res/atlas/ani/"+this.modelId+".atlas",Laya.Handler.create(this,this.onLoaded));
         }
     }
-    
+    public setXY(tx:number,ty:number):void
+    {
+        if(this.animation)
+        {
+            this.animation.pos(tx,ty);
+        }
+    }
     public dispose():void
     {
         Laya.loader.off("error"/**Laya.Event.ERROR*/,this,this.onLoadAniError);
@@ -92,6 +100,7 @@ class FrameAnimation{
         {
             this.callBack.call(this.caller);
         }
+        // if(this.isAutoRemove)
         this.dispose();
     }
     private onLoadAniError(e):void

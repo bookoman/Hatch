@@ -5,13 +5,18 @@ class LoginMediator extends BaseMediator{
     constructor(assetsUrl?:any,view?:any){
         super(assetsUrl,view);
     }
-
+    
     protected initView():void
     {
         this.view = new ui.LoginViewUI();
         LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,true,false,true);
-
+         
         super.initView();
+
+        Laya.Tween.to(this.view.logoImg,{y:110},500,Laya.Ease.backOut);
+        Laya.Tween.to(this.view.boxLogin,{y:418},500,Laya.Ease.backOut);
+
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.LOGIN_BG,1000);
 
         // TankUtil.stageShake(this.view,10);
     }
@@ -53,8 +58,8 @@ class LoginMediator extends BaseMediator{
             ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
         }
 
-        
     }
+    
 
     private loginSuccessHanlder(data:any):void
     {

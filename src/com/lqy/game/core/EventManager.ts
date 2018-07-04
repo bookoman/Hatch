@@ -20,6 +20,8 @@ class EventManager{
     public static TEST_LIST_SCRALE_RENDER:string = "TEST_LIST_SCRALE_RENDER";
     /**选择挑战关卡 */
     public static CHOICE_CHALLEGEN_GATE:string = "CHOICE_CHALLEGEN_GATE";
+    /**战报数据更新 */
+    public static REPORT_DATA_UPDATE:string = "REPORT_DATA_UPDATE";
 
     /**事件管理器 */
     public eventObj:Dictionary = null;

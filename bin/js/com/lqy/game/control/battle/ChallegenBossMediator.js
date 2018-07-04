@@ -20,19 +20,20 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         return _this;
     }
     ChallegenBossMediator.prototype.initView = function () {
-        this.view = new ui.ChallengeBossViewUI();
-        this.roleLayer = new Laya.Sprite();
-        this.view.addChild(this.roleLayer);
+        this.view = new ui.battle.ChallengeBossViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
         _super.prototype.initView.call(this);
         this.initRoles();
+        this.view.btnTimes.label = "X" + GameConfig.BATTLE_ADDSPEED_TIMES;
         // EventManager.ins.dispatchEvent(EventManager.TEST_LIST_SCRALE_RENDER);
     };
     ChallegenBossMediator.prototype.addEvents = function () {
         this.view.btnFast.on(Laya.Event.CLICK, this, this.onBtnFast);
+        this.view.btnTimes.on(Laya.Event.CLICK, this, this.onBtnTimes);
     };
     ChallegenBossMediator.prototype.removeEvents = function () {
         this.view.btnFast.off(Laya.Event.CLICK, this, this.onBtnFast);
+        this.view.btnTimes.off(Laya.Event.CLICK, this, this.onBtnTimes);
     };
     /**初始化地图数据 */
     ChallegenBossMediator.prototype.initRoles = function () {
@@ -48,7 +49,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         for (var i = 0; i < playerData.upHeroVos.length; i++) {
             baseRoleVo = playerData.upHeroVos[i];
             hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
-            hero.initRole(baseRoleVo, i, -1, this.roleLayer, true);
+            hero.initRole(baseRoleVo, i, -1, this.view.sprRole, true);
             // hero.setBlood(0);
             hero.aniPlay(RoleAniIndex.STAND);
             this.heroRoles.push(hero);
@@ -68,7 +69,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         for (i = 0; i < bossData.masterVos.length; i++) {
             baseRoleVo = bossData.masterVos[i];
             enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
-            enemy.initRole(baseRoleVo, i, 1, this.roleLayer, true);
+            enemy.initRole(baseRoleVo, i, 1, this.view.sprRole, true);
             enemy.aniPlay(RoleAniIndex.STAND);
             this.enemyRoles.push(enemy);
         }
@@ -91,6 +92,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         this.dispose();
     };
     ChallegenBossMediator.prototype.dispose = function () {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.SHAM_BATTLE, 1000);
         /**清除角色对象 */
         if (this.heroRoles) {
             var lastHeros = [];
@@ -112,6 +114,13 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         }
         // BattleEngine.ins.endBattle();
         LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, false);
+    };
+    ChallegenBossMediator.prototype.onBtnTimes = function (e) {
+        GameConfig.BATTLE_ADDSPEED_TIMES++;
+        if (GameConfig.BATTLE_ADDSPEED_TIMES > 3) {
+            GameConfig.BATTLE_ADDSPEED_TIMES = 1;
+        }
+        this.view.btnTimes.label = "X" + GameConfig.BATTLE_ADDSPEED_TIMES;
     };
     return ChallegenBossMediator;
 }(BaseMediator));

@@ -55,9 +55,9 @@
                 {
                     "x":30,
                     "type":"Panel",
-                    "props":{"y":159,"x":-32,"width":1383,"var":"zhiwuPanel","height":671},
+                    "props":{"y":159,"x":-32,"width":1383,"var":"panlePlant","height":671},
                     "nodeParent":5,
-                    "label":"Panel(zhiwuPanel)",
+                    "label":"Panel(panlePlant)",
                     "isOpen":true,
                     "isDirectory":true,
                     "isAniNode":true,
@@ -320,7 +320,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":41,"x":649,"var":"btnClose","stateNum":"1","skin":"comp/close.png"},
+            "props":{"y":41,"x":649,"var":"btnClose","stateNum":"1","skin":"comp/close.png","name":"btnClose"},
             "nodeParent":1,
             "label":"Button(btnClose)",
             "isDirectory":false,

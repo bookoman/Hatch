@@ -3,6 +3,9 @@
 */
 var ConfigManager = /** @class */ (function () {
     function ConfigManager() {
+        //测试数据
+        // this.roleConfigDic = new Dictionary();
+        // this.skillConfigDic = new Dictionary();
         /*********测试配置数据 */
         this.roleConfigAry = [
             { "id": "10000", modelId: "role10000", name: "石头怪", "scaleX": -1, "runWidth": 60, "runHeight": 100, "skillIDs": "10006", "attackRect": "0,50,50,0", "hp": 40, "dieAttTimes": 10, "att": 10, "atts": 10, "attFar": 1 },
@@ -53,11 +56,8 @@ var ConfigManager = /** @class */ (function () {
         this.masterHeroSampleDic = null;
         /**道具 */
         this.itemSampleDic = null;
-        //测试数据
-        this.roleConfigDic = new Dictionary();
-        this.skillConfigDic = new Dictionary();
-        this.parseSkillConfig();
-        this.parseRoleConfig();
+        // this.parseSkillConfig();
+        // this.parseRoleConfig();
     }
     Object.defineProperty(ConfigManager, "ins", {
         get: function () {
@@ -72,53 +72,53 @@ var ConfigManager = /** @class */ (function () {
     /**
      * 解析角色配资
      */
-    ConfigManager.prototype.parseRoleConfig = function () {
-        var _this = this;
-        var rectAry;
-        var roleVo;
-        var ax, ay, bx, by;
-        this.roleConfigAry.forEach(function (roleConfig) {
-            roleVo = new RoleVo();
-            roleVo.id = roleConfig.id;
-            roleVo.modelId = roleConfig.modelId;
-            roleVo.name = roleConfig.name;
-            roleVo.skillVos = [];
-            var skillAry = roleConfig.skillIDs == "" ? [] : roleConfig.skillIDs.split(",");
-            skillAry.forEach(function (skillId) {
-                roleVo.skillVos.push(_this.getSkillVoByID(skillId));
-            });
-            roleVo.scaleX = roleConfig.scaleX;
-            roleVo.runWidth = roleConfig.runWidth;
-            roleVo.runHeight = roleConfig.runHeight;
-            var rectAry = roleConfig.attackRect.split(",");
-            ax = rectAry[0];
-            ay = rectAry[1];
-            bx = rectAry[2];
-            by = rectAry[3];
-            roleVo.attackRange = new Rectangle(ax, ay, bx - ax, by - ay);
-            roleVo.hp = roleConfig.hp;
-            roleVo.dieAttTimes = roleConfig.dieAttTimes;
-            roleVo.att = roleConfig.att;
-            roleVo.atts = roleConfig.atts;
-            roleVo.attFar = roleConfig.attFar;
-            _this.roleConfigDic.set(roleVo.id, roleVo);
-        });
-    };
+    // public parseRoleConfig():void
+    // {
+    //     var rectAry:Array<number>;
+    //     var roleVo:RoleVo;
+    //     var ax:number,ay:number,bx:number,by:number;
+    //     this.roleConfigAry.forEach(roleConfig => {
+    //         roleVo = new RoleVo();
+    //         roleVo.id = roleConfig.id;
+    //         roleVo.modelId = roleConfig.modelId;
+    //         roleVo.name = roleConfig.name;
+    //         roleVo.skillVos = [];
+    //         var skillAry:Array<string> = roleConfig.skillIDs == "" ? [] : roleConfig.skillIDs.split(",");
+    //         skillAry.forEach(skillId =>{
+    //             roleVo.skillVos.push(this.getSkillVoByID(skillId));
+    //         });
+    //         roleVo.scaleX = roleConfig.scaleX;
+    //         roleVo.runWidth = roleConfig.runWidth;
+    //         roleVo.runHeight = roleConfig.runHeight; 
+    //         var rectAry = roleConfig.attackRect.split(",");
+    //         ax = rectAry[0];
+    //         ay = rectAry[1];
+    //         bx = rectAry[2];
+    //         by = rectAry[3];
+    //         roleVo.attackRange = new Rectangle(ax,ay,bx-ax,by-ay);
+    //         roleVo.hp = roleConfig.hp;
+    //         roleVo.dieAttTimes = roleConfig.dieAttTimes;
+    //         roleVo.att = roleConfig.att;
+    //         roleVo.atts = roleConfig.atts;
+    //         roleVo.attFar = roleConfig.attFar;
+    //         this.roleConfigDic.set(roleVo.id,roleVo);
+    //     });
+    // }
     /**
      *解析技能配置
      */
-    ConfigManager.prototype.parseSkillConfig = function () {
-        var _this = this;
-        var skillVo;
-        var skillConfig;
-        this.skillConfigAry.forEach(function (skillConfig) {
-            skillVo = new SkillVo();
-            skillVo.id = skillConfig.id;
-            skillVo.name = skillConfig.name;
-            skillVo.cd = skillConfig.cd;
-            _this.skillConfigDic.set(skillVo.id, skillVo);
-        });
-    };
+    // public parseSkillConfig():void
+    // {
+    //     var skillVo:SkillVo;
+    //     var skillConfig:Object;
+    //     this.skillConfigAry.forEach(skillConfig => {
+    //         skillVo = new SkillVo();
+    //         skillVo.key = skillConfig.id;
+    //         skillVo.name = skillConfig.name;
+    //         skillVo.cd = skillConfig.cd;
+    //         this.skillConfigDic.set(skillVo.key,skillVo);
+    //     });
+    // }
     /**解析预加载配置表 */
     ConfigManager.prototype.parsePreLoadConfigs = function () {
         this.parseQualitySample();

@@ -54,7 +54,6 @@ var TankUtil = /** @class */ (function () {
         if (times === void 0) { times = 2; }
         if (offset === void 0) { offset = 12; }
         if (speed === void 0) { speed = 32; }
-        if (callBack === void 0) { callBack = null; }
         if (this.isShake) {
             return;
         }

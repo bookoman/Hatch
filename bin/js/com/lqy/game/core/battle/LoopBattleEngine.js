@@ -142,7 +142,7 @@ var LoopBattleEngine = /** @class */ (function () {
     LoopBattleEngine.prototype.playAttackAni = function (attRole, defRole) {
         var attRoleVo = attRole.baseRoleVo;
         var defRoleVo = defRole.baseRoleVo;
-        var skillVo = attRoleVo.getCanUserSkill();
+        // var skillVo:SkillVo = attRoleVo.getCanUserSkill();
         // if(skillVo)
         // {
         //技能释放               

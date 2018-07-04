@@ -15,8 +15,6 @@ class PreLoadScene extends BaseScene{
             {url:"res/atlas/worldmap.atlas",type:Loader.ATLAS,size:10,priority:1},
             {url:"res/atlas/main.atlas",type:Loader.ATLAS,size:10,priority:1},
             {url:"unpack/login/logo.png",type:Loader.IMAGE},
-            {url:"unpack/main/main.jpg",type:Loader.IMAGE},
-            {url:"unpack/main/role.jpg",type:Loader.IMAGE},
             {url:"unpack/comp/dibanbg.png",type:Loader.IMAGE},
             {url:"unpack/comp/line.png",type:Loader.IMAGE},
             {url:"unpack/comp/mainbg.png",type:Loader.IMAGE},

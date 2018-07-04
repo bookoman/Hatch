@@ -147,6 +147,7 @@ class LoopBattleData{
         });
         if(this.isEnd)
         {
+            
             this.isWin = false;
             // console.log("战斗结束"+this.isWin);
             return;
@@ -173,6 +174,7 @@ class LoopBattleData{
         if(this.isEnd)
         {
             this.isWin = true;
+            this.productRewards();
             // console.log("战斗结束"+this.isWin);
             return;
         }
@@ -193,7 +195,13 @@ class LoopBattleData{
             this.curAttCamp = BattleAttCampType.HERO;
         }
     }
-   
+    
+    public productRewards():void
+    {
+        var gateConfig:GateSampleConfig = ConfigManager.ins.getGateSampleConfig(GameDataManager.ins.hangGateKey);
+        var rewards:Array<string> = gateConfig.getRandowRewards();
+        BattleReportData.ins.addBattleReportVo(BattleReportDataType.REWARD,null,null,null,rewards);
+    }
     /**
      * 寻找攻击目标
      * 普通攻击:
@@ -305,6 +313,11 @@ class BattleTurnVo{
         this.defRoleVo.battleDieAttTimes--;
         this.defRoleVo.isDeath = this.defRoleVo.battleDieAttTimes <= 0;
         this.defRoleVo.isAtted = true;
+        //添加战报数据
+        if(this.defRoleVo.isDeath)
+            BattleReportData.ins.addBattleReportVo(BattleReportDataType.BATTLE_DIE,this.attRoleVo.name,this.defRoleVo.name,this.attRoleVo.atk);
+        else
+            BattleReportData.ins.addBattleReportVo(BattleReportDataType.HURT,this.attRoleVo.name,this.defRoleVo.name,this.attRoleVo.atk);
         // console.log(this.defRoleVo.name ,this.defRoleVo.battleDieAttTimes);
     }
 }

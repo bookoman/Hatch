@@ -73,6 +73,8 @@ var EventManager = /** @class */ (function () {
     EventManager.TEST_LIST_SCRALE_RENDER = "TEST_LIST_SCRALE_RENDER";
     /**选择挑战关卡 */
     EventManager.CHOICE_CHALLEGEN_GATE = "CHOICE_CHALLEGEN_GATE";
+    /**战报数据更新 */
+    EventManager.REPORT_DATA_UPDATE = "REPORT_DATA_UPDATE";
     EventManager._ins = null;
     return EventManager;
 }());

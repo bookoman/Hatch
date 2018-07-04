@@ -269,7 +269,8 @@ class BossBattleEngine{
         this.bossBattleData.checkBattleEnd();
         if(this.bossBattleData.isEnd)
         {
-            Laya.timer.once(1000,this,this.endBattle);
+            // Laya.timer.once(1000,this,this.endBattle);
+            this.showBattleResultView(this.bossBattleData.isWin);
         }
         else
         {
@@ -290,6 +291,34 @@ class BossBattleEngine{
         EventManager.ins.dispatchEvent(EventManager.CHALLENGE_BOSS,[true]);
         //回到假战斗
         BattleEngine.ins.loopBattleRun();
+    }
+
+    public showBattleResultView(isSuccess:boolean):void
+    {
+        var resAry:Array<Object>;
+        var baseMediator:BaseMediator;
+        if(isSuccess)
+        {
+            resAry = [
+                {url:"unpack/battlesuccess/img_bg.png",type:Loader.IMAGE},
+                {url:"unpack/battlesuccess/img_blue.png",type:Loader.IMAGE},
+                {url:"unpack/battlesuccess/img_bluebg.png",type:Loader.IMAGE},
+                {url:"unpack/battlesuccess/img_success.png",type:Loader.IMAGE},
+                {url:"res/atlas/battlesuccess.atlas",type:Loader.ATLAS}
+            ];
+            baseMediator = new BattleSuccessMediator(resAry);
+        } 
+        else
+        {
+            resAry = [
+                {url:"unpack/battlefail/img_bg.png",type:Loader.IMAGE},
+                {url:"unpack/battlefail/img_fail.png",type:Loader.IMAGE},
+                {url:"unpack/battlefail/img_graybg.png",type:Loader.IMAGE},
+                {url:"unpack/battlefail/img_grayfillter.png",type:Loader.IMAGE},
+                {url:"res/atlas/battlefail.atlas",type:Loader.ATLAS}
+            ];
+            baseMediator = new BattleFailMediator(resAry);
+        }
     }
 
 

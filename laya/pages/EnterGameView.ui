@@ -14,21 +14,23 @@
     "child":[
         {
             "x":15,
-            "type":"Label",
-            "props":{"y":28,"x":31,"text":"当前账号：","styleSkin":"comp/label.png","fontSize":30,"color":"#ffffff"},
+            "type":"Image",
+            "props":{"y":0,"x":0,"skin":"unpack/login/loginbg.png"},
             "nodeParent":1,
-            "label":"Label",
+            "label":"Image",
             "isDirectory":false,
             "isAniNode":true,
             "hasChild":false,
-            "compId":4,
+            "compId":40,
             "child":[
-                ]
+                ],
+            "$LOCKED":true,
+            "$HIDDEN":false
         },
         {
             "x":15,
             "type":"Button",
-            "props":{"y":1082,"x":269,"width":211,"var":"btnLogin","skin":"comp/button.png","labelSize":38,"label":"进入游戏","height":72},
+            "props":{"y":965,"x":235,"var":"btnLogin","stateNum":"1","skin":"login/btn_startgame.png","labelSize":38},
             "nodeParent":1,
             "label":"Button(btnLogin)",
             "isDirectory":false,
@@ -41,7 +43,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":106,"x":38,"width":674,"skin":"unpack/login/logo.png","height":422},
+            "props":{"y":106,"x":38,"width":674,"visible":false,"skin":"unpack/login/logo.png","height":422},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -54,7 +56,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":21,"x":593,"width":140,"var":"btnRegster","skin":"comp/button.png","labelStrokeColor":"#ff0905","labelSize":30,"label":"切换账户","height":45,"alpha":0.9},
+            "props":{"y":42,"x":593,"width":140,"var":"btnRegster","stateNum":"1","skin":"comp/btn_comp.png","labelSize":24,"labelFont":"SimHei","labelColors":"#46300e","labelBold":true,"label":"切换账户","height":45,"alpha":0.9},
             "nodeParent":1,
             "label":"Button(btnRegster)",
             "isDirectory":false,
@@ -66,21 +68,8 @@
         },
         {
             "x":15,
-            "type":"Text",
-            "props":{"y":28,"x":181,"width":401,"var":"textUser","text":"325266_asda_10023","height":40,"fontSize":30,"color":"#e3e2e2","alpha":0.8,"align":"center"},
-            "nodeParent":1,
-            "label":"Text(textUser)",
-            "isDirectory":false,
-            "isAniNode":true,
-            "hasChild":false,
-            "compId":11,
-            "child":[
-                ]
-        },
-        {
-            "x":15,
             "type":"Button",
-            "props":{"y":954,"x":229,"width":303,"var":"btnChoice","height":63},
+            "props":{"y":847,"x":229,"width":303,"var":"btnChoice","height":63},
             "nodeParent":1,
             "label":"Button(btnChoice)",
             "isOpen":true,

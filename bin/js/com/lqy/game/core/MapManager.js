@@ -83,8 +83,8 @@ var MapManager = /** @class */ (function () {
         this.calSquintAngleGrid();
         GameDataManager.ins.calMapRowColPosPoint();
         //声音
-        var soundUrl = mapID >= 10000 ? "res/outside/sound/bg/zzd.mp3" : "res/outside/sound/bg/jzd.mp3";
-        SoundsManager.ins.playMusic(soundUrl, 1000);
+        // var soundUrl:string = mapID >= 10000 ?"res/outside/sound/bg/zzd.mp3" : "res/outside/sound/bg/jzd.mp3";
+        // SoundsManager.ins.playMusic(soundUrl,1000);
     };
     MapManager.prototype.backLoopMap = function () {
         this.enterMap("res/map", this.curLoopMapId, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);

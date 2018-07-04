@@ -110,7 +110,7 @@ class UIRole{
             {
                 
                 this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted);
-                this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
+                // this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID,loop);
             }
 

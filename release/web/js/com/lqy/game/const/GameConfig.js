@@ -34,13 +34,13 @@ var GameConfig = /** @class */ (function () {
     GameConfig.LINEUP_GRID_HEIGHT = 100;
     /**战斗配置 */
     /**战斗时间间隔(S) */
-    GameConfig.BATTLE_INTERVAL_TIME = 1;
+    GameConfig.BATTLE_INTERVAL_TIME = 2;
     /**战斗跑到阵型需要时间(s) */
     GameConfig.BATTLE_RUN_TIME = 0.5;
     /**战斗攻击需要时间(s) */
     GameConfig.BATTLE_ATT_TIME = 0.3;
     /**战斗加速倍数*/
-    GameConfig.BATTLE_ADDSPEED_TIMES = 3;
+    GameConfig.BATTLE_ADDSPEED_TIMES = 1;
     /**调试视图开关 */
     GameConfig.DEBUG_VIEW_SWITCH = false;
     /**场景战斗开关 */
@@ -54,6 +54,8 @@ var GameConfig = /** @class */ (function () {
     GameConfig.GATE_MAP_KEYS = [];
     /**雨出现时间间隔 s */
     GameConfig.RAIN_SHOW_LIMIT_TIME = 20;
+    /**品质color */
+    GameConfig.QUALITY_COLORS = ["#00ff00", "#003366", "#FF9933"];
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {
@@ -96,11 +98,11 @@ var HTTPRequestUrl = /** @class */ (function () {
     function HTTPRequestUrl() {
     }
     /**测试登录 get*/
-    HTTPRequestUrl.testLoginURL = "http://192.168.2.126:8080/api/testLogin.do";
+    HTTPRequestUrl.testLoginURL = "http://192.168.2.104:8080/api/testLogin.do";
     /**获取区服列表 get*/
-    HTTPRequestUrl.gameServerURL = "http://192.168.2.126:8080/api/gameserver.do";
+    HTTPRequestUrl.gameServerURL = "http://192.168.2.104:8080/api/gameserver.do";
     /**进入游戏 get*/
-    HTTPRequestUrl.enterGameURL = "http://192.168.2.126:8080/api/entergame.do";
+    HTTPRequestUrl.enterGameURL = "http://192.168.2.104:8080/api/entergame.do";
     return HTTPRequestUrl;
 }());
 /**服务器状态 */
@@ -218,4 +220,31 @@ var SkillEffect;
     /**减少对方治疗量 */
     SkillEffect[SkillEffect["REDUCE_ENEMY_TREATMENT"] = 17] = "REDUCE_ENEMY_TREATMENT";
 })(SkillEffect || (SkillEffect = {}));
+/**战报类型 */
+var BattleReportDataType;
+(function (BattleReportDataType) {
+    BattleReportDataType[BattleReportDataType["HURT"] = 1] = "HURT";
+    BattleReportDataType[BattleReportDataType["REWARD"] = 2] = "REWARD";
+    BattleReportDataType[BattleReportDataType["BATTLE_DIE"] = 3] = "BATTLE_DIE";
+})(BattleReportDataType || (BattleReportDataType = {}));
+/**背景音乐枚举 */
+var MusicBGType;
+(function (MusicBGType) {
+    MusicBGType[MusicBGType["SHAM_BATTLE"] = 0] = "SHAM_BATTLE";
+    MusicBGType[MusicBGType["TURE_BATTLE"] = 1] = "TURE_BATTLE";
+    MusicBGType[MusicBGType["WORLD_MAP"] = 2] = "WORLD_MAP";
+    MusicBGType[MusicBGType["UI_BG"] = 3] = "UI_BG";
+    MusicBGType[MusicBGType["LOGIN_BG"] = 4] = "LOGIN_BG";
+})(MusicBGType || (MusicBGType = {}));
+/**音效枚举 */
+var SoundEffectType;
+(function (SoundEffectType) {
+    SoundEffectType[SoundEffectType["CLICK"] = 0] = "CLICK";
+    SoundEffectType[SoundEffectType["CLOSE"] = 1] = "CLOSE";
+    SoundEffectType[SoundEffectType["ERROR"] = 2] = "ERROR";
+    SoundEffectType[SoundEffectType["USE_GOLD"] = 3] = "USE_GOLD";
+    SoundEffectType[SoundEffectType["HARVEST"] = 4] = "HARVEST";
+    SoundEffectType[SoundEffectType["SUCCESS"] = 5] = "SUCCESS";
+    SoundEffectType[SoundEffectType["FAIL"] = 6] = "FAIL";
+})(SoundEffectType || (SoundEffectType = {}));
 //# sourceMappingURL=GameConfig.js.map

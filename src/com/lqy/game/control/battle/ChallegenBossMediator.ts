@@ -2,7 +2,6 @@
 * 挑战boss界面
 */
 class ChallegenBossMediator extends BaseMediator{
-    private roleLayer:Laya.Sprite;
     private heroRoles:Array<BaseRole> = null;
     private enemyRoles:Array<BaseRole> = null;
     constructor(assetsUrl?:any,view?:any){
@@ -10,23 +9,26 @@ class ChallegenBossMediator extends BaseMediator{
     }
     protected initView():void
     {
-        this.view = new ui.ChallengeBossViewUI();
-        this.roleLayer = new Laya.Sprite();
-        this.view.addChild(this.roleLayer);
+        this.view = new ui.battle.ChallengeBossViewUI();
         LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,true,true);
         super.initView();
         this.initRoles();
+
+        this.view.btnTimes.label = "X"+GameConfig.BATTLE_ADDSPEED_TIMES;
         // EventManager.ins.dispatchEvent(EventManager.TEST_LIST_SCRALE_RENDER);
     }
     protected addEvents():void
     {
         this.view.btnFast.on(Laya.Event.CLICK,this,this.onBtnFast);
+        this.view.btnTimes.on(Laya.Event.CLICK,this,this.onBtnTimes);
     }
 
     protected removeEvents():void
     {
         this.view.btnFast.off(Laya.Event.CLICK,this,this.onBtnFast);
+        this.view.btnTimes.off(Laya.Event.CLICK,this,this.onBtnTimes);
     }
+    
     /**初始化地图数据 */
     public initRoles():void
     {
@@ -44,7 +46,7 @@ class ChallegenBossMediator extends BaseMediator{
             baseRoleVo = playerData.upHeroVos[i];
             hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
             
-            hero.initRole(baseRoleVo,i,-1,this.roleLayer,true);
+            hero.initRole(baseRoleVo,i,-1,this.view.sprRole,true);
             // hero.setBlood(0);
             hero.aniPlay(RoleAniIndex.STAND);
             this.heroRoles.push(hero);
@@ -68,7 +70,7 @@ class ChallegenBossMediator extends BaseMediator{
         {
             baseRoleVo = bossData.masterVos[i];
             enemy = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ENEMY_ROLE);
-            enemy.initRole(baseRoleVo,i,1,this.roleLayer,true);
+            enemy.initRole(baseRoleVo,i,1,this.view.sprRole,true);
             enemy.aniPlay(RoleAniIndex.STAND);
             this.enemyRoles.push(enemy);
         }
@@ -95,6 +97,7 @@ class ChallegenBossMediator extends BaseMediator{
     }
     public dispose():void
     {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.SHAM_BATTLE,1000);
         /**清除角色对象 */
         if(this.heroRoles)
         {
@@ -120,6 +123,15 @@ class ChallegenBossMediator extends BaseMediator{
         // BattleEngine.ins.endBattle();
         LayerManager.ins.removeToLayer(this.view,LayerManager.UI_LAYER,true,false);
     }
-
+    private onBtnTimes(e):void
+    {
+        GameConfig.BATTLE_ADDSPEED_TIMES++;
+        if(GameConfig.BATTLE_ADDSPEED_TIMES > 3)
+        {
+            GameConfig.BATTLE_ADDSPEED_TIMES = 1;
+        }
+        this.view.btnTimes.label = "X"+GameConfig.BATTLE_ADDSPEED_TIMES;
+        
+    }
     
 }

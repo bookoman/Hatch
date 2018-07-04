@@ -62,7 +62,10 @@ var EnterGameMediator = /** @class */ (function (_super) {
         }
     };
     EnterGameMediator.prototype.onBtnRegster = function (e) {
-        var enterGameMediator = new SignMediator();
+        // var enterGameMediator:SignMediator = new SignMediator();     
+        // window.history.forward();
+        // window.history.back();
+        SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
     };
     EnterGameMediator.prototype.webEnterGameHanlder = function (data) {
         var jsonObj = JSON.parse(data);

@@ -40,4 +40,8 @@
    <item name="ani/rain_01/yu5.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
    <item name="ani/rain_01/yu6.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
    <item name="ani/rain_01/yu7.png" type="Image" compress="0" pack="1" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/login/loginbg.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/login/loginbox.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/login/logo.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/comp/zhuangbeijiatu.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
 </res>

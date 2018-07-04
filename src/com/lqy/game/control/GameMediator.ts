@@ -1,3 +1,4 @@
+
 /*
 * 游戏主界面代理器
 */
@@ -24,12 +25,23 @@ class GameMediator extends BaseMediator{
     }
     protected addEvents():void
     {
-        this.view.btnOpen.on(Laya.Event.CLICK,this,this.onBtnOpen);
-        this.view.btnMap.on(Laya.Event.CLICK,this,this.onBtnMap);
-        this.view.btnLineup.on(Laya.Event.CLICK,this,this.onBtnLineup);
-        this.view.btnBattle.on(Laya.Event.CLICK,this,this.onBtnBattle);
-        this.view.btnHero.on(Laya.Event.CLICK,this,this.onBtnHero);
-        this.view.btnBag.on(Laya.Event.CLICK,this,this.onBtnBag);
+        this.view.btnOpen.on(LayaEvent.CLICK,this,this.onBtnOpen);
+        this.view.btnMap.on(LayaEvent.CLICK,this,this.onBtnMap);
+        this.view.btnLineup.on(LayaEvent.CLICK,this,this.onBtnLineup);
+        this.view.btnBattle.on(LayaEvent.CLICK,this,this.onBtnBattle);
+        this.view.btnHero.on(LayaEvent.CLICK,this,this.onBtnHero);
+        this.view.btnBag.on(LayaEvent.CLICK,this,this.onBtnBag);
+
+        this.view.btnMap.on(LayaEvent.MOUSE_DOWN,this,this.onBtnDownUp);
+        this.view.btnMap.on(LayaEvent.MOUSE_UP,this,this.onBtnDownUp);
+        this.view.btnLineup.on(LayaEvent.MOUSE_DOWN,this,this.onBtnDownUp);
+        this.view.btnLineup.on(LayaEvent.MOUSE_UP,this,this.onBtnDownUp);
+        this.view.btnBattle.on(LayaEvent.MOUSE_DOWN,this,this.onBtnDownUp);
+        this.view.btnBattle.on(LayaEvent.MOUSE_UP,this,this.onBtnDownUp);
+        this.view.btnHero.on(LayaEvent.MOUSE_DOWN,this,this.onBtnDownUp);
+        this.view.btnHero.on(LayaEvent.MOUSE_UP,this,this.onBtnDownUp);
+        this.view.btnBag.on(LayaEvent.MOUSE_DOWN,this,this.onBtnDownUp);
+        this.view.btnBag.on(LayaEvent.MOUSE_UP,this,this.onBtnDownUp);
 
         EventManager.ins.addEvent(EventManager.CHOICE_CHALLEGEN_GATE,this,this.choiceChanllegeGate);
 
@@ -49,6 +61,17 @@ class GameMediator extends BaseMediator{
         this.view.btnBattle.off(Laya.Event.CLICK,this,this.onBtnBattle);
         this.view.btnHero.off(Laya.Event.CLICK,this,this.onBtnHero);
         this.view.btnBag.off(Laya.Event.CLICK,this,this.onBtnBag);
+
+        this.view.btnMap.off(LayaEvent.MOUSE_DOWN,this,this.onBtnDownUp);
+        this.view.btnMap.off(LayaEvent.MOUSE_UP,this,this.onBtnDownUp);
+        this.view.btnLineup.off(LayaEvent.MOUSE_DOWN,this,this.onBtnDownUp);
+        this.view.btnLineup.off(LayaEvent.MOUSE_UP,this,this.onBtnDownUp);
+        this.view.btnBattle.off(LayaEvent.MOUSE_DOWN,this,this.onBtnDownUp);
+        this.view.btnBattle.off(LayaEvent.MOUSE_UP,this,this.onBtnDownUp);
+        this.view.btnHero.off(LayaEvent.MOUSE_DOWN,this,this.onBtnDownUp);
+        this.view.btnHero.off(LayaEvent.MOUSE_UP,this,this.onBtnDownUp);
+        this.view.btnBag.off(LayaEvent.MOUSE_DOWN,this,this.onBtnDownUp);
+        this.view.btnBag.off(LayaEvent.MOUSE_UP,this,this.onBtnDownUp);
 
         EventManager.ins.removeEvent(EventManager.CHOICE_CHALLEGEN_GATE,this.choiceChanllegeGate);
 
@@ -137,6 +160,9 @@ class GameMediator extends BaseMediator{
         ];
         this.curMediator = new MapWorldMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.MAP_BATTLE;
+
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP,1000);
+        
     }
     /**选择挑战关卡 */
     private choiceChanllegeGate():void
@@ -160,6 +186,8 @@ class GameMediator extends BaseMediator{
         ];
         this.curMediator = new LineupMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.LINEUP;
+
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG,1000);
     }
     /**英雄系统*/ 
     private onBtnHero(e):void
@@ -178,6 +206,8 @@ class GameMediator extends BaseMediator{
         ];
         this.curMediator = new HeroMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.HERO;
+
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG,1000);
     }
      /**战斗系统*/ 
     private onBtnBag(e):void
@@ -197,7 +227,10 @@ class GameMediator extends BaseMediator{
         ];
         this.curMediator = new BagMediator(resAry);
         GameDataManager.showModuleViewInd = GameButtomTabIndex.EQUIP;
+
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG,1000);
     }
+    
     /**挂机战斗*/ 
     private onBtnBattle(e):void
     {
@@ -221,8 +254,33 @@ class GameMediator extends BaseMediator{
             this.mapBattleMediator.enterMapBattle();
         }
         GameDataManager.showModuleViewInd = GameButtomTabIndex.BATTLE;
+
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.SHAM_BATTLE,1000);
     }
-    
+    /**按钮选中效果 */
+    private onBtnDownUp(e:LayaEvent):void
+    {
+        var btn:Button = e.target as Button;
+        
+        if(btn === this.view.btnBattle)
+        {
+            if(e.type == LayaEvent.MOUSE_DOWN)
+                btn.scale(1.1,1.1);
+            else if(e.type == LayaEvent.MOUSE_UP)
+                btn.scale(1,1);
+        }
+        else
+        {
+            if(e.type == LayaEvent.MOUSE_DOWN)
+                btn.scale(1,1);
+            else if(e.type == LayaEvent.MOUSE_UP)
+                btn.scale(0.9,0.9);
+        }
+        if(btn)
+        {
+            
+        }
+    }
     public dispose():void
     {
         

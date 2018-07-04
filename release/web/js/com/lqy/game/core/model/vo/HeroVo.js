@@ -44,9 +44,9 @@ var HeroVo = /** @class */ (function (_super) {
             //提升攻击力技能
             // bool = skillVo.initData("SK_0012");
             //嘲讽
-            bool = skillVo.initData("SK_0241");
-            skillVo.cd = 0;
-            skillVo.skillContinued = 1;
+            // bool = skillVo.initData("SK_0241");
+            // skillVo.cd = 0;
+            // skillVo.skillContinued = 1;
         }
         if (bool) {
             this.skillVos.push(skillVo);

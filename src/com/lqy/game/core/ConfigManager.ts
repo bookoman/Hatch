@@ -72,65 +72,65 @@ class ConfigManager{
     }
     constructor(){
         //测试数据
-        this.roleConfigDic = new Dictionary();
-        this.skillConfigDic = new Dictionary();
+        // this.roleConfigDic = new Dictionary();
+        // this.skillConfigDic = new Dictionary();
         
-        this.parseSkillConfig();
-        this.parseRoleConfig();
+        // this.parseSkillConfig();
+        // this.parseRoleConfig();
 
     }
     /**
      * 解析角色配资
      */
-    public parseRoleConfig():void
-    {
-        var rectAry:Array<number>;
-        var roleVo:RoleVo;
-        var ax:number,ay:number,bx:number,by:number;
-        this.roleConfigAry.forEach(roleConfig => {
-            roleVo = new RoleVo();
-            roleVo.id = roleConfig.id;
-            roleVo.modelId = roleConfig.modelId;
-            roleVo.name = roleConfig.name;
-            roleVo.skillVos = [];
+    // public parseRoleConfig():void
+    // {
+    //     var rectAry:Array<number>;
+    //     var roleVo:RoleVo;
+    //     var ax:number,ay:number,bx:number,by:number;
+    //     this.roleConfigAry.forEach(roleConfig => {
+    //         roleVo = new RoleVo();
+    //         roleVo.id = roleConfig.id;
+    //         roleVo.modelId = roleConfig.modelId;
+    //         roleVo.name = roleConfig.name;
+    //         roleVo.skillVos = [];
 
-            var skillAry:Array<string> = roleConfig.skillIDs == "" ? [] : roleConfig.skillIDs.split(",");
-            skillAry.forEach(skillId =>{
-                roleVo.skillVos.push(this.getSkillVoByID(skillId));
-            });
-            roleVo.scaleX = roleConfig.scaleX;
-            roleVo.runWidth = roleConfig.runWidth;
-            roleVo.runHeight = roleConfig.runHeight; 
-            var rectAry = roleConfig.attackRect.split(",");
-            ax = rectAry[0];
-            ay = rectAry[1];
-            bx = rectAry[2];
-            by = rectAry[3];
-            roleVo.attackRange = new Rectangle(ax,ay,bx-ax,by-ay);
-            roleVo.hp = roleConfig.hp;
-            roleVo.dieAttTimes = roleConfig.dieAttTimes;
-            roleVo.att = roleConfig.att;
-            roleVo.atts = roleConfig.atts;
-            roleVo.attFar = roleConfig.attFar;
-            this.roleConfigDic.set(roleVo.id,roleVo);
-        });
-    }
+    //         var skillAry:Array<string> = roleConfig.skillIDs == "" ? [] : roleConfig.skillIDs.split(",");
+    //         skillAry.forEach(skillId =>{
+    //             roleVo.skillVos.push(this.getSkillVoByID(skillId));
+    //         });
+    //         roleVo.scaleX = roleConfig.scaleX;
+    //         roleVo.runWidth = roleConfig.runWidth;
+    //         roleVo.runHeight = roleConfig.runHeight; 
+    //         var rectAry = roleConfig.attackRect.split(",");
+    //         ax = rectAry[0];
+    //         ay = rectAry[1];
+    //         bx = rectAry[2];
+    //         by = rectAry[3];
+    //         roleVo.attackRange = new Rectangle(ax,ay,bx-ax,by-ay);
+    //         roleVo.hp = roleConfig.hp;
+    //         roleVo.dieAttTimes = roleConfig.dieAttTimes;
+    //         roleVo.att = roleConfig.att;
+    //         roleVo.atts = roleConfig.atts;
+    //         roleVo.attFar = roleConfig.attFar;
+    //         this.roleConfigDic.set(roleVo.id,roleVo);
+    //     });
+    // }
     /**
      *解析技能配置
      */
-    public parseSkillConfig():void
-    {
-        var skillVo:SkillVo;
-        var skillConfig:Object;
-        this.skillConfigAry.forEach(skillConfig => {
-            skillVo = new SkillVo();
-            skillVo.id = skillConfig.id;
-            skillVo.name = skillConfig.name;
-            skillVo.cd = skillConfig.cd;
-            this.skillConfigDic.set(skillVo.id,skillVo);
-        });
+    // public parseSkillConfig():void
+    // {
+    //     var skillVo:SkillVo;
+    //     var skillConfig:Object;
+    //     this.skillConfigAry.forEach(skillConfig => {
+    //         skillVo = new SkillVo();
+    //         skillVo.key = skillConfig.id;
+    //         skillVo.name = skillConfig.name;
+    //         skillVo.cd = skillConfig.cd;
+    //         this.skillConfigDic.set(skillVo.key,skillVo);
+    //     });
         
-    }
+    // }
     /**解析预加载配置表 */
     public parsePreLoadConfigs():void
     {

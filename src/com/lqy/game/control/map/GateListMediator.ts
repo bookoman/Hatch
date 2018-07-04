@@ -85,7 +85,7 @@ class GateListMediator extends BaseMediator{
     }
     private battleGateResponse(gateKey:string):void  
     {
-        GameDataManager.ins.hangGateKey = gateKey;
+        // GameDataManager.ins.hangGateKey = gateKey;
         EventManager.ins.dispatchEvent(EventManager.CHOICE_CHALLEGEN_GATE);
     }
     /**扫荡返回 */
@@ -114,7 +114,7 @@ class GateListMediator extends BaseMediator{
     }
     private switchHangupGateResponse(gateKey:string):void  
     {
-        GameDataManager.ins.hangGateKey = gateKey;
+        // GameDataManager.ins.hangGateKey = gateKey;
         EventManager.ins.dispatchEvent(EventManager.CHOICE_CHALLEGEN_GATE);
     }
     private listGateRender(cell:Box,index:number):void

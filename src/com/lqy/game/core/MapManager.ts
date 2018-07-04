@@ -95,8 +95,9 @@ class MapManager{
         
         GameDataManager.ins.calMapRowColPosPoint();
         //声音
-        var soundUrl:string = mapID >= 10000 ?"res/outside/sound/bg/zzd.mp3" : "res/outside/sound/bg/jzd.mp3";
-        SoundsManager.ins.playMusic(soundUrl,1000);
+        // var soundUrl:string = mapID >= 10000 ?"res/outside/sound/bg/zzd.mp3" : "res/outside/sound/bg/jzd.mp3";
+        // SoundsManager.ins.playMusic(soundUrl,1000);
+
     }
     public backLoopMap():void
     {

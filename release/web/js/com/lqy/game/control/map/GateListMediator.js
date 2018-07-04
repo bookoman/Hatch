@@ -78,7 +78,7 @@ var GateListMediator = /** @class */ (function (_super) {
         btnSweep.filters = null;
     };
     GateListMediator.prototype.battleGateResponse = function (gateKey) {
-        GameDataManager.ins.hangGateKey = gateKey;
+        // GameDataManager.ins.hangGateKey = gateKey;
         EventManager.ins.dispatchEvent(EventManager.CHOICE_CHALLEGEN_GATE);
     };
     /**扫荡返回 */
@@ -103,7 +103,7 @@ var GateListMediator = /** @class */ (function (_super) {
         TipsManager.ins.showFloatHtmlMsg(html, this.view, this.view.width / 2, this.view.height / 2, 1.0, 200);
     };
     GateListMediator.prototype.switchHangupGateResponse = function (gateKey) {
-        GameDataManager.ins.hangGateKey = gateKey;
+        // GameDataManager.ins.hangGateKey = gateKey;
         EventManager.ins.dispatchEvent(EventManager.CHOICE_CHALLEGEN_GATE);
     };
     GateListMediator.prototype.listGateRender = function (cell, index) {

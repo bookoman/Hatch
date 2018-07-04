@@ -27,6 +27,7 @@ var BattleGateHandler = /** @class */ (function (_super) {
         // var jsonObj = JSON.parse(message.roleGateInfo);
         // GameDataManager.ins.saveGateInfoVoDic(jsonObj);
         // console.log(message);
+        GameDataManager.ins.hangGateKey = message.gateKey;
         _super.prototype.success.call(this, message.gateKey);
     };
     return BattleGateHandler;

@@ -2,12 +2,14 @@
 * 帧动画
 */
 var FrameAnimation = /** @class */ (function () {
-    function FrameAnimation(disParent, tx, ty, isSkill, scale) {
+    // private isAutoRemove:boolean;
+    function FrameAnimation(disParent, tx, ty, isSkill, scale, isAutoRemove) {
         this.isLoop = false;
         this.scale = 1;
         this.isSkill = false;
         this.scale = scale === undefined ? 1 : scale;
         this.isSkill = isSkill === undefined ? false : isSkill;
+        // this.isAutoRemove = isAutoRemove === undefined ? true : isAutoRemove;
         this.animation = new Laya.Animation;
         tx = tx === undefined ? 0 : tx;
         ty = ty === undefined ? 0 : ty;
@@ -44,6 +46,11 @@ var FrameAnimation = /** @class */ (function () {
             this.animation.loadAtlas("res/atlas/ani/" + this.modelId + ".atlas", Laya.Handler.create(this, this.onLoaded));
         }
     };
+    FrameAnimation.prototype.setXY = function (tx, ty) {
+        if (this.animation) {
+            this.animation.pos(tx, ty);
+        }
+    };
     FrameAnimation.prototype.dispose = function () {
         Laya.loader.off("error" /**Laya.Event.ERROR*/, this, this.onLoadAniError);
         this.caller = null;
@@ -70,6 +77,7 @@ var FrameAnimation = /** @class */ (function () {
         if (this.caller && this.callBack) {
             this.callBack.call(this.caller);
         }
+        // if(this.isAutoRemove)
         this.dispose();
     };
     FrameAnimation.prototype.onLoadAniError = function (e) {

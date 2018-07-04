@@ -21,32 +21,86 @@ module ui.bag {
     }
 }
 
-module ui {
-    export class BattleReportViewUI extends View {
-		public texaArea:Laya.TextArea;
+module ui.battle {
+    export class BattleFailViewUI extends View {
+		public bg:Laya.Image;
+		public imgGray:Laya.Image;
+		public btnGiveup:Laya.Button;
+		public btnBattleAgain:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":375},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"unpack/main/img_reportsbg.png","sizeGrid":"30,4,4,4","height":374}},{"type":"TextArea","props":{"y":57,"x":10,"width":731,"var":"texaArea","height":300,"editable":false}},{"type":"Label","props":{"y":15,"x":322,"width":85,"text":"战    报","height":25,"fontSize":24,"color":"#000000","bold":true,"align":"center"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"var":"bg","skin":"comp/blank.png","height":1334}},{"type":"Image","props":{"y":161,"x":3,"skin":"unpack/battlefail/img_graybg.png"}},{"type":"Image","props":{"y":565,"x":381,"var":"imgGray","skin":"unpack/battlefail/img_grayfillter.png","anchorY":0.5,"anchorX":0.5}},{"type":"Image","props":{"y":532,"x":-17,"skin":"unpack/battlefail/img_bg.png"}},{"type":"Image","props":{"y":336,"x":83,"skin":"unpack/battlefail/img_fail.png"}},{"type":"Button","props":{"y":744,"x":106,"var":"btnGiveup","stateNum":1,"skin":"battlefail/btn_giveup.png"}},{"type":"Button","props":{"y":744,"x":425,"var":"btnBattleAgain","stateNum":1,"skin":"battlefail/btn_battleagain.png"}}]};
         constructor(){ super()}
         createChildren():void {
         
             super.createChildren();
-            this.createView(ui.BattleReportViewUI.uiView);
+            this.createView(ui.battle.BattleFailViewUI.uiView);
 
         }
 
     }
 }
 
-module ui {
-    export class ChallengeBossViewUI extends View {
-		public btnFast:Laya.Button;
+module ui.battle {
+    export class BattleReportViewUI extends View {
+		public panelMask:Laya.Panel;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/challengeboss/bg.png"}},{"type":"Button","props":{"y":1111,"x":277,"width":195,"var":"btnFast","skin":"comp/button.png","labelSize":30,"label":"快速结束","height":71}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":375},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"unpack/main/img_reportsbg.png","sizeGrid":"30,4,4,4","height":374}},{"type":"Panel","props":{"y":68,"x":20,"width":715,"var":"panelMask","vScrollBarSkin":"comp/vscroll.png","height":200}},{"type":"Image","props":{"y":15,"x":314,"skin":"main/img_battlereport.png"}}]};
         constructor(){ super()}
         createChildren():void {
         
             super.createChildren();
-            this.createView(ui.ChallengeBossViewUI.uiView);
+            this.createView(ui.battle.BattleReportViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.battle {
+    export class BattleSuccessViewUI extends View {
+		public bg:Laya.Image;
+		public imgGray:Laya.Image;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"var":"bg","skin":"comp/blank.png","height":1334}},{"type":"Image","props":{"y":150,"x":0,"skin":"unpack/battlesuccess/img_bluebg.png"}},{"type":"Image","props":{"y":550,"x":378,"var":"imgGray","skin":"unpack/battlesuccess/img_blue.png","anchorY":0.5,"anchorX":0.5}},{"type":"Image","props":{"y":521,"x":-8,"skin":"unpack/battlesuccess/img_bg.png"}},{"type":"Image","props":{"y":325,"x":80,"skin":"unpack/battlesuccess/img_success.png"}},{"type":"Image","props":{"y":676,"x":146,"skin":"battlesuccess/img_rewards.png"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.battle.BattleSuccessViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.battle {
+    export class ChallengeBossViewUI extends View {
+		public btnFast:Laya.Button;
+		public sprRole:Laya.Sprite;
+		public btnTimes:Laya.Button;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/challengeboss/img_battlebg.png"}},{"type":"Button","props":{"y":1111,"x":277,"width":195,"visible":false,"var":"btnFast","skin":"comp/button.png","labelSize":30,"label":"快速结束","height":71}},{"type":"Sprite","props":{"var":"sprRole"}},{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/challengeboss/img_battlepre.png"}},{"type":"Button","props":{"y":1121,"x":337,"width":83,"var":"btnTimes","stateNum":1,"skin":"comp/btn_comp.png","labelSize":30,"labelFont":"SimHei","labelColors":"#46300e","labelBold":true,"label":"X1","height":60,"alpha":0.9}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.battle.ChallengeBossViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.battle {
+    export class MapBattleViewUI extends View {
+		public btnChalleangeBoss:Laya.Button;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/main/img_fenwei.png"}},{"type":"Button","props":{"y":891,"x":567,"width":172,"var":"btnChalleangeBoss","stateNum":1,"skin":"comp/btn_comp.png","labelSize":30,"labelFont":"SimHei","labelColors":"#46300e","labelBold":true,"label":"挑战boss","height":60,"alpha":0.9}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.battle.MapBattleViewUI.uiView);
 
         }
 
@@ -76,7 +130,7 @@ module ui.comp {
 		public imgIcon:Laya.Image;
 		public imgTick:Laya.Image;
 
-        public static  uiView:any ={"type":"View","props":{"width":115,"height":115},"child":[{"type":"Clip","props":{"y":2,"x":2,"width":110,"var":"clipBG","skin":"comp/clip_qulity1.png","height":110,"clipY":2}},{"type":"Image","props":{"y":10,"x":10,"width":95,"var":"imgIcon","height":96}},{"type":"Image","props":{"y":27,"x":14,"visible":false,"var":"imgTick","skin":"comp/img_tick.png"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":115,"height":115},"child":[{"type":"Clip","props":{"y":-2,"x":-5,"var":"clipBG","skin":"comp/q_1.png","clipY":1}},{"type":"Image","props":{"y":9,"x":9,"width":95,"var":"imgIcon","height":96}},{"type":"Image","props":{"y":25,"x":-4,"visible":false,"var":"imgTick","skin":"comp/img_select.png"}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -110,12 +164,11 @@ module ui {
     export class EnterGameViewUI extends View {
 		public btnLogin:Laya.Button;
 		public btnRegster:Laya.Button;
-		public textUser:laya.display.Text;
 		public btnChoice:Laya.Button;
 		public lblServName:laya.display.Text;
 		public serverListView:ui.ChoiceServerViewUI;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Label","props":{"y":28,"x":31,"text":"当前账号：","fontSize":30,"color":"#ffffff"}},{"type":"Button","props":{"y":1082,"x":269,"width":211,"var":"btnLogin","skin":"comp/button.png","labelSize":38,"label":"进入游戏","height":72}},{"type":"Image","props":{"y":106,"x":38,"width":674,"skin":"unpack/login/logo.png","height":422}},{"type":"Button","props":{"y":21,"x":593,"width":140,"var":"btnRegster","skin":"comp/button.png","labelStrokeColor":"#ff0905","labelSize":30,"label":"切换账户","height":45,"alpha":0.9}},{"type":"Text","props":{"y":28,"x":181,"width":401,"var":"textUser","text":"325266_asda_10023","height":40,"fontSize":30,"color":"#e3e2e2","alpha":0.8,"align":"center"}},{"type":"Button","props":{"y":954,"x":229,"width":303,"var":"btnChoice","height":63},"child":[{"type":"Line","props":{"y":0,"x":0,"toY":0,"toX":300,"lineWidth":1,"lineColor":"#ff0000"}},{"type":"Line","props":{"y":60,"x":0,"toY":0,"toX":300,"lineWidth":1,"lineColor":"#ff0000"}},{"type":"Circle","props":{"y":30,"x":10,"radius":10,"lineWidth":1,"fillColor":"#f82c2c"}},{"type":"Text","props":{"y":12,"x":40,"width":254,"var":"lblServName","text":"一区丶齐天大圣","height":41,"fontSize":30,"color":"#e3e2e2"}}]},{"type":"ChoiceServerView","props":{"y":0,"x":0,"visible":false,"var":"serverListView","runtime":"ui.ChoiceServerViewUI"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/login/loginbg.png"}},{"type":"Button","props":{"y":965,"x":235,"var":"btnLogin","stateNum":1,"skin":"login/btn_startgame.png","labelSize":38}},{"type":"Image","props":{"y":106,"x":38,"width":674,"visible":false,"skin":"unpack/login/logo.png","height":422}},{"type":"Button","props":{"y":42,"x":593,"width":140,"var":"btnRegster","stateNum":1,"skin":"comp/btn_comp.png","labelSize":24,"labelFont":"SimHei","labelColors":"#46300e","labelBold":true,"label":"切换账户","height":45,"alpha":0.9}},{"type":"Button","props":{"y":847,"x":229,"width":303,"var":"btnChoice","height":63},"child":[{"type":"Line","props":{"y":0,"x":0,"toY":0,"toX":300,"lineWidth":1,"lineColor":"#ff0000"}},{"type":"Line","props":{"y":60,"x":0,"toY":0,"toX":300,"lineWidth":1,"lineColor":"#ff0000"}},{"type":"Circle","props":{"y":30,"x":10,"radius":10,"lineWidth":1,"fillColor":"#f82c2c"}},{"type":"Text","props":{"y":12,"x":40,"width":254,"var":"lblServName","text":"一区丶齐天大圣","height":41,"fontSize":30,"color":"#e3e2e2"}}]},{"type":"ChoiceServerView","props":{"y":0,"x":0,"visible":false,"var":"serverListView","runtime":"ui.ChoiceServerViewUI"}}]};
         constructor(){ super()}
         createChildren():void {
         			View.regComponent("Text",laya.display.Text);
@@ -123,6 +176,35 @@ module ui {
 
             super.createChildren();
             this.createView(ui.EnterGameViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.equip {
+    export class SmeltViewUI extends View {
+		public smeltTitle:Laya.Image;
+		public smeltPanel:Laya.Panel;
+		public displylable:Laya.Label;
+		public ani1:Laya.Animation;
+		public ani2:Laya.Animation;
+		public ani3:Laya.Animation;
+		public ani4:Laya.Animation;
+		public ani5:Laya.Animation;
+		public ani6:Laya.Animation;
+		public btnSmelt:Laya.Image;
+		public ainrong:Laya.Animation;
+		public smeltNum:Laya.Label;
+		public displyLable:Laya.Label;
+		public btnClose:Laya.Button;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/smelt/smeltbg.png"}},{"type":"Image","props":{"y":69,"x":6,"var":"smeltTitle","skin":"smelt/smelt.png"}},{"type":"Panel","props":{"y":343,"x":66,"width":652,"var":"smeltPanel","name":"smeltPanel","height":667},"child":[{"type":"Image","props":{"y":647,"x":2,"skin":"unpack/smelt/slidimg.png"}},{"type":"Image","props":{"y":132,"x":104,"skin":"unpack/comp/zhuangbeijiatu.png"}},{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/smelt/boximg.png"}},{"type":"Image","props":{"y":32,"x":30,"skin":"smelt/lablenum.png"}},{"type":"Label","props":{"y":306,"x":318,"var":"displylable","text":"当前熔炼","fontSize":30,"color":"#e5f2f3","bold":true,"anchorY":0.5,"anchorX":0.5}},{"type":"Animation","props":{"y":336,"x":160,"width":1,"visible":false,"var":"ani1","source":"res/ani/fuse.ani","scaleY":1.8,"scaleX":1.8,"name":"ani1","height":1,"autoPlay":true}},{"type":"Animation","props":{"y":491,"x":160,"visible":false,"var":"ani2","source":"res/ani/fuse.ani","scaleY":1.8,"scaleX":1.8,"name":"ani2","autoPlay":true}},{"type":"Animation","props":{"y":184,"x":490,"visible":false,"var":"ani3","source":"res/ani/fuse.ani","scaleY":1.8,"scaleX":1.8,"name":"ani3","autoPlay":true}},{"type":"Animation","props":{"y":339,"x":490,"visible":false,"var":"ani4","source":"res/ani/fuse.ani","scaleY":1.8,"scaleX":1.8,"name":"ani4","autoPlay":true}},{"type":"Animation","props":{"y":501,"x":490,"visible":false,"var":"ani5","source":"res/ani/fuse.ani","scaleY":1.8,"scaleX":1.8,"name":"ani5","autoPlay":true}},{"type":"Animation","props":{"y":181,"x":160,"visible":false,"var":"ani6","source":"res/ani/fuse.ani","scaleY":1.8,"scaleX":1.8,"name":"ani6","autoPlay":true}}]},{"type":"Image","props":{"y":254,"x":67,"skin":"smelt/daozhao.png"}},{"type":"Image","props":{"y":351,"x":60,"skin":"unpack/smelt/slidimg.png"}},{"type":"Image","props":{"y":267,"x":325,"skin":"smelt/skillbth.png"}},{"type":"Image","props":{"y":1031,"x":193,"skin":"smelt/autoselect.png"}},{"type":"Image","props":{"y":1033,"x":443,"var":"btnSmelt","skin":"smelt/smeltbth.png"}},{"type":"Animation","props":{"y":668,"x":386,"visible":false,"var":"ainrong","source":"res/ani/ronglian1.ani","name":"ainrong","autoPlay":false}},{"type":"Label","props":{"y":671,"x":348,"visible":false,"var":"smeltNum","text":"1350","name":"smeltNum","fontSize":30,"color":"#74ef13","bold":true}},{"type":"Label","props":{"y":671,"x":348,"visible":true,"var":"displyLable","text":"2000","name":"displyLable","fontSize":30,"color":"#74ef13","bold":true}},{"type":"Button","props":{"y":19,"x":688,"var":"btnClose","stateNum":1,"skin":"comp/close.png","name":"btnClose"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.equip.SmeltViewUI.uiView);
 
         }
 
@@ -148,7 +230,7 @@ module ui.farm {
     export class FarmViewUI extends View {
 		public farmPanel:Laya.Panel;
 		public bg:Laya.Image;
-		public zhiwuPanel:Laya.Panel;
+		public panlePlant:Laya.Panel;
 		public zhongzhiList:Laya.List;
 		public zhongzhiBg:Laya.Image;
 		public ZhongZhiIcon:Laya.Image;
@@ -157,7 +239,7 @@ module ui.farm {
 		public wumai:Laya.Image;
 		public btnClose:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"y":0,"x":0,"width":750,"height":1334},"child":[{"type":"Panel","props":{"y":0,"x":0,"width":750,"var":"farmPanel","height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"var":"bg","skin":"unpack/farm/bg.png"}},{"type":"Image","props":{"y":1197,"x":29,"skin":"unpack/farm/huawen.png"}},{"type":"Panel","props":{"y":159,"x":-32,"width":1383,"var":"zhiwuPanel","height":671},"child":[{"type":"Image","props":{"y":12,"x":-265,"skin":"unpack/farm/caijimap.png"}}]},{"type":"Image","props":{"y":37,"x":-1,"skin":"farm/tip-zhongzi.png"}},{"type":"Panel","props":{"y":827,"x":24,"width":703,"height":354},"child":[{"type":"Image","props":{"skin":"unpack/farm/bgzhongzhi.png"}},{"type":"Image","props":{"skin":"farm/tip-zhongzhi.png"}},{"type":"List","props":{"width":491,"var":"zhongzhiList","spaceY":10,"spaceX":10,"selectEnable":false,"repeatY":1,"repeatX":3,"renderType":"render","name":"zhongzhiList","height":210,"centerY":0,"centerX":0},"child":[{"type":"VScrollBar","props":{"y":10,"x":-48,"width":1,"name":"scrollBar","height":338}},{"type":"VBox","props":{"x":2,"width":152,"top":10,"space":15,"renderType":"render","bottom":5,"align":"center"},"child":[{"type":"Panel","props":{"y":-51,"x":-28,"width":104,"height":102,"anchorY":0,"anchorX":0},"child":[{"type":"Image","props":{"y":51,"x":52,"width":104,"var":"zhongzhiBg","skin":"farm/frame.png","name":"zhongzhiBg","height":102,"anchorY":0.5,"anchorX":0.5}},{"type":"Image","props":{"y":53,"x":50,"var":"ZhongZhiIcon","skin":"farm/bigmogu.png","name":"ZhongZhiIcon","anchorY":0.5,"anchorX":0.5}}]},{"type":"Label","props":{"y":59,"x":-29,"var":"zhongzhiName","text":"毒蘑菇花花","name":"zhongzhiName","fontSize":20,"color":"#f2d778","bold":true,"align":"center"}},{"type":"Label","props":{"y":59,"x":-53,"text":"已使用：（2/3）","name":"zhongzhiName","fontSize":20,"color":"#563610","bold":true,"align":"center"}}]}]}]},{"type":"Panel","props":{"y":783,"x":428,"width":290,"height":38},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"farm/bgnumber.png"}},{"type":"Button","props":{"y":1,"x":255,"stateNum":1,"skin":"farm/jia.png"}},{"type":"Label","props":{"y":6,"x":187,"var":"shengyuCount","text":"3","name":"shengyuCount","fontSize":25,"color":"#f6ed94","bold":true}},{"type":"Image","props":{"y":2,"x":8,"skin":"farm/chishu.png"}}]},{"type":"Image","props":{"y":-298,"x":-1420,"width":2182,"var":"wumai","skin":"worldmap/wumai.png","height":823}}]},{"type":"Button","props":{"y":41,"x":649,"var":"btnClose","stateNum":1,"skin":"comp/close.png"}}]};
+        public static  uiView:any ={"type":"View","props":{"y":0,"x":0,"width":750,"height":1334},"child":[{"type":"Panel","props":{"y":0,"x":0,"width":750,"var":"farmPanel","height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"var":"bg","skin":"unpack/farm/bg.png"}},{"type":"Image","props":{"y":1197,"x":29,"skin":"unpack/farm/huawen.png"}},{"type":"Panel","props":{"y":159,"x":-32,"width":1383,"var":"panlePlant","height":671},"child":[{"type":"Image","props":{"y":12,"x":-265,"skin":"unpack/farm/caijimap.png"}}]},{"type":"Image","props":{"y":37,"x":-1,"skin":"farm/tip-zhongzi.png"}},{"type":"Panel","props":{"y":827,"x":24,"width":703,"height":354},"child":[{"type":"Image","props":{"skin":"unpack/farm/bgzhongzhi.png"}},{"type":"Image","props":{"skin":"farm/tip-zhongzhi.png"}},{"type":"List","props":{"width":491,"var":"zhongzhiList","spaceY":10,"spaceX":10,"selectEnable":false,"repeatY":1,"repeatX":3,"renderType":"render","name":"zhongzhiList","height":210,"centerY":0,"centerX":0},"child":[{"type":"VScrollBar","props":{"y":10,"x":-48,"width":1,"name":"scrollBar","height":338}},{"type":"VBox","props":{"x":2,"width":152,"top":10,"space":15,"renderType":"render","bottom":5,"align":"center"},"child":[{"type":"Panel","props":{"y":-51,"x":-28,"width":104,"height":102,"anchorY":0,"anchorX":0},"child":[{"type":"Image","props":{"y":51,"x":52,"width":104,"var":"zhongzhiBg","skin":"farm/frame.png","name":"zhongzhiBg","height":102,"anchorY":0.5,"anchorX":0.5}},{"type":"Image","props":{"y":53,"x":50,"var":"ZhongZhiIcon","skin":"farm/bigmogu.png","name":"ZhongZhiIcon","anchorY":0.5,"anchorX":0.5}}]},{"type":"Label","props":{"y":59,"x":-29,"var":"zhongzhiName","text":"毒蘑菇花花","name":"zhongzhiName","fontSize":20,"color":"#f2d778","bold":true,"align":"center"}},{"type":"Label","props":{"y":59,"x":-53,"text":"已使用：（2/3）","name":"zhongzhiName","fontSize":20,"color":"#563610","bold":true,"align":"center"}}]}]}]},{"type":"Panel","props":{"y":783,"x":428,"width":290,"height":38},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"farm/bgnumber.png"}},{"type":"Button","props":{"y":1,"x":255,"stateNum":1,"skin":"farm/jia.png"}},{"type":"Label","props":{"y":6,"x":187,"var":"shengyuCount","text":"3","name":"shengyuCount","fontSize":25,"color":"#f6ed94","bold":true}},{"type":"Image","props":{"y":2,"x":8,"skin":"farm/chishu.png"}}]},{"type":"Image","props":{"y":-298,"x":-1420,"width":2182,"var":"wumai","skin":"worldmap/wumai.png","height":823}}]},{"type":"Button","props":{"y":41,"x":649,"var":"btnClose","stateNum":1,"skin":"comp/close.png","name":"btnClose"}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -179,7 +261,7 @@ module ui {
 		public btnBattle:Laya.Button;
 		public viewAniScale:ui.test.TestAniScaleViewUI;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"mouseThrough":true,"height":1334},"child":[{"type":"Button","props":{"y":17,"x":706,"width":34,"var":"btnOpen","stateNum":1,"skin":"main/laba.png","sizeGrid":"-10,0,-6,-14","labelStrokeColor":"#f88508","labelSize":32,"height":31,"alpha":0.6}},{"type":"Image","props":{"y":1215,"x":0,"width":750,"skin":"unpack/main/diban.png","height":119}},{"type":"Image","props":{"y":1320,"x":0,"width":750,"skin":"main/img_blood.png","height":14}},{"type":"Tab","props":{"y":1214,"x":2,"width":746,"height":124},"child":[{"type":"Button","props":{"y":-7,"x":-1,"width":145,"var":"btnMap","stateNum":1,"skin":"main/huic.png","labelSize":40,"height":102}},{"type":"Button","props":{"y":0,"x":435,"width":148,"var":"btnHero","stateNum":1,"skin":"main/juese.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":145,"width":148,"var":"btnLineup","stateNum":1,"skin":"main/tansuo.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":-1,"x":590,"width":148,"var":"btnBag","stateNum":1,"skin":"main/bag.png","labelSize":40,"height":100}},{"type":"Button","props":{"y":0,"x":292,"width":148,"var":"btnBattle","stateNum":1,"skin":"main/zuoz.png","labelSize":40,"height":100}}]},{"type":"TestAniScaleView","props":{"y":1,"x":253,"visible":false,"var":"viewAniScale","runtime":"ui.test.TestAniScaleViewUI"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"mouseThrough":true,"height":1334},"child":[{"type":"Button","props":{"y":17,"x":706,"width":34,"visible":false,"var":"btnOpen","stateNum":1,"skin":"main/laba.png","sizeGrid":"-10,0,-6,-14","labelStrokeColor":"#f88508","labelSize":32,"height":31,"alpha":0.6}},{"type":"Tab","props":{"y":1235,"x":0,"width":746,"height":124},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/main/img_btnbg.png"}},{"type":"Button","props":{"y":98,"x":94,"var":"btnMap","stateNum":1,"skin":"main/btn_map.png","scaleY":0.9,"scaleX":0.9,"pivotY":130,"pivotX":76,"labelSize":40}},{"type":"Button","props":{"y":98,"x":545,"var":"btnHero","stateNum":1,"skin":"main/btn_hero.png","scaleY":0.9,"scaleX":0.9,"pivotY":130,"pivotX":76,"labelSize":40}},{"type":"Button","props":{"y":98,"x":227,"var":"btnLineup","stateNum":1,"skin":"main/btn_lineup.png","scaleY":0.9,"scaleX":0.9,"pivotY":130,"pivotX":76,"labelSize":40}},{"type":"Button","props":{"y":98,"x":673,"var":"btnBag","stateNum":1,"skin":"main/btn_bag.png","scaleY":0.9,"scaleX":0.9,"pivotY":130,"pivotX":76,"labelSize":40}},{"type":"Button","props":{"y":100,"x":377,"var":"btnBattle","stateNum":1,"skin":"main/btn_battle.png","pivotY":130,"pivotX":76,"labelSize":40}}]},{"type":"TestAniScaleView","props":{"y":1,"x":253,"visible":false,"var":"viewAniScale","runtime":"ui.test.TestAniScaleViewUI"}}]};
         constructor(){ super()}
         createChildren():void {
         			View.regComponent("ui.test.TestAniScaleViewUI",ui.test.TestAniScaleViewUI);
@@ -200,7 +282,7 @@ module ui.graphtag {
 		public defImage:Laya.Image;
 		public graptitleImage:Laya.Image;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"skin":"unpack/comp/mainbg.png"}},{"type":"Panel","props":{"y":204,"x":755,"width":734,"var":"graphtagPanel","height":953},"child":[{"type":"Image","props":{"skin":"unpack/comp/dibanbg.png"}},{"type":"Button","props":{"y":-9,"x":676,"var":"btnClose","stateNum":1,"skin":"comp/close.png"}},{"type":"Image","props":{"y":0,"x":10,"var":"atkImage","skin":"graphtag/atk.png"}},{"type":"Image","props":{"y":121,"x":9,"var":"defImage","skin":"graphtag/checkDef.png"}},{"type":"Image","props":{"y":58,"x":100,"skin":"unpack/comp/line.png"}},{"type":"Image","props":{"y":885,"x":98,"skin":"unpack/comp/line.png"}},{"type":"Image","props":{"y":87,"x":85,"skin":"unpack/graphtag/grahtagjiatu.png"}}]},{"type":"Image","props":{"y":35,"x":-227,"var":"graptitleImage","skin":"graphtag/graptitle.png"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"skin":"unpack/comp/mainbg.png"}},{"type":"Panel","props":{"y":204,"x":755,"width":734,"var":"graphtagPanel","height":953},"child":[{"type":"Image","props":{"skin":"unpack/comp/dibanbg.png"}},{"type":"Button","props":{"y":-9,"x":676,"var":"btnClose","stateNum":1,"skin":"comp/close.png","name":"btnClose"}},{"type":"Image","props":{"y":0,"x":10,"var":"atkImage","skin":"graphtag/atk.png"}},{"type":"Image","props":{"y":121,"x":9,"var":"defImage","skin":"graphtag/checkDef.png"}},{"type":"Image","props":{"y":58,"x":100,"skin":"unpack/comp/line.png"}},{"type":"Image","props":{"y":885,"x":98,"skin":"unpack/comp/line.png"}},{"type":"Image","props":{"y":87,"x":85,"skin":"unpack/graphtag/grahtagjiatu.png"}}]},{"type":"Image","props":{"y":35,"x":-227,"var":"graptitleImage","skin":"graphtag/graptitle.png"}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -302,11 +384,13 @@ module ui.lineup {
 
 module ui {
     export class LoginViewUI extends View {
+		public logoImg:Laya.Image;
+		public boxLogin:Laya.Box;
+		public btnLogin:Laya.Button;
 		public inputAccount:Laya.TextInput;
 		public inputPwd:Laya.TextInput;
-		public btnLogin:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"unpack/main/main.jpg","height":1334}},{"type":"Box","props":{"y":576,"x":127,"width":496,"height":317},"child":[{"type":"Image","props":{"width":496,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":361,"centerY":0,"centerX":0}},{"type":"TextInput","props":{"y":73,"x":187,"width":216,"var":"inputAccount","text":"xielong5","skin":"comp/textinput.png","height":36,"fontSize":30}},{"type":"Label","props":{"y":72,"x":95,"width":100,"text":"帐号：","height":38,"fontSize":30,"color":"#000000"}},{"type":"TextInput","props":{"y":141,"x":187,"width":216,"var":"inputPwd","type":"password","text":"123456","skin":"comp/textinput.png","height":36,"fontSize":30}},{"type":"Label","props":{"y":140,"x":95,"width":100,"text":"密码：","height":38,"fontSize":30}},{"type":"Button","props":{"y":209,"x":158,"width":211,"var":"btnLogin","skin":"comp/button.png","labelSize":38,"label":"登  录","height":72}}]}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/login/loginbg.png"}},{"type":"Image","props":{"y":-271,"x":28,"visible":false,"var":"logoImg","skin":"unpack/login/logo.png"}},{"type":"Box","props":{"y":1355,"x":105,"var":"boxLogin"},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/login/loginbox.png"}},{"type":"Image","props":{"y":144,"x":104,"skin":"login/account.png"}},{"type":"Image","props":{"y":240,"x":104,"skin":"login/pwdimg.png"}},{"type":"Button","props":{"y":313,"x":232,"var":"btnLogin","stateNum":1,"skin":"login/loginbth.png"}},{"type":"TextInput","props":{"y":142,"x":189,"width":284,"var":"inputAccount","text":"xielong7","height":42,"fontSize":28,"bold":true}},{"type":"TextInput","props":{"y":231,"x":192,"wordWrap":false,"width":281,"var":"inputPwd","type":"password","text":"123456","height":42,"fontSize":28,"bold":true}}]}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -378,22 +462,6 @@ module ui.map {
         
             super.createChildren();
             this.createView(ui.map.GateListViewUI.uiView);
-
-        }
-
-    }
-}
-
-module ui.map {
-    export class MapBattleViewUI extends View {
-		public btnChalleangeBoss:Laya.Button;
-
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/main/img_fenwei.png"}},{"type":"Button","props":{"y":891,"x":567,"width":172,"var":"btnChalleangeBoss","skin":"comp/button.png","labelSize":24,"label":"挑战boss","height":59}}]};
-        constructor(){ super()}
-        createChildren():void {
-        
-            super.createChildren();
-            this.createView(ui.map.MapBattleViewUI.uiView);
 
         }
 

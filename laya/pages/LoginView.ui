@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":3,
+    "selecteID":12,
     "props":{"width":750,"sceneColor":"#000000","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -15,7 +15,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":0,"x":0,"width":750,"skin":"unpack/main/main.jpg","height":1334},
+            "props":{"y":0,"x":0,"skin":"unpack/login/loginbg.png"},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -24,39 +24,54 @@
             "compId":2,
             "child":[
                 ],
-            "$LOCKED":false
+            "$LOCKED":true,
+            "$HIDDEN":false
+        },
+        {
+            "x":15,
+            "type":"Image",
+            "props":{"y":-271,"x":28,"visible":false,"var":"logoImg","skin":"unpack/login/logo.png"},
+            "nodeParent":1,
+            "label":"Image(logoImg)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":12,
+            "child":[
+                ]
         },
         {
             "x":15,
             "type":"Box",
-            "props":{"y":576,"x":127,"width":496,"height":317},
+            "props":{"y":1355,"x":105,"var":"boxLogin"},
             "nodeParent":1,
-            "label":"Box",
+            "label":"Box(boxLogin)",
             "isOpen":true,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
-            "compId":3,
+            "compId":18,
             "child":[
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"width":496,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":361,"centerY":0,"centerX":0},
-                    "nodeParent":3,
+                    "props":{"y":0,"x":0,"skin":"unpack/login/loginbox.png"},
+                    "nodeParent":18,
                     "label":"Image",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
                     "compId":4,
                     "child":[
-                        ]
+                        ],
+                    "$LOCKED":true
                 },
                 {
                     "x":30,
-                    "type":"TextInput",
-                    "props":{"y":73,"x":187,"width":216,"var":"inputAccount","text":"xielong5","skin":"comp/textinput.png","height":36,"fontSize":30},
-                    "nodeParent":3,
-                    "label":"TextInput(inputAccount)",
+                    "type":"Image",
+                    "props":{"y":144,"x":104,"skin":"login/account.png"},
+                    "nodeParent":18,
+                    "label":"Image",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
@@ -66,10 +81,10 @@
                 },
                 {
                     "x":30,
-                    "type":"Label",
-                    "props":{"y":72,"x":95,"width":100,"text":"帐号：","styleSkin":"comp/label.png","height":38,"fontSize":30,"color":"#000000"},
-                    "nodeParent":3,
-                    "label":"Label",
+                    "type":"Image",
+                    "props":{"y":240,"x":104,"skin":"login/pwdimg.png"},
+                    "nodeParent":18,
+                    "label":"Image",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
@@ -79,10 +94,10 @@
                 },
                 {
                     "x":30,
-                    "type":"TextInput",
-                    "props":{"y":141,"x":187,"width":216,"var":"inputPwd","type":"password","text":"123456","skin":"comp/textinput.png","height":36,"fontSize":30},
-                    "nodeParent":3,
-                    "label":"TextInput(inputPwd)",
+                    "type":"Button",
+                    "props":{"y":313,"x":232,"var":"btnLogin","stateNum":"1","skin":"login/loginbth.png"},
+                    "nodeParent":18,
+                    "label":"Button(btnLogin)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
@@ -92,10 +107,10 @@
                 },
                 {
                     "x":30,
-                    "type":"Label",
-                    "props":{"y":140,"x":95,"width":100,"text":"密码：","styleSkin":"comp/label.png","height":38,"fontSize":30},
-                    "nodeParent":3,
-                    "label":"Label",
+                    "type":"TextInput",
+                    "props":{"y":142,"x":189,"width":284,"var":"inputAccount","text":"xielong7","height":42,"fontSize":28,"bold":true},
+                    "nodeParent":18,
+                    "label":"TextInput(inputAccount)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
@@ -105,18 +120,17 @@
                 },
                 {
                     "x":30,
-                    "type":"Button",
-                    "props":{"y":209,"x":158,"width":211,"var":"btnLogin","skin":"comp/button.png","labelSize":38,"label":"登  录","height":72},
-                    "nodeParent":3,
-                    "label":"Button(btnLogin)",
+                    "type":"TextInput",
+                    "props":{"y":231,"x":192,"wordWrap":false,"width":281,"var":"inputPwd","type":"password","text":"123456","height":42,"fontSize":28,"bold":true},
+                    "nodeParent":18,
+                    "label":"TextInput(inputPwd)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":11,
+                    "compId":9,
                     "child":[
                         ]
-                }],
-            "$HIDDEN":false
+                }]
         }],
     "animations":[
         {

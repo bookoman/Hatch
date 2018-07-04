@@ -53,7 +53,7 @@ class TankUtil {
    * @param speed
    *
    */  
-  public static stageShake(view:Laya.Sprite, times:number = 2, offset:number = 12, speed:number = 32,caller?:any,callBack?:Function = null):void
+  public static stageShake(view:Laya.Sprite, times:number = 2, offset:number = 12, speed:number = 32,caller?:any,callBack?:Function):void
   {
         if(this.isShake){
                 return;
@@ -80,5 +80,6 @@ class TankUtil {
                 }
             }
         }
+    }
 
 }

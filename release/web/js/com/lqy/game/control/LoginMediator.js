@@ -20,6 +20,9 @@ var LoginMediator = /** @class */ (function (_super) {
         this.view = new ui.LoginViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, true, false, true);
         _super.prototype.initView.call(this);
+        Laya.Tween.to(this.view.logoImg, { y: 110 }, 500, Laya.Ease.backOut);
+        Laya.Tween.to(this.view.boxLogin, { y: 418 }, 500, Laya.Ease.backOut);
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.LOGIN_BG, 1000);
         // TankUtil.stageShake(this.view,10);
     };
     LoginMediator.prototype.addEvents = function () {

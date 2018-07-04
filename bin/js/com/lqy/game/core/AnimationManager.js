@@ -54,6 +54,20 @@ var AnimationManager = /** @class */ (function () {
             this.rainFrameAni = null;
         }
     };
+    /**添加鼠标点击特效 */
+    AnimationManager.prototype.addMouseClickEffect = function () {
+        var layer = LayerManager.ins.getLayer(LayerManager.TIP_LAYER);
+        if (this.mouseClickAni == null) {
+            this.mouseClickAni = new Laya.Animation();
+            this.mouseClickAni.loadAnimation("res/ani/click.ani");
+            this.mouseClickAni.on("complete" /**Laya.Event.COMPLETE*/, this, function (e) {
+                this.mouseClickAni.removeSelf();
+            });
+        }
+        this.mouseClickAni.pos(layer.mouseX, layer.mouseY);
+        layer.addChild(this.mouseClickAni);
+        this.mouseClickAni.play();
+    };
     AnimationManager._ins = null;
     return AnimationManager;
 }());

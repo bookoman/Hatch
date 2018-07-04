@@ -35,13 +35,13 @@ class GameConfig{
 
     /**战斗配置 */
     /**战斗时间间隔(S) */
-    public static BATTLE_INTERVAL_TIME:number = 1;
+    public static BATTLE_INTERVAL_TIME:number = 2;
     /**战斗跑到阵型需要时间(s) */
     public static BATTLE_RUN_TIME:number = 0.5;
     /**战斗攻击需要时间(s) */
     public static BATTLE_ATT_TIME:number = 0.3;
     /**战斗加速倍数*/
-    public static BATTLE_ADDSPEED_TIMES:number = 3;
+    public static BATTLE_ADDSPEED_TIMES:number = 1;
 
     /**调试视图开关 */
     public static DEBUG_VIEW_SWITCH:boolean = false;
@@ -59,6 +59,9 @@ class GameConfig{
     
     /**雨出现时间间隔 s */
     public static RAIN_SHOW_LIMIT_TIME:number = 20;
+
+    /**品质color */
+    public static QUALITY_COLORS:Array<string> = ["#00ff00","#003366","#FF9933"];
 }
 
 class HTTPReqType{
@@ -101,11 +104,11 @@ class Protocol{
 /**http请求地址 */
 class HTTPRequestUrl{
     /**测试登录 get*/
-    public static testLoginURL:string = "http://192.168.2.126:8080/api/testLogin.do";
+    public static testLoginURL:string = "http://192.168.2.104:8080/api/testLogin.do";
     /**获取区服列表 get*/
-    public static gameServerURL:string = "http://192.168.2.126:8080/api/gameserver.do";
+    public static gameServerURL:string = "http://192.168.2.104:8080/api/gameserver.do";
     /**进入游戏 get*/
-    public static enterGameURL:string = "http://192.168.2.126:8080/api/entergame.do";
+    public static enterGameURL:string = "http://192.168.2.104:8080/api/entergame.do";
 
 }
 
@@ -209,4 +212,16 @@ enum SkillEffect{
     ADD_INJURY_FREE,
     /**减少对方治疗量 */
     REDUCE_ENEMY_TREATMENT
+}
+/**战报类型 */
+enum BattleReportDataType{
+    HURT = 1,REWARD,BATTLE_DIE
+}
+/**背景音乐枚举 */
+enum MusicBGType{
+    SHAM_BATTLE = 0,TURE_BATTLE,WORLD_MAP,UI_BG,LOGIN_BG
+}
+/**音效枚举 */
+enum SoundEffectType{
+    CLICK = 0,CLOSE,ERROR,USE_GOLD,HARVEST,SUCCESS,FAIL
 }

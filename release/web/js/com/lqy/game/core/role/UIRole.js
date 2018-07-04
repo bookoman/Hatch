@@ -81,7 +81,7 @@ var UIRole = /** @class */ (function () {
             //>= aniCount默认播放第一个动画
             if (this.skeletonAni) {
                 this.skeletonAni.player.on(Laya.Event.COMPLETE, this, this.onPlayCompleted);
-                this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
+                // this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
                 this.skeletonAni.play(aniID, loop);
             }
         }

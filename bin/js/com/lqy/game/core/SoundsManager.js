@@ -5,6 +5,22 @@ var LayaSoundManager = Laya.SoundManager;
 */
 var SoundsManager = /** @class */ (function () {
     function SoundsManager() {
+        this.musicsConfig = [
+            { "url": "res/outside/sound/bg/jzd.mp3", "desc": "假战斗背景" },
+            { "url": "res/outside/sound/bg/zzd.mp3", "desc": "真战斗背景" },
+            { "url": "res/outside/sound/bg/ui-map.ogg", "desc": "大地图背景" },
+            { "url": "res/outside/sound/bg/ui-bjyy.mp3", "desc": "UI背景" },
+            { "url": "res/outside/sound/bg/ui_dl.mp3", "desc": "登录背景" }
+        ];
+        this.soundsConfig = [
+            { "url": "res/outside/sound/effect/ui_dj.wav", "desc": "点击音效" },
+            { "url": "res/outside/sound/effect/ui_gb.mp3", "desc": "关闭音效" },
+            { "url": "res/outside/sound/effect/ui_dl.mp3", "desc": "报错音效" },
+            { "url": "res/outside/sound/effect/ui_gold.wav", "desc": "消耗金币音效" },
+            { "url": "res/outside/sound/effect/ui_dl.mp3", "desc": "收获音效" },
+            { "url": "res/outside/sound/effect/sl.ogg", "desc": "战斗胜利音效" },
+            { "url": "res/outside/sound/effect/sb.ogg", "desc": "战斗失败音效" }
+        ];
         this.soundChannelDic = new Dictionary();
     }
     Object.defineProperty(SoundsManager, "ins", {
@@ -89,6 +105,22 @@ var SoundsManager = /** @class */ (function () {
      */
     SoundsManager.prototype.removeChannel = function (channel) {
         LayaSoundManager.removeChannel(channel);
+    };
+    /**播放背景音乐 */
+    SoundsManager.prototype.playerMusicByEnum = function (eId, loops, complete, startTime) {
+        if (loops === void 0) { loops = 0; }
+        if (complete === void 0) { complete = null; }
+        if (startTime === void 0) { startTime = 0; }
+        var config = this.musicsConfig[eId];
+        this.playMusic(config.url, loops, complete, startTime);
+    };
+    /**播放背景音乐 */
+    SoundsManager.prototype.playerSoundByEnum = function (eId, loops, complete, startTime) {
+        if (loops === void 0) { loops = 0; }
+        if (complete === void 0) { complete = null; }
+        if (startTime === void 0) { startTime = 0; }
+        var config = this.soundsConfig[eId];
+        this.playSound(config.url, loops, complete, startTime);
     };
     SoundsManager._ins = null;
     return SoundsManager;

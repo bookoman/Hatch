@@ -4,6 +4,8 @@
 class AnimationManager{
     /**雨特效 */
     private rainFrameAni:FrameAnimation = null;
+    /**鼠标点击效果 */
+    private mouseClickAni:Laya.Animation;
     constructor(){
 
     }
@@ -58,6 +60,25 @@ class AnimationManager{
             this.rainFrameAni = null;
         }
     }
+    /**添加鼠标点击特效 */
+    public addMouseClickEffect():void
+    {
+        var layer:MyLayer = LayerManager.ins.getLayer(LayerManager.TIP_LAYER);
+        if(this.mouseClickAni == null)
+        {
+            this.mouseClickAni = new Laya.Animation();
+            this.mouseClickAni.loadAnimation("res/ani/click.ani");
+            this.mouseClickAni.on("complete"/**Laya.Event.COMPLETE*/,this,function(e):void{
+                this.mouseClickAni.removeSelf();
+            });
+        }
+        this.mouseClickAni.pos(layer.mouseX,layer.mouseY);
+        layer.addChild(this.mouseClickAni);
+        this.mouseClickAni.play()
+
+    }
+
+
 
     
 }

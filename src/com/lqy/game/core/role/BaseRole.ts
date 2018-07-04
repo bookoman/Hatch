@@ -144,7 +144,7 @@ class BaseRole extends Laya.Sprite{
     private onPlayCompleted():void
     {
         // console.log("后........",this.baseRoleVo.name,this.aniId);
-        if(this.aniId == RoleAniIndex.ATTACK)
+        if(this.aniId == RoleAniIndex.ATTACK && GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE)
         {
             SoundsManager.ins.playSound("res/outside/sound/effect/fit.wav");
         }

@@ -5,26 +5,24 @@ P 12740C40 bagtitle.png
 P 64F84F48 xiaohao.png
 P 7FC0A0F9 zhangwen.png
 P 5DCC64E6 zhuangbei.png
+D battlefail
+P FD6C1092 btn_battleagain.png
+P 9AE49F37 btn_giveup.png
+D battlesuccess
+P F4D2463B img_rewards.png
 D challengeboss
 D comp
 P D12221A9 bg.png
 P 9401CC40 blank.png
 P 26626531 btn_base.png
 P B03390E5 btn_close.png
+P B25F802A btn_comp.png
 P 9B2EC815 btn_evolve.png
 P CDDC322D btn_resetskill.png
 P 27B6DFDC btn_skill.png
 P 1F3929EA button.png
 P 6CC6DF97 checkbox.png
 P FB94CCF2 clip_num.png
-P 42A48524 clip_qulity0.png
-P 42A48524 clip_qulity1.png
-P 4400070B clip_qulity2.png
-P 26929EB5 clip_qulity3.png
-P B63497FE clip_qulity4.png
-P ECF92ACB clip_qulity5.png
-P AFEDDD70 clip_qulity6.png
-P 318D6271 clip_qulity7.png
 P F7B6B7D7 clip_selectBox.png
 P 755271AE clip_tree_arrow.png
 P 859FD34C clip_tree_folder.png
@@ -38,14 +36,15 @@ P E466EB1C hslider$bar.png
 P C4BECA54 hslider.png
 P 5EDC128C html.png
 P ACFFCCCF image.png
+P B2FE2584 img_select.png
 P B804ADB3 img_shadow.png
-P A3066B81 img_tick.png
 P 35BBD554 itembox.png
 P EF5C6C0E l_yezhi_1.png
 P 5EDC128C label.png
 P 5EDC128C linkbutton.png
 P 9E4DD730 progress$bar.png
 P 3FD78E12 progress.png
+P 0361C2BD q_1 - 副本.png
 P 0361C2BD q_1.png
 P ACD8826E q_2.png
 P A90B0D56 q_3.png
@@ -83,21 +82,38 @@ P 7081B0E0 checkedAtk.png
 P 759C83B7 def.png
 P 63D92342 graptitle.png
 D hero
+D login
+P 566FF044 account.png
+P 2A91AC24 btn_startgame.png
+P D78C5F9A loginbth.png
+P EB55BD92 pwdimg.png
+P 34B8123E selectBox.png
+P 28F1D245 xialabth.png
 D main
-P A7FC63D9 bag.png
+P 49A28204 btn_bag.png
+P 0D603D06 btn_battle.png
+P 1A7556D6 btn_farm.png
+P ED2C2065 btn_graphtag.png
+P 3BC9143E btn_hero.png
+P 06A34008 btn_lineup.png
+P 6EB14387 btn_map.png
+P 0B3047BB btn_open.png
+P 4A195B00 btn_smelt.png
 P 20196FC1 clip_shadow.png
-P B533CE1E huic.png
-P E6BEF92D huic_1.png
+P 3E0F646F img_battlereport.png
 P 8A5092D9 img_blood.png
 P 740D53ED img_bloodbg.png
-P 3C936667 img_tzdb.png
-P D7F208FB juese.png
-P C131F4E2 juese_1.png
 P 42A3FE33 laba.png
-P 00C58ACB logo.png
 P 3ED4975B skill_bg01.png
-P 9CCB3152 tansuo.png
-P E23808C2 zuoz.png
+D smelt
+P 91D859DF autoselect.png
+P 02C5B5DB daozhao.png
+P 697D2DBE lablenum.png
+P 87498251 piliangbtn.png
+P 13AA413C shengwang.png
+P F4423653 skillbth.png
+P FB2FA1BB smelt.png
+P 9E5957AE smeltbth.png
 D unpack
 D worldmap
 P F287933A btn_chanllege.png
@@ -114,6 +130,15 @@ P 712B0160 img_map.png
 P 6EB1262C img_notice.png
 P B268763D img_reward.png
 P 8E8E545E wumai.png
+D ani/click
+P 97C89EE3 tc_bipai_00000.png
+P 8565F3BF tc_bipai_00001.png
+P 7CE0B0BE tc_bipai_00002.png
+P 395DC65D tc_bipai_00003.png
+P 9B664115 tc_bipai_00004.png
+P 04F36F98 tc_bipai_00005.png
+P 9F63E757 tc_bipai_00006.png
+P BD197B11 tc_bipai_00007.png
 D ani/common_buff
 P 757EBDE8 buff_1.png
 P C274C787 buff_10.png
@@ -131,6 +156,22 @@ P 5C8EC553 buff_6.png
 P 949D71D8 buff_7.png
 P E339C1FB buff_8.png
 P E0F6B3FC buff_9.png
+D ani/fuse
+P F13B6E03 xancx_d4897f[1] 00001.png
+P FABFDB05 xancx_d4897f[1] 00002.png
+P 97183C39 xancx_d4897f[1] 00003.png
+P 2EDE8360 xancx_d4897f[1] 00004.png
+P CBF92654 xancx_d4897f[1] 00005.png
+P ADD2A933 xancx_d4897f[1] 00006.png
+P 12884920 xancx_d4897f[1] 00007.png
+P F9A1F7F0 xancx_d4897f[1] 00008.png
+P 1C3EC4EE xancx_d4897f[1] 00009.png
+P A5466CE8 xancx_d4897f[1] 00010.png
+P 28A76F3F xancx_d4897f[1] 00011.png
+P CEC05702 xancx_d4897f[1] 00012.png
+P F232498F xancx_d4897f[1] 00013.png
+P DFDD0496 xancx_d4897f[1] 00014.png
+P 47AD0120 xancx_d4897f[1] 00015.png
 D ani/rain_01
 P A06D6842 yu2.png
 P 4712FE31 yu3.png
@@ -138,6 +179,21 @@ P B5328399 yu4.png
 P 1CA2FF7F yu5.png
 P 13AEAA55 yu6.png
 P 62FC2F17 yu7.png
+D ani/ronglian
+P 4D1E14D2 r1.png
+P 65C08D7F r10.png
+P 262BA8E2 r11.png
+P 58E28470 r12.png
+P 4A91FDAB r13.png
+P 5E6D9E8C r14.png
+P AFE05916 r2.png
+P 726227D4 r3.png
+P 7935724C r4.png
+P 3FA2F8C6 r5.png
+P 1D445E47 r6.png
+P DC8F562F r7.png
+P 37B3D6AB r8.png
+P 13565414 r9.png
 D ani/SK_0041
 P 0F74E5CB touchui_1.png
 P C8002D6F touchui_10.png
@@ -208,12 +264,25 @@ P 86DC8C1C icon-009.png
 P F30CC7E9 icon-010.png
 D unpack/bag
 R 30A44D11 itemjiatu.png
+D unpack/battlefail
+R 42C49836 img_bg.png
+R FC78EE61 img_fail.png
+R F2D67A8D img_graybg.png
+R FECA4C45 img_grayfillter.png
+D unpack/battlesuccess
+R B346003E img_bg.png
+R 598C1FA6 img_blue.png
+R 717D1923 img_bluebg.png
+R 3E87310F img_success.png
 D unpack/challengeboss
-R 888F93F0 bg.png
+R CFB8FF78 img_battlebg.png
+R 3E22F7A5 img_battlepre.png
 D unpack/comp
 R 45BD7FF8 dibanbg.png
+R 0ADFE7C5 grahtagjiatu.png
 R B07D3FD3 line.png
 R C8E1D92A mainbg.png
+R 72AF5430 zhuangbeijiatu.png
 D unpack/farm
 R 2BFEA787 bg.png
 R 5F3A3E86 bgzhongzhi.png
@@ -225,14 +294,15 @@ D unpack/lineup
 R 1E93072A bg.png
 R 0FCDCA25 juese_bg.png
 D unpack/login
-R AEF7B252 logo.png
+R E56E48B2 loginbg.png
+R 172E29A7 loginbox.png
+R 18174D21 logo.png
 D unpack/main
 R 6D978B09 bg_dibian.png
 R 6D978B09 diban.png
+R 02115426 img_btnbg.png
 R 23A50F59 img_fenwei.png
-R 93F650EB img_reportsbg.png
-R ABF2AEF3 main.jpg
-R 43507D1A role.jpg
+R 0E1574B9 img_reportsbg.png
 R DED7EA0A roleBg.png
 R C7A9AB28 skill_bg02.png
 R C05B7C8F skill_bk.png
@@ -252,6 +322,10 @@ R 5EFEF576 preBg.png
 R F6C100E1 progress.png
 R 41CCD3AD progressBg.png
 R 5DB194CD progressLight.png
+D unpack/smelt
+R A6207A31 boximg.png
+R CEC74E56 slidimg.png
+R A04D3FB1 smeltbg.png
 D unpack/worldmap
 R 8BC2DFBB bg.png
 R C79DB7B3 img_gatebg.png
