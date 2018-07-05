@@ -65500,21 +65500,21 @@ var GameServerState = /** @class */ (function () {
     function GameServerState() {
     }
     /**
-     * 正常在线
+     * 流畅
      */
     GameServerState.GameServer_State_ON = 0;
     /**
+     * 拥挤
+     */
+    GameServerState.GameServer_State_Croding = 1;
+    /**
      * 火爆
      */
-    GameServerState.GameServer_State_FIRE = 1;
+    GameServerState.GameServer_State_FIRE = 2;
     /**
     * 停服
     */
     GameServerState.GameServer_State_OFF = -1;
-    /**
-     * 停服维护
-     */
-    GameServerState.GameServer_State_Maintain = -2;
     return GameServerState;
 }());
 /**地图类型枚举 */
@@ -65781,7 +65781,7 @@ var CGAnimation = /** @class */ (function (_super) {
             "在一阵强烈的电磁风暴过后，一群人类突然出现在茂密的丛林中。",
             "这些人在经历了绝望、挣扎之后，被迫开始在这个时代扎根生存，他们自称为穿越者。",
             "随着远古大陆上穿越者越来越多，这些人终于安定下来，并联合起来组成了部落。穿越者的部落在远古大陆上艰难的生存着......",
-            "直到......",
+            "直到他们发现了恐龙......",
             "在付出了惨痛的代价后，穿越者们终于成功的驯化了部分恐龙，而且在经过了数代人的探索之后，他们更是总结出了一套完整的驯龙和育恐龙体系。",
             "在恐龙的协助下，穿越者们在异界渐渐站稳了脚跟，修建了村落，然后也渐渐形成了新的信仰和习俗。每个刚穿越而来的人，都会到村落外抓自己的第一条龙，以证明自己在部落中的价值。",
             "一个偶然的机会，几个穿越者在一个不知名的山谷后面发现了一片上古遗迹......",
@@ -65916,9 +65916,9 @@ var CGAnimation = /** @class */ (function (_super) {
             this.printFontComplete = true;
             // this.nextPage();
             if (this.pageId == this.fontsAry.length - 1) {
-                Laya.Tween.to(this.aniArrow, { alpha: 0 }, 2000);
+                Laya.Tween.to(this.aniArrow, { alpha: 0 }, 3000);
             }
-            Laya.Tween.to(this.imgPage, { alpha: 0 }, 2000, null, Laya.Handler.create(this, this.playComplete));
+            Laya.Tween.to(this.imgPage, { alpha: 0 }, 3000, null, Laya.Handler.create(this, this.playComplete));
         }
     };
     CGAnimation.prototype.nextPage = function () {
@@ -66193,7 +66193,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.ChoiceServerViewUI.uiView);
         };
-        ChoiceServerViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "var": "bg", "skin": "comp/blank.png", "height": 1334 } }, { "type": "List", "props": { "width": 547, "var": "listServer", "spaceY": 5, "repeatY": 10, "height": 470, "centerY": 0, "centerX": 0 }, "child": [{ "type": "Box", "props": { "name": "render" }, "child": [{ "type": "Clip", "props": { "width": 522, "skin": "comp/clip_selectBox.png", "name": "clip", "height": 38, "clipY": 2 } }, { "type": "Label", "props": { "y": 2, "x": 10, "width": 247, "text": "测试服务器1", "name": "lblServName", "height": 36, "fontSize": 30, "color": "#000000" } }, { "type": "Label", "props": { "y": 2, "x": 286, "width": 166, "text": "拥挤", "name": "lblServState", "height": 36, "fontSize": 30, "color": "#d7100c" } }] }, { "type": "VScrollBar", "props": { "y": 0, "x": 526, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 423 } }] }] };
+        ChoiceServerViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "var": "bg", "skin": "comp/blank.png", "height": 1334 } }, { "type": "Image", "props": { "y": 337, "x": 66, "skin": "unpack/login/loginbox.png", "scaleY": 1.1, "scaleX": 1.1 } }, { "type": "List", "props": { "y": 611, "x": 112, "width": 531, "var": "listServer", "repeatY": 4, "repeatX": 2, "height": 290, "centerY": 89, "centerX": 2 }, "child": [{ "type": "Box", "props": { "y": 0, "x": 0, "width": 273, "name": "render", "height": 83 }, "child": [{ "type": "Clip", "props": { "y": -14, "x": -6, "skin": "login/img_fontbg2.png", "name": "clip", "clipY": 1 } }, { "type": "Label", "props": { "y": 7, "x": 10, "width": 134, "text": "测试服务", "name": "lblServName", "height": 29, "fontSize": 22, "font": "SimHei", "color": "#baf8ff", "bold": false, "align": "center" } }, { "type": "Image", "props": { "y": -4, "x": 141, "skin": "login/img_state0.png", "name": "imgServState" } }] }, { "type": "VScrollBar", "props": { "y": 0, "x": 526, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 254 } }] }, { "type": "Button", "props": { "y": 331, "x": 595, "var": "btnBack", "stateNum": 1, "skin": "login/btn_back.png" } }, { "type": "Image", "props": { "y": 413, "x": 293, "skin": "login/img_font3.png" } }, { "type": "Image", "props": { "y": 548, "x": 313, "skin": "login/img_font.png" } }, { "type": "Box", "props": { "y": 475, "x": 112, "var": "boxPreServ0", "height": 38 }, "child": [{ "type": "Clip", "props": { "y": -14, "x": -6, "skin": "login/img_fontbg2.png", "name": "clip", "clipY": 1 } }, { "type": "Label", "props": { "y": 7, "x": 10, "width": 134, "name": "lblServName", "height": 31, "fontSize": 22, "font": "SimHei", "color": "#baf8ff", "bold": false, "align": "center" } }, { "type": "Image", "props": { "y": -4, "x": 146, "skin": "login/img_state0.png", "name": "imgServState" } }] }, { "type": "Box", "props": { "y": 475, "x": 386, "visible": false, "var": "boxPreServ1", "height": 38 }, "child": [{ "type": "Clip", "props": { "y": -14, "x": -6, "skin": "login/img_fontbg2.png", "name": "clip", "clipY": 1 } }, { "type": "Label", "props": { "y": 7, "x": 10, "width": 134, "text": "测试", "name": "lblServName", "height": 36, "fontSize": 22, "font": "SimHei", "color": "#baf8ff", "bold": false, "align": "center" } }, { "type": "Image", "props": { "y": -4, "x": 146, "skin": "login/img_state0.png", "name": "imgServState" } }] }] };
         return ChoiceServerViewUI;
     }(View));
     ui.ChoiceServerViewUI = ChoiceServerViewUI;
@@ -66243,7 +66243,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.EnterGameViewUI.uiView);
         };
-        EnterGameViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbg.png" } }, { "type": "Button", "props": { "y": 965, "x": 235, "var": "btnLogin", "stateNum": 1, "skin": "login/btn_startgame.png", "labelSize": 38 } }, { "type": "Image", "props": { "y": 106, "x": 38, "width": 674, "visible": false, "skin": "unpack/login/logo.png", "height": 422 } }, { "type": "Button", "props": { "y": 42, "x": 593, "width": 140, "var": "btnRegster", "stateNum": 1, "skin": "comp/btn_comp.png", "labelSize": 24, "labelFont": "SimHei", "labelColors": "#46300e", "labelBold": true, "label": "切换账户", "height": 45, "alpha": 0.9 } }, { "type": "Button", "props": { "y": 847, "x": 229, "width": 303, "var": "btnChoice", "height": 63 }, "child": [{ "type": "Line", "props": { "y": 0, "x": 0, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Line", "props": { "y": 60, "x": 0, "toY": 0, "toX": 300, "lineWidth": 1, "lineColor": "#ff0000" } }, { "type": "Circle", "props": { "y": 30, "x": 10, "radius": 10, "lineWidth": 1, "fillColor": "#f82c2c" } }, { "type": "Text", "props": { "y": 12, "x": 40, "width": 254, "var": "lblServName", "text": "一区丶齐天大圣", "height": 41, "fontSize": 30, "color": "#e3e2e2" } }] }, { "type": "ChoiceServerView", "props": { "y": 0, "x": 0, "visible": false, "var": "serverListView", "runtime": "ui.ChoiceServerViewUI" } }] };
+        EnterGameViewUI.uiView = { "type": "View", "props": { "width": 750, "skin": "login/img_state0.png", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbg.png" } }, { "type": "Button", "props": { "y": 718, "x": 235, "var": "btnLogin", "stateNum": 1, "skin": "login/btn_startgame.png", "labelSize": 38 } }, { "type": "Image", "props": { "y": 106, "x": 38, "width": 674, "visible": false, "skin": "unpack/login/logo.png", "height": 422 } }, { "type": "Button", "props": { "y": 42, "x": 593, "width": 140, "var": "btnRegster", "stateNum": 1, "skin": "comp/btn_comp.png", "labelSize": 24, "labelFont": "SimHei", "labelColors": "#46300e", "labelBold": true, "label": "切换账户", "height": 45, "alpha": 0.9 } }, { "type": "Button", "props": { "y": 600, "x": 214, "width": 303, "var": "btnChoice", "height": 63 }, "child": [{ "type": "Image", "props": { "y": -3, "x": 3, "skin": "login/img_fontbg3.png" } }, { "type": "Text", "props": { "y": 14, "x": 13, "width": 254, "var": "lblServName", "text": "一区丶齐天大圣", "height": 41, "fontSize": 30, "font": "SimHei", "color": "#baf8ff", "bold": true, "align": "center" } }, { "type": "Image", "props": { "y": 14, "x": 250, "var": "imgServState", "skin": "login/img_state0.png" } }] }, { "type": "Button", "props": { "y": 608, "x": 535, "var": "btnSelect", "stateNum": 1, "skin": "login/btn_select.png" } }, { "type": "ChoiceServerView", "props": { "y": 0, "x": 0, "visible": false, "var": "serverListView", "runtime": "ui.ChoiceServerViewUI" } }] };
         return EnterGameViewUI;
     }(View));
     ui.EnterGameViewUI = EnterGameViewUI;
@@ -66431,7 +66431,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.LoginViewUI.uiView);
         };
-        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbg.png" } }, { "type": "Image", "props": { "y": -271, "x": 28, "visible": false, "var": "logoImg", "skin": "unpack/login/logo.png" } }, { "type": "Box", "props": { "y": 1355, "x": 105, "var": "boxLogin" }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbox.png" } }, { "type": "Image", "props": { "y": 144, "x": 104, "skin": "login/account.png" } }, { "type": "Image", "props": { "y": 240, "x": 104, "skin": "login/pwdimg.png" } }, { "type": "Button", "props": { "y": 313, "x": 232, "var": "btnLogin", "stateNum": 1, "skin": "login/loginbth.png" } }, { "type": "TextInput", "props": { "y": 142, "x": 189, "width": 284, "var": "inputAccount", "text": "xielong7", "height": 42, "fontSize": 28, "bold": true } }, { "type": "TextInput", "props": { "y": 231, "x": 192, "wordWrap": false, "width": 281, "var": "inputPwd", "type": "password", "text": "123456", "height": 42, "fontSize": 28, "bold": true } }] }] };
+        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbg.png" } }, { "type": "Image", "props": { "y": -271, "x": 28, "visible": false, "var": "logoImg", "skin": "unpack/login/logo.png" } }, { "type": "Box", "props": { "y": 1355, "x": 105, "var": "boxLogin" }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbox.png" } }, { "type": "Image", "props": { "y": 155, "x": 79, "skin": "login/img_fontbg.png" } }, { "type": "Image", "props": { "y": 106, "x": 104, "skin": "login/img_account.png" } }, { "type": "Image", "props": { "y": 202, "x": 104, "skin": "login/img_font4.png" } }, { "type": "Button", "props": { "y": 277, "x": 372, "var": "btnLogin", "stateNum": 1, "skin": "login/btn_login.png" } }, { "type": "TextInput", "props": { "y": 104, "x": 189, "width": 284, "var": "inputAccount", "text": "xielong7", "height": 42, "fontSize": 28, "bold": true } }, { "type": "TextInput", "props": { "y": 193, "x": 192, "wordWrap": false, "width": 281, "var": "inputPwd", "type": "password", "text": "123456", "height": 42, "fontSize": 28, "bold": true } }, { "type": "Button", "props": { "y": 321, "x": 103, "var": "btnForgetPwd", "stateNum": 1, "skin": "login/btn_forgetpwd.png" } }, { "type": "Button", "props": { "y": 387, "x": 210, "var": "btnRegister", "stateNum": 1, "skin": "login/btn_register.png" } }, { "type": "Button", "props": { "y": 443, "x": 105, "stateNum": 1, "skin": "login/btn_qq.png" } }, { "type": "Button", "props": { "y": 443, "x": 207, "stateNum": 1, "skin": "login/btn_wx.png" } }, { "type": "Button", "props": { "y": 443, "x": 308, "stateNum": 1, "skin": "login/btn_persion.png" } }, { "type": "Button", "props": { "y": 443, "x": 410, "stateNum": 1, "skin": "login/btn_add.png" } }] }] };
         return LoginViewUI;
     }(View));
     ui.LoginViewUI = LoginViewUI;
@@ -67946,17 +67946,23 @@ var ChoiceServerMediator = /** @class */ (function (_super) {
     ChoiceServerMediator.prototype.initView = function () {
         _super.prototype.initView.call(this);
         this.view.listServer.array = GameDataManager.ins.serverList;
+        this.view.listServer.scrollBar.visible = false;
+        if (GameDataManager.ins.curServerInfo) {
+            this.view.boxPreServ0.getChildByName("lblServName").text = GameDataManager.ins.curServerInfo.name;
+        }
     };
     ChoiceServerMediator.prototype.addEvents = function () {
         this.view.listServer.selectEnable = true;
         this.view.listServer.selectHandler = new Handler(this, this.onSelect);
         this.view.listServer.renderHandler = new Handler(this, this.updateItem);
         this.view.bg.on(Laya.Event.CLICK, this, this.onMouseClick);
+        this.view.btnBack.on(Laya.Event.CLICK, this, this.onMouseClick);
     };
     ChoiceServerMediator.prototype.removeEvents = function () {
         this.view.listServer.selectHandler = null;
         this.view.listServer.renderHandler = null;
         this.view.bg.off(Laya.Event.CLICK, this, this.onMouseClick);
+        this.view.btnBack.off(Laya.Event.CLICK, this, this.onMouseClick);
     };
     ChoiceServerMediator.prototype.onMouseClick = function (e) {
         this.hide();
@@ -67966,16 +67972,19 @@ var ChoiceServerMediator = /** @class */ (function (_super) {
         if (tempLbl) {
             tempLbl.text = cell.dataSource.name;
         }
-        tempLbl = cell.getChildByName("lblServState");
-        if (tempLbl) {
-            tempLbl.text = LG.getTXT("server.state" + cell.dataSource.state);
+        var imgState = cell.getChildByName("imgServState");
+        if (imgState) {
+            var sevState = cell.dataSource.state;
+            if (sevState > 2)
+                sevState = 2;
+            imgState.skin = "login/img_state" + sevState + ".png";
         }
     };
     ChoiceServerMediator.prototype.onSelect = function (index) {
-        console.log("当前选择的索引：" + index);
+        // console.log("当前选择的索引：" + index);
         var cell = this.view.listServer.getCell(index);
         if (cell) {
-            cell.getChildByName("clip").index = 1;
+            cell.getChildByName("clip").index = 0;
         }
         GameDataManager.ins.choiceServerInfo(index);
         if (this.caller && this.choiceCallBack) {
@@ -68028,12 +68037,14 @@ var EnterGameMediator = /** @class */ (function (_super) {
     EnterGameMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
+        this.view.btnSelect.on(Laya.Event.CLICK, this, this.onBtnChoice);
         this.view.btnRegster.on(Laya.Event.CLICK, this, this.onBtnRegster);
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN, Protocol.USER_LOGIN_CMD, new UserLoginHandler(this, this.onWebSocketLogined));
     };
     EnterGameMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
+        this.view.btnSelect.off(Laya.Event.CLICK, this, this.onBtnChoice);
         this.view.btnRegster.off(Laya.Event.CLICK, this, this.onBtnRegster);
         WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN, Protocol.USER_LOGIN_CMD, this);
     };
@@ -68046,6 +68057,10 @@ var EnterGameMediator = /** @class */ (function (_super) {
     EnterGameMediator.prototype.updateServerInfo = function () {
         if (GameDataManager.ins.curServerInfo) {
             this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
+            var sevState = GameDataManager.ins.curServerInfo.state;
+            if (sevState > 2)
+                sevState = 2;
+            this.view.imgServState.skin = "login/img_state" + sevState + ".png";
         }
     };
     EnterGameMediator.prototype.onBtnLogin = function (e) {
@@ -68141,6 +68156,7 @@ var EquipSmeltMediator = /** @class */ (function (_super) {
         _super.prototype.dispose.call(this);
     };
     EquipSmeltMediator.prototype.onBtnCloseClick = function (e) {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP);
         this.dispose();
     };
     EquipSmeltMediator.prototype.onBtnSmeltClick = function (e) {
@@ -68282,6 +68298,7 @@ var FarmMediator = /** @class */ (function (_super) {
         this.view.panlePlant.off(Laya.Event.MOUSE_UP, this, this.onViewMouseEvent);
     };
     FarmMediator.prototype.onCloseBtnClick = function (e) {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP);
         this.dispose();
         // console.log(e.target);
     };
@@ -68607,6 +68624,7 @@ var GraphtagMediator = /** @class */ (function (_super) {
         this.view.btnClose.off(Laya.Event.CLICK, this, this.onCloseBtnClick);
     };
     GraphtagMediator.prototype.onCloseBtnClick = function (e) {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP);
         Tween.to(this.view.graptitleImage, { x: -227 }, 100);
         Tween.to(this.view.graphtagPanel, { x: 755 }, 100, null, Handler.create(this, this.dispose));
     };

@@ -33,6 +33,7 @@ class FarmMediator extends BaseMediator{
     }
     private onCloseBtnClick(e):void
     {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP);
         this.dispose();
         // console.log(e.target);
     }

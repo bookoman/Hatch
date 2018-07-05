@@ -1,9 +1,9 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":1,
-    "selecteID":7,
-    "props":{"width":750,"sceneColor":"#100606","height":1334},
+    "selectedBox":34,
+    "selecteID":44,
+    "props":{"width":750,"skin":"login/img_state0.png","sceneColor":"#100606","height":1334},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -30,7 +30,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":965,"x":235,"var":"btnLogin","stateNum":"1","skin":"login/btn_startgame.png","labelSize":38},
+            "props":{"y":718,"x":235,"var":"btnLogin","stateNum":"1","skin":"login/btn_startgame.png","labelSize":38},
             "nodeParent":1,
             "label":"Button(btnLogin)",
             "isDirectory":false,
@@ -69,7 +69,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":847,"x":229,"width":303,"var":"btnChoice","height":63},
+            "props":{"y":600,"x":214,"width":303,"var":"btnChoice","height":63},
             "nodeParent":1,
             "label":"Button(btnChoice)",
             "isOpen":true,
@@ -80,47 +80,21 @@
             "child":[
                 {
                     "x":30,
-                    "type":"Line",
-                    "props":{"y":0,"x":0,"toY":0,"toX":300,"lineWidth":1,"lineColor":"#ff0000"},
+                    "type":"Image",
+                    "props":{"y":-3,"x":3,"skin":"login/img_fontbg3.png"},
                     "nodeParent":34,
-                    "label":"Line",
+                    "label":"Image",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":35,
-                    "child":[
-                        ]
-                },
-                {
-                    "x":30,
-                    "type":"Line",
-                    "props":{"y":60,"x":0,"toY":0,"toX":300,"lineWidth":1,"lineColor":"#ff0000"},
-                    "nodeParent":34,
-                    "label":"Line",
-                    "isDirectory":false,
-                    "isAniNode":true,
-                    "hasChild":false,
-                    "compId":36,
-                    "child":[
-                        ]
-                },
-                {
-                    "x":30,
-                    "type":"Circle",
-                    "props":{"y":30,"x":10,"radius":10,"lineWidth":1,"fillColor":"#f82c2c"},
-                    "nodeParent":34,
-                    "label":"Circle",
-                    "isDirectory":false,
-                    "isAniNode":true,
-                    "hasChild":false,
-                    "compId":37,
+                    "compId":43,
                     "child":[
                         ]
                 },
                 {
                     "x":30,
                     "type":"Text",
-                    "props":{"y":12,"x":40,"width":254,"var":"lblServName","text":"一区丶齐天大圣","height":41,"fontSize":30,"color":"#e3e2e2"},
+                    "props":{"y":14,"x":13,"width":254,"var":"lblServName","text":"一区丶齐天大圣","height":41,"fontSize":30,"font":"SimHei","color":"#baf8ff","bold":true,"align":"center"},
                     "nodeParent":34,
                     "label":"Text(lblServName)",
                     "isDirectory":false,
@@ -129,7 +103,33 @@
                     "compId":38,
                     "child":[
                         ]
+                },
+                {
+                    "x":30,
+                    "type":"Image",
+                    "props":{"y":14,"x":250,"var":"imgServState","skin":"login/img_state0.png"},
+                    "nodeParent":34,
+                    "label":"Image(imgServState)",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":44,
+                    "child":[
+                        ]
                 }]
+        },
+        {
+            "x":15,
+            "type":"Button",
+            "props":{"y":608,"x":535,"var":"btnSelect","stateNum":"1","skin":"login/btn_select.png"},
+            "nodeParent":1,
+            "label":"Button(btnSelect)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":41,
+            "child":[
+                ]
         },
         {
             "x":15,

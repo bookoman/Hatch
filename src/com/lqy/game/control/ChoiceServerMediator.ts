@@ -15,6 +15,11 @@ class ChoiceServerMediator extends BaseMediator{
     protected initView():void{
         super.initView();
         this.view.listServer.array = GameDataManager.ins.serverList;
+        (this.view.listServer as Laya.List).scrollBar.visible = false;
+        if(GameDataManager.ins.curServerInfo)
+        {
+            this.view.boxPreServ0.getChildByName("lblServName").text = GameDataManager.ins.curServerInfo.name;
+        }
     }
 
     protected addEvents():void{
@@ -22,12 +27,14 @@ class ChoiceServerMediator extends BaseMediator{
         this.view.listServer.selectHandler = new Handler(this, this.onSelect);
         this.view.listServer.renderHandler = new Handler(this, this.updateItem);
         this.view.bg.on(Laya.Event.CLICK,this,this.onMouseClick);
+        this.view.btnBack.on(Laya.Event.CLICK,this,this.onMouseClick);
     }
 
     protected removeEvents():void{
         this.view.listServer.selectHandler = null;
         this.view.listServer.renderHandler = null;
         this.view.bg.off(Laya.Event.CLICK,this,this.onMouseClick);
+        this.view.btnBack.off(Laya.Event.CLICK,this,this.onMouseClick);
     }
     private onMouseClick(e:Laya.Event):void
     {
@@ -41,19 +48,22 @@ class ChoiceServerMediator extends BaseMediator{
         {
             tempLbl.text = (cell.dataSource as ServerInfoVo).name;
         }
-        tempLbl = cell.getChildByName("lblServState") as Label;
-        if(tempLbl)
+        var imgState:Laya.Image = cell.getChildByName("imgServState") as Laya.Image;
+        if(imgState)
         {
-            tempLbl.text = LG.getTXT("server.state"+(cell.dataSource as ServerInfoVo).state);
+            var sevState:number = cell.dataSource.state;
+            if(sevState > 2)
+                sevState = 2;
+            imgState.skin = "login/img_state"+sevState+".png";
         }
     }
 
     private onSelect(index: number): void {
-        console.log("当前选择的索引：" + index);
+        // console.log("当前选择的索引：" + index);
         var cell:Box = this.view.listServer.getCell(index);
         if(cell)
         {
-            (cell.getChildByName("clip") as Laya.Clip).index = 1;
+            (cell.getChildByName("clip") as Laya.Clip).index = 0;
         }
         GameDataManager.ins.choiceServerInfo(index);
         if(this.caller && this.choiceCallBack)

@@ -116,21 +116,21 @@ class HTTPRequestUrl{
 class GameServerState{
 
     /**
-     * 正常在线
+     * 流畅
      */
     public static  GameServer_State_ON = 0;
     /**
+     * 拥挤
+     */
+    public static  GameServer_State_Croding = 1;
+    /**
      * 火爆
      */
-    public static GameServer_State_FIRE = 1;
+    public static GameServer_State_FIRE = 2;
      /**
      * 停服
      */
     public static GameServer_State_OFF = -1;
-    /**
-     * 停服维护
-     */
-    public static GameServer_State_Maintain = -2;
      
 }
 

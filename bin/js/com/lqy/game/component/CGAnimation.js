@@ -27,7 +27,7 @@ var CGAnimation = /** @class */ (function (_super) {
             "在一阵强烈的电磁风暴过后，一群人类突然出现在茂密的丛林中。",
             "这些人在经历了绝望、挣扎之后，被迫开始在这个时代扎根生存，他们自称为穿越者。",
             "随着远古大陆上穿越者越来越多，这些人终于安定下来，并联合起来组成了部落。穿越者的部落在远古大陆上艰难的生存着......",
-            "直到......",
+            "直到他们发现了恐龙......",
             "在付出了惨痛的代价后，穿越者们终于成功的驯化了部分恐龙，而且在经过了数代人的探索之后，他们更是总结出了一套完整的驯龙和育恐龙体系。",
             "在恐龙的协助下，穿越者们在异界渐渐站稳了脚跟，修建了村落，然后也渐渐形成了新的信仰和习俗。每个刚穿越而来的人，都会到村落外抓自己的第一条龙，以证明自己在部落中的价值。",
             "一个偶然的机会，几个穿越者在一个不知名的山谷后面发现了一片上古遗迹......",
@@ -162,9 +162,9 @@ var CGAnimation = /** @class */ (function (_super) {
             this.printFontComplete = true;
             // this.nextPage();
             if (this.pageId == this.fontsAry.length - 1) {
-                Laya.Tween.to(this.aniArrow, { alpha: 0 }, 2000);
+                Laya.Tween.to(this.aniArrow, { alpha: 0 }, 3000);
             }
-            Laya.Tween.to(this.imgPage, { alpha: 0 }, 2000, null, Laya.Handler.create(this, this.playComplete));
+            Laya.Tween.to(this.imgPage, { alpha: 0 }, 3000, null, Laya.Handler.create(this, this.playComplete));
         }
     };
     CGAnimation.prototype.nextPage = function () {

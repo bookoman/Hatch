@@ -110,21 +110,21 @@ var GameServerState = /** @class */ (function () {
     function GameServerState() {
     }
     /**
-     * 正常在线
+     * 流畅
      */
     GameServerState.GameServer_State_ON = 0;
     /**
+     * 拥挤
+     */
+    GameServerState.GameServer_State_Croding = 1;
+    /**
      * 火爆
      */
-    GameServerState.GameServer_State_FIRE = 1;
+    GameServerState.GameServer_State_FIRE = 2;
     /**
     * 停服
     */
     GameServerState.GameServer_State_OFF = -1;
-    /**
-     * 停服维护
-     */
-    GameServerState.GameServer_State_Maintain = -2;
     return GameServerState;
 }());
 /**地图类型枚举 */

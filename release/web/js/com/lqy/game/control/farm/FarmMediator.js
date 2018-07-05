@@ -39,6 +39,7 @@ var FarmMediator = /** @class */ (function (_super) {
         this.view.panlePlant.off(Laya.Event.MOUSE_UP, this, this.onViewMouseEvent);
     };
     FarmMediator.prototype.onCloseBtnClick = function (e) {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP);
         this.dispose();
         // console.log(e.target);
     };

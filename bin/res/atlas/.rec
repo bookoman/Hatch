@@ -98,9 +98,13 @@ P 14EDACD1 img_font.png
 P 3F9714C2 img_font3.png
 P ADC3ADD8 img_font4.png
 P AA26D00A img_fontbg.png
+P B5EBCBE2 img_fontbg2.png
 P 096E0B86 img_fontbg3.png
 P 096E0B86 img_fontbg4.png
-P B5EBCBE2 img_selectbox.png
+P B0878DE3 img_state-1.png
+P 2C80ED3C img_state0.png
+P 71B10AA3 img_state1.png
+P 45ED28A1 img_state2.png
 D main
 P 49A28204 btn_bag.png
 P 0D603D06 btn_battle.png
@@ -112,7 +116,7 @@ P 6EB14387 btn_map.png
 P 0B3047BB btn_open.png
 P 4A195B00 btn_smelt.png
 P 20196FC1 clip_shadow.png
-P FC271F6B img_battle.png
+P FC271F6B img_battlereport.png
 P 8A5092D9 img_blood.png
 P 740D53ED img_bloodbg.png
 P 42A3FE33 laba.png
@@ -154,7 +158,7 @@ P BD197B11 tc_bipai_00007.png
 D ani/click_skip
 P F1326ACC img_arrow.png
 P BC991586 img_line.png
-D ani/common_buff
+D ani/Common_buff
 P 757EBDE8 buff_1.png
 P C274C787 buff_10.png
 P 162715AD buff_11.png

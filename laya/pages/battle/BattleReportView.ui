@@ -42,7 +42,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":15,"x":314,"skin":"main/img_battlereport.png"},
+            "props":{"y":8,"x":314,"skin":"main/img_battlereport.png"},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,

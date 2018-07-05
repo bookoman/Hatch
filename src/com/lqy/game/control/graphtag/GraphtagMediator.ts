@@ -26,6 +26,7 @@ class GraphtagMediator extends BaseMediator{
     }
     private onCloseBtnClick(e):void
     {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP);
         Tween.to(this.view.graptitleImage, { x: -227 }, 100);
         Tween.to(this.view.graphtagPanel, { x: 755 }, 100, null, Handler.create(this, this.dispose));
     }

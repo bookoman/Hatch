@@ -42,6 +42,7 @@ class EquipSmeltMediator extends BaseMediator{
 
     private onBtnCloseClick(e):void
     {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP);
         this.dispose();
     }
     private onBtnSmeltClick(e):void

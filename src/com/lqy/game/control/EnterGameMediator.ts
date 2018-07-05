@@ -21,6 +21,7 @@ class EnterGameMediator extends BaseMediator{
     {
         this.view.btnLogin.on(Laya.Event.CLICK,this,this.onBtnLogin);
         this.view.btnChoice.on(Laya.Event.CLICK,this,this.onBtnChoice);
+        this.view.btnSelect.on(Laya.Event.CLICK,this,this.onBtnChoice);
         this.view.btnRegster.on(Laya.Event.CLICK,this,this.onBtnRegster);
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,new UserLoginHandler(this,this.onWebSocketLogined));
         
@@ -30,6 +31,7 @@ class EnterGameMediator extends BaseMediator{
     {
         this.view.btnLogin.off(Laya.Event.CLICK,this,this.onBtnLogin);
         this.view.btnChoice.off(Laya.Event.CLICK,this,this.onBtnChoice);
+        this.view.btnSelect.off(Laya.Event.CLICK,this,this.onBtnChoice);
         this.view.btnRegster.off(Laya.Event.CLICK,this,this.onBtnRegster);
         WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,this);
         
@@ -49,6 +51,10 @@ class EnterGameMediator extends BaseMediator{
         if(GameDataManager.ins.curServerInfo)
         {
             this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
+            var sevState:number = GameDataManager.ins.curServerInfo.state;
+            if(sevState > 2)
+                sevState = 2;
+            this.view.imgServState.skin = "login/img_state"+sevState+".png";
         }
     }
     

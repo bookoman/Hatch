@@ -47,6 +47,7 @@ var EquipSmeltMediator = /** @class */ (function (_super) {
         _super.prototype.dispose.call(this);
     };
     EquipSmeltMediator.prototype.onBtnCloseClick = function (e) {
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP);
         this.dispose();
     };
     EquipSmeltMediator.prototype.onBtnSmeltClick = function (e) {

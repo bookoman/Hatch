@@ -26,17 +26,23 @@ var ChoiceServerMediator = /** @class */ (function (_super) {
     ChoiceServerMediator.prototype.initView = function () {
         _super.prototype.initView.call(this);
         this.view.listServer.array = GameDataManager.ins.serverList;
+        this.view.listServer.scrollBar.visible = false;
+        if (GameDataManager.ins.curServerInfo) {
+            this.view.boxPreServ0.getChildByName("lblServName").text = GameDataManager.ins.curServerInfo.name;
+        }
     };
     ChoiceServerMediator.prototype.addEvents = function () {
         this.view.listServer.selectEnable = true;
         this.view.listServer.selectHandler = new Handler(this, this.onSelect);
         this.view.listServer.renderHandler = new Handler(this, this.updateItem);
         this.view.bg.on(Laya.Event.CLICK, this, this.onMouseClick);
+        this.view.btnBack.on(Laya.Event.CLICK, this, this.onMouseClick);
     };
     ChoiceServerMediator.prototype.removeEvents = function () {
         this.view.listServer.selectHandler = null;
         this.view.listServer.renderHandler = null;
         this.view.bg.off(Laya.Event.CLICK, this, this.onMouseClick);
+        this.view.btnBack.off(Laya.Event.CLICK, this, this.onMouseClick);
     };
     ChoiceServerMediator.prototype.onMouseClick = function (e) {
         this.hide();
@@ -46,16 +52,19 @@ var ChoiceServerMediator = /** @class */ (function (_super) {
         if (tempLbl) {
             tempLbl.text = cell.dataSource.name;
         }
-        tempLbl = cell.getChildByName("lblServState");
-        if (tempLbl) {
-            tempLbl.text = LG.getTXT("server.state" + cell.dataSource.state);
+        var imgState = cell.getChildByName("imgServState");
+        if (imgState) {
+            var sevState = cell.dataSource.state;
+            if (sevState > 2)
+                sevState = 2;
+            imgState.skin = "login/img_state" + sevState + ".png";
         }
     };
     ChoiceServerMediator.prototype.onSelect = function (index) {
-        console.log("当前选择的索引：" + index);
+        // console.log("当前选择的索引：" + index);
         var cell = this.view.listServer.getCell(index);
         if (cell) {
-            cell.getChildByName("clip").index = 1;
+            cell.getChildByName("clip").index = 0;
         }
         GameDataManager.ins.choiceServerInfo(index);
         if (this.caller && this.choiceCallBack) {

@@ -74,7 +74,7 @@
                             }],
                         "skin":[
                             {
-                                "value":"ani/common_buff/buff_1.png",
+                                "value":"ani/Common_buff/buff_1.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -82,7 +82,7 @@
                                 "index":0
                             },
                             {
-                                "value":"ani/common_buff/buff_2.png",
+                                "value":"ani/Common_buff/buff_2.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -90,7 +90,7 @@
                                 "index":2
                             },
                             {
-                                "value":"ani/common_buff/buff_3.png",
+                                "value":"ani/Common_buff/buff_3.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -98,7 +98,7 @@
                                 "index":3
                             },
                             {
-                                "value":"ani/common_buff/buff_4.png",
+                                "value":"ani/Common_buff/buff_4.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -106,7 +106,7 @@
                                 "index":4
                             },
                             {
-                                "value":"ani/common_buff/buff_5.png",
+                                "value":"ani/Common_buff/buff_5.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -114,7 +114,7 @@
                                 "index":5
                             },
                             {
-                                "value":"ani/common_buff/buff_6.png",
+                                "value":"ani/Common_buff/buff_6.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -122,7 +122,7 @@
                                 "index":6
                             },
                             {
-                                "value":"ani/common_buff/buff_7.png",
+                                "value":"ani/Common_buff/buff_7.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -130,7 +130,7 @@
                                 "index":7
                             },
                             {
-                                "value":"ani/common_buff/buff_8.png",
+                                "value":"ani/Common_buff/buff_8.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -138,7 +138,7 @@
                                 "index":8
                             },
                             {
-                                "value":"ani/common_buff/buff_7.png",
+                                "value":"ani/Common_buff/buff_7.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -147,7 +147,7 @@
                                 "index":9
                             },
                             {
-                                "value":"ani/common_buff/buff_10.png",
+                                "value":"ani/Common_buff/buff_10.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -155,7 +155,7 @@
                                 "index":10
                             },
                             {
-                                "value":"ani/common_buff/buff_11.png",
+                                "value":"ani/Common_buff/buff_11.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -163,7 +163,7 @@
                                 "index":11
                             },
                             {
-                                "value":"ani/common_buff/buff_12.png",
+                                "value":"ani/Common_buff/buff_12.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -171,7 +171,7 @@
                                 "index":12
                             },
                             {
-                                "value":"ani/common_buff/buff_13.png",
+                                "value":"ani/Common_buff/buff_13.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -179,7 +179,7 @@
                                 "index":13
                             },
                             {
-                                "value":"ani/common_buff/buff_14.png",
+                                "value":"ani/Common_buff/buff_14.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -187,7 +187,7 @@
                                 "index":14
                             },
                             {
-                                "value":"ani/common_buff/buff_15.png",
+                                "value":"ani/Common_buff/buff_15.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
@@ -195,7 +195,7 @@
                                 "index":15
                             },
                             {
-                                "value":"ani/common_buff/buff_16.png",
+                                "value":"ani/Common_buff/buff_16.png",
                                 "tweenMethod":"linearNone",
                                 "tween":false,
                                 "target":2,
