@@ -22,7 +22,7 @@ var BattleReportVo = /** @class */ (function () {
                 html = "<span style='fontSize:24;color:#009900'>[" + this.atkName + "]</span>"
                     + "<span style='fontSize:24;color:#000000'> 最后一击打出 </span>"
                     + "<span style='fontSize:24;color:#ff0000'>" + this.hurt + "</span>"
-                    + "<span style='fontSize:24;color:#000000'> 点伤害，成功击杀了</span>"
+                    + "<span style='fontSize:24;color:#000000'> 点伤害，成功击败了</span>"
                     + "<span style='fontSize:24;color:#009900'>[" + this.defName + "]</span>";
                 return html;
             case BattleReportDataType.REWARD:

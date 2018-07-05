@@ -9,7 +9,7 @@ class LoginMediator extends BaseMediator{
     protected initView():void
     {
         this.view = new ui.LoginViewUI();
-        LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,true,false,true);
+        LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,false,true);
          
         super.initView();
 

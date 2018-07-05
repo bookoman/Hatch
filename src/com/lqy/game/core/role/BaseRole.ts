@@ -119,7 +119,8 @@ class BaseRole extends Laya.Sprite{
                 Laya.loader.on(/*laya.events.Event.ERROR*/"error",this,this.skeletonLoadError);
                 // console.log("前........",this.baseRoleVo.name,aniID);
                 this.skeletonAni.player.on(Laya.Event.COMPLETE,this,this.onPlayCompleted);
-                this.skeletonAni.playbackRate(GameConfig.BATTLE_ADDSPEED_TIMES);
+                var speedTime:number = GameDataManager.ins.isChallengeBoss ? GameConfig.BATTLE_ADDSPEED_TIMES : 1;
+                this.skeletonAni.playbackRate(speedTime);
                 this.skeletonAni.play(aniID,loop);
 
                 // console.log("........"+aniID);

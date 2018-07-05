@@ -13,7 +13,8 @@ class ChallegenBossMediator extends BaseMediator{
         LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,true,true);
         super.initView();
         this.initRoles();
-
+        
+        GameConfig.BATTLE_ADDSPEED_TIMES = 1;
         this.view.btnTimes.label = "X"+GameConfig.BATTLE_ADDSPEED_TIMES;
         // EventManager.ins.dispatchEvent(EventManager.TEST_LIST_SCRALE_RENDER);
     }

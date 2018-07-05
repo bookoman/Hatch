@@ -18,7 +18,7 @@ var EnterGameMediator = /** @class */ (function (_super) {
     }
     EnterGameMediator.prototype.initView = function () {
         this.view = new ui.EnterGameViewUI();
-        LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, true, false, true);
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         _super.prototype.initView.call(this);
         //选择服务器列表
         this.choiceServerMediator = new ChoiceServerMediator(null, this.view.serverListView, this, this.updateServerInfo);

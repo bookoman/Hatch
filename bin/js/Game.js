@@ -1,4 +1,5 @@
 var Handler = Laya.Handler;
+var ResourceVersion = Laya.ResourceVersion;
 /*
 * 游戏入口
 * name;
@@ -51,6 +52,8 @@ Laya.stage.scaleMode = "showAll"; //showall跟showAll不一样。。。。
 Laya.stage.alignH = "center";
 Laya.stage.alignV = "top";
 // SoundManager.useAudioMusic = false;
+//设置版本控制类型为使用文件名映射的方式
+ResourceVersion.type = ResourceVersion.FILENAME_VERSION;
 //激活资源版本控制
 Laya.ResourceVersion.enable("version.json", Handler.create(null, beginLoad));
 function beginLoad() {

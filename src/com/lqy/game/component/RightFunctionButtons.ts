@@ -197,6 +197,7 @@ class RightFunctionButtons extends Laya.Sprite{
             {url:"res/atlas/graphtag.atlas",type:Loader.ATLAS}
         ];
         this.curMediator = new GraphtagMediator(resAry);
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG);
     }
     private onBtnFarm():void
     {
@@ -214,6 +215,7 @@ class RightFunctionButtons extends Laya.Sprite{
             {url:"res/atlas/farm.atlas",type:Loader.ATLAS}
         ];
         this.curMediator = new FarmMediator(resAry);
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG);
     }
     private onBtnSmelt():void
     {
@@ -233,6 +235,7 @@ class RightFunctionButtons extends Laya.Sprite{
             {url:"res/atlas/smelt.atlas",type:Loader.ATLAS}
         ];
         this.curMediator = new EquipSmeltMediator(resAry);
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG);
     }
 
     private dispose():void

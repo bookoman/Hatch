@@ -44,4 +44,6 @@
    <item name="unpack/login/loginbox.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/login/logo.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/comp/zhuangbeijiatu.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/cgani/img_left.png" type="Button" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/cgani/img_right.png" type="Button" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
 </res>

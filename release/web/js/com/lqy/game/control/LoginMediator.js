@@ -18,7 +18,7 @@ var LoginMediator = /** @class */ (function (_super) {
     }
     LoginMediator.prototype.initView = function () {
         this.view = new ui.LoginViewUI();
-        LayerManager.ins.addToLayer(this.view, LayerManager.BG_LAYER, true, false, true);
+        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         _super.prototype.initView.call(this);
         Laya.Tween.to(this.view.logoImg, { y: 110 }, 500, Laya.Ease.backOut);
         Laya.Tween.to(this.view.boxLogin, { y: 418 }, 500, Laya.Ease.backOut);

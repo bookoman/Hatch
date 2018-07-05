@@ -17,18 +17,22 @@ class PreLoadScene extends BaseScene{
             {url:"unpack/login/logo.png",type:Loader.IMAGE},
             {url:"unpack/comp/dibanbg.png",type:Loader.IMAGE},
             {url:"unpack/comp/line.png",type:Loader.IMAGE},
-            {url:"unpack/comp/mainbg.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/p1.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/p2.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/p3.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/p4.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/p5.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/p6.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/p7.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/bg.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/img_gatebg.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/img_listbg.png",type:Loader.IMAGE},
-            // {url:"unpack/worldmap/img_listgraybg.png",type:Loader.IMAGE},
+            {url:"unpack/comp/mainbg.png",type:Loader.IMAGE},//
+            {url:"res/atlas/ani/click_skip.atlas",type:Loader.ATLAS},
+            {url:"unpack/cgani/img_page1.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page2.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page3.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page4.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page5.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page6.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page7.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page8.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page9.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page10.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page11.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_page12.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_left.png",type:Loader.IMAGE},
+            {url:"unpack/cgani/img_right.png",type:Loader.IMAGE},//
             {url:"res/config/GateMapSample.xml",type:Loader.TEXT},
             {url:"res/config/GateSample.xml",type:Loader.TEXT},
             {url:"res/config/HeroSkillSample.xml",type:Loader.TEXT},
@@ -48,6 +52,10 @@ class PreLoadScene extends BaseScene{
         PreLoadingView.ins.setProgress(value);
     }
     private loadedComplete():void
+    {
+        CGAnimation.ins.show(this,this.enterGame);
+    }
+    private enterGame():void
     {
         ConfigManager.ins.parsePreLoadConfigs();
         SceneMananger.ins.enter(SceneMananger.GAME_SCENE);

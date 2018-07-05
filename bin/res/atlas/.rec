@@ -83,12 +83,24 @@ P 759C83B7 def.png
 P 63D92342 graptitle.png
 D hero
 D login
-P 566FF044 account.png
-P 2A91AC24 btn_startgame.png
-P D78C5F9A loginbth.png
-P EB55BD92 pwdimg.png
-P 34B8123E selectBox.png
-P 28F1D245 xialabth.png
+P 90A7498D btn_add.png
+P 749BEA89 btn_back.png
+P CF6E1CC1 btn_forgetpwd.png
+P 39344E01 btn_login.png
+P 0A6B2B80 btn_persion.png
+P DBA22A55 btn_qq.png
+P 17BD1940 btn_register.png
+P B703E2D6 btn_select.png
+P 1DE8527C btn_startgame.png
+P 0ECAB0D8 btn_wx.png
+P 964CDBD9 img_account.png
+P 14EDACD1 img_font.png
+P 3F9714C2 img_font3.png
+P ADC3ADD8 img_font4.png
+P AA26D00A img_fontbg.png
+P 096E0B86 img_fontbg3.png
+P 096E0B86 img_fontbg4.png
+P B5EBCBE2 img_selectbox.png
 D main
 P 49A28204 btn_bag.png
 P 0D603D06 btn_battle.png
@@ -100,7 +112,7 @@ P 6EB14387 btn_map.png
 P 0B3047BB btn_open.png
 P 4A195B00 btn_smelt.png
 P 20196FC1 clip_shadow.png
-P 3E0F646F img_battlereport.png
+P FC271F6B img_battle.png
 P 8A5092D9 img_blood.png
 P 740D53ED img_bloodbg.png
 P 42A3FE33 laba.png
@@ -139,6 +151,9 @@ P 9B664115 tc_bipai_00004.png
 P 04F36F98 tc_bipai_00005.png
 P 9F63E757 tc_bipai_00006.png
 P BD197B11 tc_bipai_00007.png
+D ani/click_skip
+P F1326ACC img_arrow.png
+P BC991586 img_line.png
 D ani/common_buff
 P 757EBDE8 buff_1.png
 P C274C787 buff_10.png
@@ -274,6 +289,22 @@ R B346003E img_bg.png
 R 598C1FA6 img_blue.png
 R 717D1923 img_bluebg.png
 R 3E87310F img_success.png
+D unpack/cgani
+R FD6AA211 img_left.png
+R 644658CB img_page.png
+R 4FE74C1A img_page1.png
+R 058988D0 img_page10.png
+R 739FE9F6 img_page11.png
+R 7300F80A img_page12.png
+R CA48B546 img_page2.png
+R 142C46AE img_page3.png
+R 4B8C8041 img_page4.png
+R B90F58C4 img_page5.png
+R D7320F52 img_page6.png
+R 53835CF5 img_page7.png
+R 277F83BE img_page8.png
+R BF936BBD img_page9.png
+R 2E3CE857 img_right.png
 D unpack/challengeboss
 R CFB8FF78 img_battlebg.png
 R 3E22F7A5 img_battlepre.png
@@ -294,15 +325,15 @@ D unpack/lineup
 R 1E93072A bg.png
 R 0FCDCA25 juese_bg.png
 D unpack/login
-R E56E48B2 loginbg.png
-R 172E29A7 loginbox.png
-R 18174D21 logo.png
+R 7365CBC3 loginbg.png
+R 47EE59FF loginbox.png
+R F390386D logo.png
 D unpack/main
 R 6D978B09 bg_dibian.png
 R 6D978B09 diban.png
 R 02115426 img_btnbg.png
 R 23A50F59 img_fenwei.png
-R 0E1574B9 img_reportsbg.png
+R C898EA98 img_reportsbg.png
 R DED7EA0A roleBg.png
 R C7A9AB28 skill_bg02.png
 R C05B7C8F skill_bk.png

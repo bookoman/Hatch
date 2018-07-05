@@ -184,6 +184,7 @@ var RightFunctionButtons = /** @class */ (function (_super) {
             { url: "res/atlas/graphtag.atlas", type: Loader.ATLAS }
         ];
         this.curMediator = new GraphtagMediator(resAry);
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG);
     };
     RightFunctionButtons.prototype.onBtnFarm = function () {
         if (this.curMediator) {
@@ -199,6 +200,7 @@ var RightFunctionButtons = /** @class */ (function (_super) {
             { url: "res/atlas/farm.atlas", type: Loader.ATLAS }
         ];
         this.curMediator = new FarmMediator(resAry);
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG);
     };
     RightFunctionButtons.prototype.onBtnSmelt = function () {
         if (this.curMediator) {
@@ -216,6 +218,7 @@ var RightFunctionButtons = /** @class */ (function (_super) {
             { url: "res/atlas/smelt.atlas", type: Loader.ATLAS }
         ];
         this.curMediator = new EquipSmeltMediator(resAry);
+        SoundsManager.ins.playerMusicByEnum(MusicBGType.UI_BG);
     };
     RightFunctionButtons.prototype.dispose = function () {
         if (this.curMediator) {

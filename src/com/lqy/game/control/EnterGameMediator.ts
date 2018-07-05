@@ -10,7 +10,7 @@ class EnterGameMediator extends BaseMediator{
     protected initView():void
     {
         this.view = new ui.EnterGameViewUI();
-        LayerManager.ins.addToLayer(this.view,LayerManager.BG_LAYER,true,false,true);
+        LayerManager.ins.addToLayer(this.view,LayerManager.UI_LAYER,false,false,true);
         super.initView();
         //选择服务器列表
         this.choiceServerMediator = new ChoiceServerMediator(null,this.view.serverListView,this,this.updateServerInfo);

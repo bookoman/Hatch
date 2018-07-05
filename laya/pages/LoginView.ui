@@ -1,8 +1,8 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":1,
-    "selecteID":12,
+    "selectedBox":18,
+    "selecteID":26,
     "props":{"width":750,"sceneColor":"#000000","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -69,7 +69,20 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":144,"x":104,"skin":"login/account.png"},
+                    "props":{"y":155,"x":79,"skin":"login/img_fontbg.png"},
+                    "nodeParent":18,
+                    "label":"Image",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":19,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Image",
+                    "props":{"y":106,"x":104,"skin":"login/img_account.png"},
                     "nodeParent":18,
                     "label":"Image",
                     "isDirectory":false,
@@ -82,7 +95,7 @@
                 {
                     "x":30,
                     "type":"Image",
-                    "props":{"y":240,"x":104,"skin":"login/pwdimg.png"},
+                    "props":{"y":202,"x":104,"skin":"login/img_font4.png"},
                     "nodeParent":18,
                     "label":"Image",
                     "isDirectory":false,
@@ -95,7 +108,7 @@
                 {
                     "x":30,
                     "type":"Button",
-                    "props":{"y":313,"x":232,"var":"btnLogin","stateNum":"1","skin":"login/loginbth.png"},
+                    "props":{"y":277,"x":372,"var":"btnLogin","stateNum":"1","skin":"login/btn_login.png"},
                     "nodeParent":18,
                     "label":"Button(btnLogin)",
                     "isDirectory":false,
@@ -108,7 +121,7 @@
                 {
                     "x":30,
                     "type":"TextInput",
-                    "props":{"y":142,"x":189,"width":284,"var":"inputAccount","text":"xielong7","height":42,"fontSize":28,"bold":true},
+                    "props":{"y":104,"x":189,"width":284,"var":"inputAccount","text":"xielong7","height":42,"fontSize":28,"bold":true},
                     "nodeParent":18,
                     "label":"TextInput(inputAccount)",
                     "isDirectory":false,
@@ -121,13 +134,91 @@
                 {
                     "x":30,
                     "type":"TextInput",
-                    "props":{"y":231,"x":192,"wordWrap":false,"width":281,"var":"inputPwd","type":"password","text":"123456","height":42,"fontSize":28,"bold":true},
+                    "props":{"y":193,"x":192,"wordWrap":false,"width":281,"var":"inputPwd","type":"password","text":"123456","height":42,"fontSize":28,"bold":true},
                     "nodeParent":18,
                     "label":"TextInput(inputPwd)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
                     "compId":9,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":321,"x":103,"var":"btnForgetPwd","stateNum":"1","skin":"login/btn_forgetpwd.png"},
+                    "nodeParent":18,
+                    "label":"Button(btnForgetPwd)",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":21,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":387,"x":210,"var":"btnRegister","stateNum":"1","skin":"login/btn_register.png"},
+                    "nodeParent":18,
+                    "label":"Button(btnRegister)",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":22,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":443,"x":105,"stateNum":"1","skin":"login/btn_qq.png"},
+                    "nodeParent":18,
+                    "label":"Button",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":23,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":443,"x":207,"stateNum":"1","skin":"login/btn_wx.png"},
+                    "nodeParent":18,
+                    "label":"Button",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":24,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":443,"x":308,"stateNum":"1","skin":"login/btn_persion.png"},
+                    "nodeParent":18,
+                    "label":"Button",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":25,
+                    "child":[
+                        ]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":443,"x":410,"stateNum":"1","skin":"login/btn_add.png"},
+                    "nodeParent":18,
+                    "label":"Button",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":26,
                     "child":[
                         ]
                 }]

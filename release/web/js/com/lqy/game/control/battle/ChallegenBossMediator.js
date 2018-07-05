@@ -24,6 +24,7 @@ var ChallegenBossMediator = /** @class */ (function (_super) {
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, true, true);
         _super.prototype.initView.call(this);
         this.initRoles();
+        GameConfig.BATTLE_ADDSPEED_TIMES = 1;
         this.view.btnTimes.label = "X" + GameConfig.BATTLE_ADDSPEED_TIMES;
         // EventManager.ins.dispatchEvent(EventManager.TEST_LIST_SCRALE_RENDER);
     };

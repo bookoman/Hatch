@@ -1,4 +1,5 @@
 var Handler = Laya.Handler;
+var ResourceVersion = Laya.ResourceVersion;
 
 /*
 * 游戏入口
@@ -10,6 +11,7 @@ class Game{
     }
     public init():void
     {
+        
         var resAry:Array<Object> = [
             {url:"res/atlas/comp.atlas",type:Loader.ATLAS},
             {url:"res/atlas/ani/click.atlas",type:Loader.ATLAS},
@@ -30,7 +32,6 @@ class Game{
         Laya.stage.on(Laya.Event.CLICK,this,this.mouseClickStage)
         // var ani:FrameAnimation = new FrameAnimation(Laya.stage,GameConfig.STAGE_WIDTH/2,GameConfig.STAGE_HEIGHT/2,true);
         // ani.playAni("SK_0101",true);
-        
     }
     private mouseClickStage(e:Laya.Event):void
     {
@@ -59,7 +60,8 @@ Laya.stage.scaleMode = "showAll";//showall跟showAll不一样。。。。
 Laya.stage.alignH = "center";
 Laya.stage.alignV = "top";
 // SoundManager.useAudioMusic = false;
-
+//设置版本控制类型为使用文件名映射的方式
+ResourceVersion.type = ResourceVersion.FILENAME_VERSION;
 //激活资源版本控制
 Laya.ResourceVersion.enable("version.json", Handler.create(null, beginLoad));
 function beginLoad(){    
