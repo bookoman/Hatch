@@ -87,14 +87,29 @@ class LoopBattleData{
             if(!attRoleVo.isDeath && !attRoleVo.isAtted)
             {
                 //寻找攻击具体对象
+                var tempAry:Array<BaseRoleVo> = [];
+                tempAry[0] = null;
                 for(var j = 0;j < attRoleVo.attEnemyVos.length;j++)
                 {
                     defRoleVo = attRoleVo.attEnemyVos[j];
-                    if(defRoleVo && !defRoleVo.isDeath && attRoleVo.gridY == defRoleVo.gridY)
+                    if(defRoleVo && !defRoleVo.isDeath)
                     {
-                        break;
+                        if(attRoleVo.gridY == defRoleVo.gridY){
+                            tempAry[0] = defRoleVo;
+                            break;
+                        }
+                        else
+                        {
+                            tempAry.push(defRoleVo);
+                        }
                     }
-                    defRoleVo = null;
+                }
+                defRoleVo = null;
+                for(j = 0;j < tempAry.length;j++)
+                {
+                    defRoleVo = tempAry[j];
+                    if(defRoleVo)
+                        break;
                 }
             }
             if(attRoleVo && defRoleVo)
@@ -113,7 +128,6 @@ class LoopBattleData{
         // this.curDefRoleVo.battleHP -= this.curAttRoleVo.att;
         // this.curDefRoleVo.isDeath = this.curDefRoleVo.battleHP <= 0;
         // this.curAttRoleVo.isAtted = true;
-        // this.checkBattleEnd();
         //攻击次数检测
         this.curBattleTurnVos.forEach(battleTurnVo => {
             // console.log(attRoleVo.name + ","+attRoleVo.roleId,battleTurnVo.attRoleVo.name + ","+battleTurnVo.attRoleVo.roleId);
@@ -122,7 +136,7 @@ class LoopBattleData{
                 battleTurnVo.calculationAttribute();
             }
         });
-        this.checkBattleEnd();
+        // this.checkBattleEnd();
     }
     
     /**
@@ -312,7 +326,7 @@ class BattleTurnVo{
     {
         this.defRoleVo.battleDieAttTimes--;
         this.defRoleVo.isDeath = this.defRoleVo.battleDieAttTimes <= 0;
-        this.defRoleVo.isAtted = true;
+        this.attRoleVo.isAtted = true;
         //添加战报数据
         if(this.defRoleVo.isDeath)
             BattleReportData.ins.addBattleReportVo(BattleReportDataType.BATTLE_DIE,this.attRoleVo.name,this.defRoleVo.name,this.attRoleVo.atk);

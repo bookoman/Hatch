@@ -31,6 +31,11 @@ class ClientSender{
     /**英雄上、下、更新阵型 */
     public static heroLinuepUpdateReq(lineupId:number,heroId:string,isUp:boolean):void
     {
+        if(!isUp && GameDataManager.ins.selfPlayerData.heroLineupDic.values.length <= 1)
+        {
+            TipsManager.ins.showFloatMsg("阵上英雄不得少于一个",30,"#ff0000",LayerManager.ins.getLayer(LayerManager.TIP_LAYER),GameConfig.STAGE_WIDTH/2,GameConfig.STAGE_HEIGHT/2,1,0,200);
+            return;
+        }
         var UpdateFormationRequest:any = WebSocketManager.ins.defineProtoClass("UpdateFormationRequest");
         var message:any = {};
         message.siteIdx = lineupId;

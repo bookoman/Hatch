@@ -201,8 +201,10 @@ class LoopBattleEngine{
         {
             defRole.aniPlay(RoleAniIndex.INJURED,false);
         }
-        defRole.showFloatFont("-"+attRoleVo.atk);
-        defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
+        Laya.timer.once(500,this,function():void{
+            defRole.showFloatFont("-"+attRoleVo.atk);
+            defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
+        },null,false);
     }
     // /**
     //  * 攻击完移动回阵型
@@ -228,6 +230,7 @@ class LoopBattleEngine{
         this.battleTurnVoSum--;
         if(this.battleTurnVoSum <= 0)
         {
+            this.loopBattleData.checkBattleEnd();
             this.attCompleted();
         }
     }

@@ -195,35 +195,38 @@ class BossBattleEngine{
         }
         // var hurt:number = this.bossBattleData.calculationAttribute();
         defRoleVo.calculationAttribute(attRoleVo,this.bossBattleData.getRankAtk(attRoleVo.isEnemy));
-        //本次伤害
-        var bossBattleRoleData:BossBattleRoleData = defRoleVo.bossBattleRoleData;
-        if(bossBattleRoleData.hurt > 0)
-        {
-            defRole.showFloatFont("-" + bossBattleRoleData.hurt);
-            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
-        }
-        //+攻击力
-        if(bossBattleRoleData.addAtk > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.addAtk,defRoleVo.assiSkillContinuedVo.addAtk,attRoleVo))
-        {
-           
-            defRole.baseRoleVo.realAtk += bossBattleRoleData.addAtk;
-            defRole.showFloatFont("攻击力+"+ bossBattleRoleData.addAtk);
-        }
-        if(bossBattleRoleData.recoveryBlood > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.recoveryBlood,defRoleVo.assiSkillContinuedVo.recoveryBlood,attRoleVo))
-        {
-            defRole.baseRoleVo.battleHP += bossBattleRoleData.recoveryBlood;
-            //战斗血量
-            if(defRole.baseRoleVo.battleHP > defRole.baseRoleVo.hp)
-                defRole.baseRoleVo.battleHP = defRole.baseRoleVo.hp;
-            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
-            defRole.showFloatFont("血量+"+ bossBattleRoleData.recoveryBlood);
-        }
-        if(bossBattleRoleData.bleeding > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.bleeding,defRoleVo.assiSkillContinuedVo.bleeding,attRoleVo))
-        {
-            defRole.baseRoleVo.battleHP -= bossBattleRoleData.bleeding;
-            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
-            defRole.showFloatFont("流血-"+ bossBattleRoleData.bleeding);
-        }
+        //延迟飘血
+        Laya.timer.once(500 / GameConfig.BATTLE_ADDSPEED_TIMES,this,function():void{
+            //本次伤害
+            var bossBattleRoleData:BossBattleRoleData = defRoleVo.bossBattleRoleData;
+            if(bossBattleRoleData.hurt > 0)
+            {
+                defRole.showFloatFont("-" + bossBattleRoleData.hurt);
+                defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+            }
+            //+攻击力
+            if(bossBattleRoleData.addAtk > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.addAtk,defRoleVo.assiSkillContinuedVo.addAtk,attRoleVo))
+            {
+            
+                defRole.baseRoleVo.realAtk += bossBattleRoleData.addAtk;
+                defRole.showFloatFont("攻击力+"+ bossBattleRoleData.addAtk);
+            }
+            if(bossBattleRoleData.recoveryBlood > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.recoveryBlood,defRoleVo.assiSkillContinuedVo.recoveryBlood,attRoleVo))
+            {
+                defRole.baseRoleVo.battleHP += bossBattleRoleData.recoveryBlood;
+                //战斗血量
+                if(defRole.baseRoleVo.battleHP > defRole.baseRoleVo.hp)
+                    defRole.baseRoleVo.battleHP = defRole.baseRoleVo.hp;
+                defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+                defRole.showFloatFont("血量+"+ bossBattleRoleData.recoveryBlood);
+            }
+            if(bossBattleRoleData.bleeding > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.bleeding,defRoleVo.assiSkillContinuedVo.bleeding,attRoleVo))
+            {
+                defRole.baseRoleVo.battleHP -= bossBattleRoleData.bleeding;
+                defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+                defRole.showFloatFont("流血-"+ bossBattleRoleData.bleeding);
+            }
+        },null,false);
         // if(defRoleVo.name == "美颌龙")
         // {
         //     console.log(".........",defRoleVo.battleHP,bossBattleRoleData.bleeding);

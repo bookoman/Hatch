@@ -34,7 +34,7 @@ class HeroVo extends BaseRoleVo{
         this.doubleAtk = this.heroAttr.doubleAtkRate;
         this.hurt = config.hurt;
         this.tenacity = config.tenacity;
-        this.dieAttTimes = 10;
+        this.dieAttTimes = 100;
 
         // var qualityConfig:QualitySampleConfig = ConfigManager.ins.getQualitySampleConfig(this.qualityKey);
         this.upAtk = this.heroAttr.upAtk;
