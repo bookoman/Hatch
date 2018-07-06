@@ -72,6 +72,7 @@ class RightFunctionButtons extends Laya.Sprite{
         this.openBtn.stateNum = 1;
         this.openBtn.anchorX = 0.5;
         this.openBtn.anchorY = 0.5
+        this.openBtn.rotation = 45;
         this.addChild(this.openBtn);
         // this.openBtn.on(Laya.Event.CLICK,this,this.onOpenBtnClick);
         this.on(Laya.Event.CLICK,this,this.onViewClick);
@@ -165,9 +166,11 @@ class RightFunctionButtons extends Laya.Sprite{
         })
         this.isOpen = !this.isOpen;
         if(this.isOpen){
+            this.openBtn.rotation = 90;
             this.open();
         }
         else{
+            this.openBtn.rotation = 45;
             this.close();
         }
         // var lbl:string = this.isOpen ? "-" : "+";

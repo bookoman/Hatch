@@ -62,6 +62,8 @@ class GameConfig{
 
     /**品质color */
     public static QUALITY_COLORS:Array<string> = ["#00ff00","#003366","#FF9933"];
+    /**是否显示CG动画 */
+    public static isShowCG:boolean = false;
 }
 
 class HTTPReqType{

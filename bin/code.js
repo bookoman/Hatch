@@ -66123,7 +66123,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.battle.BattleReportViewUI.uiView);
             };
-            BattleReportViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 375 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/img_reportsbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "Panel", "props": { "y": 68, "x": 20, "width": 715, "var": "panelMask", "vScrollBarSkin": "comp/vscroll.png", "height": 200 } }, { "type": "Image", "props": { "y": 15, "x": 314, "skin": "main/img_battlereport.png" } }] };
+            BattleReportViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 375 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/img_reportsbg.png", "sizeGrid": "30,4,4,4", "height": 374 } }, { "type": "Panel", "props": { "y": 68, "x": 20, "width": 715, "var": "panelMask", "vScrollBarSkin": "comp/vscroll.png", "height": 200 } }, { "type": "Image", "props": { "y": 8, "x": 314, "skin": "main/img_battlereport.png" } }] };
             return BattleReportViewUI;
         }(View));
         battle.BattleReportViewUI = BattleReportViewUI;

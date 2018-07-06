@@ -46,4 +46,10 @@
    <item name="unpack/comp/zhuangbeijiatu.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/cgani/img_left.png" type="Button" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/cgani/img_right.png" type="Button" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/main/font_yellow.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/main/font_green.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/main/font_blue.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/main/font_red1.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/main/font_red2.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/main/font_red.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
 </res>

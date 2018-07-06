@@ -53,7 +53,10 @@ class PreLoadScene extends BaseScene{
     }
     private loadedComplete():void
     {
-        CGAnimation.ins.show(this,this.enterGame);
+        if(GameConfig.isShowCG)
+            CGAnimation.ins.show(this,this.enterGame);
+        else
+            this.enterGame();
     }
     private enterGame():void
     {

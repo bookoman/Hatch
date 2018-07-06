@@ -1,8 +1,8 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":4,
-    "selecteID":10,
+    "selectedBox":1,
+    "selecteID":5,
     "props":{"width":690,"sceneColor":"#000000","height":830},
     "nodeParent":-1,
     "label":"View",
@@ -29,7 +29,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":-59,"x":48,"var":"imgMapBlock","skin":"worldmap/img_map.png"},
+            "props":{"y":-104,"x":-48,"var":"imgMapBlock","skin":"worldmap/img_map.png"},
             "nodeParent":1,
             "label":"Image(imgMapBlock)",
             "isDirectory":false,
@@ -43,7 +43,7 @@
         {
             "x":15,
             "type":"List",
-            "props":{"y":200,"x":36,"var":"listGate","spaceY":20,"repeatY":4},
+            "props":{"y":209,"x":24,"width":639,"var":"listGate","spaceY":20,"repeatY":4,"layoutEnabled":true,"height":602},
             "nodeParent":1,
             "label":"List(listGate)",
             "isOpen":true,
@@ -55,7 +55,7 @@
                 {
                     "x":30,
                     "type":"Box",
-                    "props":{"name":"render"},
+                    "props":{"y":0,"x":0,"width":627,"name":"render","height":114},
                     "nodeParent":5,
                     "label":"Box(render)",
                     "isOpen":true,
@@ -75,7 +75,8 @@
                             "hasChild":false,
                             "compId":3,
                             "child":[
-                                ]
+                                ],
+                            "$HIDDEN":false
                         },
                         {
                             "x":45,
@@ -193,12 +194,13 @@
                             "compId":20,
                             "child":[
                                 ]
-                        }]
+                        }],
+                    "$HIDDEN":false
                 },
                 {
                     "x":30,
                     "type":"VScrollBar",
-                    "props":{"y":10,"x":622,"width":17,"skin":"comp/vscroll.png","name":"scrollBar","height":557},
+                    "props":{"y":0,"x":622,"width":17,"skin":"comp/vscroll.png","name":"scrollBar","height":551},
                     "nodeParent":5,
                     "label":"VScrollBar(scrollBar)",
                     "isDirectory":false,
@@ -213,7 +215,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":134,"x":397,"var":"imgMapName","skin":"worldmap/img_lbl0.png"},
+            "props":{"y":20,"x":318,"var":"imgMapName","skin":"worldmap/img_lbl0.png"},
             "nodeParent":1,
             "label":"Image(imgMapName)",
             "isDirectory":false,
@@ -223,6 +225,32 @@
             "child":[
                 ],
             "$HIDDEN":false
+        },
+        {
+            "x":15,
+            "type":"Text",
+            "props":{"y":96,"x":211,"wordWrap":true,"width":436,"text":"每当你打开一扇门，其它的门就随之关闭，自始至终，你都只有一条路可走。 ","leading":12,"height":97,"fontSize":20,"color":"#342727","bold":true,"align":"left"},
+            "nodeParent":1,
+            "label":"Text",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":23,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Text",
+            "props":{"y":159,"x":215,"wordWrap":true,"width":432,"text":"——《龙族》","leading":12,"height":34,"fontSize":20,"color":"#342727","bold":true,"align":"right"},
+            "nodeParent":1,
+            "label":"Text",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":24,
+            "child":[
+                ]
         }],
     "animations":[
         {

@@ -21,25 +21,25 @@
 	<!--以下引用了常用类库，如果不使用，可以删除-->
 	
     <!--核心包，封装了显示对象渲染，事件，时间管理，时间轴动画，缓动，消息交互,socket，本地存储，鼠标触摸，声音，加载，颜色滤镜，位图字体等-->
-	<script type="text/javascript" src="libs/laya.core.js"></script>
+	<script type="text/javascript" src="libs/laya.core5c4232de.js"></script>
 	<!--提供了微信小游戏的适配-->
-	<script type="text/javascript" src="libs/laya.wxmini.js"></script>
+	<script type="text/javascript" src="libs/laya.wxmini2f1aecbb.js"></script>
 	<!--封装了webgl渲染管线，如果使用webgl渲染，可以在初始化时调用Laya.init(1000,800,laya.webgl.WebGL);-->
-    <script type="text/javascript" src="libs/laya.webgl.js"></script>
+    <script type="text/javascript" src="libs/laya.webglc33381e1.js"></script>
 	<!--是动画模块，包含了swf动画，骨骼动画等-->
-    <script type="text/javascript" src="libs/laya.ani.js"></script>
+    <script type="text/javascript" src="libs/laya.ani09c25136.js"></script>
 	<!--包含更多webgl滤镜，比如外发光，阴影，模糊以及更多-->
-    <script type="text/javascript" src="libs/laya.filter.js"></script>
+    <script type="text/javascript" src="libs/laya.filter1e4f4892.js"></script>
 	<!--封装了html动态排版功能-->
-    <script type="text/javascript" src="libs/laya.html.js"></script>
+    <script type="text/javascript" src="libs/laya.htmle333b940.js"></script>
 	<!--粒子类库-->
-    <script type="text/javascript" src="libs/laya.particle.js"></script>
+    <script type="text/javascript" src="libs/laya.particlef05941b6.js"></script>
 	<!--提供tileMap解析支持-->
-    <script type="text/javascript" src="libs/laya.tiledmap.js"></script>
+    <script type="text/javascript" src="libs/laya.tiledmapd017de4e.js"></script>
 	<!--提供了制作UI的各种组件实现-->
-    <script type="text/javascript" src="libs/laya.ui.js"></script>
+    <script type="text/javascript" src="libs/laya.uidfb1e6bf.js"></script>
 	<!--Protobuf-->
-    <script type="text/javascript" src="libs/protobuf.js"></script>
+    <script type="text/javascript" src="libs/protobuf1c1d3db4.js"></script>
 	<!-- 物理引擎matter.js -->
 	<!--用户自定义顺序文件添加到这里-->
 	<!--jsfile--Custom-->
@@ -48,129 +48,129 @@
 	<!--自定义的js(src文件夹下)文件自动添加到下面jsfile模块标签里面里-->
 	<!--删除标签，ide不会自动添加js文件，请谨慎操作-->
 	<!--jsfile--startTag-->
-	<script src="js/com/lqy/game/util/TsJsContactUtile.js"></script>
-	<script src="js/com/lqy/game/util/TankUtils.js"></script>
-	<script src="js/com/lqy/game/util/StringUtil.js"></script>
-	<script src="js/com/lqy/game/util/ObjectPoolUtil.js"></script>
-	<script src="js/com/lqy/game/util/MapUtil.js"></script>
-	<script src="js/com/lqy/game/util/LG.js"></script>
-	<script src="js/com/lqy/game/util/FormulaUtil.js"></script>
-	<script src="js/com/lqy/game/util/DebugViewUtil.js"></script>
-	<script src="js/com/lqy/game/util/CommonUtil.js"></script>
-	<script src="js/com/lqy/game/core/TipsManager.js"></script>
-	<script src="js/com/lqy/game/core/SoundsManager.js"></script>
-	<script src="js/com/lqy/game/core/SceneMananger.js"></script>
-	<script src="js/com/lqy/game/core/scene/BaseScene.js"></script>
-	<script src="js/com/lqy/game/core/RoleManager.js"></script>
-	<script src="js/com/lqy/game/core/role/UIRole.js"></script>
-	<script src="js/com/lqy/game/core/role/Skill.js"></script>
-	<script src="js/com/lqy/game/core/net/WebSocketManager.js"></script>
-	<script src="js/com/lqy/game/core/net/HttpManager.js"></script>
-	<script src="js/com/lqy/game/core/net/ClientSender.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/SkillVo.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/SkillContinuedVo.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/ServerInfoVo.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/RoleVo.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/LineupPosVo.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/GateInfoVo.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/BattleReportVo.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/BaseRoleVo.js"></script>
-	<script src="js/com/lqy/game/core/model/PlayerData.js"></script>
-	<script src="js/com/lqy/game/core/model/EnemyData.js"></script>
-	<script src="js/com/lqy/game/core/model/config/QualityScoreSampleConfig.js"></script>
-	<script src="js/com/lqy/game/core/model/config/QualitySampleConfig.js"></script>
-	<script src="js/com/lqy/game/core/model/config/MasterHeroSampleConfig.js"></script>
-	<script src="js/com/lqy/game/core/model/config/ItemSampleConfig.js"></script>
-	<script src="js/com/lqy/game/core/model/config/HeroTypeSampleConfig.js"></script>
-	<script src="js/com/lqy/game/core/model/config/HeroSkillSampleConfig.js"></script>
-	<script src="js/com/lqy/game/core/model/config/HeroSampleConfig.js"></script>
-	<script src="js/com/lqy/game/core/model/config/HeroLevelSampleConfig.js"></script>
-	<script src="js/com/lqy/game/core/model/config/GateSampleConfig.js"></script>
-	<script src="js/com/lqy/game/core/model/config/GateMapSampleConfig.js"></script>
-	<script src="js/com/lqy/game/core/model/BattleReportData.js"></script>
-	<script src="js/com/lqy/game/core/MapManager.js"></script>
-	<script src="js/com/lqy/game/core/map/SquintAngleGrid.js"></script>
-	<script src="js/com/lqy/game/core/map/SourceCache.js"></script>
-	<script src="js/com/lqy/game/core/LineupManager.js"></script>
-	<script src="js/com/lqy/game/core/GameDataManager.js"></script>
-	<script src="js/com/lqy/game/core/EventManager.js"></script>
-	<script src="js/com/lqy/game/core/ConfigManager.js"></script>
-	<script src="js/com/lqy/game/core/battle/LoopBattleEngine.js"></script>
-	<script src="js/com/lqy/game/core/battle/LoopBattleData.js"></script>
-	<script src="js/com/lqy/game/core/battle/BossBattleRoleData.js"></script>
-	<script src="js/com/lqy/game/core/battle/BossBattleEngine.js"></script>
-	<script src="js/com/lqy/game/core/battle/BossBattleData.js"></script>
-	<script src="js/com/lqy/game/core/battle/BattleEngine.js"></script>
-	<script src="js/com/lqy/game/core/AnimationManager.js"></script>
-	<script src="js/com/lqy/game/const/GameConfig.js"></script>
-	<script src="js/com/lqy/game/component/FrameAnimation.js"></script>
-	<script src="js/com/lqy/game/component/AtlasAnimation.js"></script>
-	<script src="js/com/lqy/game/component/CGAnimation.js"></script>
-	<script src="js/com/lqy/game/component/FloatFontTips.js"></script>
-	<script src="js/ui/layaUI.max.all.js"></script>
-	<script src="js/com/lqy/game/component/IconView.js"></script>
-	<script src="js/com/lqy/game/component/ModuleLoadingView.js"></script>
-	<script src="js/com/lqy/game/component/ModuleLoadingViewCopy.js"></script>
-	<script src="js/com/lqy/game/component/PreLoadingView.js"></script>
-	<script src="js/com/lqy/game/component/RightFunctionButtons.js"></script>
-	<script src="js/com/lqy/game/component/RoleBloodBar.js"></script>
-	<script src="js/com/lqy/game/component/SkillView.js"></script>
-	<script src="js/com/lqy/game/control/BaseMediator.js"></script>
-	<script src="js/com/lqy/game/control/bag/BagMediator.js"></script>
-	<script src="js/com/lqy/game/control/battle/BattleFailMediator.js"></script>
-	<script src="js/com/lqy/game/control/battle/BattleReportMediator.js"></script>
-	<script src="js/com/lqy/game/control/battle/BattleSuccessMediator.js"></script>
-	<script src="js/com/lqy/game/control/battle/ChallegenBossMediator.js"></script>
-	<script src="js/com/lqy/game/control/battle/MapBattleMediator.js"></script>
-	<script src="js/com/lqy/game/control/ChoiceServerMediator.js"></script>
-	<script src="js/com/lqy/game/control/EnterGameMediator.js"></script>
-	<script src="js/com/lqy/game/control/equip/EquipSmeltMediator.js"></script>
-	<script src="js/com/lqy/game/control/EquipMediator.js"></script>
-	<script src="js/com/lqy/game/control/farm/FarmMediator.js"></script>
-	<script src="js/com/lqy/game/control/GameMediator.js"></script>
-	<script src="js/com/lqy/game/control/graphtag/GraphtagMediator.js"></script>
-	<script src="js/com/lqy/game/control/HeroMediator.js"></script>
-	<script src="js/com/lqy/game/control/HomeMediator.js"></script>
-	<script src="js/com/lqy/game/control/lineup/LineupGridMediator.js"></script>
-	<script src="js/com/lqy/game/control/lineup/LineupGridMediatorBackups.js"></script>
-	<script src="js/com/lqy/game/control/lineup/LineupMediator.js"></script>
-	<script src="js/com/lqy/game/control/lineup/LineupMediatorBackups.js"></script>
-	<script src="js/com/lqy/game/control/LoginMediator.js"></script>
-	<script src="js/com/lqy/game/control/map/GateListMediator.js"></script>
-	<script src="js/com/lqy/game/control/map/MapWorldMediator.js"></script>
-	<script src="js/com/lqy/game/control/SignMediator.js"></script>
-	<script src="js/com/lqy/game/control/TestMediator.js"></script>
-	<script src="js/com/lqy/game/core/LayerManager.js"></script>
-	<script src="js/com/lqy/game/core/map/ImageLoader.js"></script>
-	<script src="js/com/lqy/game/core/map/MapEngine.js"></script>
-	<script src="js/com/lqy/game/core/map/MapGrid.js"></script>
-	<script src="js/com/lqy/game/core/map/MapLoopEngine.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/HeroVo.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/MasterNPCVo.js"></script>
-	<script src="js/com/lqy/game/core/model/vo/MasterVo.js"></script>
-	<script src="js/com/lqy/game/core/net/SocketHanlder.js"></script>
-	<script src="js/com/lqy/game/core/net/handler/BattleGateHandler.js"></script>
-	<script src="js/com/lqy/game/core/net/handler/GateHangupStateHandler.js"></script>
-	<script src="js/com/lqy/game/core/net/handler/GateSwitchHangupHandler.js"></script>
-	<script src="js/com/lqy/game/core/net/handler/GetGateInfoHandler.js"></script>
-	<script src="js/com/lqy/game/core/net/handler/GetHeroInfosHanlder.js"></script>
-	<script src="js/com/lqy/game/core/net/handler/HeroUpdateLineupHanlder.js"></script>
-	<script src="js/com/lqy/game/core/net/handler/ScanGateHandler.js"></script>
-	<script src="js/com/lqy/game/core/net/handler/UserLoginHandler.js"></script>
-	<script src="js/com/lqy/game/core/net/PackageIn.js"></script>
-	<script src="js/com/lqy/game/core/net/PackageOut.js"></script>
-	<script src="js/com/lqy/game/core/role/BaseRole.js"></script>
-	<script src="js/com/lqy/game/core/role/Enemy.js"></script>
-	<script src="js/com/lqy/game/core/role/Hero.js"></script>
-	<script src="js/com/lqy/game/core/role/NPC.js"></script>
-	<script src="js/com/lqy/game/core/scene/GameScene.js"></script>
-	<script src="js/com/lqy/game/core/scene/LoginScene.js"></script>
-	<script src="js/com/lqy/game/core/scene/PreLoadScene.js"></script>
+	<script src="js/com/lqy/game/util/TsJsContactUtile02cee7e7.js"></script>
+	<script src="js/com/lqy/game/util/TankUtilsdea5da3c.js"></script>
+	<script src="js/com/lqy/game/util/StringUtilfca6c094.js"></script>
+	<script src="js/com/lqy/game/util/ObjectPoolUtil636b2ab3.js"></script>
+	<script src="js/com/lqy/game/util/MapUtild5843e9c.js"></script>
+	<script src="js/com/lqy/game/util/LG15eb59dd.js"></script>
+	<script src="js/com/lqy/game/util/FormulaUtilf7574e2b.js"></script>
+	<script src="js/com/lqy/game/util/DebugViewUtilcc8bdaf2.js"></script>
+	<script src="js/com/lqy/game/util/CommonUtilb2d0a867.js"></script>
+	<script src="js/com/lqy/game/core/TipsManager8271a0e6.js"></script>
+	<script src="js/com/lqy/game/core/SoundsManager28b17bda.js"></script>
+	<script src="js/com/lqy/game/core/SceneManangerac10920d.js"></script>
+	<script src="js/com/lqy/game/core/scene/BaseScene685c2891.js"></script>
+	<script src="js/com/lqy/game/core/RoleManager5293d90c.js"></script>
+	<script src="js/com/lqy/game/core/role/UIRole2d77c4df.js"></script>
+	<script src="js/com/lqy/game/core/role/Skill54368013.js"></script>
+	<script src="js/com/lqy/game/core/net/WebSocketManager5ad7a0e6.js"></script>
+	<script src="js/com/lqy/game/core/net/HttpManagera5042501.js"></script>
+	<script src="js/com/lqy/game/core/net/ClientSender476c0a71.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/SkillVo6a66e95b.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/SkillContinuedVoaddbc3c6.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/ServerInfoVof9f88ead.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/RoleVoc26b435f.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/LineupPosVoa9336629.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/GateInfoVob0766af2.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/BattleReportVo53a7656a.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/BaseRoleVo526a526a.js"></script>
+	<script src="js/com/lqy/game/core/model/PlayerData3e892c7c.js"></script>
+	<script src="js/com/lqy/game/core/model/EnemyDatafb8d2177.js"></script>
+	<script src="js/com/lqy/game/core/model/config/QualityScoreSampleConfig4e5433ed.js"></script>
+	<script src="js/com/lqy/game/core/model/config/QualitySampleConfigaae72e46.js"></script>
+	<script src="js/com/lqy/game/core/model/config/MasterHeroSampleConfig6f7bc80c.js"></script>
+	<script src="js/com/lqy/game/core/model/config/ItemSampleConfig802db879.js"></script>
+	<script src="js/com/lqy/game/core/model/config/HeroTypeSampleConfig98a40c38.js"></script>
+	<script src="js/com/lqy/game/core/model/config/HeroSkillSampleConfig24880189.js"></script>
+	<script src="js/com/lqy/game/core/model/config/HeroSampleConfig8158a3e8.js"></script>
+	<script src="js/com/lqy/game/core/model/config/HeroLevelSampleConfigca26d27a.js"></script>
+	<script src="js/com/lqy/game/core/model/config/GateSampleConfig78d6b7ca.js"></script>
+	<script src="js/com/lqy/game/core/model/config/GateMapSampleConfige7d1fb85.js"></script>
+	<script src="js/com/lqy/game/core/model/BattleReportData76a87811.js"></script>
+	<script src="js/com/lqy/game/core/MapManagerc45bbbdb.js"></script>
+	<script src="js/com/lqy/game/core/map/SquintAngleGridb919b76d.js"></script>
+	<script src="js/com/lqy/game/core/map/SourceCachea4d8d437.js"></script>
+	<script src="js/com/lqy/game/core/LineupManager1f62dabc.js"></script>
+	<script src="js/com/lqy/game/core/GameDataManager75db3b7c.js"></script>
+	<script src="js/com/lqy/game/core/EventManager82ea5188.js"></script>
+	<script src="js/com/lqy/game/core/ConfigManager70122a1b.js"></script>
+	<script src="js/com/lqy/game/core/battle/LoopBattleEngine321aad00.js"></script>
+	<script src="js/com/lqy/game/core/battle/LoopBattleData0caf0ec2.js"></script>
+	<script src="js/com/lqy/game/core/battle/BossBattleRoleDatafb41ba54.js"></script>
+	<script src="js/com/lqy/game/core/battle/BossBattleEngine9ad4428f.js"></script>
+	<script src="js/com/lqy/game/core/battle/BossBattleDatac16cc8b1.js"></script>
+	<script src="js/com/lqy/game/core/battle/BattleEngine3f990a20.js"></script>
+	<script src="js/com/lqy/game/core/AnimationManagerb4ed1916.js"></script>
+	<script src="js/com/lqy/game/const/GameConfigb14eaa0f.js"></script>
+	<script src="js/com/lqy/game/component/FrameAnimation3bb8d849.js"></script>
+	<script src="js/com/lqy/game/component/AtlasAnimation97a7fadb.js"></script>
+	<script src="js/com/lqy/game/component/CGAnimation09ac5147.js"></script>
+	<script src="js/com/lqy/game/component/FloatFontTips797c336a.js"></script>
+	<script src="js/ui/layaUI.max.all132ac490.js"></script>
+	<script src="js/com/lqy/game/component/IconViewc5321d08.js"></script>
+	<script src="js/com/lqy/game/component/ModuleLoadingViewe404c16f.js"></script>
+	<script src="js/com/lqy/game/component/ModuleLoadingViewCopy4dd30b85.js"></script>
+	<script src="js/com/lqy/game/component/PreLoadingView0cccbc99.js"></script>
+	<script src="js/com/lqy/game/component/RightFunctionButtons26688657.js"></script>
+	<script src="js/com/lqy/game/component/RoleBloodBar1b65587d.js"></script>
+	<script src="js/com/lqy/game/component/SkillViewb8bb3fe6.js"></script>
+	<script src="js/com/lqy/game/control/BaseMediator5af60eb6.js"></script>
+	<script src="js/com/lqy/game/control/bag/BagMediatorb4c404f3.js"></script>
+	<script src="js/com/lqy/game/control/battle/BattleFailMediatorbf25276f.js"></script>
+	<script src="js/com/lqy/game/control/battle/BattleReportMediator1249dc4a.js"></script>
+	<script src="js/com/lqy/game/control/battle/BattleSuccessMediator6c42fb1b.js"></script>
+	<script src="js/com/lqy/game/control/battle/ChallegenBossMediator06c03e81.js"></script>
+	<script src="js/com/lqy/game/control/battle/MapBattleMediator3c0fe9e5.js"></script>
+	<script src="js/com/lqy/game/control/ChoiceServerMediator313baf06.js"></script>
+	<script src="js/com/lqy/game/control/EnterGameMediator615c333e.js"></script>
+	<script src="js/com/lqy/game/control/equip/EquipSmeltMediator61c1aa46.js"></script>
+	<script src="js/com/lqy/game/control/EquipMediatorbfd302af.js"></script>
+	<script src="js/com/lqy/game/control/farm/FarmMediatorc4c0ae44.js"></script>
+	<script src="js/com/lqy/game/control/GameMediatorb729a34f.js"></script>
+	<script src="js/com/lqy/game/control/graphtag/GraphtagMediatorc00ad75f.js"></script>
+	<script src="js/com/lqy/game/control/HeroMediator0552405e.js"></script>
+	<script src="js/com/lqy/game/control/HomeMediator904994d1.js"></script>
+	<script src="js/com/lqy/game/control/lineup/LineupGridMediatorbbdd11d1.js"></script>
+	<script src="js/com/lqy/game/control/lineup/LineupGridMediatorBackups4c5e2422.js"></script>
+	<script src="js/com/lqy/game/control/lineup/LineupMediatorfded3bb5.js"></script>
+	<script src="js/com/lqy/game/control/lineup/LineupMediatorBackups81dec25a.js"></script>
+	<script src="js/com/lqy/game/control/LoginMediatore02ce6a5.js"></script>
+	<script src="js/com/lqy/game/control/map/GateListMediatora46a4ec7.js"></script>
+	<script src="js/com/lqy/game/control/map/MapWorldMediatord9027a0e.js"></script>
+	<script src="js/com/lqy/game/control/SignMediator42eb2110.js"></script>
+	<script src="js/com/lqy/game/control/TestMediator05b6fae0.js"></script>
+	<script src="js/com/lqy/game/core/LayerManager8a443cf9.js"></script>
+	<script src="js/com/lqy/game/core/map/ImageLoader9a344772.js"></script>
+	<script src="js/com/lqy/game/core/map/MapEnginedbf8d139.js"></script>
+	<script src="js/com/lqy/game/core/map/MapGrid910a39a3.js"></script>
+	<script src="js/com/lqy/game/core/map/MapLoopEngine19e0b86c.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/HeroVo617133a1.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/MasterNPCVo05e829fb.js"></script>
+	<script src="js/com/lqy/game/core/model/vo/MasterVo4cc2b07a.js"></script>
+	<script src="js/com/lqy/game/core/net/SocketHanlderafffc57a.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/BattleGateHandlere902a4a6.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/GateHangupStateHandlerf079ef49.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/GateSwitchHangupHandler532cb64d.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/GetGateInfoHandler2a611595.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/GetHeroInfosHanlderb919b36c.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/HeroUpdateLineupHanlderacff068a.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/ScanGateHandlerc885340a.js"></script>
+	<script src="js/com/lqy/game/core/net/handler/UserLoginHandlerf574cb54.js"></script>
+	<script src="js/com/lqy/game/core/net/PackageIn7229b7a2.js"></script>
+	<script src="js/com/lqy/game/core/net/PackageOut71f786ea.js"></script>
+	<script src="js/com/lqy/game/core/role/BaseRole001cf91a.js"></script>
+	<script src="js/com/lqy/game/core/role/Enemy8922fd85.js"></script>
+	<script src="js/com/lqy/game/core/role/Hero77fadfd4.js"></script>
+	<script src="js/com/lqy/game/core/role/NPC4d474516.js"></script>
+	<script src="js/com/lqy/game/core/scene/GameScene2c349d06.js"></script>
+	<script src="js/com/lqy/game/core/scene/LoginScenee396e848.js"></script>
+	<script src="js/com/lqy/game/core/scene/PreLoadScene747d9572.js"></script>
 	<!--jsfile--endTag-->
 
 	<!--启动类添加到这里-->
 	<!--jsfile--Main-->
-	<script src="js/Game.js"></script>
+	<script src="js/Gameff1df1b3.js"></script>
 	<!--jsfile--Main-->
 
 	<script type="text/javascript">

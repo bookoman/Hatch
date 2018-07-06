@@ -61,7 +61,10 @@ var PreLoadScene = /** @class */ (function (_super) {
         PreLoadingView.ins.setProgress(value);
     };
     PreLoadScene.prototype.loadedComplete = function () {
-        CGAnimation.ins.show(this, this.enterGame);
+        if (GameConfig.isShowCG)
+            CGAnimation.ins.show(this, this.enterGame);
+        else
+            this.enterGame();
     };
     PreLoadScene.prototype.enterGame = function () {
         ConfigManager.ins.parsePreLoadConfigs();

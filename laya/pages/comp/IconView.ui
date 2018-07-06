@@ -50,7 +50,8 @@
             "hasChild":false,
             "compId":4,
             "child":[
-                ]
+                ],
+            "$HIDDEN":true
         }],
     "animations":[
         {

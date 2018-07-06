@@ -1,8 +1,8 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":1,
-    "selecteID":34,
+    "selectedBox":14,
+    "selecteID":16,
     "props":{"y":0,"x":0,"width":750,"sceneColor":"#000000","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -58,14 +58,13 @@
                     "props":{"y":159,"x":-32,"width":1383,"var":"panlePlant","height":671},
                     "nodeParent":5,
                     "label":"Panel(panlePlant)",
-                    "isOpen":true,
+                    "isOpen":false,
                     "isDirectory":true,
                     "isAniNode":true,
                     "hasChild":true,
                     "compId":11,
                     "child":[
                         {
-                            "x":45,
                             "type":"Image",
                             "props":{"y":12,"x":-265,"skin":"unpack/farm/caijimap.png"},
                             "nodeParent":11,
@@ -107,7 +106,7 @@
                         {
                             "x":45,
                             "type":"Image",
-                            "props":{"skin":"unpack/farm/bgzhongzhi.png"},
+                            "props":{"y":20,"x":0,"skin":"unpack/farm/bgzhongzhi.png"},
                             "nodeParent":14,
                             "label":"Image",
                             "isDirectory":false,
@@ -121,7 +120,7 @@
                         {
                             "x":45,
                             "type":"Image",
-                            "props":{"skin":"farm/tip-zhongzhi.png"},
+                            "props":{"y":21,"x":-16,"skin":"farm/tip-zhongzhi.png"},
                             "nodeParent":14,
                             "label":"Image",
                             "isDirectory":false,
@@ -135,18 +134,19 @@
                         {
                             "x":45,
                             "type":"List",
-                            "props":{"width":491,"var":"zhongzhiList","spaceY":10,"spaceX":10,"selectEnable":false,"repeatY":1,"repeatX":3,"renderType":"render","name":"zhongzhiList","height":210,"centerY":0,"centerX":0},
+                            "props":{"width":491,"var":"zhongzhiList","spaceY":10,"spaceX":10,"selectEnable":false,"repeatY":1,"repeatX":3,"renderType":"render","name":"zhongzhiList","height":210,"centerY":16,"centerX":9},
                             "nodeParent":14,
                             "label":"List(zhongzhiList)",
-                            "isOpen":false,
+                            "isOpen":true,
                             "isDirectory":true,
                             "isAniNode":true,
                             "hasChild":true,
                             "compId":16,
                             "child":[
                                 {
+                                    "x":60,
                                     "type":"VScrollBar",
-                                    "props":{"y":10,"x":-48,"width":1,"name":"scrollBar","height":338},
+                                    "props":{"y":10,"x":-48,"width":1,"name":"scrollBar","height":227},
                                     "nodeParent":16,
                                     "label":"VScrollBar(scrollBar)",
                                     "isDirectory":false,
@@ -157,6 +157,7 @@
                                         ]
                                 },
                                 {
+                                    "x":60,
                                     "type":"VBox",
                                     "props":{"x":2,"width":152,"top":10,"space":15,"renderType":"render","bottom":5,"align":"center"},
                                     "nodeParent":16,
@@ -168,6 +169,7 @@
                                     "compId":18,
                                     "child":[
                                         {
+                                            "x":75,
                                             "type":"Panel",
                                             "props":{"y":-51,"x":-28,"width":104,"height":102,"anchorY":0,"anchorX":0},
                                             "nodeParent":18,
@@ -179,6 +181,7 @@
                                             "compId":24,
                                             "child":[
                                                 {
+                                                    "x":90,
                                                     "type":"Image",
                                                     "props":{"y":51,"x":52,"width":104,"var":"zhongzhiBg","skin":"farm/frame.png","name":"zhongzhiBg","height":102,"anchorY":0.5,"anchorX":0.5},
                                                     "nodeParent":24,
@@ -193,6 +196,7 @@
                                                     "$LOCKED":true
                                                 },
                                                 {
+                                                    "x":90,
                                                     "type":"Image",
                                                     "props":{"y":53,"x":50,"var":"ZhongZhiIcon","skin":"farm/bigmogu.png","name":"ZhongZhiIcon","anchorY":0.5,"anchorX":0.5},
                                                     "nodeParent":24,
@@ -207,6 +211,7 @@
                                                 }]
                                         },
                                         {
+                                            "x":75,
                                             "type":"Label",
                                             "props":{"y":59,"x":-29,"var":"zhongzhiName","text":"毒蘑菇花花","name":"zhongzhiName","fontSize":20,"color":"#f2d778","bold":true,"align":"center"},
                                             "nodeParent":18,
@@ -219,6 +224,7 @@
                                                 ]
                                         },
                                         {
+                                            "x":75,
                                             "type":"Label",
                                             "props":{"y":59,"x":-53,"text":"已使用：（2/3）","name":"zhongzhiName","fontSize":20,"color":"#563610","bold":true,"align":"center"},
                                             "nodeParent":18,

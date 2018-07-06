@@ -2,7 +2,7 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":3,
+    "selecteID":9,
     "props":{"width":750,"sceneColor":"#000000","height":1334},
     "nodeParent":-1,
     "label":"View",
@@ -56,7 +56,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":532,"x":-17,"skin":"unpack/battlefail/img_bg.png"},
+            "props":{"y":532,"x":-24,"skin":"unpack/battlefail/img_bg.png"},
             "nodeParent":1,
             "label":"Image",
             "isDirectory":false,
@@ -69,7 +69,7 @@
         {
             "x":15,
             "type":"Image",
-            "props":{"y":336,"x":83,"skin":"unpack/battlefail/img_fail.png"},
+            "props":{"y":336,"x":72,"skin":"unpack/battlefail/img_fail.png"},
             "nodeParent":1,
             "label":"Image",
             "isOpen":true,
@@ -83,7 +83,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":744,"x":106,"var":"btnGiveup","stateNum":"1","skin":"battlefail/btn_giveup.png"},
+            "props":{"y":744,"x":99,"var":"btnGiveup","stateNum":"1","skin":"battlefail/btn_giveup.png"},
             "nodeParent":1,
             "label":"Button(btnGiveup)",
             "isDirectory":false,
@@ -96,7 +96,7 @@
         {
             "x":15,
             "type":"Button",
-            "props":{"y":744,"x":425,"var":"btnBattleAgain","stateNum":"1","skin":"battlefail/btn_battleagain.png"},
+            "props":{"y":744,"x":418,"var":"btnBattleAgain","stateNum":"1","skin":"battlefail/btn_battleagain.png"},
             "nodeParent":1,
             "label":"Button(btnBattleAgain)",
             "isDirectory":false,

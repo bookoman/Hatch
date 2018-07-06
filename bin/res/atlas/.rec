@@ -335,6 +335,10 @@ R F390386D logo.png
 D unpack/main
 R 6D978B09 bg_dibian.png
 R 6D978B09 diban.png
+R ABC61B73 font_blue.png
+R 4D5E4407 font_green.png
+R B4FDFFCD font_red.png
+R 8A0E168D font_yellow.png
 R 02115426 img_btnbg.png
 R 23A50F59 img_fenwei.png
 R C898EA98 img_reportsbg.png

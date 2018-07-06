@@ -90,8 +90,9 @@ class BaseRole extends Laya.Sprite{
         var floatFontTip:FloatFontTips = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
         if(floatFontTip)
         {
-            floatFontTip.setAttribute(40,"#ff0000");
-            floatFontTip.show(tipString,this,-30,-200,0.5,40,80,this.baseRoleVo.isEnemy);
+            // floatFontTip.setAttribute(40,"#ff0000");
+            // floatFontTip.show(tipString,this,-30,-200,0.5,40,80,this.baseRoleVo.isEnemy);
+            floatFontTip.showFlontClip(tipString,this,-30,-200,0.5,40,80,this.baseRoleVo.isEnemy);
         }
     }
     

@@ -1,0 +1,73 @@
+option java_package = "com.lqy.gameserver.protocs";
+option java_outer_classname = "GateProtoc";
+
+
+enum GateModuleProtocl {
+	M_Gate = 1002;       // 关卡模块号	
+}
+
+enum GateCommandProtocl {
+	C_GateInfo = 1;              //   获取玩家关卡信息
+	C_HangupState = 2;           //   关卡挂机
+	C_SwitchHangGate = 3;        //   切换挂机关卡
+	C_Battle = 4;				 //   挑战关卡
+	C_Scan = 5;					 //   扫荡关卡
+}
+
+//请求玩家关卡信息 [C_GateInfo]
+message GateInfoRequest {
+	optional int32 statusCode  = 1;				// 无意义
+}
+
+//返回玩家关卡信息 [C_GateInfo]
+message GateInfoResponse {
+	required int32 statusCode = 1; 				// 状态码：0：成功
+	optional string roleGateInfo = 2;		    // 玩家关卡信息
+}
+
+//请求关卡挂机状态信息 [C_HangupState]
+message HangupStateRequest {
+	optional int32 statusCode  = 1;				// 无意义
+}
+
+//返回关卡挂机状态信息 [C_HangupState]
+message HangupStateResponse {
+	required int32 statusCode = 1; 				// 状态码：0：成功
+	optional string gateKey  = 2;				// 关卡ID
+	optional string hangRewardJson  = 3;	    // 奖励
+}
+
+//请求切换挂机关卡 [C_SwitchHangGate]
+message SwitchHangGateRequest {
+	optional string gateKey  = 1;				// 关卡ID
+}
+
+//返回切换挂机关卡 [C_SwitchHangGate]
+message SwitchHangGateResponse {
+	required int32 statusCode = 1; 				// 状态码：0：成功
+	optional string gateKey  = 2;				// 关卡ID
+}
+
+//请求扫荡关卡 [C_Scan]
+message ScanGateRequest {
+	optional string gateKey  = 1;				// 关卡ID
+}
+
+//返回扫荡关卡 [C_Scan]
+message ScanGateResponse {
+	required int32 statusCode = 1; 				// 状态码：0：成功
+	optional string gateKey  = 2;				// 关卡ID
+	optional string rewardsJson = 3;			// 扫荡奖励
+}
+
+
+//请求挑战关卡 [C_Battle]
+message BattleGateRequest {
+	optional string gateKey  = 1;				// 关卡ID
+}
+
+//返回挑战关卡 [C_Battle]
+message BattleGateResponse {
+	required int32 statusCode = 1; 				// 状态码：0：成功
+	optional string gateKey  = 2;				// 关卡ID
+}

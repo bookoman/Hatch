@@ -56,6 +56,8 @@ var GameConfig = /** @class */ (function () {
     GameConfig.RAIN_SHOW_LIMIT_TIME = 20;
     /**品质color */
     GameConfig.QUALITY_COLORS = ["#00ff00", "#003366", "#FF9933"];
+    /**是否显示CG动画 */
+    GameConfig.isShowCG = false;
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {
