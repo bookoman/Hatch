@@ -2,7 +2,7 @@
 * 循环假战斗数据
 */
 class LoopBattleData{
-    private attHeroVos:Array<HeroVo>;
+    public attHeroVos:Array<HeroVo>;
     private attEnemyVos:Array<MasterNPCVo>;
     public curAttCamp:number = 0;
     public curBattleTurnVos:Array<BattleTurnVo>;

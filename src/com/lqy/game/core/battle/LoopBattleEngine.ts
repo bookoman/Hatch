@@ -74,12 +74,16 @@ class LoopBattleEngine{
     {
         var tempAry:Array<BaseRole> = new Array();
         this.roleMgr.heroRoles.forEach(hero => {
-            tempAry.push(hero);
+            this.loopBattleData.attHeroVos.forEach(heroVo => {
+                if(heroVo.roleId == hero.baseRoleVo.roleId){
+                    tempAry.push(hero);
+                }
+            });
         });
-        tempAry.sort(function(vo1:BaseRole,vo2:BaseRole):number{
-            return vo1.baseRoleVo.gridX > vo2.baseRoleVo.gridX ? -1 : 1;
-        })
-        tempAry = tempAry.slice(0,GameConfig.BATTLE_LOOP_HERO_SUM);
+        // tempAry.sort(function(vo1:BaseRole,vo2:BaseRole):number{
+        //     return vo1.baseRoleVo.gridX > vo2.baseRoleVo.gridX ? -1 : 1;
+        // })
+        // tempAry = tempAry.slice(0,GameConfig.BATTLE_LOOP_HERO_SUM);
         return tempAry;
     }
     /**开始战斗 */

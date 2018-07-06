@@ -59,14 +59,19 @@ var LoopBattleEngine = /** @class */ (function () {
     };
     /**得到参战英雄 */
     LoopBattleEngine.prototype.getJoinBattleHeroVo = function () {
+        var _this = this;
         var tempAry = new Array();
         this.roleMgr.heroRoles.forEach(function (hero) {
-            tempAry.push(hero);
+            _this.loopBattleData.attHeroVos.forEach(function (heroVo) {
+                if (heroVo.roleId == hero.baseRoleVo.roleId) {
+                    tempAry.push(hero);
+                }
+            });
         });
-        tempAry.sort(function (vo1, vo2) {
-            return vo1.baseRoleVo.gridX > vo2.baseRoleVo.gridX ? -1 : 1;
-        });
-        tempAry = tempAry.slice(0, GameConfig.BATTLE_LOOP_HERO_SUM);
+        // tempAry.sort(function(vo1:BaseRole,vo2:BaseRole):number{
+        //     return vo1.baseRoleVo.gridX > vo2.baseRoleVo.gridX ? -1 : 1;
+        // })
+        // tempAry = tempAry.slice(0,GameConfig.BATTLE_LOOP_HERO_SUM);
         return tempAry;
     };
     /**开始战斗 */
