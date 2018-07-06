@@ -181,6 +181,10 @@ class GameMediator extends BaseMediator{
             this.curMediator.dispose();
             this.curMediator = null;
         }
+        if(this.mapBattleMediator)
+        {
+            this.mapBattleMediator.clearReportView();
+        }
         var resAry:Array<Object> = [
             {url:"res/atlas/lineup.atlas",type:Loader.ATLAS}
         ];
@@ -201,7 +205,11 @@ class GameMediator extends BaseMediator{
             this.curMediator.dispose();
             this.curMediator = null;
         }
-         var resAry:Array<Object> = [
+        if(this.mapBattleMediator)
+        {
+            this.mapBattleMediator.clearReportView();
+        }
+        var resAry:Array<Object> = [
             {url:"res/atlas/hero.atlas",type:Loader.ATLAS}
         ];
         this.curMediator = new HeroMediator(resAry);
@@ -220,6 +228,10 @@ class GameMediator extends BaseMediator{
         {
             this.curMediator.dispose();
             this.curMediator = null;
+        }
+        if(this.mapBattleMediator)
+        {
+            this.mapBattleMediator.clearReportView();
         }
         var resAry:Array<Object> = [
             {url:"unpack/bag/itemjiatu.png",type:Loader.IMAGE},
@@ -258,6 +270,7 @@ class GameMediator extends BaseMediator{
             //更新英雄
             // BattleEngine.ins.resetLoopBattle();
         }
+        this.mapBattleMediator.allReportDataUpdate();
         
         GameDataManager.showModuleViewInd = GameButtomTabIndex.BATTLE;
 

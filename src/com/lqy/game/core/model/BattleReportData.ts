@@ -3,7 +3,7 @@
 */
 class BattleReportData{
     public static REPORT_SUM_LIMIT:number = 100;
-    private reportVos:Array<BattleReportVo>
+    public reportVos:Array<BattleReportVo>
     constructor(){
         this.reportVos = [];
     }
@@ -43,7 +43,9 @@ class BattleReportData{
             // vo.rewardNum = rewardNum;
             vo.rewardDatas = rewardDatas;
         }
-
-        EventManager.ins.dispatchEvent(EventManager.REPORT_DATA_UPDATE,vo);
+        this.reportVos.push(vo);
+        if(GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE){
+            EventManager.ins.dispatchEvent(EventManager.REPORT_DATA_UPDATE,vo);
+        }
     }
 }

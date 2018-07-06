@@ -28,7 +28,20 @@ class MapBattleMediator extends BaseMediator{
         
         
     }
-    
+    /**更新所有战报 */
+    public allReportDataUpdate():void
+    {
+        if(this.battleReportMediator){
+            this.battleReportMediator.allReportDataUpdate();
+        }
+    }
+    /**清除战报视图 */
+    public clearReportView():void
+    {
+        if(this.battleReportMediator){
+            this.battleReportMediator.clearReportView();
+        }
+    }
     /**进入地图假战斗 */
     public enterMapBattle():void
     {
@@ -52,6 +65,7 @@ class MapBattleMediator extends BaseMediator{
         {
             if(this.challegenBossMediator)
                 this.challegenBossMediator.dispose();
+            this.battleReportMediator.allReportDataUpdate();
         }
         // RoleManager.ins.resetRolePoint();
     }
@@ -61,6 +75,8 @@ class MapBattleMediator extends BaseMediator{
      */
     private onChalleangeBoss(e:Laya.Event):void
     {
+        this.clearReportView();
+
         MapManager.ins.enterMap("res/map",10000,MapUtil.TYPE_LOAD_NOCUT,400,300,920,300);
         GameDataManager.ins.productBossData();
         var resAry:Array<Object> = [{url:"unpack/challengeboss/bg.png",type:Loader.IMAGE}];

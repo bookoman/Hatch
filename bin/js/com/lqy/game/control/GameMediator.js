@@ -154,6 +154,9 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
+        if (this.mapBattleMediator) {
+            this.mapBattleMediator.clearReportView();
+        }
         var resAry = [
             { url: "res/atlas/lineup.atlas", type: Loader.ATLAS }
         ];
@@ -170,6 +173,9 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
+        if (this.mapBattleMediator) {
+            this.mapBattleMediator.clearReportView();
+        }
         var resAry = [
             { url: "res/atlas/hero.atlas", type: Loader.ATLAS }
         ];
@@ -185,6 +191,9 @@ var GameMediator = /** @class */ (function (_super) {
         if (this.curMediator) {
             this.curMediator.dispose();
             this.curMediator = null;
+        }
+        if (this.mapBattleMediator) {
+            this.mapBattleMediator.clearReportView();
         }
         var resAry = [
             { url: "unpack/bag/itemjiatu.png", type: Loader.IMAGE },
@@ -215,6 +224,7 @@ var GameMediator = /** @class */ (function (_super) {
             //更新英雄
             // BattleEngine.ins.resetLoopBattle();
         }
+        this.mapBattleMediator.allReportDataUpdate();
         GameDataManager.showModuleViewInd = GameButtomTabIndex.BATTLE;
         SoundsManager.ins.playerMusicByEnum(MusicBGType.SHAM_BATTLE, 1000);
     };

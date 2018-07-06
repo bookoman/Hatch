@@ -35,6 +35,18 @@ var BattleReportMediator = /** @class */ (function (_super) {
     BattleReportMediator.prototype.removeEvents = function () {
         EventManager.ins.removeEvent(EventManager.REPORT_DATA_UPDATE, this);
     };
+    /**更新所有战报 */
+    BattleReportMediator.prototype.allReportDataUpdate = function () {
+        var _this = this;
+        BattleReportData.ins.reportVos.forEach(function (vo) {
+            _this.reportDataUpdate(vo);
+        });
+    };
+    /**清除战报视图 */
+    BattleReportMediator.prototype.clearReportView = function () {
+        this.view.panelMask.removeChildren();
+        this.items.splice(0, this.items.length);
+    };
     /**更新视图 */
     BattleReportMediator.prototype.reportDataUpdate = function (vo) {
         var item;
@@ -71,7 +83,7 @@ var BattleReportMediator = /** @class */ (function (_super) {
         this.view.visible = bool;
     };
     BattleReportMediator.prototype.dispose = function () {
-        this.view.vboxReport.removeChildren();
+        this.view.panelMask.removeChildren();
         this.items.splice(0, this.items.length);
         this.items = null;
         _super.prototype.dispose.call(this);

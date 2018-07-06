@@ -11,22 +11,22 @@ var BattleReportVo = /** @class */ (function () {
         var html = "";
         switch (this.type) {
             case BattleReportDataType.HURT:
-                html = "<span style='fontSize:24;color:#009900'>[" + this.atkName + "]</span>"
-                    + "<span style='fontSize:24;color:#000000'> 攻击 </span>"
-                    + "<span style='fontSize:24;color:#009900'>[" + this.defName + "]</span>"
-                    + "<span style='fontSize:24;color:#000000'> 造成了 </span>"
-                    + "<span style='fontSize:24;color:#ff0000'>" + this.hurt + "</span>"
-                    + "<span style='fontSize:24;color:#000000'> 点伤害 </span>";
+                html = "<font style='fontSize:24;color:#009900'>[" + this.atkName + "]</font>"
+                    + "<font style='fontSize:24;color:#000000'> 攻击 </font>"
+                    + "<font style='fontSize:24;color:#009900'>[" + this.defName + "]</font>"
+                    + "<font style='fontSize:24;color:#000000'> 造成了 </font>"
+                    + "<font style='fontSize:24;color:#ff0000'>" + this.hurt + "</font>"
+                    + "<font style='fontSize:24;color:#000000'> 点伤害 </font>";
                 return html;
             case BattleReportDataType.BATTLE_DIE:
-                html = "<span style='fontSize:24;color:#009900'>[" + this.atkName + "]</span>"
-                    + "<span style='fontSize:24;color:#000000'> 最后一击打出 </span>"
-                    + "<span style='fontSize:24;color:#ff0000'>" + this.hurt + "</span>"
-                    + "<span style='fontSize:24;color:#000000'> 点伤害，成功击败了</span>"
-                    + "<span style='fontSize:24;color:#009900'>[" + this.defName + "]</span>";
+                html = "<font style='fontSize:24;color:#009900'>[" + this.atkName + "]</font>"
+                    + "<font style='fontSize:24;color:#000000'> 最后一击打出 </font>"
+                    + "<font style='fontSize:24;color:#ff0000'>" + this.hurt + "</font>"
+                    + "<font style='fontSize:24;color:#000000'> 点伤害，成功击败了</font>"
+                    + "<font style='fontSize:24;color:#009900'>[" + this.defName + "]</font>";
                 return html;
             case BattleReportDataType.REWARD:
-                html = "<span style='fontSize:24;color:#000000'> 战斗结束，获得奖励 </span>";
+                html = "<font style='fontSize:24;color:#000000'> 战斗结束，获得奖励 </font>";
                 var itemKey;
                 var itemNum;
                 var ind = Math.ceil(Math.random() * GameConfig.QUALITY_COLORS.length) - 1;
@@ -38,11 +38,11 @@ var BattleReportVo = /** @class */ (function () {
                     var itemConfig = ConfigManager.ins.getItemSampleConfig(itemKey);
                     if (!itemConfig)
                         continue;
-                    html += "<span style='fontSize:24;color:" + qualityColor + "'>[" + itemConfig.itemName + "]</span>" + "<span style='fontSize:24;color:#ff0000'>X" + itemNum;
+                    html += "<font style='fontSize:24;color:" + qualityColor + "'>[" + itemConfig.itemName + "]</font>" + "<font style='fontSize:24;color:#ff0000'>X" + itemNum;
                     if (i < this.rewardDatas.length - 1)
-                        html += ";</span>";
+                        html += ";</font>";
                     else
-                        html += "</span>";
+                        html += "</font>";
                 }
                 return html;
         }

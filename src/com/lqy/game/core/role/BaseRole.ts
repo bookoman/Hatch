@@ -180,7 +180,10 @@ class BaseRole extends Laya.Sprite{
         if(!this.isLoaded)
         {
             this.skeletonAni = this.templet.buildArmature(2);
-            this.skeletonAni.scale(this.aniScale * this.baseRoleVo.scale,this.baseRoleVo.scale);
+            if(this.baseRoleVo)
+                this.skeletonAni.scale(this.aniScale * this.baseRoleVo.scale,this.baseRoleVo.scale);
+            else
+                this.skeletonAni.scale(this.aniScale,1);
             this.addChild(this.skeletonAni);
 
             this.isLoaded = true;

@@ -32,6 +32,18 @@ var MapBattleMediator = /** @class */ (function (_super) {
         this.view.btnChalleangeBoss.off(Laya.Event.CLICK, this, this.onChalleangeBoss);
         EventManager.ins.removeEvent(EventManager.CHALLENGE_BOSS, this.challegenBossHandler);
     };
+    /**更新所有战报 */
+    MapBattleMediator.prototype.allReportDataUpdate = function () {
+        if (this.battleReportMediator) {
+            this.battleReportMediator.allReportDataUpdate();
+        }
+    };
+    /**清除战报视图 */
+    MapBattleMediator.prototype.clearReportView = function () {
+        if (this.battleReportMediator) {
+            this.battleReportMediator.clearReportView();
+        }
+    };
     /**进入地图假战斗 */
     MapBattleMediator.prototype.enterMapBattle = function () {
         this.battleReportMediator = new BattleReportMediator();
@@ -47,6 +59,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
         else {
             if (this.challegenBossMediator)
                 this.challegenBossMediator.dispose();
+            this.battleReportMediator.allReportDataUpdate();
         }
         // RoleManager.ins.resetRolePoint();
     };
@@ -55,6 +68,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
      * @param e
      */
     MapBattleMediator.prototype.onChalleangeBoss = function (e) {
+        this.clearReportView();
         MapManager.ins.enterMap("res/map", 10000, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
         GameDataManager.ins.productBossData();
         var resAry = [{ url: "unpack/challengeboss/bg.png", type: Loader.IMAGE }];

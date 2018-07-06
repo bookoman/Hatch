@@ -32,6 +32,19 @@ class BattleReportMediator extends BaseMediator{
     {
         EventManager.ins.removeEvent(EventManager.REPORT_DATA_UPDATE,this);
     }
+    /**更新所有战报 */
+    public allReportDataUpdate():void
+    {
+        BattleReportData.ins.reportVos.forEach(vo => {
+            this.reportDataUpdate(vo);
+        });
+    }
+    /**清除战报视图 */
+    public clearReportView():void
+    {
+        this.view.panelMask.removeChildren();
+        this.items.splice(0,this.items.length);
+    }
     /**更新视图 */
     public reportDataUpdate(vo:BattleReportVo):void
     {
@@ -70,6 +83,7 @@ class BattleReportMediator extends BaseMediator{
         {
             (this.view.panelMask as Laya.Panel).scrollTo(0,item.y + item.contextHeight - this.maskHeight);
         }
+        
     }
     public setVisible(bool:boolean):void
     {
@@ -78,7 +92,7 @@ class BattleReportMediator extends BaseMediator{
 
     public dispose():void
     {
-        this.view.vboxReport.removeChildren();
+        this.view.panelMask.removeChildren();
         this.items.splice(0,this.items.length);
         this.items = null;
         super.dispose();

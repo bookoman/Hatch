@@ -37,7 +37,10 @@ var BattleReportData = /** @class */ (function () {
             // vo.rewardNum = rewardNum;
             vo.rewardDatas = rewardDatas;
         }
-        EventManager.ins.dispatchEvent(EventManager.REPORT_DATA_UPDATE, vo);
+        this.reportVos.push(vo);
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE) {
+            EventManager.ins.dispatchEvent(EventManager.REPORT_DATA_UPDATE, vo);
+        }
     };
     BattleReportData.REPORT_SUM_LIMIT = 100;
     BattleReportData._ins = null;
