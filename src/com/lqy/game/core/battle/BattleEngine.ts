@@ -10,6 +10,7 @@ class BattleEngine{
     private skillView:SkillView;
     private loopBattleEngine:LoopBattleEngine;
     private bossBattleEngine:BossBattleEngine;
+    public isLoopBattle:boolean = false;
     constructor(){
         this.loopBattleEngine = new LoopBattleEngine();
         this.bossBattleEngine = new BossBattleEngine();
@@ -30,6 +31,7 @@ class BattleEngine{
     }
     public run():void
     {
+        this.isLoopBattle = true;
         Laya.timer.loop(1000,this,this.runUpdate);
     }
     /**更新 */
@@ -66,6 +68,14 @@ class BattleEngine{
         if(this.bossBattleEngine)
         {
             this.bossBattleEngine.endBattle();
+        }
+    }
+    /**重置循环战斗 */
+    public resetLoopBattle():void
+    {
+        if(this.loopBattleEngine)
+        {
+            this.loopBattleEngine.endBattle();
         }
     }
 

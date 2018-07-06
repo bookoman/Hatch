@@ -164,14 +164,22 @@ class MapManager{
 
     public getHeroMapBalltGridPoint(gridNum:number):Array<any>
     {
-        var gridPointAry:Array<any> = this.curMapConfig["battleHeroGrid"];
-        return gridPointAry[gridNum];
+        if(this.curMapConfig)
+        {
+            var gridPointAry:Array<any> = this.curMapConfig["battleHeroGrid"];
+            return gridPointAry[gridNum];
+        }
+        return [0,0];
     }
 
     public getEnemyMapBalltGridPoint(gridNum:number):Array<any>
     {
-        var gridPointAry:Array<any> = this.curMapConfig["battleEnemyGrid"];
-        return gridPointAry[gridNum];
+        if(this.curMapConfig)
+        {
+            var gridPointAry:Array<any> = this.curMapConfig["battleEnemyGrid"];
+            return gridPointAry[gridNum];
+        }
+        return [0,0];
     }
 
     public getConfigById(mapId:string):Object

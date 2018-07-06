@@ -19,7 +19,7 @@ class PlayerData{
         
     }
     /**添加上阵宠物 */
-    public addUpHeroVo(heroId:string,lineId:number):void
+    public addUpHeroVo(heroId:string,lineId:number):BaseRoleVo
     {
         if(!this.upHeroVos)
         {
@@ -34,24 +34,29 @@ class PlayerData{
         }
         else
         {
+            heroVo.initRowColPosPoint();
             this.upHeroVos.push(heroVo);
         }
+        return heroVo;
     }
     /**删除上阵宠物 */
-    public removeUpHeroVo(heroId:string):void
+    public removeUpHeroVo(heroId:string):BaseRoleVo
     {
         if(!this.upHeroVos)
         {
             return;
         }
+        var heroVo:BaseRoleVo;
         for(var i = 0;i < this.upHeroVos.length;i++)
         {
-            if(this.upHeroVos[i].heroId == heroId)
+            heroVo = this.upHeroVos[i];
+            if(heroVo.roleId == heroId)
             {
-                this.upHeroVos[i].lineupGrid = null;
+                heroVo.lineupGrid = null;
                 this.upHeroVos.splice(i,1);
-                break
+                return heroVo;
             }
         }
+        return null;
     }
 }

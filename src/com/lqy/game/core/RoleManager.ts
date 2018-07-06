@@ -11,7 +11,7 @@ class RoleManager{
      /**英雄 */
     public heroRunCount:number = 0;
     constructor(){
-
+        this.heroRoles = [];
     }
     private static _ins = null;
     public static get ins():RoleManager
@@ -22,7 +22,32 @@ class RoleManager{
         }
         return this._ins;
     }
-
+    /**更新阵型 */
+    public updateLineupHeros(heroVo:BaseRoleVo,isUp:boolean):void
+    {
+        var hero:Hero = null;
+        if(isUp)
+        {
+            hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
+            hero.initRole(heroVo,5,-1);
+            this.heroRoles.push(hero);
+        }
+        else
+        {   
+            for(var i = 0;i < this.heroRoles.length;i++)
+            {
+                hero = this.heroRoles[i];
+                if(hero.baseRoleVo.roleId == heroVo.roleId)
+                {
+                    ObjectPoolUtil.stillObject(ObjectPoolUtil.HERO_ROLE,hero);
+                    hero.dispose();
+                    this.heroRoles.splice(i,1);
+                    break;
+                }
+            }
+        }
+        BattleEngine.ins.resetLoopBattle();
+    }
     /**初始化角色 */
     public initHeros():void
     {

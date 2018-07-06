@@ -8,6 +8,7 @@
 */
 var BattleEngine = /** @class */ (function () {
     function BattleEngine() {
+        this.isLoopBattle = false;
         this.loopBattleEngine = new LoopBattleEngine();
         this.bossBattleEngine = new BossBattleEngine();
         //技能视图
@@ -27,6 +28,7 @@ var BattleEngine = /** @class */ (function () {
         configurable: true
     });
     BattleEngine.prototype.run = function () {
+        this.isLoopBattle = true;
         Laya.timer.loop(1000, this, this.runUpdate);
     };
     /**更新 */
@@ -56,6 +58,12 @@ var BattleEngine = /** @class */ (function () {
     BattleEngine.prototype.challegenBossFastEnd = function () {
         if (this.bossBattleEngine) {
             this.bossBattleEngine.endBattle();
+        }
+    };
+    /**重置循环战斗 */
+    BattleEngine.prototype.resetLoopBattle = function () {
+        if (this.loopBattleEngine) {
+            this.loopBattleEngine.endBattle();
         }
     };
     BattleEngine._ins = null;

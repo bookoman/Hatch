@@ -136,12 +136,18 @@ var MapManager = /** @class */ (function () {
         this.squintAngleGrid.initGrid();
     };
     MapManager.prototype.getHeroMapBalltGridPoint = function (gridNum) {
-        var gridPointAry = this.curMapConfig["battleHeroGrid"];
-        return gridPointAry[gridNum];
+        if (this.curMapConfig) {
+            var gridPointAry = this.curMapConfig["battleHeroGrid"];
+            return gridPointAry[gridNum];
+        }
+        return [0, 0];
     };
     MapManager.prototype.getEnemyMapBalltGridPoint = function (gridNum) {
-        var gridPointAry = this.curMapConfig["battleEnemyGrid"];
-        return gridPointAry[gridNum];
+        if (this.curMapConfig) {
+            var gridPointAry = this.curMapConfig["battleEnemyGrid"];
+            return gridPointAry[gridNum];
+        }
+        return [0, 0];
     };
     MapManager.prototype.getConfigById = function (mapId) {
         return this.mapCofing[mapId];

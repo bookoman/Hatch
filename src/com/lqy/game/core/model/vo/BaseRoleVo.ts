@@ -107,6 +107,10 @@ class BaseRoleVo{
     /**初始化阵型数据 */
     public initRowColPosPoint():void
     {
+        if(MapManager.ins.squintAngleGrid == null)
+        {
+            return;
+        }
         var px,py;
         var gridPointAry;
         if(this.isEnemy)

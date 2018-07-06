@@ -11,6 +11,7 @@ var RoleManager = /** @class */ (function () {
         this.enemyRunCount = 0;
         /**英雄 */
         this.heroRunCount = 0;
+        this.heroRoles = [];
     }
     Object.defineProperty(RoleManager, "ins", {
         get: function () {
@@ -22,6 +23,27 @@ var RoleManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**更新阵型 */
+    RoleManager.prototype.updateLineupHeros = function (heroVo, isUp) {
+        var hero = null;
+        if (isUp) {
+            hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
+            hero.initRole(heroVo, 5, -1);
+            this.heroRoles.push(hero);
+        }
+        else {
+            for (var i = 0; i < this.heroRoles.length; i++) {
+                hero = this.heroRoles[i];
+                if (hero.baseRoleVo.roleId == heroVo.roleId) {
+                    ObjectPoolUtil.stillObject(ObjectPoolUtil.HERO_ROLE, hero);
+                    hero.dispose();
+                    this.heroRoles.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        BattleEngine.ins.resetLoopBattle();
+    };
     /**初始化角色 */
     RoleManager.prototype.initHeros = function () {
         if (this.heroRoles == null) {

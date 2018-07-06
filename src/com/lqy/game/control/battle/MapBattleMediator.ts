@@ -5,8 +5,6 @@ class MapBattleMediator extends BaseMediator{
     private battleReportMediator:BattleReportMediator = null;
     private challegenBossMediator:ChallegenBossMediator = null;
     
-    
-    
     constructor(assetsUrl?:any,view?:any){
         super(assetsUrl,view);
     }
@@ -31,7 +29,6 @@ class MapBattleMediator extends BaseMediator{
         
     }
     
-
     /**进入地图假战斗 */
     public enterMapBattle():void
     {

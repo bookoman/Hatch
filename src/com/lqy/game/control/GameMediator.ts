@@ -253,6 +253,12 @@ class GameMediator extends BaseMediator{
             this.mapBattleMediator = new MapBattleMediator();
             this.mapBattleMediator.enterMapBattle();
         }
+        else
+        {
+            //更新英雄
+            // BattleEngine.ins.resetLoopBattle();
+        }
+        
         GameDataManager.showModuleViewInd = GameButtomTabIndex.BATTLE;
 
         SoundsManager.ins.playerMusicByEnum(MusicBGType.SHAM_BATTLE,1000);

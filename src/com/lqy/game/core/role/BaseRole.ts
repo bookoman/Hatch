@@ -252,7 +252,6 @@ class BaseRole extends Laya.Sprite{
     }
     public dispose():void
     {
-
         this.parent.setChildIndex(this,0);
         this.removeSelf();
         if(this.skeletonAni)
