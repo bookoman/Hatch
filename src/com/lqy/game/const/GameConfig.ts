@@ -53,7 +53,7 @@ class GameConfig{
     public static HERO_DEFAULT_ANI_MODELID:string = "baolong001";
 
     /**单机游戏 */
-    public static SINGLE_GAME:boolean = false;
+    public static SINGLE_GAME:boolean = true;
     /**挂机关卡地图key数据 */
     public static GATE_MAP_KEYS:Array<string> = [];
     
@@ -64,6 +64,21 @@ class GameConfig{
     public static QUALITY_COLORS:Array<string> = ["#00ff00","#003366","#FF9933"];
     /**是否显示CG动画 */
     public static isShowCG:boolean = false;
+
+
+
+    //****单机测试数据 */
+    /**登录信息 */
+    public static loginAuthentication:string = '{"authentication": "taoken888888888888","data":"xielong"}';
+    /**服务器信息 */
+    public static serverInfos:string = '{"data": [{"guid": 1,"name": "龙翔于天","ip": "127.0.0.1","port": 9080,"state": 0,"createTime": 20000},'
+    + '{"guid": 1,"name": "龙归大海","ip": "127.0.0.1","port": 9080,"state": 0,"createTime": 20000}],'
+	+ '"lastInGameServers":{"guid": 1,"name": "龙归大海","ip": "127.0.0.1","port": 9080,"state": 0,"createTime": 20000}}';
+    /**关卡信息 */
+    public static gatesInfos:string = '{"hangGateKey":"G_1-1","gateInfoMap":{"G_1-1":{"gateKey":"G_1-1","gateMapKey":"GM_1000","passGate":10000,"passTime":10000},'
+    +'"G_1-2":{"gateKey":"G_1-2","gateMapKey":"GM_1000","passGate":10000,"passTime":10000}}}';
+    /**上阵信息 */
+    public static heroInfos:string = '{"0": "10000","1": "100001"}';
 }
 
 class HTTPReqType{
@@ -106,11 +121,11 @@ class Protocol{
 /**http请求地址 */
 class HTTPRequestUrl{
     /**测试登录 get*/
-    public static testLoginURL:string = "http://192.168.2.104:8080/api/testLogin.do";
+    public static testLoginURL:string = "http://192.168.2.126:8080/api/testLogin.do";
     /**获取区服列表 get*/
-    public static gameServerURL:string = "http://192.168.2.104:8080/api/gameserver.do";
+    public static gameServerURL:string = "http://192.168.2.126:8080/api/gameserver.do";
     /**进入游戏 get*/
-    public static enterGameURL:string = "http://192.168.2.104:8080/api/entergame.do";
+    public static enterGameURL:string = "http://192.168.2.126:8080/api/entergame.do";
 
 }
 

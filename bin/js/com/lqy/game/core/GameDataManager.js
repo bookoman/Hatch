@@ -179,6 +179,38 @@ var GameDataManager = /** @class */ (function () {
             baseROleVo.initRowColPosPoint();
         });
     };
+    /**假战斗数据 */
+    GameDataManager.prototype.initData = function () {
+        //测试数据
+        if (!this.selfPlayerData) {
+            this.selfPlayerData = new PlayerData();
+        }
+        this.selfPlayerData.id = 88888888;
+        // this.selfPlayerData.name = "SimplePlan";
+        // this.selfPlayerData.lineupId = "1";
+        // var lineupposVoAry:Array<LineupPosVo> = LineupManager.ins.getCofingByID(this.selfPlayerData.lineupId);
+        this.selfPlayerData.heroVoDic = new Dictionary();
+        var keys = ["Hero_10001", "Hero_10009", "Hero_10017", "Hero_10025", "Hero_10033"];
+        var heroVo;
+        for (var i = 0; i < keys.length; i++) {
+            // roleVo = ConfigManager.ins.getHeroSampleConfig(keys[i]);
+            heroVo = new HeroVo();
+            heroVo.heroKey = keys[i];
+            heroVo.lineupGrid = i;
+            heroVo.heroId = heroVo.heroKey + "_" + heroVo.lineupGrid;
+            heroVo.initBaseData();
+            this.selfPlayerData.heroVoDic.set(heroVo.roleId, heroVo);
+        }
+        //阵型数据
+        this.selfPlayerData.heroLineupDic = new Dictionary();
+        var heroId;
+        for (var i = 0; i < this.selfPlayerData.heroVoDic.values.length; i++) {
+            heroVo = this.selfPlayerData.heroVoDic.values[i];
+            this.selfPlayerData.heroLineupDic.set(heroVo.lineupGrid, heroVo.roleId);
+            this.selfPlayerData.addUpHeroVo(heroVo.roleId, heroVo.lineupGrid);
+        }
+        this.selfPlayerData.heroSum = this.selfPlayerData.heroVoDic.values.length;
+    };
     /**显示模块视图索引 */
     GameDataManager.showModuleViewInd = -1;
     GameDataManager._ins = null;

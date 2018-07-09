@@ -2,7 +2,7 @@
 * name;
 */
 class BattleReportData{
-    public static REPORT_SUM_LIMIT:number = 100;
+    public static REPORT_SUM_LIMIT:number = 50;
     public reportVos:Array<BattleReportVo>
     constructor(){
         this.reportVos = [];

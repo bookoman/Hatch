@@ -36,6 +36,7 @@ class EquipSmeltMediator extends BaseMediator{
                 Laya.Tween.clearAll(ani);
             }
             Laya.Tween.clearAll(this.view.ainrong);
+            Laya.Tween.clearAll(this.view.smeltNum);
         }
         super.dispose();
     }

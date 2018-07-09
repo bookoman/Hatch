@@ -30,6 +30,6 @@ class HeroUpdateLineupHanlder extends SocketHanlder{
         if(BattleEngine.ins.isLoopBattle)
             RoleManager.ins.updateLineupHeros(heroVo,message.flag);
         console.log("上阵状态："+message.flag);
-        super.success(message);
+        super.success(message.flag);
     }
 }

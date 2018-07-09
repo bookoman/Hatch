@@ -44,9 +44,9 @@ class LineupMediator extends BaseMediator{
         WebSocketManager.ins.unregisterHandler(Protocol.HERO,Protocol.HERO_UPDATE_FORMATION,this);
     }
     /**更新阵型服务器返回 */
-    private heroUpdateLineupHandler(data):void
+    private heroUpdateLineupHandler(isUp:boolean):void
     {
-        if(data.flag)
+        if(isUp)
         {
             this.selectIconView.setSelect(true);
             this.curSelectGrid.setUpHero(this.selectIconView.heroId,this.selectIconView);
@@ -107,7 +107,10 @@ class LineupMediator extends BaseMediator{
                         lineupId = this.curSelectGrid.lineupId;
                         isUp = true;
                     }
-                    ClientSender.heroLinuepUpdateReq(lineupId,this.selectIconView.heroId,isUp); 
+                    if(GameConfig.SINGLE_GAME)//单机测试
+                        this.singleGameUpdateLineup(isUp,this.selectIconView.heroId,lineupId);
+                    else
+                        ClientSender.heroLinuepUpdateReq(lineupId,this.selectIconView.heroId,isUp); 
                 }
                 else
                 {
@@ -115,7 +118,10 @@ class LineupMediator extends BaseMediator{
                     {
                         lineupId = this.selectIconView.lineupId;
                         isUp = false;
-                        ClientSender.heroLinuepUpdateReq(lineupId,this.selectIconView.heroId,isUp);   
+                        if(GameConfig.SINGLE_GAME)//单机测试
+                            this.singleGameUpdateLineup(isUp,this.selectIconView.heroId,lineupId);
+                        else
+                            ClientSender.heroLinuepUpdateReq(lineupId,this.selectIconView.heroId,isUp);   
                     }
                 }
             }
@@ -124,6 +130,25 @@ class LineupMediator extends BaseMediator{
         {   
 
         }
+    }
+    /**单机游戏模拟上阵 */
+    private singleGameUpdateLineup(isUp:boolean,heroId:string,lineupId:number):void
+    {
+        var selfPlayerData:PlayerData = GameDataManager.ins.selfPlayerData;
+        var heroVo;
+        if(isUp)
+        {
+            selfPlayerData.heroLineupDic.set(lineupId,heroId);
+            heroVo = selfPlayerData.addUpHeroVo(heroId,lineupId);
+        }
+        else
+        {
+            selfPlayerData.heroLineupDic.remove(lineupId);
+            heroVo = selfPlayerData.removeUpHeroVo(heroId);
+        }
+        if(BattleEngine.ins.isLoopBattle && heroVo)
+            RoleManager.ins.updateLineupHeros(heroVo,isUp);
+        this.heroUpdateLineupHandler(isUp);
     }
 
     private initLineup():void

@@ -24,13 +24,29 @@ var HeroVo = /** @class */ (function (_super) {
         this.modelId = config.modelId;
         this.scale = config.modelSize;
         this.name = config.name;
-        this.doubleAtk = this.heroAttr.doubleAtkRate;
         this.hurt = config.hurt;
         this.tenacity = config.tenacity;
         this.dieAttTimes = 100;
-        // var qualityConfig:QualitySampleConfig = ConfigManager.ins.getQualitySampleConfig(this.qualityKey);
-        this.upAtk = this.heroAttr.upAtk;
-        this.updef = this.heroAttr.upDef;
+        if (GameConfig.SINGLE_GAME) {
+            this.qualityKey = "Q_10001";
+            var qualityConfig = ConfigManager.ins.getQualitySampleConfig(this.qualityKey);
+            this.doubleAtk = config.doubleAtk;
+            this.upAtk = qualityConfig.aktMin;
+            this.updef = qualityConfig.defMin;
+            this.level = 1;
+            // this.doubleAtk = 1;
+            // this.upAtk = 4;
+            // this.updef = 3;
+            // this.level = 1;
+            this.atk = Math.ceil(config.atk);
+            this.def = Number(config.def);
+            this.hp = Number(config.hp);
+        }
+        else {
+            this.doubleAtk = this.heroAttr.doubleAtkRate;
+            this.upAtk = this.heroAttr.upAtk;
+            this.updef = this.heroAttr.upDef;
+        }
         /**技能数据 */
         this.skillVos = [];
         var skillVo = new SkillVo();

@@ -35,7 +35,7 @@ var HeroUpdateLineupHanlder = /** @class */ (function (_super) {
         if (BattleEngine.ins.isLoopBattle)
             RoleManager.ins.updateLineupHeros(heroVo, message.flag);
         console.log("上阵状态：" + message.flag);
-        _super.prototype.success.call(this, message);
+        _super.prototype.success.call(this, message.flag);
     };
     return HeroUpdateLineupHanlder;
 }(SocketHanlder));

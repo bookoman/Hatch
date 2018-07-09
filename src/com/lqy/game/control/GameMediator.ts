@@ -3,18 +3,21 @@
 * 游戏主界面代理器
 */
 class GameMediator extends BaseMediator{
-    private curMediator:BaseMediator = null;
-    private mapBattleMediator:MapBattleMediator = null;
+    private curMediator:BaseMediator;
+    private mapBattleMediator:MapBattleMediator;
     
     constructor(assetsUrl?:any,view?:any){
         super(assetsUrl,view);
     }
     protected initView():void
     {
-        ClientSender.getHeroInfoReq(1);
+        if(GameConfig.SINGLE_GAME)
+            GameDataManager.ins.initData();
+        else
+            ClientSender.getHeroInfoReq(1);
 
         ObjectPoolUtil.init();
-        // GameDataManager.ins.initData();
+
 
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view,LayerManager.TOP_LAYER,false,false,true);
@@ -139,7 +142,16 @@ class GameMediator extends BaseMediator{
             this.curMediator.dispose();
             this.curMediator = null;
         }
-        ClientSender.gateGateInfoReq();
+        if(GameConfig.SINGLE_GAME)
+        {
+            var jsonObj = JSON.parse(GameConfig.gatesInfos);
+            GameDataManager.ins.saveGateInfoVoInfo(jsonObj);
+            this.gateInfoHanlder();
+        }
+        else
+        {
+            ClientSender.gateGateInfoReq();
+        }
     }
     private gateInfoHanlder():void
     {

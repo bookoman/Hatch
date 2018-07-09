@@ -54,7 +54,16 @@ class GateListMediator extends BaseMediator{
             var cell:Box = this.view.listGate.getCell(index);
             if(e.target == cell.getChildByName("btnChanllege"))
             {
-                ClientSender.ballteGateReq((cell.dataSource as GateSampleConfig).key);
+                if(GameConfig.SINGLE_GAME)
+                {
+                    var gateKey:string = (cell.dataSource as GateSampleConfig).key;
+                    GameDataManager.ins.hangGateKey = gateKey;
+                    this.battleGateResponse(gateKey);
+                }
+                else
+                {
+                    ClientSender.ballteGateReq((cell.dataSource as GateSampleConfig).key);
+                }
             }
             else if(e.target == cell.getChildByName("btnSweep"))
             {
@@ -66,7 +75,10 @@ class GateListMediator extends BaseMediator{
                 }
                 Laya.timer.once(2000,this,this.timeEndCanScan,[btnSp],false);
                 btnSp.filters = [this.grayFilter];
-                ClientSender.scanGateReq((cell.dataSource as GateSampleConfig).key);
+                if(GameConfig.SINGLE_GAME)
+                    this.scanGateResponse((cell.dataSource as GateSampleConfig).key);
+                else
+                    ClientSender.scanGateReq((cell.dataSource as GateSampleConfig).key);
             }
             else if(e.target == cell.getChildByName("imgReward"))
             {
@@ -74,7 +86,16 @@ class GateListMediator extends BaseMediator{
             }
             else
             {
-                ClientSender.gateSwitchHangReq((cell.dataSource as GateSampleConfig).key);
+                if(GameConfig.SINGLE_GAME)
+                {
+                    var gateKey:string = (cell.dataSource as GateSampleConfig).key;
+                    GameDataManager.ins.hangGateKey = gateKey;
+                    this.switchHangupGateResponse(gateKey);
+                }
+                else
+                {
+                    ClientSender.gateSwitchHangReq((cell.dataSource as GateSampleConfig).key);
+                }
             }
         }
     }

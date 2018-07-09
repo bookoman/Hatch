@@ -43,6 +43,7 @@ var EquipSmeltMediator = /** @class */ (function (_super) {
                 Laya.Tween.clearAll(ani);
             }
             Laya.Tween.clearAll(this.view.ainrong);
+            Laya.Tween.clearAll(this.view.smeltNum);
         }
         _super.prototype.dispose.call(this);
     };

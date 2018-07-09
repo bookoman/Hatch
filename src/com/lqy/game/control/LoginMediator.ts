@@ -34,6 +34,12 @@ class LoginMediator extends BaseMediator{
     {
         if(GameConfig.SINGLE_GAME)
         {
+            var jsonObj = JSON.parse('{"authentication": "taoken888888888888","data":"'+this.view.inputAccount.text+'"}');
+            GameDataManager.ins.saveSelfPlayerData(jsonObj);
+            //服务器列表
+            jsonObj = JSON.parse(GameConfig.serverInfos);
+            GameDataManager.ins.saveServerInfoList(jsonObj.data,jsonObj.lastInGameServers);
+
             //单机测试
             var resAry:Array<Object> = [
                 {url:"unpack/login/logo.png",type:Loader.IMAGE}

@@ -250,32 +250,44 @@ class GameDataManager{
 
     /**假战斗数据 */
 
-    // public initData():void
-    // {
+    public initData():void
+    {
         
-    //     //测试数据
-    //     if(!this.selfPlayerData)
-    //     {
-    //         this.selfPlayerData = new PlayerData();
-    //     }
-    //     this.selfPlayerData.id = 88888888;
-    //     this.selfPlayerData.name = "SimplePlan";
-    //     // this.selfPlayerData.lineupId = "1";
-    //     // var lineupposVoAry:Array<LineupPosVo> = LineupManager.ins.getCofingByID(this.selfPlayerData.lineupId);
-    //     this.selfPlayerData.roleVoAry = [];
-    //     var keys:Array<string> = ["10000","10001","10002","10007","10006","10005"];
-    //     var roleVo:RoleVo;
-    //     for(var i = 0;i < keys.length;i++)
-    //     {
-    //         roleVo = ConfigManager.ins.getRoleVoByID(keys[i]);
-    //         if(roleVo)
-    //         {
-    //             roleVo.lineupGrid = i;
-    //             this.selfPlayerData.roleVoAry.push(roleVo);
-    //         }
-    //     }
-    //     this.selfPlayerData.heroSum = this.selfPlayerData.roleVoAry.length;
-    // }
+        //测试数据
+        if(!this.selfPlayerData)
+        {
+            this.selfPlayerData = new PlayerData();
+        }
+        this.selfPlayerData.id = 88888888;
+        // this.selfPlayerData.name = "SimplePlan";
+        // this.selfPlayerData.lineupId = "1";
+        // var lineupposVoAry:Array<LineupPosVo> = LineupManager.ins.getCofingByID(this.selfPlayerData.lineupId);
+        this.selfPlayerData.heroVoDic = new Dictionary();
+        var keys:Array<string> = ["Hero_10001","Hero_10009","Hero_10017","Hero_10025","Hero_10033"];
+        var heroVo:HeroVo;
+        for(var i = 0;i < keys.length;i++)
+        {
+            // roleVo = ConfigManager.ins.getHeroSampleConfig(keys[i]);
+            heroVo = new HeroVo();
+            heroVo.heroKey = keys[i];
+            heroVo.lineupGrid = i;
+            heroVo.heroId = heroVo.heroKey + "_"+ heroVo.lineupGrid;
+            heroVo.initBaseData();
+            this.selfPlayerData.heroVoDic.set(heroVo.roleId,heroVo)
+        }
+
+        //阵型数据
+        this.selfPlayerData.heroLineupDic = new Dictionary();
+        var heroId:string;
+
+        for(var i = 0;i < this.selfPlayerData.heroVoDic.values.length;i++)
+        {
+            heroVo = this.selfPlayerData.heroVoDic.values[i];
+            this.selfPlayerData.heroLineupDic.set(heroVo.lineupGrid,heroVo.roleId);
+            this.selfPlayerData.addUpHeroVo(heroVo.roleId,heroVo.lineupGrid);
+        }
+        this.selfPlayerData.heroSum = this.selfPlayerData.heroVoDic.values.length;
+    }
     /**计算角色再地图上坐标 */
     // public calMapRowColPosPoint():void
     // {

@@ -42,7 +42,7 @@ var BattleReportData = /** @class */ (function () {
             EventManager.ins.dispatchEvent(EventManager.REPORT_DATA_UPDATE, vo);
         }
     };
-    BattleReportData.REPORT_SUM_LIMIT = 100;
+    BattleReportData.REPORT_SUM_LIMIT = 50;
     BattleReportData._ins = null;
     return BattleReportData;
 }());

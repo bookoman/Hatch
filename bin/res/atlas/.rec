@@ -44,7 +44,7 @@ P 5EDC128C label.png
 P 5EDC128C linkbutton.png
 P 9E4DD730 progress$bar.png
 P 3FD78E12 progress.png
-P 0361C2BD q_1 - 副本.png
+P 0361C2BD q_0.png
 P 0361C2BD q_1.png
 P ACD8826E q_2.png
 P A90B0D56 q_3.png
@@ -158,7 +158,7 @@ P BD197B11 tc_bipai_00007.png
 D ani/click_skip
 P F1326ACC img_arrow.png
 P BC991586 img_line.png
-D ani/Common_buff
+D ani/common_buff
 P 757EBDE8 buff_1.png
 P C274C787 buff_10.png
 P 162715AD buff_11.png
