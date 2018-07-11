@@ -49,13 +49,27 @@ var GameConfig = /** @class */ (function () {
     /**没有资源时，英雄默认资源模型ID */
     GameConfig.HERO_DEFAULT_ANI_MODELID = "baolong001";
     /**单机游戏 */
-    GameConfig.SINGLE_GAME = false;
+    GameConfig.SINGLE_GAME = true;
     /**挂机关卡地图key数据 */
     GameConfig.GATE_MAP_KEYS = [];
     /**雨出现时间间隔 s */
     GameConfig.RAIN_SHOW_LIMIT_TIME = 20;
     /**品质color */
     GameConfig.QUALITY_COLORS = ["#00ff00", "#003366", "#FF9933"];
+    /**是否显示CG动画 */
+    GameConfig.isShowCG = false;
+    //****单机测试数据 */
+    /**登录信息 */
+    GameConfig.loginAuthentication = '{"authentication": "taoken888888888888","data":"xielong"}';
+    /**服务器信息 */
+    GameConfig.serverInfos = '{"data": [{"guid": 1,"name": "龙翔于天","ip": "127.0.0.1","port": 9080,"state": 0,"createTime": 20000},'
+        + '{"guid": 1,"name": "龙归大海","ip": "127.0.0.1","port": 9080,"state": 0,"createTime": 20000}],'
+        + '"lastInGameServers":{"guid": 1,"name": "龙归大海","ip": "127.0.0.1","port": 9080,"state": 0,"createTime": 20000}}';
+    /**关卡信息 */
+    GameConfig.gatesInfos = '{"hangGateKey":"G_1-1","gateInfoMap":{"G_1-1":{"gateKey":"G_1-1","gateMapKey":"GM_1000","passGate":10000,"passTime":10000},'
+        + '"G_1-2":{"gateKey":"G_1-2","gateMapKey":"GM_1000","passGate":10000,"passTime":10000}}}';
+    /**上阵信息 */
+    GameConfig.heroInfos = '{"0": "10000","1": "100001"}';
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {
@@ -98,11 +112,11 @@ var HTTPRequestUrl = /** @class */ (function () {
     function HTTPRequestUrl() {
     }
     /**测试登录 get*/
-    HTTPRequestUrl.testLoginURL = "http://192.168.2.104:8080/api/testLogin.do";
+    HTTPRequestUrl.testLoginURL = "http://192.168.2.126:8080/api/testLogin.do";
     /**获取区服列表 get*/
-    HTTPRequestUrl.gameServerURL = "http://192.168.2.104:8080/api/gameserver.do";
+    HTTPRequestUrl.gameServerURL = "http://192.168.2.126:8080/api/gameserver.do";
     /**进入游戏 get*/
-    HTTPRequestUrl.enterGameURL = "http://192.168.2.104:8080/api/entergame.do";
+    HTTPRequestUrl.enterGameURL = "http://192.168.2.126:8080/api/entergame.do";
     return HTTPRequestUrl;
 }());
 /**服务器状态 */

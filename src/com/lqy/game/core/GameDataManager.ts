@@ -77,7 +77,7 @@ class GameDataManager{
             gateInfoVo = this.gateInfoDic[key];
             if(gateInfoVo.gateMapKey == mapkey)
             {
-                ary.push(gateInfoVo)
+                ary.push(gateInfoVo);
             }
         }
         return ary;

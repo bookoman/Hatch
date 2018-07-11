@@ -1,0 +1,638 @@
+// Simple Set Clipboard System
+// Author: Joseph Huckaby
+
+var ZeroClipboard = {
+
+	version: "1.0.7",
+	clients: {}, // registered upload clients on page, indexed by id
+	moviePath: 'ZeroClipboard.swf', // URL to movie
+	nextId: 1, // ID of next movie
+
+	$: function(thingy) {
+		// simple DOM lookup utility function
+		if (typeof(thingy) == 'string') thingy = document.getElementById(thingy);
+		if (!thingy.addClass) {
+			// extend element with a few useful methods
+			thingy.hide = function() { this.style.display = 'none'; };
+			thingy.show = function() { this.style.display = ''; };
+			thingy.addClass = function(name) { this.removeClass(name); this.className += ' ' + name; };
+			thingy.removeClass = function(name) {
+				var classes = this.className.split(/\s+/);
+				var idx = -1;
+				for (var k = 0; k < classes.length; k++) {
+					if (classes[k] == name) { idx = k; k = classes.length; }
+				}
+				if (idx > -1) {
+					classes.splice( idx, 1 );
+					this.className = classes.join(' ');
+				}
+				return this;
+			};
+			thingy.hasClass = function(name) {
+				return !!this.className.match( new RegExp("\\s*" + name + "\\s*") );
+			};
+		}
+		return thingy;
+	},
+
+	setMoviePath: function(path) {
+		// set path to ZeroClipboard.swf
+		this.moviePath = path;
+	},
+
+	dispatch: function(id, eventName, args) {
+		// receive event from flash movie, send to client
+		var client = this.clients[id];
+		if (client) {
+			client.receiveEvent(eventName, args);
+		}
+	},
+
+	register: function(id, client) {
+		// register new client to receive events
+		this.clients[id] = client;
+	},
+
+	getDOMObjectPosition: function(obj, stopObj) {
+		// get absolute coordinates for dom element
+		var info = {
+			left: 0,
+			top: 0,
+			width: obj.width ? obj.width : obj.offsetWidth,
+			height: obj.height ? obj.height : obj.offsetHeight
+		};
+
+		while (obj && (obj != stopObj)) {
+			info.left += obj.offsetLeft;
+			info.top += obj.offsetTop;
+			obj = obj.offsetParent;
+		}
+
+		return info;
+	},
+
+	Client: function(elem) {
+		// constructor for new simple upload client
+		this.handlers = {};
+
+		// unique ID
+		this.id = ZeroClipboard.nextId++;
+		this.movieId = 'ZeroClipboardMovie_' + this.id;
+
+		// register client with singleton to receive flash events
+		ZeroClipboard.register(this.id, this);
+
+		// create movie
+		if (elem) this.glue(elem);
+	}
+};
+
+ZeroClipboard.Client.prototype = {
+
+	id: 0, // unique ID for us
+	ready: false, // whether movie is ready to receive events or not
+	movie: null, // reference to movie object
+	clipText: '', // text to copy to clipboard
+	handCursorEnabled: true, // whether to show hand cursor, or default pointer cursor
+	cssEffects: true, // enable CSS mouse effects on dom container
+	handlers: null, // user event handlers
+
+	glue: function(elem, appendElem, stylesToAdd) {
+		// glue to DOM element
+		// elem can be ID or actual DOM element object
+		this.domElement = ZeroClipboard.$(elem);
+
+		// float just above object, or zIndex 99 if dom element isn't set
+		var zIndex = 99;
+		if (this.domElement.style.zIndex) {
+			zIndex = parseInt(this.domElement.style.zIndex, 10) + 1;
+		}
+
+		if (typeof(appendElem) == 'string') {
+			appendElem = ZeroClipboard.$(appendElem);
+		}
+		else if (typeof(appendElem) == 'undefined') {
+			appendElem = document.getElementsByTagName('body')[0];
+		}
+
+		// find X/Y position of domElement
+		var box = ZeroClipboard.getDOMObjectPosition(this.domElement, appendElem);
+
+		// create floating DIV above element
+		this.div = document.createElement('div');
+		var style = this.div.style;
+		style.position = 'absolute';
+		style.left = '' + box.left + 'px';
+		style.top = '' + box.top + 'px';
+		style.width = '' + box.width + 'px';
+		style.height = '' + box.height + 'px';
+		style.zIndex = zIndex;
+
+		if (typeof(stylesToAdd) == 'object') {
+			for (addedStyle in stylesToAdd) {
+				style[addedStyle] = stylesToAdd[addedStyle];
+			}
+		}
+
+		// style.backgroundColor = '#f00'; // debug
+
+		appendElem.appendChild(this.div);
+
+		this.div.innerHTML = this.getHTML( box.width, box.height );
+	},
+
+	getHTML: function(width, height) {
+		// return HTML for movie
+		var html = '';
+		var flashvars = 'id=' + this.id +
+			'&width=' + width +
+			'&height=' + height;
+
+		if (navigator.userAgent.match(/MSIE/)) {
+			// IE gets an OBJECT tag
+			var protocol = location.href.match(/^https/i) ? 'https://' : 'http://';
+			html += '<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="'+protocol+'download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="'+width+'" height="'+height+'" id="'+this.movieId+'" align="middle"><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="'+ZeroClipboard.moviePath+'" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="'+flashvars+'"/><param name="wmode" value="transparent"/></object>';
+		}
+		else {
+			// all other browsers get an EMBED tag
+			html += '<embed id="'+this.movieId+'" src="'+ZeroClipboard.moviePath+'" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="'+width+'" height="'+height+'" name="'+this.movieId+'" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="'+flashvars+'" wmode="transparent" />';
+		}
+		return html;
+	},
+
+	hide: function() {
+		// temporarily hide floater offscreen
+		if (this.div) {
+			this.div.style.left = '-2000px';
+		}
+	},
+
+	show: function() {
+		// show ourselves after a call to hide()
+		this.reposition();
+	},
+
+	destroy: function() {
+		// destroy control and floater
+		if (this.domElement && this.div) {
+			this.hide();
+			this.div.innerHTML = '';
+
+			var body = document.getElementsByTagName('body')[0];
+			try { body.removeChild( this.div ); } catch(e) {;}
+
+			this.domElement = null;
+			this.div = null;
+		}
+	},
+
+	reposition: function(elem) {
+		// reposition our floating div, optionally to new container
+		// warning: container CANNOT change size, only position
+		if (elem) {
+			this.domElement = ZeroClipboard.$(elem);
+			if (!this.domElement) this.hide();
+		}
+
+		if (this.domElement && this.div) {
+			var box = ZeroClipboard.getDOMObjectPosition(this.domElement);
+			var style = this.div.style;
+			style.left = '' + box.left + 'px';
+			style.top = '' + box.top + 'px';
+		}
+	},
+
+	setText: function(newText) {
+		// set text to be copied to clipboard
+		this.clipText = newText;
+		if (this.ready) this.movie.setText(newText);
+	},
+
+	addEventListener: function(eventName, func) {
+		// add user event listener for event
+		// event types: load, queueStart, fileStart, fileComplete, queueComplete, progress, error, cancel
+		eventName = eventName.toString().toLowerCase().replace(/^on/, '');
+		if (!this.handlers[eventName]) this.handlers[eventName] = [];
+		this.handlers[eventName].push(func);
+	},
+
+	setHandCursor: function(enabled) {
+		// enable hand cursor (true), or default arrow cursor (false)
+		this.handCursorEnabled = enabled;
+		if (this.ready) this.movie.setHandCursor(enabled);
+	},
+
+	setCSSEffects: function(enabled) {
+		// enable or disable CSS effects on DOM container
+		this.cssEffects = !!enabled;
+	},
+
+	receiveEvent: function(eventName, args) {
+		// receive event from flash
+		eventName = eventName.toString().toLowerCase().replace(/^on/, '');
+
+		// special behavior for certain events
+		switch (eventName) {
+			case 'load':
+				// movie claims it is ready, but in IE this isn't always the case...
+				// bug fix: Cannot extend EMBED DOM elements in Firefox, must use traditional function
+				this.movie = document.getElementById(this.movieId);
+				if (!this.movie) {
+					var self = this;
+					setTimeout( function() { self.receiveEvent('load', null); }, 1 );
+					return;
+				}
+
+				// firefox on pc needs a "kick" in order to set these in certain cases
+				if (!this.ready && navigator.userAgent.match(/Firefox/) && navigator.userAgent.match(/Windows/)) {
+					var self = this;
+					setTimeout( function() { self.receiveEvent('load', null); }, 100 );
+					this.ready = true;
+					return;
+				}
+
+				this.ready = true;
+				this.movie.setText( this.clipText );
+				this.movie.setHandCursor( this.handCursorEnabled );
+				break;
+
+			case 'mouseover':
+				if (this.domElement && this.cssEffects) {
+					this.domElement.addClass('hover');
+					if (this.recoverActive) this.domElement.addClass('active');
+				}
+				break;
+
+			case 'mouseout':
+				if (this.domElement && this.cssEffects) {
+					this.recoverActive = false;
+					if (this.domElement.hasClass('active')) {
+						this.domElement.removeClass('active');
+						this.recoverActive = true;
+					}
+					this.domElement.removeClass('hover');
+				}
+				break;
+
+			case 'mousedown':
+				if (this.domElement && this.cssEffects) {
+					this.domElement.addClass('active');
+				}
+				break;
+
+			case 'mouseup':
+				if (this.domElement && this.cssEffects) {
+					this.domElement.removeClass('active');
+					this.recoverActive = false;
+				}
+				break;
+		} // switch eventName
+
+		if (this.handlers[eventName]) {
+			for (var idx = 0, len = this.handlers[eventName].length; idx < len; idx++) {
+				var func = this.handlers[eventName][idx];
+
+				if (typeof(func) == 'function') {
+					// actual function reference
+					func(this, args);
+				}
+				else if ((typeof(func) == 'object') && (func.length == 2)) {
+					// PHP style object + method, i.e. [myObject, 'myMethod']
+					func[0][ func[1] ](this, args);
+				}
+				else if (typeof(func) == 'string') {
+					// name of function
+					window[func](this, args);
+				}
+			} // foreach event handler defined
+		} // user defined handler for event
+	}
+
+};
+
+var current_video_type = '';
+
+/** 设置视频信息
+ *
+ * @param string vid 联盟的视频id
+ * @param string thumb 联盟的视频图片
+ */
+function setVideoInfo(ccvid, thumb) {
+	$("#videourl").val(ccvid);
+	$("#pic_remote").val(thumb);
+}
+
+/** 联盟传递的视频id 和时间
+ *
+ * @param {string} ccvid
+ * @param {string} vtime
+ */
+function videoPlay(ccvid, vtime) {
+	if(!ccvid || !vtime) {
+		return false;
+	}
+	//$.get(front_url + "ajax/set_video_info/" + ccvid + "/" + vtime);
+}
+
+if (typeof series != 'undefined') {
+	/** 专辑播放跳转
+	 *
+	 */
+	function playnext(){
+		window.location.href = next_video_url;
+	}
+}
+
+function in_array(value, array) {
+	if(typeof value == 'string') {
+		for(var i in array) {
+			if(array[i] == value) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+// 定义 XMLHTTP 读取的各种状态
+var XMLHTTP_READYSTATE_UNLOAD = 0; // send()方法还没有被调用
+var XMLHTTP_READYSTATE_READING = 1; // send()方法已经被调用，请求还是在处理中
+var XMLHTTP_READYSTATE_READED = 2; // send()方法已完成，整个应答已接收
+var XMLHTTP_READYSTATE_EXCHANING = 3; // 正在解析应答
+var XMLHTTP_READYSTATE_FINISHED = 4; // 已解析，准备好进行下一步处理
+
+// 定义 XMLHTTP 服务器返回的状态
+var XMLHTTP_STATUS_OK = 200;	//正常状态
+
+// 定义其他ajax用的变量
+var ajaxUrls = new Array(); // 记录已经生成ajax对象的url，防止重复点击。
+var ajaxStacks = new Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);// ajax 对象时间占位堆栈。
+
+function ajaxClass(resultType) {
+
+	for(var _stackIndex = 0; _stackIndex < ajaxStacks.length && ajaxStacks[_stackIndex] != 0; _stackIndex++);//note 查询空闲的时间位
+	ajaxStacks[_stackIndex] = 1;// 表示该任务占位
+
+	var ajax = new Object();
+
+	// 默认为 XML 方式
+	ajax._resultType = resultType ? resultType : 'XML';
+
+	ajax._callFunciton = null;	// 回调函数
+	ajax._postContent = '';	// post内容
+	ajax.ajaxUrl = '';	// ajax的url
+	ajax.showArea = null; // 显示区域
+	ajax._stackIndex = 0;
+	ajax._stackIndex = _stackIndex;
+
+
+	ajax.setResultType = function(resultType) {
+		ajax._resultType = resultType;
+	}
+
+	// 初始化
+	ajax._initiation = function() {
+		var q = false;
+		 if(window.ActiveXObject) {
+			var IExmlhttps = ['Microsoft.XMLHTTP', 'MSXML.XMLHTTP', 'Microsoft.XMLHTTP', 'Msxml2.XMLHTTP.7.0', 'Msxml2.XMLHTTP.6.0', 'Msxml2.XMLHTTP.5.0', 'Msxml2.XMLHTTP.4.0', 'MSXML2.XMLHTTP.3.0', 'MSXML2.XMLHTTP'];
+			for(var i=0; i<IExmlhttps.length; i++) {
+				try {
+					q = new ActiveXObject(IExmlhttps[i]);
+					if(q) {
+						return q;
+					}
+				} catch(e) {
+					continue;
+				}
+			}
+		} else if(window.XMLHttpRequest) {
+			q = new XMLHttpRequest();
+			if(q.overrideMimeType) {
+				q.overrideMimeType('text/xml');
+			}
+		}
+
+		return q;
+	}
+
+	ajax._xmlhttp = ajax._initiation();
+
+	ajax._parseResult = function() {
+		try{
+			if(ajax._xmlhttp.status == XMLHTTP_STATUS_OK) {
+				if(ajaxUrls.length > 0 ) {
+					for(k in ajaxUrls) {
+						if(ajaxUrls[k] == ajax.ajaxUrl) {
+							ajaxUrls[k] = null;
+						}
+					}
+				}
+				if(ajax._callFunciton) {
+					if(ajax._resultType == 'HTML') {
+						ajax._callFunciton(ajax._xmlhttp.responseText, ajax);
+					} else if(ajax._resultType == 'XML') {
+						//if(ajax._xmlhttp.responseXML.lastChild != null) {
+							var result = ajax._xmlhttp.responseXML.lastChild.firstChild.nodeValue != null ? ajax._xmlhttp.responseXML.lastChild.firstChild.nodeValue : ajax._xmlhttp.responseText;
+							//result = result != null ? result : '异常错误';
+							result = execJS(result);
+							ajax._callFunciton(result, ajax);
+						//}
+					}
+				}
+				ajaxStacks[ajax._stackIndex] = 0;// 清空标志位，使其它对象有时间段可以被申请
+			}else{
+				ajax._callFunciton('error', ajax);
+			}
+
+		} catch(e){
+			//ajax._callFunciton('error', ajax);
+		}
+	}
+
+	ajax.get = function(ajaxUrl, callFunciton) {
+		if(in_array(ajaxUrl, ajaxUrls)) {
+			return false;
+		} else {
+			ajaxUrls.push(ajaxUrl);
+		}
+		ajax.ajaxUrl = ajaxUrl;
+		ajax._xmlhttp.onreadystatechange = ajax._parseResult;
+		ajax._callFunciton = callFunciton ? callFunciton : null;
+		//var delay = attackevasive & 1 ? (ajax._stackIndex + 1) * 1000 : 100;
+		var delay = (ajax._stackIndex + 1) * 1000;
+		if(window.XMLHttpRequest) {
+			setTimeout(function(){
+			ajax._xmlhttp.open('GET', ajax.ajaxUrl, true);
+			ajax._xmlhttp.send(null);}, delay);
+		} else {
+			setTimeout(function(){
+			ajax._xmlhttp.open("GET", ajax.ajaxUrl, true);
+			ajax._xmlhttp.send();}, delay);
+		}
+
+	}
+
+	ajax.post = function(ajaxUrl, postContent, callFunciton) {
+		if(in_array(ajaxUrl, ajaxUrls)) {
+			return false;
+		} else {
+			ajaxUrls.push(ajaxUrl);
+		}
+		ajax.ajaxUrl = ajaxUrl;
+		ajax._postContent = postContent;
+		ajax._xmlhttp.onreadystatechange = ajax._parseResult;
+		ajax._callFunciton = callFunciton ? callFunciton : null;
+		ajax._xmlhttp.open('POST', ajaxUrl);
+		ajax._xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		ajax._xmlhttp.send(ajax._postContent);
+	}
+	return ajax;
+}
+
+function get_video_meta() {
+	var returnStr = '';
+	var video_add_form = document.getElementById("video_add_form");
+
+	if(video_add_form.filename.value == '') {
+		alert("未选择上传视频")
+		return false;
+	}
+
+	if(!video_check_data(video_add_form)) {
+		return false;
+	}
+
+	returnStr += 'class=' + video_add_form.channelsub.value.substr(video_add_form.channelsub.value.indexOf(',')+1,2) + '&';
+
+	returnStr += 'title=' + video_add_form.title.value + '&';
+
+	returnStr += 'tags=' + video_add_form.tags.value + '&';
+
+	returnStr += 'ccvid=' + video_add_form.videourl.value + '&';
+
+	returnStr += 'description=' + video_add_form.description.value + '&';
+
+  	returnStr += 'isup=' + 1 + '&';
+
+	returnStr += 'share=' + 1 + '&';
+
+	returnStr += 'front=' + 1;
+
+	//alert(returnStr);return false;
+	return returnStr;
+}
+
+function upload_finish() {
+
+	var video_add_form = document.getElementById("video_add_form");
+
+	if(video_add_form.videourl.value == '') {
+		alert("视频未上传")
+		return false;
+	}
+
+	video_add_form.submit();
+}
+
+function video_check_data(video_add_form) {
+	if(video_add_form.channelsub.value == '') {
+		alert("请选择频道！")
+		video_add_form.channelsub.focus()
+		return false;
+	}
+	if(video_add_form.title.value == '') {
+		alert("请填写标题！")
+		video_add_form.title.focus()
+		return false;
+	}
+	if(video_add_form.tags.value == '') {
+		alert("请填写标签！")
+		video_add_form.tags.focus()
+		return false;
+	}
+
+
+	return true;
+}
+
+function set_source_id(source_id) {
+	try {
+		document.getElementById('video_add_form').videourl.value = source_id;
+		return true;
+	} catch(e) {
+		return false;
+	}
+}
+
+function load_playlist_video(pid, page) {
+	if(typeof(page) != 'number') {
+		page = 1;
+	}
+	var pla = new ajaxClass('HTML');
+	//pla.get(site_url + 'ajax/playlist_video/'+vid+'/'+pid+'/'+page, function(pl, ajax){
+	pla.get('/index.php/ajax/playlist_video/'+vid+'/'+pid+'/'+page, function(pl, ajax){
+		if(pl == 'error'){
+
+		}else{
+			if(pl != ''){
+				eval('var result='+pl);
+				//eval('var data='+result.data);
+				var plistHtml = '';
+				for(i in result.data){
+					if(result.data[i].vid == vid){
+						plistHtml += '<li class="currA"><a href="'+base_dir+'html/playlist/'+pid+'/'+result.data[i].vid+'.html">'+result.data[i].stitle+'</a></li>';
+					}else{
+						plistHtml += '<li><a href="'+base_dir+'html/playlist/'+pid+'/'+result.data[i].vid+'.html">'+result.data[i].stitle+'</a></li>';
+					}
+				}
+				//alert(result.data);
+				document.getElementById('plistHtml').innerHTML = plistHtml;
+				document.getElementById('pagination').innerHTML = result.pagination;
+				return;
+			}
+
+		}
+	})
+}
+
+function video_view_count(vid){
+	var url = "http://www.tangdou.com/ajax/count?jsoncallback=?";
+	jQuery.getJSON(url,{vid:vid},function(d){
+		if (d){
+			jQuery("#viewcount").html(d.count);
+		}
+	});
+}
+
+function more_nav(type){
+	var obj_more = document.getElementById("sub_nav");
+	if(type == 'block'){
+		obj_more.style.display = 'block';
+	}else if(type == 'none'){
+		obj_more.style.display = 'none';
+	}
+}
+
+function copy_url(txt,el) {
+	if(!txt) {
+		return false;
+	}
+	var txt_value = document.getElementById(txt).value || '';
+	if(window.clipboardData) {
+		window.clipboardData.clearData();
+		window.clipboardData.setData("Text", txt_value);
+	} else {
+		ZeroClipboard.setMoviePath('http://www.tangdou.com/system/template/share/media/js/ZeroClipboard10.swf');
+		var clip = new ZeroClipboard.Client();
+		clip.setHandCursor(true);
+	    clip.setText(txt_value);
+	    clip.addEventListener('complete', function (client) {
+	      alert("链接地址已经复制到剪切板!");
+		  clip.destroy();
+	    });
+	    clip.glue(el);
+	}
+}
+
+

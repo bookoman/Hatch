@@ -61699,6 +61699,7 @@ var RoleManager = /** @class */ (function () {
         this.enemyRunCount = 0;
         /**英雄 */
         this.heroRunCount = 0;
+        this.heroRoles = [];
     }
     Object.defineProperty(RoleManager, "ins", {
         get: function () {
@@ -61710,6 +61711,27 @@ var RoleManager = /** @class */ (function () {
         enumerable: true,
         configurable: true
     });
+    /**更新阵型 */
+    RoleManager.prototype.updateLineupHeros = function (heroVo, isUp) {
+        var hero = null;
+        if (isUp) {
+            hero = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.HERO_ROLE);
+            hero.initRole(heroVo, 5, -1);
+            this.heroRoles.push(hero);
+        }
+        else {
+            for (var i = 0; i < this.heroRoles.length; i++) {
+                hero = this.heroRoles[i];
+                if (hero.baseRoleVo.roleId == heroVo.roleId) {
+                    ObjectPoolUtil.stillObject(ObjectPoolUtil.HERO_ROLE, hero);
+                    hero.dispose();
+                    this.heroRoles.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        BattleEngine.ins.resetLoopBattle();
+    };
     /**初始化角色 */
     RoleManager.prototype.initHeros = function () {
         if (this.heroRoles == null) {
@@ -62194,6 +62216,10 @@ var ClientSender = /** @class */ (function () {
     };
     /**英雄上、下、更新阵型 */
     ClientSender.heroLinuepUpdateReq = function (lineupId, heroId, isUp) {
+        if (!isUp && GameDataManager.ins.selfPlayerData.heroLineupDic.values.length <= 1) {
+            TipsManager.ins.showFloatMsg("阵上英雄不得少于一个", 30, "#ff0000", LayerManager.ins.getLayer(LayerManager.TIP_LAYER), GameConfig.STAGE_WIDTH / 2, GameConfig.STAGE_HEIGHT / 2, 1, 0, 200);
+            return;
+        }
         var UpdateFormationRequest = WebSocketManager.ins.defineProtoClass("UpdateFormationRequest");
         var message = {};
         message.siteIdx = lineupId;
@@ -62537,22 +62563,22 @@ var BattleReportVo = /** @class */ (function () {
         var html = "";
         switch (this.type) {
             case BattleReportDataType.HURT:
-                html = "<span style='fontSize:24;color:#009900'>[" + this.atkName + "]</span>"
-                    + "<span style='fontSize:24;color:#000000'> 攻击 </span>"
-                    + "<span style='fontSize:24;color:#009900'>[" + this.defName + "]</span>"
-                    + "<span style='fontSize:24;color:#000000'> 造成了 </span>"
-                    + "<span style='fontSize:24;color:#ff0000'>" + this.hurt + "</span>"
-                    + "<span style='fontSize:24;color:#000000'> 点伤害 </span>";
+                html = "<font style='fontSize:24;color:#009900'>[" + this.atkName + "]</font>"
+                    + "<font style='fontSize:24;color:#000000'> 攻击 </font>"
+                    + "<font style='fontSize:24;color:#009900'>[" + this.defName + "]</font>"
+                    + "<font style='fontSize:24;color:#000000'> 造成了 </font>"
+                    + "<font style='fontSize:24;color:#ff0000'>" + this.hurt + "</font>"
+                    + "<font style='fontSize:24;color:#000000'> 点伤害 </font>";
                 return html;
             case BattleReportDataType.BATTLE_DIE:
-                html = "<span style='fontSize:24;color:#009900'>[" + this.atkName + "]</span>"
-                    + "<span style='fontSize:24;color:#000000'> 最后一击打出 </span>"
-                    + "<span style='fontSize:24;color:#ff0000'>" + this.hurt + "</span>"
-                    + "<span style='fontSize:24;color:#000000'> 点伤害，成功击败了</span>"
-                    + "<span style='fontSize:24;color:#009900'>[" + this.defName + "]</span>";
+                html = "<font style='fontSize:24;color:#009900'>[" + this.atkName + "]</font>"
+                    + "<font style='fontSize:24;color:#000000'> 最后一击打出 </font>"
+                    + "<font style='fontSize:24;color:#ff0000'>" + this.hurt + "</font>"
+                    + "<font style='fontSize:24;color:#000000'> 点伤害，成功击败了</font>"
+                    + "<font style='fontSize:24;color:#009900'>[" + this.defName + "]</font>";
                 return html;
             case BattleReportDataType.REWARD:
-                html = "<span style='fontSize:24;color:#000000'> 战斗结束，获得奖励 </span>";
+                html = "<font style='fontSize:24;color:#000000'> 战斗结束，获得奖励 </font>";
                 var itemKey;
                 var itemNum;
                 var ind = Math.ceil(Math.random() * GameConfig.QUALITY_COLORS.length) - 1;
@@ -62564,11 +62590,11 @@ var BattleReportVo = /** @class */ (function () {
                     var itemConfig = ConfigManager.ins.getItemSampleConfig(itemKey);
                     if (!itemConfig)
                         continue;
-                    html += "<span style='fontSize:24;color:" + qualityColor + "'>[" + itemConfig.itemName + "]</span>" + "<span style='fontSize:24;color:#ff0000'>X" + itemNum;
+                    html += "<font style='fontSize:24;color:" + qualityColor + "'>[" + itemConfig.itemName + "]</font>" + "<font style='fontSize:24;color:#ff0000'>X" + itemNum;
                     if (i < this.rewardDatas.length - 1)
-                        html += ";</span>";
+                        html += ";</font>";
                     else
-                        html += "</span>";
+                        html += "</font>";
                 }
                 return html;
         }
@@ -62619,6 +62645,9 @@ var BaseRoleVo = /** @class */ (function () {
     };
     /**初始化阵型数据 */
     BaseRoleVo.prototype.initRowColPosPoint = function () {
+        if (MapManager.ins.squintAngleGrid == null) {
+            return;
+        }
         var px, py;
         var gridPointAry;
         if (this.isEnemy) {
@@ -62864,21 +62893,26 @@ var PlayerData = /** @class */ (function () {
             this.upHeroVos[ind] = heroVo;
         }
         else {
+            heroVo.initRowColPosPoint();
             this.upHeroVos.push(heroVo);
         }
+        return heroVo;
     };
     /**删除上阵宠物 */
     PlayerData.prototype.removeUpHeroVo = function (heroId) {
         if (!this.upHeroVos) {
             return;
         }
+        var heroVo;
         for (var i = 0; i < this.upHeroVos.length; i++) {
-            if (this.upHeroVos[i].heroId == heroId) {
-                this.upHeroVos[i].lineupGrid = null;
+            heroVo = this.upHeroVos[i];
+            if (heroVo.roleId == heroId) {
+                heroVo.lineupGrid = null;
                 this.upHeroVos.splice(i, 1);
-                break;
+                return heroVo;
             }
         }
+        return null;
     };
     return PlayerData;
 }());
@@ -63121,9 +63155,12 @@ var BattleReportData = /** @class */ (function () {
             // vo.rewardNum = rewardNum;
             vo.rewardDatas = rewardDatas;
         }
-        EventManager.ins.dispatchEvent(EventManager.REPORT_DATA_UPDATE, vo);
+        this.reportVos.push(vo);
+        if (GameDataManager.showModuleViewInd == GameButtomTabIndex.BATTLE) {
+            EventManager.ins.dispatchEvent(EventManager.REPORT_DATA_UPDATE, vo);
+        }
     };
-    BattleReportData.REPORT_SUM_LIMIT = 100;
+    BattleReportData.REPORT_SUM_LIMIT = 50;
     BattleReportData._ins = null;
     return BattleReportData;
 }());
@@ -63266,12 +63303,18 @@ var MapManager = /** @class */ (function () {
         this.squintAngleGrid.initGrid();
     };
     MapManager.prototype.getHeroMapBalltGridPoint = function (gridNum) {
-        var gridPointAry = this.curMapConfig["battleHeroGrid"];
-        return gridPointAry[gridNum];
+        if (this.curMapConfig) {
+            var gridPointAry = this.curMapConfig["battleHeroGrid"];
+            return gridPointAry[gridNum];
+        }
+        return [0, 0];
     };
     MapManager.prototype.getEnemyMapBalltGridPoint = function (gridNum) {
-        var gridPointAry = this.curMapConfig["battleEnemyGrid"];
-        return gridPointAry[gridNum];
+        if (this.curMapConfig) {
+            var gridPointAry = this.curMapConfig["battleEnemyGrid"];
+            return gridPointAry[gridNum];
+        }
+        return [0, 0];
     };
     MapManager.prototype.getConfigById = function (mapId) {
         return this.mapCofing[mapId];
@@ -63649,6 +63692,38 @@ var GameDataManager = /** @class */ (function () {
         this.selfPlayerData.upHeroVos.forEach(function (baseROleVo) {
             baseROleVo.initRowColPosPoint();
         });
+    };
+    /**假战斗数据 */
+    GameDataManager.prototype.initData = function () {
+        //测试数据
+        if (!this.selfPlayerData) {
+            this.selfPlayerData = new PlayerData();
+        }
+        this.selfPlayerData.id = 88888888;
+        // this.selfPlayerData.name = "SimplePlan";
+        // this.selfPlayerData.lineupId = "1";
+        // var lineupposVoAry:Array<LineupPosVo> = LineupManager.ins.getCofingByID(this.selfPlayerData.lineupId);
+        this.selfPlayerData.heroVoDic = new Dictionary();
+        var keys = ["Hero_10001", "Hero_10009", "Hero_10017", "Hero_10025", "Hero_10033"];
+        var heroVo;
+        for (var i = 0; i < keys.length; i++) {
+            // roleVo = ConfigManager.ins.getHeroSampleConfig(keys[i]);
+            heroVo = new HeroVo();
+            heroVo.heroKey = keys[i];
+            heroVo.lineupGrid = i;
+            heroVo.heroId = heroVo.heroKey + "_" + heroVo.lineupGrid;
+            heroVo.initBaseData();
+            this.selfPlayerData.heroVoDic.set(heroVo.roleId, heroVo);
+        }
+        //阵型数据
+        this.selfPlayerData.heroLineupDic = new Dictionary();
+        var heroId;
+        for (var i = 0; i < this.selfPlayerData.heroVoDic.values.length; i++) {
+            heroVo = this.selfPlayerData.heroVoDic.values[i];
+            this.selfPlayerData.heroLineupDic.set(heroVo.lineupGrid, heroVo.roleId);
+            this.selfPlayerData.addUpHeroVo(heroVo.roleId, heroVo.lineupGrid);
+        }
+        this.selfPlayerData.heroSum = this.selfPlayerData.heroVoDic.values.length;
     };
     /**显示模块视图索引 */
     GameDataManager.showModuleViewInd = -1;
@@ -64042,6 +64117,44 @@ var ConfigManager = /** @class */ (function () {
      */
     ConfigManager.prototype.xmlToObjcet = function (str, DineClass, keyPro, dic) {
         var content = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
+        var datas = content.split("\r");
+        var element;
+        var tempAry;
+        var value;
+        var objs = [];
+        var obj;
+        for (var i = 0; i < datas.length; i++) {
+            if (datas[i].indexOf("<element") != -1) {
+                element = datas[i];
+                tempAry = element.split(" ");
+                obj = new DineClass();
+                for (var j = 0; j < tempAry.length; j++) {
+                    value = tempAry[j];
+                    if (value.indexOf("<element") == -1 && value.indexOf("/>") == -1) {
+                        var keyValueAry = value.split("=");
+                        if (isNaN(Number(keyValueAry[1]))) {
+                            obj[keyValueAry[0]] = keyValueAry[1].split("\'")[1];
+                        }
+                        else {
+                            obj[keyValueAry[0]] = Number(keyValueAry[1]);
+                        }
+                        // console.log(value,"=",obj[value]);
+                    }
+                }
+                dic.set(obj[keyPro], obj);
+                // console.log(obj.modelId,obj.key,obj.name);
+            }
+        }
+    };
+    /**
+     * xml转为对象
+     * @param str
+     * @param DineClass
+     * @param keyPro
+     * @param dic
+     */
+    ConfigManager.prototype.xmlToObjcet1 = function (str, DineClass, keyPro, dic) {
+        var content = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
         var datas = content.split("\r\n");
         var element;
         var tempAry;
@@ -64134,14 +64247,19 @@ var LoopBattleEngine = /** @class */ (function () {
     };
     /**得到参战英雄 */
     LoopBattleEngine.prototype.getJoinBattleHeroVo = function () {
+        var _this = this;
         var tempAry = new Array();
         this.roleMgr.heroRoles.forEach(function (hero) {
-            tempAry.push(hero);
+            _this.loopBattleData.attHeroVos.forEach(function (heroVo) {
+                if (heroVo.roleId == hero.baseRoleVo.roleId) {
+                    tempAry.push(hero);
+                }
+            });
         });
-        tempAry.sort(function (vo1, vo2) {
-            return vo1.baseRoleVo.gridX > vo2.baseRoleVo.gridX ? -1 : 1;
-        });
-        tempAry = tempAry.slice(0, GameConfig.BATTLE_LOOP_HERO_SUM);
+        // tempAry.sort(function(vo1:BaseRole,vo2:BaseRole):number{
+        //     return vo1.baseRoleVo.gridX > vo2.baseRoleVo.gridX ? -1 : 1;
+        // })
+        // tempAry = tempAry.slice(0,GameConfig.BATTLE_LOOP_HERO_SUM);
         return tempAry;
     };
     /**开始战斗 */
@@ -64245,8 +64363,10 @@ var LoopBattleEngine = /** @class */ (function () {
         else {
             defRole.aniPlay(RoleAniIndex.INJURED, false);
         }
-        defRole.showFloatFont("-" + attRoleVo.atk);
-        defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
+        Laya.timer.once(500, this, function () {
+            defRole.showFloatFont("-" + attRoleVo.atk);
+            defRole.setBlood(1 - defRoleVo.battleDieAttTimes / defRoleVo.dieAttTimes);
+        }, null, false);
     };
     // /**
     //  * 攻击完移动回阵型
@@ -64269,6 +64389,7 @@ var LoopBattleEngine = /** @class */ (function () {
         }
         this.battleTurnVoSum--;
         if (this.battleTurnVoSum <= 0) {
+            this.loopBattleData.checkBattleEnd();
             this.attCompleted();
         }
     };
@@ -64356,12 +64477,25 @@ var LoopBattleData = /** @class */ (function () {
             var defRoleVo;
             if (!attRoleVo.isDeath && !attRoleVo.isAtted) {
                 //寻找攻击具体对象
+                var tempAry = [];
+                tempAry[0] = null;
                 for (var j = 0; j < attRoleVo.attEnemyVos.length; j++) {
                     defRoleVo = attRoleVo.attEnemyVos[j];
-                    if (defRoleVo && !defRoleVo.isDeath && attRoleVo.gridY == defRoleVo.gridY) {
-                        break;
+                    if (defRoleVo && !defRoleVo.isDeath) {
+                        if (attRoleVo.gridY == defRoleVo.gridY) {
+                            tempAry[0] = defRoleVo;
+                            break;
+                        }
+                        else {
+                            tempAry.push(defRoleVo);
+                        }
                     }
-                    defRoleVo = null;
+                }
+                defRoleVo = null;
+                for (j = 0; j < tempAry.length; j++) {
+                    defRoleVo = tempAry[j];
+                    if (defRoleVo)
+                        break;
                 }
             }
             if (attRoleVo && defRoleVo) {
@@ -64378,7 +64512,6 @@ var LoopBattleData = /** @class */ (function () {
         // this.curDefRoleVo.battleHP -= this.curAttRoleVo.att;
         // this.curDefRoleVo.isDeath = this.curDefRoleVo.battleHP <= 0;
         // this.curAttRoleVo.isAtted = true;
-        // this.checkBattleEnd();
         //攻击次数检测
         this.curBattleTurnVos.forEach(function (battleTurnVo) {
             // console.log(attRoleVo.name + ","+attRoleVo.roleId,battleTurnVo.attRoleVo.name + ","+battleTurnVo.attRoleVo.roleId);
@@ -64386,7 +64519,7 @@ var LoopBattleData = /** @class */ (function () {
                 battleTurnVo.calculationAttribute();
             }
         });
-        this.checkBattleEnd();
+        // this.checkBattleEnd();
     };
     /**
      * 检测战斗结束
@@ -64541,7 +64674,7 @@ var BattleTurnVo = /** @class */ (function () {
     BattleTurnVo.prototype.calculationAttribute = function () {
         this.defRoleVo.battleDieAttTimes--;
         this.defRoleVo.isDeath = this.defRoleVo.battleDieAttTimes <= 0;
-        this.defRoleVo.isAtted = true;
+        this.attRoleVo.isAtted = true;
         //添加战报数据
         if (this.defRoleVo.isDeath)
             BattleReportData.ins.addBattleReportVo(BattleReportDataType.BATTLE_DIE, this.attRoleVo.name, this.defRoleVo.name, this.attRoleVo.atk);
@@ -64738,30 +64871,33 @@ var BossBattleEngine = /** @class */ (function () {
         }
         // var hurt:number = this.bossBattleData.calculationAttribute();
         defRoleVo.calculationAttribute(attRoleVo, this.bossBattleData.getRankAtk(attRoleVo.isEnemy));
-        //本次伤害
-        var bossBattleRoleData = defRoleVo.bossBattleRoleData;
-        if (bossBattleRoleData.hurt > 0) {
-            defRole.showFloatFont("-" + bossBattleRoleData.hurt);
-            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
-        }
-        //+攻击力
-        if (bossBattleRoleData.addAtk > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.addAtk, defRoleVo.assiSkillContinuedVo.addAtk, attRoleVo)) {
-            defRole.baseRoleVo.realAtk += bossBattleRoleData.addAtk;
-            defRole.showFloatFont("攻击力+" + bossBattleRoleData.addAtk);
-        }
-        if (bossBattleRoleData.recoveryBlood > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.recoveryBlood, defRoleVo.assiSkillContinuedVo.recoveryBlood, attRoleVo)) {
-            defRole.baseRoleVo.battleHP += bossBattleRoleData.recoveryBlood;
-            //战斗血量
-            if (defRole.baseRoleVo.battleHP > defRole.baseRoleVo.hp)
-                defRole.baseRoleVo.battleHP = defRole.baseRoleVo.hp;
-            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
-            defRole.showFloatFont("血量+" + bossBattleRoleData.recoveryBlood);
-        }
-        if (bossBattleRoleData.bleeding > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.bleeding, defRoleVo.assiSkillContinuedVo.bleeding, attRoleVo)) {
-            defRole.baseRoleVo.battleHP -= bossBattleRoleData.bleeding;
-            defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
-            defRole.showFloatFont("流血-" + bossBattleRoleData.bleeding);
-        }
+        //延迟飘血
+        Laya.timer.once(500 / GameConfig.BATTLE_ADDSPEED_TIMES, this, function () {
+            //本次伤害
+            var bossBattleRoleData = defRoleVo.bossBattleRoleData;
+            if (bossBattleRoleData.hurt > 0) {
+                defRole.showFloatFont("-" + bossBattleRoleData.hurt);
+                defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+            }
+            //+攻击力
+            if (bossBattleRoleData.addAtk > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.addAtk, defRoleVo.assiSkillContinuedVo.addAtk, attRoleVo)) {
+                defRole.baseRoleVo.realAtk += bossBattleRoleData.addAtk;
+                defRole.showFloatFont("攻击力+" + bossBattleRoleData.addAtk);
+            }
+            if (bossBattleRoleData.recoveryBlood > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.recoveryBlood, defRoleVo.assiSkillContinuedVo.recoveryBlood, attRoleVo)) {
+                defRole.baseRoleVo.battleHP += bossBattleRoleData.recoveryBlood;
+                //战斗血量
+                if (defRole.baseRoleVo.battleHP > defRole.baseRoleVo.hp)
+                    defRole.baseRoleVo.battleHP = defRole.baseRoleVo.hp;
+                defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+                defRole.showFloatFont("血量+" + bossBattleRoleData.recoveryBlood);
+            }
+            if (bossBattleRoleData.bleeding > 0 && defRoleVo.isShowOnceSkill(defRoleVo.mainSkillContinuedVo.bleeding, defRoleVo.assiSkillContinuedVo.bleeding, attRoleVo)) {
+                defRole.baseRoleVo.battleHP -= bossBattleRoleData.bleeding;
+                defRole.setBlood(1 - defRoleVo.battleHP / defRoleVo.hp);
+                defRole.showFloatFont("流血-" + bossBattleRoleData.bleeding);
+            }
+        }, null, false);
         // if(defRoleVo.name == "美颌龙")
         // {
         //     console.log(".........",defRoleVo.battleHP,bossBattleRoleData.bleeding);
@@ -65260,6 +65396,7 @@ var BossBattleData = /** @class */ (function () {
 */
 var BattleEngine = /** @class */ (function () {
     function BattleEngine() {
+        this.isLoopBattle = false;
         this.loopBattleEngine = new LoopBattleEngine();
         this.bossBattleEngine = new BossBattleEngine();
         //技能视图
@@ -65279,6 +65416,7 @@ var BattleEngine = /** @class */ (function () {
         configurable: true
     });
     BattleEngine.prototype.run = function () {
+        this.isLoopBattle = true;
         Laya.timer.loop(1000, this, this.runUpdate);
     };
     /**更新 */
@@ -65308,6 +65446,12 @@ var BattleEngine = /** @class */ (function () {
     BattleEngine.prototype.challegenBossFastEnd = function () {
         if (this.bossBattleEngine) {
             this.bossBattleEngine.endBattle();
+        }
+    };
+    /**重置循环战斗 */
+    BattleEngine.prototype.resetLoopBattle = function () {
+        if (this.loopBattleEngine) {
+            this.loopBattleEngine.endBattle();
         }
     };
     BattleEngine._ins = null;
@@ -65439,13 +65583,27 @@ var GameConfig = /** @class */ (function () {
     /**没有资源时，英雄默认资源模型ID */
     GameConfig.HERO_DEFAULT_ANI_MODELID = "baolong001";
     /**单机游戏 */
-    GameConfig.SINGLE_GAME = false;
+    GameConfig.SINGLE_GAME = true;
     /**挂机关卡地图key数据 */
     GameConfig.GATE_MAP_KEYS = [];
     /**雨出现时间间隔 s */
     GameConfig.RAIN_SHOW_LIMIT_TIME = 20;
     /**品质color */
     GameConfig.QUALITY_COLORS = ["#00ff00", "#003366", "#FF9933"];
+    /**是否显示CG动画 */
+    GameConfig.isShowCG = false;
+    //****单机测试数据 */
+    /**登录信息 */
+    GameConfig.loginAuthentication = '{"authentication": "taoken888888888888","data":"xielong"}';
+    /**服务器信息 */
+    GameConfig.serverInfos = '{"data": [{"guid": 1,"name": "龙翔于天","ip": "127.0.0.1","port": 9080,"state": 0,"createTime": 20000},'
+        + '{"guid": 1,"name": "龙归大海","ip": "127.0.0.1","port": 9080,"state": 0,"createTime": 20000}],'
+        + '"lastInGameServers":{"guid": 1,"name": "龙归大海","ip": "127.0.0.1","port": 9080,"state": 0,"createTime": 20000}}';
+    /**关卡信息 */
+    GameConfig.gatesInfos = '{"hangGateKey":"G_1-1","gateInfoMap":{"G_1-1":{"gateKey":"G_1-1","gateMapKey":"GM_1000","passGate":10000,"passTime":10000},'
+        + '"G_1-2":{"gateKey":"G_1-2","gateMapKey":"GM_1000","passGate":10000,"passTime":10000}}}';
+    /**上阵信息 */
+    GameConfig.heroInfos = '{"0": "10000","1": "100001"}';
     return GameConfig;
 }());
 var HTTPReqType = /** @class */ (function () {
@@ -65488,11 +65646,11 @@ var HTTPRequestUrl = /** @class */ (function () {
     function HTTPRequestUrl() {
     }
     /**测试登录 get*/
-    HTTPRequestUrl.testLoginURL = "http://192.168.2.104:8080/api/testLogin.do";
+    HTTPRequestUrl.testLoginURL = "http://192.168.2.126:8080/api/testLogin.do";
     /**获取区服列表 get*/
-    HTTPRequestUrl.gameServerURL = "http://192.168.2.104:8080/api/gameserver.do";
+    HTTPRequestUrl.gameServerURL = "http://192.168.2.126:8080/api/gameserver.do";
     /**进入游戏 get*/
-    HTTPRequestUrl.enterGameURL = "http://192.168.2.104:8080/api/entergame.do";
+    HTTPRequestUrl.enterGameURL = "http://192.168.2.126:8080/api/entergame.do";
     return HTTPRequestUrl;
 }());
 /**服务器状态 */
@@ -65998,6 +66156,10 @@ var FloatFontTips = /** @class */ (function (_super) {
     function FloatFontTips() {
         var _this = _super.call(this) || this;
         _this.htmlDiv = new Laya.HTMLDivElement();
+        _this.fontClipView = new FontClipView("unpack/main/font_red.png", "+-0123456789");
+        _this.fontClipView.anchorX = 0.5;
+        _this.fontClipView.anchorY = 0.5;
+        _this.fontClipView.scale(0.8, 0.8);
         return _this;
     }
     /**
@@ -66050,18 +66212,68 @@ var FloatFontTips = /** @class */ (function (_super) {
         Laya.Tween.to(this, { y: this.y - floatHei, alpha: 0.6 }, showTime * 1000, Laya.Ease.backInOut, Laya.Handler.create(this, this.floatCompleted));
     };
     /**
+     * 显示fontClip
+     * @param msg
+     * @param parent
+     * @param sx
+     * @param sy
+     * @param showTime
+     * @param floatWidth
+     * @param floatHei
+     * @param isRight
+     * @param fontSkin
+     * @param sheet
+     */
+    FloatFontTips.prototype.showFlontClip = function (msg, parent, sx, sy, showTime, floatWidth, floatHei, isRight, fontSkin, sheet) {
+        this.text = "";
+        fontSkin = fontSkin === undefined ? "unpack/main/font_red.png" : fontSkin;
+        sheet = sheet === undefined ? "+-0123456789" : sheet;
+        this.fontClipView.skin = fontSkin;
+        this.fontClipView.sheet = sheet;
+        this.fontClipView.value = msg;
+        this.addChild(this.fontClipView);
+        this.x = sx;
+        this.y = sy;
+        parent.addChild(this);
+        this.alpha = 1;
+        var tx = this.x + (isRight ? 1 : -1) * floatWidth;
+        Laya.Tween.to(this, { x: tx, y: this.y - floatHei, alpha: 0.8 }, showTime * 1000, Laya.Ease.backOut, Laya.Handler.create(this, this.floatCompleted));
+    };
+    /**
      * 移动完成
      */
     FloatFontTips.prototype.floatCompleted = function () {
         this.htmlDiv.innerHTML = "";
         this.text = "";
         this.removeSelf();
+        this.fontClipView.removeSelf();
         Laya.Tween.clearAll(this);
         ObjectPoolUtil.stillObject(ObjectPoolUtil.FLOAT_FONT_TIPS, this);
     };
     return FloatFontTips;
 }(Laya.Label));
 //# sourceMappingURL=FloatFontTips.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* 位图字体组件
+*/
+var FontClipView = /** @class */ (function (_super) {
+    __extends(FontClipView, _super);
+    function FontClipView(skin, sheet) {
+        return _super.call(this, skin, sheet) || this;
+    }
+    return FontClipView;
+}(Laya.FontClip));
+//# sourceMappingURL=FontClipView.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -66105,7 +66317,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.battle.BattleFailViewUI.uiView);
             };
-            BattleFailViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "var": "bg", "skin": "comp/blank.png", "height": 1334 } }, { "type": "Image", "props": { "y": 161, "x": 3, "skin": "unpack/battlefail/img_graybg.png" } }, { "type": "Image", "props": { "y": 565, "x": 381, "var": "imgGray", "skin": "unpack/battlefail/img_grayfillter.png", "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 532, "x": -17, "skin": "unpack/battlefail/img_bg.png" } }, { "type": "Image", "props": { "y": 336, "x": 83, "skin": "unpack/battlefail/img_fail.png" } }, { "type": "Button", "props": { "y": 744, "x": 106, "var": "btnGiveup", "stateNum": 1, "skin": "battlefail/btn_giveup.png" } }, { "type": "Button", "props": { "y": 744, "x": 425, "var": "btnBattleAgain", "stateNum": 1, "skin": "battlefail/btn_battleagain.png" } }] };
+            BattleFailViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "var": "bg", "skin": "comp/blank.png", "height": 1334 } }, { "type": "Image", "props": { "y": 161, "x": 3, "skin": "unpack/battlefail/img_graybg.png" } }, { "type": "Image", "props": { "y": 565, "x": 381, "var": "imgGray", "skin": "unpack/battlefail/img_grayfillter.png", "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 532, "x": -24, "skin": "unpack/battlefail/img_bg.png" } }, { "type": "Image", "props": { "y": 336, "x": 72, "skin": "unpack/battlefail/img_fail.png" } }, { "type": "Button", "props": { "y": 744, "x": 99, "var": "btnGiveup", "stateNum": 1, "skin": "battlefail/btn_giveup.png" } }, { "type": "Button", "props": { "y": 744, "x": 418, "var": "btnBattleAgain", "stateNum": 1, "skin": "battlefail/btn_battleagain.png" } }] };
             return BattleFailViewUI;
         }(View));
         battle.BattleFailViewUI = BattleFailViewUI;
@@ -66141,7 +66353,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.battle.BattleSuccessViewUI.uiView);
             };
-            BattleSuccessViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "var": "bg", "skin": "comp/blank.png", "height": 1334 } }, { "type": "Image", "props": { "y": 150, "x": 0, "skin": "unpack/battlesuccess/img_bluebg.png" } }, { "type": "Image", "props": { "y": 550, "x": 378, "var": "imgGray", "skin": "unpack/battlesuccess/img_blue.png", "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 521, "x": -8, "skin": "unpack/battlesuccess/img_bg.png" } }, { "type": "Image", "props": { "y": 325, "x": 80, "skin": "unpack/battlesuccess/img_success.png" } }, { "type": "Image", "props": { "y": 676, "x": 146, "skin": "battlesuccess/img_rewards.png" } }] };
+            BattleSuccessViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "var": "bg", "skin": "comp/blank.png", "height": 1334 } }, { "type": "Image", "props": { "y": 150, "x": 0, "skin": "unpack/battlesuccess/img_bluebg.png" } }, { "type": "Image", "props": { "y": 550, "x": 378, "var": "imgGray", "skin": "unpack/battlesuccess/img_blue.png", "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 521, "x": -13, "skin": "unpack/battlesuccess/img_bg.png" } }, { "type": "Image", "props": { "y": 325, "x": 72, "skin": "unpack/battlesuccess/img_success.png" } }, { "type": "Image", "props": { "y": 676, "x": 134, "skin": "battlesuccess/img_rewards.png" } }] };
             return BattleSuccessViewUI;
         }(View));
         battle.BattleSuccessViewUI = BattleSuccessViewUI;
@@ -66159,7 +66371,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.battle.ChallengeBossViewUI.uiView);
             };
-            ChallengeBossViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/img_battlebg.png" } }, { "type": "Button", "props": { "y": 1111, "x": 277, "width": 195, "visible": false, "var": "btnFast", "skin": "comp/button.png", "labelSize": 30, "label": "快速结束", "height": 71 } }, { "type": "Sprite", "props": { "var": "sprRole" } }, { "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/img_battlepre.png" } }, { "type": "Button", "props": { "y": 1121, "x": 337, "width": 83, "var": "btnTimes", "stateNum": 1, "skin": "comp/btn_comp.png", "labelSize": 30, "labelFont": "SimHei", "labelColors": "#46300e", "labelBold": true, "label": "X1", "height": 60, "alpha": 0.9 } }] };
+            ChallengeBossViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/img_battlebg.png" } }, { "type": "Button", "props": { "y": 1111, "x": 277, "width": 195, "visible": false, "var": "btnFast", "skin": "comp/button.png", "labelSize": 30, "label": "快速结束", "height": 71 } }, { "type": "Sprite", "props": { "var": "sprRole" } }, { "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/challengeboss/img_battlepre.png" } }, { "type": "Button", "props": { "y": 1121, "x": 333, "width": 83, "var": "btnTimes", "stateNum": 1, "skin": "comp/btn_comp.png", "labelSize": 30, "labelFont": "SimHei", "labelColors": "#46300e", "labelBold": true, "label": "X1", "height": 60, "alpha": 0.9 } }] };
             return ChallengeBossViewUI;
         }(View));
         battle.ChallengeBossViewUI = ChallengeBossViewUI;
@@ -66260,7 +66472,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.equip.SmeltViewUI.uiView);
             };
-            SmeltViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/smelt/smeltbg.png" } }, { "type": "Image", "props": { "y": 69, "x": 6, "var": "smeltTitle", "skin": "smelt/smelt.png" } }, { "type": "Panel", "props": { "y": 343, "x": 66, "width": 652, "var": "smeltPanel", "name": "smeltPanel", "height": 667 }, "child": [{ "type": "Image", "props": { "y": 647, "x": 2, "skin": "unpack/smelt/slidimg.png" } }, { "type": "Image", "props": { "y": 132, "x": 104, "skin": "unpack/comp/zhuangbeijiatu.png" } }, { "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/smelt/boximg.png" } }, { "type": "Image", "props": { "y": 32, "x": 30, "skin": "smelt/lablenum.png" } }, { "type": "Label", "props": { "y": 306, "x": 318, "var": "displylable", "text": "当前熔炼", "fontSize": 30, "color": "#e5f2f3", "bold": true, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Animation", "props": { "y": 336, "x": 160, "width": 1, "visible": false, "var": "ani1", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani1", "height": 1, "autoPlay": true } }, { "type": "Animation", "props": { "y": 491, "x": 160, "visible": false, "var": "ani2", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani2", "autoPlay": true } }, { "type": "Animation", "props": { "y": 184, "x": 490, "visible": false, "var": "ani3", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani3", "autoPlay": true } }, { "type": "Animation", "props": { "y": 339, "x": 490, "visible": false, "var": "ani4", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani4", "autoPlay": true } }, { "type": "Animation", "props": { "y": 501, "x": 490, "visible": false, "var": "ani5", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani5", "autoPlay": true } }, { "type": "Animation", "props": { "y": 181, "x": 160, "visible": false, "var": "ani6", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani6", "autoPlay": true } }] }, { "type": "Image", "props": { "y": 254, "x": 67, "skin": "smelt/daozhao.png" } }, { "type": "Image", "props": { "y": 351, "x": 60, "skin": "unpack/smelt/slidimg.png" } }, { "type": "Image", "props": { "y": 267, "x": 325, "skin": "smelt/skillbth.png" } }, { "type": "Image", "props": { "y": 1031, "x": 193, "skin": "smelt/autoselect.png" } }, { "type": "Image", "props": { "y": 1033, "x": 443, "var": "btnSmelt", "skin": "smelt/smeltbth.png" } }, { "type": "Animation", "props": { "y": 668, "x": 386, "visible": false, "var": "ainrong", "source": "res/ani/ronglian1.ani", "name": "ainrong", "autoPlay": false } }, { "type": "Label", "props": { "y": 671, "x": 348, "visible": false, "var": "smeltNum", "text": "1350", "name": "smeltNum", "fontSize": 30, "color": "#74ef13", "bold": true } }, { "type": "Label", "props": { "y": 671, "x": 348, "visible": true, "var": "displyLable", "text": "2000", "name": "displyLable", "fontSize": 30, "color": "#74ef13", "bold": true } }, { "type": "Button", "props": { "y": 19, "x": 688, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png", "name": "btnClose" } }] };
+            SmeltViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/smelt/smeltbg.png" } }, { "type": "Image", "props": { "y": 69, "x": 6, "var": "smeltTitle", "skin": "smelt/smelt.png" } }, { "type": "Panel", "props": { "y": 343, "x": 66, "width": 652, "var": "smeltPanel", "name": "smeltPanel", "height": 667 }, "child": [{ "type": "Image", "props": { "y": 647, "x": 2, "skin": "unpack/smelt/slidimg.png" } }, { "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/smelt/boximg.png" } }, { "type": "Image", "props": { "y": 132, "x": 104, "skin": "unpack/comp/zhuangbeijiatu.png" } }, { "type": "Image", "props": { "y": 32, "x": 30, "skin": "smelt/lablenum.png" } }, { "type": "Label", "props": { "y": 306, "x": 318, "var": "displylable", "text": "当前熔炼", "fontSize": 30, "color": "#e5f2f3", "bold": true, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Animation", "props": { "y": 336, "x": 160, "width": 1, "visible": false, "var": "ani1", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani1", "height": 1, "autoPlay": true } }, { "type": "Animation", "props": { "y": 491, "x": 160, "visible": false, "var": "ani2", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani2", "autoPlay": true } }, { "type": "Animation", "props": { "y": 184, "x": 490, "visible": false, "var": "ani3", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani3", "autoPlay": true } }, { "type": "Animation", "props": { "y": 339, "x": 490, "visible": false, "var": "ani4", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani4", "autoPlay": true } }, { "type": "Animation", "props": { "y": 501, "x": 490, "visible": false, "var": "ani5", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani5", "autoPlay": true } }, { "type": "Animation", "props": { "y": 181, "x": 160, "visible": false, "var": "ani6", "source": "res/ani/fuse.ani", "scaleY": 1.8, "scaleX": 1.8, "name": "ani6", "autoPlay": true } }] }, { "type": "Image", "props": { "y": 254, "x": 67, "skin": "smelt/daozhao.png" } }, { "type": "Image", "props": { "y": 351, "x": 60, "skin": "unpack/smelt/slidimg.png" } }, { "type": "Image", "props": { "y": 267, "x": 325, "skin": "smelt/skillbth.png" } }, { "type": "Image", "props": { "y": 1031, "x": 193, "skin": "smelt/autoselect.png" } }, { "type": "Image", "props": { "y": 1033, "x": 443, "var": "btnSmelt", "skin": "smelt/smeltbth.png" } }, { "type": "Animation", "props": { "y": 668, "x": 386, "visible": false, "var": "ainrong", "source": "res/ani/ronglian1.ani", "name": "ainrong", "autoPlay": false } }, { "type": "Label", "props": { "y": 671, "x": 348, "visible": false, "var": "smeltNum", "text": "1350", "name": "smeltNum", "fontSize": 30, "color": "#74ef13", "bold": true } }, { "type": "Label", "props": { "y": 671, "x": 348, "visible": true, "var": "displyLable", "text": "2000", "name": "displyLable", "fontSize": 30, "color": "#74ef13", "bold": true } }, { "type": "Button", "props": { "y": 19, "x": 688, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png", "name": "btnClose" } }] };
             return SmeltViewUI;
         }(View));
         equip.SmeltViewUI = SmeltViewUI;
@@ -66293,7 +66505,7 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.farm.FarmViewUI.uiView);
             };
-            FarmViewUI.uiView = { "type": "View", "props": { "y": 0, "x": 0, "width": 750, "height": 1334 }, "child": [{ "type": "Panel", "props": { "y": 0, "x": 0, "width": 750, "var": "farmPanel", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "var": "bg", "skin": "unpack/farm/bg.png" } }, { "type": "Image", "props": { "y": 1197, "x": 29, "skin": "unpack/farm/huawen.png" } }, { "type": "Panel", "props": { "y": 159, "x": -32, "width": 1383, "var": "panlePlant", "height": 671 }, "child": [{ "type": "Image", "props": { "y": 12, "x": -265, "skin": "unpack/farm/caijimap.png" } }] }, { "type": "Image", "props": { "y": 37, "x": -1, "skin": "farm/tip-zhongzi.png" } }, { "type": "Panel", "props": { "y": 827, "x": 24, "width": 703, "height": 354 }, "child": [{ "type": "Image", "props": { "skin": "unpack/farm/bgzhongzhi.png" } }, { "type": "Image", "props": { "skin": "farm/tip-zhongzhi.png" } }, { "type": "List", "props": { "width": 491, "var": "zhongzhiList", "spaceY": 10, "spaceX": 10, "selectEnable": false, "repeatY": 1, "repeatX": 3, "renderType": "render", "name": "zhongzhiList", "height": 210, "centerY": 0, "centerX": 0 }, "child": [{ "type": "VScrollBar", "props": { "y": 10, "x": -48, "width": 1, "name": "scrollBar", "height": 338 } }, { "type": "VBox", "props": { "x": 2, "width": 152, "top": 10, "space": 15, "renderType": "render", "bottom": 5, "align": "center" }, "child": [{ "type": "Panel", "props": { "y": -51, "x": -28, "width": 104, "height": 102, "anchorY": 0, "anchorX": 0 }, "child": [{ "type": "Image", "props": { "y": 51, "x": 52, "width": 104, "var": "zhongzhiBg", "skin": "farm/frame.png", "name": "zhongzhiBg", "height": 102, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 53, "x": 50, "var": "ZhongZhiIcon", "skin": "farm/bigmogu.png", "name": "ZhongZhiIcon", "anchorY": 0.5, "anchorX": 0.5 } }] }, { "type": "Label", "props": { "y": 59, "x": -29, "var": "zhongzhiName", "text": "毒蘑菇花花", "name": "zhongzhiName", "fontSize": 20, "color": "#f2d778", "bold": true, "align": "center" } }, { "type": "Label", "props": { "y": 59, "x": -53, "text": "已使用：（2/3）", "name": "zhongzhiName", "fontSize": 20, "color": "#563610", "bold": true, "align": "center" } }] }] }] }, { "type": "Panel", "props": { "y": 783, "x": 428, "width": 290, "height": 38 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "farm/bgnumber.png" } }, { "type": "Button", "props": { "y": 1, "x": 255, "stateNum": 1, "skin": "farm/jia.png" } }, { "type": "Label", "props": { "y": 6, "x": 187, "var": "shengyuCount", "text": "3", "name": "shengyuCount", "fontSize": 25, "color": "#f6ed94", "bold": true } }, { "type": "Image", "props": { "y": 2, "x": 8, "skin": "farm/chishu.png" } }] }, { "type": "Image", "props": { "y": -298, "x": -1420, "width": 2182, "var": "wumai", "skin": "worldmap/wumai.png", "height": 823 } }] }, { "type": "Button", "props": { "y": 41, "x": 649, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png", "name": "btnClose" } }] };
+            FarmViewUI.uiView = { "type": "View", "props": { "y": 0, "x": 0, "width": 750, "height": 1334 }, "child": [{ "type": "Panel", "props": { "y": 0, "x": 0, "width": 750, "var": "farmPanel", "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "var": "bg", "skin": "unpack/farm/bg.png" } }, { "type": "Image", "props": { "y": 1197, "x": 29, "skin": "unpack/farm/huawen.png" } }, { "type": "Panel", "props": { "y": 159, "x": -32, "width": 1383, "var": "panlePlant", "height": 671 }, "child": [{ "type": "Image", "props": { "y": 12, "x": -265, "skin": "unpack/farm/caijimap.png" } }] }, { "type": "Image", "props": { "y": 37, "x": -1, "skin": "farm/tip-zhongzi.png" } }, { "type": "Panel", "props": { "y": 827, "x": 24, "width": 703, "height": 354 }, "child": [{ "type": "Image", "props": { "y": 20, "x": 0, "skin": "unpack/farm/bgzhongzhi.png" } }, { "type": "Image", "props": { "y": 21, "x": -16, "skin": "farm/tip-zhongzhi.png" } }, { "type": "List", "props": { "width": 491, "var": "zhongzhiList", "spaceY": 10, "spaceX": 10, "selectEnable": false, "repeatY": 1, "repeatX": 3, "renderType": "render", "name": "zhongzhiList", "height": 210, "centerY": 16, "centerX": 9 }, "child": [{ "type": "VScrollBar", "props": { "y": 10, "x": -48, "width": 1, "name": "scrollBar", "height": 227 } }, { "type": "VBox", "props": { "x": 2, "width": 152, "top": 10, "space": 15, "renderType": "render", "bottom": 5, "align": "center" }, "child": [{ "type": "Panel", "props": { "y": -51, "x": -28, "width": 104, "height": 102, "anchorY": 0, "anchorX": 0 }, "child": [{ "type": "Image", "props": { "y": 51, "x": 52, "width": 104, "var": "zhongzhiBg", "skin": "farm/frame.png", "name": "zhongzhiBg", "height": 102, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": 53, "x": 50, "var": "ZhongZhiIcon", "skin": "farm/bigmogu.png", "name": "ZhongZhiIcon", "anchorY": 0.5, "anchorX": 0.5 } }] }, { "type": "Label", "props": { "y": 59, "x": -29, "var": "zhongzhiName", "text": "毒蘑菇花花", "name": "zhongzhiName", "fontSize": 20, "color": "#f2d778", "bold": true, "align": "center" } }, { "type": "Label", "props": { "y": 59, "x": -53, "text": "已使用：（2/3）", "name": "zhongzhiName", "fontSize": 20, "color": "#563610", "bold": true, "align": "center" } }] }] }] }, { "type": "Panel", "props": { "y": 783, "x": 428, "width": 290, "height": 38 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "farm/bgnumber.png" } }, { "type": "Button", "props": { "y": 1, "x": 255, "stateNum": 1, "skin": "farm/jia.png" } }, { "type": "Label", "props": { "y": 6, "x": 187, "var": "shengyuCount", "text": "3", "name": "shengyuCount", "fontSize": 25, "color": "#f6ed94", "bold": true } }, { "type": "Image", "props": { "y": 2, "x": 8, "skin": "farm/chishu.png" } }] }, { "type": "Image", "props": { "y": -298, "x": -1420, "width": 2182, "var": "wumai", "skin": "worldmap/wumai.png", "height": 823 } }] }, { "type": "Button", "props": { "y": 41, "x": 649, "var": "btnClose", "stateNum": 1, "skin": "comp/close.png", "name": "btnClose" } }] };
             return FarmViewUI;
         }(View));
         farm.FarmViewUI = FarmViewUI;
@@ -66500,10 +66712,11 @@ var ui;
                 return _super.call(this) || this;
             }
             GateListViewUI.prototype.createChildren = function () {
+                View.regComponent("Text", laya.display.Text);
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.map.GateListViewUI.uiView);
             };
-            GateListViewUI.uiView = { "type": "View", "props": { "width": 690, "height": 830 }, "child": [{ "type": "Image", "props": { "y": -6, "x": -18, "skin": "unpack/worldmap/img_gatebg.png" } }, { "type": "Image", "props": { "y": -59, "x": 48, "var": "imgMapBlock", "skin": "worldmap/img_map.png" } }, { "type": "List", "props": { "y": 200, "x": 36, "var": "listGate", "spaceY": 20, "repeatY": 4 }, "child": [{ "type": "Box", "props": { "name": "render" }, "child": [{ "type": "Image", "props": { "skin": "unpack/worldmap/img_listbg.png", "name": "bg" } }, { "type": "Label", "props": { "y": 18, "x": 125, "width": 188, "text": "关卡", "name": "lblName", "height": 29, "fontSize": 26, "color": "0x000000", "bold": true } }, { "type": "Image", "props": { "y": 9, "x": 17, "width": 95, "name": "imgIcon", "height": 96 } }, { "type": "Label", "props": { "y": 48, "x": 138, "width": 188, "text": "推荐等级：", "name": "lblLevel", "height": 29, "fontSize": 20, "color": "#b05454", "bold": true } }, { "type": "Image", "props": { "y": 67, "x": 138, "width": 46, "skin": "worldmap/img_reward.png", "name": "imgReward", "height": 40 } }, { "type": "Label", "props": { "y": 76, "x": 186, "width": 99, "text": "宝箱：1", "name": "lblReadNum", "height": 29, "fontSize": 20, "color": "#99743d", "bold": true } }, { "type": "Button", "props": { "y": 27, "x": 441, "stateNum": 1, "skin": "worldmap/btn_swap.png", "name": "btnSweep" } }, { "type": "Button", "props": { "y": 27, "x": 440, "stateNum": 1, "skin": "worldmap/btn_chanllege.png", "name": "btnChanllege" } }, { "type": "Image", "props": { "y": 38, "x": 397, "skin": "worldmap/img_notice.png", "name": "img_notice" } }, { "type": "Image", "props": { "y": 20, "x": 295, "skin": "worldmap/img_hundup.png", "name": "img_hand" } }] }, { "type": "VScrollBar", "props": { "y": 10, "x": 622, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 557 } }] }, { "type": "Image", "props": { "y": 134, "x": 397, "var": "imgMapName", "skin": "worldmap/img_lbl0.png" } }] };
+            GateListViewUI.uiView = { "type": "View", "props": { "width": 690, "height": 830 }, "child": [{ "type": "Image", "props": { "y": -6, "x": -18, "skin": "unpack/worldmap/img_gatebg.png" } }, { "type": "Image", "props": { "y": -104, "x": -48, "var": "imgMapBlock", "skin": "worldmap/img_map.png" } }, { "type": "List", "props": { "y": 209, "x": 24, "width": 639, "var": "listGate", "spaceY": 20, "repeatY": 4, "layoutEnabled": true, "height": 602 }, "child": [{ "type": "Box", "props": { "y": 0, "x": 0, "width": 627, "name": "render", "height": 114 }, "child": [{ "type": "Image", "props": { "skin": "unpack/worldmap/img_listbg.png", "name": "bg" } }, { "type": "Label", "props": { "y": 18, "x": 125, "width": 188, "text": "关卡", "name": "lblName", "height": 29, "fontSize": 26, "color": "0x000000", "bold": true } }, { "type": "Image", "props": { "y": 9, "x": 17, "width": 95, "name": "imgIcon", "height": 96 } }, { "type": "Label", "props": { "y": 48, "x": 138, "width": 188, "text": "推荐等级：", "name": "lblLevel", "height": 29, "fontSize": 20, "color": "#b05454", "bold": true } }, { "type": "Image", "props": { "y": 67, "x": 138, "width": 46, "skin": "worldmap/img_reward.png", "name": "imgReward", "height": 40 } }, { "type": "Label", "props": { "y": 76, "x": 186, "width": 99, "text": "宝箱：1", "name": "lblReadNum", "height": 29, "fontSize": 20, "color": "#99743d", "bold": true } }, { "type": "Button", "props": { "y": 27, "x": 441, "stateNum": 1, "skin": "worldmap/btn_swap.png", "name": "btnSweep" } }, { "type": "Button", "props": { "y": 27, "x": 440, "stateNum": 1, "skin": "worldmap/btn_chanllege.png", "name": "btnChanllege" } }, { "type": "Image", "props": { "y": 38, "x": 397, "skin": "worldmap/img_notice.png", "name": "img_notice" } }, { "type": "Image", "props": { "y": 20, "x": 295, "skin": "worldmap/img_hundup.png", "name": "img_hand" } }] }, { "type": "VScrollBar", "props": { "y": 0, "x": 622, "width": 17, "skin": "comp/vscroll.png", "name": "scrollBar", "height": 551 } }] }, { "type": "Image", "props": { "y": 20, "x": 318, "var": "imgMapName", "skin": "worldmap/img_lbl0.png" } }, { "type": "Text", "props": { "y": 96, "x": 211, "wordWrap": true, "width": 436, "text": "每当你打开一扇门，其它的门就随之关闭，自始至终，你都只有一条路可走。 ", "leading": 12, "height": 97, "fontSize": 20, "color": "#342727", "bold": true, "align": "left" } }, { "type": "Text", "props": { "y": 159, "x": 215, "wordWrap": true, "width": 432, "text": "——《龙族》", "leading": 12, "height": 34, "fontSize": 20, "color": "#342727", "bold": true, "align": "right" } }] };
             return GateListViewUI;
         }(View));
         map.GateListViewUI = GateListViewUI;
@@ -67143,6 +67356,7 @@ var RightFunctionButtons = /** @class */ (function (_super) {
         this.openBtn.stateNum = 1;
         this.openBtn.anchorX = 0.5;
         this.openBtn.anchorY = 0.5;
+        this.openBtn.rotation = 45;
         this.addChild(this.openBtn);
         // this.openBtn.on(Laya.Event.CLICK,this,this.onOpenBtnClick);
         this.on(Laya.Event.CLICK, this, this.onViewClick);
@@ -67222,9 +67436,11 @@ var RightFunctionButtons = /** @class */ (function (_super) {
         });
         this.isOpen = !this.isOpen;
         if (this.isOpen) {
+            this.openBtn.rotation = 90;
             this.open();
         }
         else {
+            this.openBtn.rotation = 45;
             this.close();
         }
         // var lbl:string = this.isOpen ? "-" : "+";
@@ -67320,19 +67536,26 @@ var RoleBloodBar = /** @class */ (function (_super) {
     RoleBloodBar.prototype.initSkin = function () {
         this.bg = new Laya.Image("main/img_bloodbg.png");
         this.bg.sizeGrid = "10,10,10,10";
-        this.bg.width = 200;
+        this.bg.width = 100;
         // this.bg.texture = Laya.loader.getRes("main/img_bloodbg.png");
         this.addChild(this.bg);
         this.progress = new Laya.Image("main/img_blood.png");
         this.progress.sizeGrid = "2,2,2,2";
-        this.progress.x = 5;
+        this.progress.x = 6;
         this.progress.y = 5;
         // this.progress.texture = Laya.loader.getRes("main/img_blood.png");
-        this.progress.width = 190;
+        this.progress.width = 90;
         this.addChild(this.progress);
+        this.imgAttribute = new Laya.Image();
+        this.imgAttribute.x = -20;
+        this.imgAttribute.y = -5;
+        this.addChild(this.imgAttribute);
     };
     RoleBloodBar.prototype.init = function () {
         this.setProgress(0);
+        var attId = Math.ceil(Math.random() * 6);
+        this.imgAttribute.skin = "main/img_att" + attId + ".png";
+        console.log(this.imgAttribute.width, this.imgAttribute.height, this.imgAttribute.scaleX);
     };
     /**
      *
@@ -67342,6 +67565,7 @@ var RoleBloodBar = /** @class */ (function (_super) {
         var rect = new Rectangle(0, 0, this.progress.width, this.progress.height);
         rect.x = value * rect.width;
         this.progress.scrollRect = rect;
+        this.scaleX;
     };
     return RoleBloodBar;
 }(Laya.Sprite));
@@ -67616,6 +67840,18 @@ var BattleReportMediator = /** @class */ (function (_super) {
     BattleReportMediator.prototype.removeEvents = function () {
         EventManager.ins.removeEvent(EventManager.REPORT_DATA_UPDATE, this);
     };
+    /**更新所有战报 */
+    BattleReportMediator.prototype.allReportDataUpdate = function () {
+        var _this = this;
+        BattleReportData.ins.reportVos.forEach(function (vo) {
+            _this.reportDataUpdate(vo);
+        });
+    };
+    /**清除战报视图 */
+    BattleReportMediator.prototype.clearReportView = function () {
+        this.view.panelMask.removeChildren();
+        this.items.splice(0, this.items.length);
+    };
     /**更新视图 */
     BattleReportMediator.prototype.reportDataUpdate = function (vo) {
         var item;
@@ -67652,7 +67888,7 @@ var BattleReportMediator = /** @class */ (function (_super) {
         this.view.visible = bool;
     };
     BattleReportMediator.prototype.dispose = function () {
-        this.view.vboxReport.removeChildren();
+        this.view.panelMask.removeChildren();
         this.items.splice(0, this.items.length);
         this.items = null;
         _super.prototype.dispose.call(this);
@@ -67877,6 +68113,18 @@ var MapBattleMediator = /** @class */ (function (_super) {
         this.view.btnChalleangeBoss.off(Laya.Event.CLICK, this, this.onChalleangeBoss);
         EventManager.ins.removeEvent(EventManager.CHALLENGE_BOSS, this.challegenBossHandler);
     };
+    /**更新所有战报 */
+    MapBattleMediator.prototype.allReportDataUpdate = function () {
+        if (this.battleReportMediator) {
+            this.battleReportMediator.allReportDataUpdate();
+        }
+    };
+    /**清除战报视图 */
+    MapBattleMediator.prototype.clearReportView = function () {
+        if (this.battleReportMediator) {
+            this.battleReportMediator.clearReportView();
+        }
+    };
     /**进入地图假战斗 */
     MapBattleMediator.prototype.enterMapBattle = function () {
         this.battleReportMediator = new BattleReportMediator();
@@ -67892,6 +68140,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
         else {
             if (this.challegenBossMediator)
                 this.challegenBossMediator.dispose();
+            this.battleReportMediator.allReportDataUpdate();
         }
         // RoleManager.ins.resetRolePoint();
     };
@@ -67900,6 +68149,7 @@ var MapBattleMediator = /** @class */ (function (_super) {
      * @param e
      */
     MapBattleMediator.prototype.onChalleangeBoss = function (e) {
+        this.clearReportView();
         MapManager.ins.enterMap("res/map", 10000, MapUtil.TYPE_LOAD_NOCUT, 400, 300, 920, 300);
         GameDataManager.ins.productBossData();
         var resAry = [{ url: "unpack/challengeboss/bg.png", type: Loader.IMAGE }];
@@ -68152,6 +68402,7 @@ var EquipSmeltMediator = /** @class */ (function (_super) {
                 Laya.Tween.clearAll(ani);
             }
             Laya.Tween.clearAll(this.view.ainrong);
+            Laya.Tween.clearAll(this.view.smeltNum);
         }
         _super.prototype.dispose.call(this);
     };
@@ -68368,15 +68619,14 @@ var __extends = (this && this.__extends) || (function () {
 var GameMediator = /** @class */ (function (_super) {
     __extends(GameMediator, _super);
     function GameMediator(assetsUrl, view) {
-        var _this = _super.call(this, assetsUrl, view) || this;
-        _this.curMediator = null;
-        _this.mapBattleMediator = null;
-        return _this;
+        return _super.call(this, assetsUrl, view) || this;
     }
     GameMediator.prototype.initView = function () {
-        ClientSender.getHeroInfoReq(1);
+        if (GameConfig.SINGLE_GAME)
+            GameDataManager.ins.initData();
+        else
+            ClientSender.getHeroInfoReq(1);
         ObjectPoolUtil.init();
-        // GameDataManager.ins.initData();
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.TOP_LAYER, false, false, true);
         _super.prototype.initView.call(this);
@@ -68473,7 +68723,14 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
-        ClientSender.gateGateInfoReq();
+        if (GameConfig.SINGLE_GAME) {
+            var jsonObj = JSON.parse(GameConfig.gatesInfos);
+            GameDataManager.ins.saveGateInfoVoInfo(jsonObj);
+            this.gateInfoHanlder();
+        }
+        else {
+            ClientSender.gateGateInfoReq();
+        }
     };
     GameMediator.prototype.gateInfoHanlder = function () {
         //显示地图界面
@@ -68508,6 +68765,9 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
+        if (this.mapBattleMediator) {
+            this.mapBattleMediator.clearReportView();
+        }
         var resAry = [
             { url: "res/atlas/lineup.atlas", type: Loader.ATLAS }
         ];
@@ -68524,6 +68784,9 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
+        if (this.mapBattleMediator) {
+            this.mapBattleMediator.clearReportView();
+        }
         var resAry = [
             { url: "res/atlas/hero.atlas", type: Loader.ATLAS }
         ];
@@ -68539,6 +68802,9 @@ var GameMediator = /** @class */ (function (_super) {
         if (this.curMediator) {
             this.curMediator.dispose();
             this.curMediator = null;
+        }
+        if (this.mapBattleMediator) {
+            this.mapBattleMediator.clearReportView();
         }
         var resAry = [
             { url: "unpack/bag/itemjiatu.png", type: Loader.IMAGE },
@@ -68565,6 +68831,11 @@ var GameMediator = /** @class */ (function (_super) {
             this.mapBattleMediator = new MapBattleMediator();
             this.mapBattleMediator.enterMapBattle();
         }
+        else {
+            //更新英雄
+            // BattleEngine.ins.resetLoopBattle();
+        }
+        this.mapBattleMediator.allReportDataUpdate();
         GameDataManager.showModuleViewInd = GameButtomTabIndex.BATTLE;
         SoundsManager.ins.playerMusicByEnum(MusicBGType.SHAM_BATTLE, 1000);
     };
@@ -68968,9 +69239,9 @@ var LineupMediator = /** @class */ (function (_super) {
         WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, this);
     };
     /**更新阵型服务器返回 */
-    LineupMediator.prototype.heroUpdateLineupHandler = function (data) {
+    LineupMediator.prototype.heroUpdateLineupHandler = function (isUp) {
         var _this = this;
-        if (data.flag) {
+        if (isUp) {
             this.selectIconView.setSelect(true);
             this.curSelectGrid.setUpHero(this.selectIconView.heroId, this.selectIconView);
         }
@@ -69012,19 +69283,41 @@ var LineupMediator = /** @class */ (function (_super) {
                         lineupId = this.curSelectGrid.lineupId;
                         isUp = true;
                     }
-                    ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
+                    if (GameConfig.SINGLE_GAME) //单机测试
+                        this.singleGameUpdateLineup(isUp, this.selectIconView.heroId, lineupId);
+                    else
+                        ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
                 }
                 else {
                     if (this.selectIconView.selectTick) {
                         lineupId = this.selectIconView.lineupId;
                         isUp = false;
-                        ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
+                        if (GameConfig.SINGLE_GAME) //单机测试
+                            this.singleGameUpdateLineup(isUp, this.selectIconView.heroId, lineupId);
+                        else
+                            ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
                     }
                 }
             }
         }
         else if (e.type == Laya.Event.MOUSE_UP) {
         }
+    };
+    /**单机游戏模拟上阵 */
+    LineupMediator.prototype.singleGameUpdateLineup = function (isUp, heroId, lineupId) {
+        var selfPlayerData = GameDataManager.ins.selfPlayerData;
+        var heroVo;
+        if (isUp) {
+            selfPlayerData.heroLineupDic.set(lineupId, heroId);
+            heroVo = selfPlayerData.addUpHeroVo(heroId, lineupId);
+        }
+        else {
+            selfPlayerData.heroLineupDic.remove(lineupId);
+            heroVo = selfPlayerData.removeUpHeroVo(heroId);
+        }
+        if (BattleEngine.ins.isLoopBattle && heroVo)
+            RoleManager.ins.updateLineupHeros(heroVo, isUp);
+        this.heroUpdateLineupHandler(isUp);
     };
     LineupMediator.prototype.initLineup = function () {
         var _this = this;
@@ -69267,6 +69560,11 @@ var LoginMediator = /** @class */ (function (_super) {
     };
     LoginMediator.prototype.onBtnLogin = function (e) {
         if (GameConfig.SINGLE_GAME) {
+            var jsonObj = JSON.parse('{"authentication": "taoken888888888888","data":"' + this.view.inputAccount.text + '"}');
+            GameDataManager.ins.saveSelfPlayerData(jsonObj);
+            //服务器列表
+            jsonObj = JSON.parse(GameConfig.serverInfos);
+            GameDataManager.ins.saveServerInfoList(jsonObj.data, jsonObj.lastInGameServers);
             //单机测试
             var resAry = [
                 { url: "unpack/login/logo.png", type: Loader.IMAGE }
@@ -69374,7 +69672,14 @@ var GateListMediator = /** @class */ (function (_super) {
         if (e.type == Laya.Event.CLICK) {
             var cell = this.view.listGate.getCell(index);
             if (e.target == cell.getChildByName("btnChanllege")) {
-                ClientSender.ballteGateReq(cell.dataSource.key);
+                if (GameConfig.SINGLE_GAME) {
+                    var gateKey = cell.dataSource.key;
+                    GameDataManager.ins.hangGateKey = gateKey;
+                    this.battleGateResponse(gateKey);
+                }
+                else {
+                    ClientSender.ballteGateReq(cell.dataSource.key);
+                }
             }
             else if (e.target == cell.getChildByName("btnSweep")) {
                 var btnSp = cell.getChildByName("btnSweep");
@@ -69384,13 +69689,23 @@ var GateListMediator = /** @class */ (function (_super) {
                 }
                 Laya.timer.once(2000, this, this.timeEndCanScan, [btnSp], false);
                 btnSp.filters = [this.grayFilter];
-                ClientSender.scanGateReq(cell.dataSource.key);
+                if (GameConfig.SINGLE_GAME)
+                    this.scanGateResponse(cell.dataSource.key);
+                else
+                    ClientSender.scanGateReq(cell.dataSource.key);
             }
             else if (e.target == cell.getChildByName("imgReward")) {
                 console.log("点击宝箱");
             }
             else {
-                ClientSender.gateSwitchHangReq(cell.dataSource.key);
+                if (GameConfig.SINGLE_GAME) {
+                    var gateKey = cell.dataSource.key;
+                    GameDataManager.ins.hangGateKey = gateKey;
+                    this.switchHangupGateResponse(gateKey);
+                }
+                else {
+                    ClientSender.gateSwitchHangReq(cell.dataSource.key);
+                }
             }
         }
     };
@@ -70514,13 +70829,29 @@ var HeroVo = /** @class */ (function (_super) {
         this.modelId = config.modelId;
         this.scale = config.modelSize;
         this.name = config.name;
-        this.doubleAtk = this.heroAttr.doubleAtkRate;
         this.hurt = config.hurt;
         this.tenacity = config.tenacity;
-        this.dieAttTimes = 10;
-        // var qualityConfig:QualitySampleConfig = ConfigManager.ins.getQualitySampleConfig(this.qualityKey);
-        this.upAtk = this.heroAttr.upAtk;
-        this.updef = this.heroAttr.upDef;
+        this.dieAttTimes = 100;
+        if (GameConfig.SINGLE_GAME) {
+            this.qualityKey = "Q_10001";
+            var qualityConfig = ConfigManager.ins.getQualitySampleConfig(this.qualityKey);
+            this.doubleAtk = config.doubleAtk;
+            this.upAtk = qualityConfig.aktMin;
+            this.updef = qualityConfig.defMin;
+            this.level = 1;
+            // this.doubleAtk = 1;
+            // this.upAtk = 4;
+            // this.updef = 3;
+            // this.level = 1;
+            this.atk = Math.ceil(config.atk);
+            this.def = Number(config.def);
+            this.hp = Number(config.hp);
+        }
+        else {
+            this.doubleAtk = this.heroAttr.doubleAtkRate;
+            this.upAtk = this.heroAttr.upAtk;
+            this.updef = this.heroAttr.upDef;
+        }
         /**技能数据 */
         this.skillVos = [];
         var skillVo = new SkillVo();
@@ -70901,15 +71232,19 @@ var HeroUpdateLineupHanlder = /** @class */ (function (_super) {
     };
     HeroUpdateLineupHanlder.prototype.success = function (message) {
         var selfPlayerData = GameDataManager.ins.selfPlayerData;
-        selfPlayerData.heroLineupDic.set(message.siteIdx, message.heroId);
+        var heroVo;
         if (message.flag) {
-            selfPlayerData.addUpHeroVo(message.heroId, message.flag);
+            selfPlayerData.heroLineupDic.set(message.siteIdx, message.heroId);
+            heroVo = selfPlayerData.addUpHeroVo(message.heroId, message.siteIdx);
         }
         else {
-            selfPlayerData.removeUpHeroVo(message.heroId);
+            selfPlayerData.heroLineupDic.remove(message.siteIdx);
+            heroVo = selfPlayerData.removeUpHeroVo(message.heroId);
         }
+        if (BattleEngine.ins.isLoopBattle)
+            RoleManager.ins.updateLineupHeros(heroVo, message.flag);
         console.log("上阵状态：" + message.flag);
-        _super.prototype.success.call(this, message);
+        _super.prototype.success.call(this, message.flag);
     };
     return HeroUpdateLineupHanlder;
 }(SocketHanlder));
@@ -71135,8 +71470,9 @@ var BaseRole = /** @class */ (function (_super) {
         tipString = tipString === undefined ? "" : tipString;
         var floatFontTip = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
         if (floatFontTip) {
-            floatFontTip.setAttribute(40, "#ff0000");
-            floatFontTip.show(tipString, this, -30, -200, 0.5, 40, 80, this.baseRoleVo.isEnemy);
+            // floatFontTip.setAttribute(40,"#ff0000");
+            // floatFontTip.show(tipString,this,-30,-200,0.5,40,80,this.baseRoleVo.isEnemy);
+            floatFontTip.showFlontClip(tipString, this, -30, -200, 0.5, 40, 80, this.baseRoleVo.isEnemy);
         }
     };
     /**
@@ -71200,7 +71536,10 @@ var BaseRole = /** @class */ (function (_super) {
         // console.log(this.roleVo.id,bound.width,bound.height);
         if (!this.isLoaded) {
             this.skeletonAni = this.templet.buildArmature(2);
-            this.skeletonAni.scale(this.aniScale * this.baseRoleVo.scale, this.baseRoleVo.scale);
+            if (this.baseRoleVo)
+                this.skeletonAni.scale(this.aniScale * this.baseRoleVo.scale, this.baseRoleVo.scale);
+            else
+                this.skeletonAni.scale(this.aniScale, 1);
             this.addChild(this.skeletonAni);
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();
@@ -71220,8 +71559,11 @@ var BaseRole = /** @class */ (function (_super) {
         // this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
         this.roleBloodBar = new RoleBloodBar();
         this.roleBloodBar.visible = true;
-        this.roleBloodBar.scaleX = 0.5;
-        this.roleBloodBar.x = -60;
+        // this.roleBloodBar.scaleX = 0.5;
+        if (this.baseRoleVo.isEnemy)
+            this.roleBloodBar.x = -30;
+        else
+            this.roleBloodBar.x = -60;
         this.roleBloodBar.y = -180;
         this.roleBloodBar.init();
         this.addChild(this.roleBloodBar);
@@ -71523,7 +71865,10 @@ var PreLoadScene = /** @class */ (function (_super) {
         PreLoadingView.ins.setProgress(value);
     };
     PreLoadScene.prototype.loadedComplete = function () {
-        CGAnimation.ins.show(this, this.enterGame);
+        if (GameConfig.isShowCG)
+            CGAnimation.ins.show(this, this.enterGame);
+        else
+            this.enterGame();
     };
     PreLoadScene.prototype.enterGame = function () {
         ConfigManager.ins.parsePreLoadConfigs();

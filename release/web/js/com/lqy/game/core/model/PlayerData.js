@@ -18,21 +18,26 @@ var PlayerData = /** @class */ (function () {
             this.upHeroVos[ind] = heroVo;
         }
         else {
+            heroVo.initRowColPosPoint();
             this.upHeroVos.push(heroVo);
         }
+        return heroVo;
     };
     /**删除上阵宠物 */
     PlayerData.prototype.removeUpHeroVo = function (heroId) {
         if (!this.upHeroVos) {
             return;
         }
+        var heroVo;
         for (var i = 0; i < this.upHeroVos.length; i++) {
-            if (this.upHeroVos[i].heroId == heroId) {
-                this.upHeroVos[i].lineupGrid = null;
+            heroVo = this.upHeroVos[i];
+            if (heroVo.roleId == heroId) {
+                heroVo.lineupGrid = null;
                 this.upHeroVos.splice(i, 1);
-                break;
+                return heroVo;
             }
         }
+        return null;
     };
     return PlayerData;
 }());

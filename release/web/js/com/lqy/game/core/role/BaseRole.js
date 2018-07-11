@@ -73,8 +73,9 @@ var BaseRole = /** @class */ (function (_super) {
         tipString = tipString === undefined ? "" : tipString;
         var floatFontTip = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.FLOAT_FONT_TIPS);
         if (floatFontTip) {
-            floatFontTip.setAttribute(40, "#ff0000");
-            floatFontTip.show(tipString, this, -30, -200, 0.5, 40, 80, this.baseRoleVo.isEnemy);
+            // floatFontTip.setAttribute(40,"#ff0000");
+            // floatFontTip.show(tipString,this,-30,-200,0.5,40,80,this.baseRoleVo.isEnemy);
+            floatFontTip.showFlontClip(tipString, this, -30, -200, 0.5, 40, 80, this.baseRoleVo.isEnemy);
         }
     };
     /**
@@ -138,7 +139,10 @@ var BaseRole = /** @class */ (function (_super) {
         // console.log(this.roleVo.id,bound.width,bound.height);
         if (!this.isLoaded) {
             this.skeletonAni = this.templet.buildArmature(2);
-            this.skeletonAni.scale(this.aniScale * this.baseRoleVo.scale, this.baseRoleVo.scale);
+            if (this.baseRoleVo)
+                this.skeletonAni.scale(this.aniScale * this.baseRoleVo.scale, this.baseRoleVo.scale);
+            else
+                this.skeletonAni.scale(this.aniScale, 1);
             this.addChild(this.skeletonAni);
             this.isLoaded = true;
             this.aniCount = this.skeletonAni.getAnimNum();
@@ -158,8 +162,11 @@ var BaseRole = /** @class */ (function (_super) {
         // this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
         this.roleBloodBar = new RoleBloodBar();
         this.roleBloodBar.visible = true;
-        this.roleBloodBar.scaleX = 0.5;
-        this.roleBloodBar.x = -60;
+        // this.roleBloodBar.scaleX = 0.5;
+        if (this.baseRoleVo.isEnemy)
+            this.roleBloodBar.x = -30;
+        else
+            this.roleBloodBar.x = -60;
         this.roleBloodBar.y = -180;
         this.roleBloodBar.init();
         this.addChild(this.roleBloodBar);

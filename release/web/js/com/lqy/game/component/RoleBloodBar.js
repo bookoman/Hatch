@@ -21,19 +21,26 @@ var RoleBloodBar = /** @class */ (function (_super) {
     RoleBloodBar.prototype.initSkin = function () {
         this.bg = new Laya.Image("main/img_bloodbg.png");
         this.bg.sizeGrid = "10,10,10,10";
-        this.bg.width = 200;
+        this.bg.width = 100;
         // this.bg.texture = Laya.loader.getRes("main/img_bloodbg.png");
         this.addChild(this.bg);
         this.progress = new Laya.Image("main/img_blood.png");
         this.progress.sizeGrid = "2,2,2,2";
-        this.progress.x = 5;
+        this.progress.x = 6;
         this.progress.y = 5;
         // this.progress.texture = Laya.loader.getRes("main/img_blood.png");
-        this.progress.width = 190;
+        this.progress.width = 90;
         this.addChild(this.progress);
+        this.imgAttribute = new Laya.Image();
+        this.imgAttribute.x = -20;
+        this.imgAttribute.y = -5;
+        this.addChild(this.imgAttribute);
     };
     RoleBloodBar.prototype.init = function () {
         this.setProgress(0);
+        var attId = Math.ceil(Math.random() * 6);
+        this.imgAttribute.skin = "main/img_att" + attId + ".png";
+        console.log(this.imgAttribute.width, this.imgAttribute.height, this.imgAttribute.scaleX);
     };
     /**
      *
@@ -43,6 +50,7 @@ var RoleBloodBar = /** @class */ (function (_super) {
         var rect = new Rectangle(0, 0, this.progress.width, this.progress.height);
         rect.x = value * rect.width;
         this.progress.scrollRect = rect;
+        this.scaleX;
     };
     return RoleBloodBar;
 }(Laya.Sprite));

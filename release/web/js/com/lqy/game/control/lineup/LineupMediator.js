@@ -43,9 +43,9 @@ var LineupMediator = /** @class */ (function (_super) {
         WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, this);
     };
     /**更新阵型服务器返回 */
-    LineupMediator.prototype.heroUpdateLineupHandler = function (data) {
+    LineupMediator.prototype.heroUpdateLineupHandler = function (isUp) {
         var _this = this;
-        if (data.flag) {
+        if (isUp) {
             this.selectIconView.setSelect(true);
             this.curSelectGrid.setUpHero(this.selectIconView.heroId, this.selectIconView);
         }
@@ -87,19 +87,41 @@ var LineupMediator = /** @class */ (function (_super) {
                         lineupId = this.curSelectGrid.lineupId;
                         isUp = true;
                     }
-                    ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
+                    if (GameConfig.SINGLE_GAME) //单机测试
+                        this.singleGameUpdateLineup(isUp, this.selectIconView.heroId, lineupId);
+                    else
+                        ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
                 }
                 else {
                     if (this.selectIconView.selectTick) {
                         lineupId = this.selectIconView.lineupId;
                         isUp = false;
-                        ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
+                        if (GameConfig.SINGLE_GAME) //单机测试
+                            this.singleGameUpdateLineup(isUp, this.selectIconView.heroId, lineupId);
+                        else
+                            ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
                     }
                 }
             }
         }
         else if (e.type == Laya.Event.MOUSE_UP) {
         }
+    };
+    /**单机游戏模拟上阵 */
+    LineupMediator.prototype.singleGameUpdateLineup = function (isUp, heroId, lineupId) {
+        var selfPlayerData = GameDataManager.ins.selfPlayerData;
+        var heroVo;
+        if (isUp) {
+            selfPlayerData.heroLineupDic.set(lineupId, heroId);
+            heroVo = selfPlayerData.addUpHeroVo(heroId, lineupId);
+        }
+        else {
+            selfPlayerData.heroLineupDic.remove(lineupId);
+            heroVo = selfPlayerData.removeUpHeroVo(heroId);
+        }
+        if (BattleEngine.ins.isLoopBattle && heroVo)
+            RoleManager.ins.updateLineupHeros(heroVo, isUp);
+        this.heroUpdateLineupHandler(isUp);
     };
     LineupMediator.prototype.initLineup = function () {
         var _this = this;

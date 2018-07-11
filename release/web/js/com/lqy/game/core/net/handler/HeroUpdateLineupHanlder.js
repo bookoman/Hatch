@@ -23,15 +23,19 @@ var HeroUpdateLineupHanlder = /** @class */ (function (_super) {
     };
     HeroUpdateLineupHanlder.prototype.success = function (message) {
         var selfPlayerData = GameDataManager.ins.selfPlayerData;
-        selfPlayerData.heroLineupDic.set(message.siteIdx, message.heroId);
+        var heroVo;
         if (message.flag) {
-            selfPlayerData.addUpHeroVo(message.heroId, message.flag);
+            selfPlayerData.heroLineupDic.set(message.siteIdx, message.heroId);
+            heroVo = selfPlayerData.addUpHeroVo(message.heroId, message.siteIdx);
         }
         else {
-            selfPlayerData.removeUpHeroVo(message.heroId);
+            selfPlayerData.heroLineupDic.remove(message.siteIdx);
+            heroVo = selfPlayerData.removeUpHeroVo(message.heroId);
         }
+        if (BattleEngine.ins.isLoopBattle)
+            RoleManager.ins.updateLineupHeros(heroVo, message.flag);
         console.log("上阵状态：" + message.flag);
-        _super.prototype.success.call(this, message);
+        _super.prototype.success.call(this, message.flag);
     };
     return HeroUpdateLineupHanlder;
 }(SocketHanlder));

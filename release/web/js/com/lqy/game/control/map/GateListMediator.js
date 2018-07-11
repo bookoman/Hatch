@@ -54,7 +54,14 @@ var GateListMediator = /** @class */ (function (_super) {
         if (e.type == Laya.Event.CLICK) {
             var cell = this.view.listGate.getCell(index);
             if (e.target == cell.getChildByName("btnChanllege")) {
-                ClientSender.ballteGateReq(cell.dataSource.key);
+                if (GameConfig.SINGLE_GAME) {
+                    var gateKey = cell.dataSource.key;
+                    GameDataManager.ins.hangGateKey = gateKey;
+                    this.battleGateResponse(gateKey);
+                }
+                else {
+                    ClientSender.ballteGateReq(cell.dataSource.key);
+                }
             }
             else if (e.target == cell.getChildByName("btnSweep")) {
                 var btnSp = cell.getChildByName("btnSweep");
@@ -64,13 +71,23 @@ var GateListMediator = /** @class */ (function (_super) {
                 }
                 Laya.timer.once(2000, this, this.timeEndCanScan, [btnSp], false);
                 btnSp.filters = [this.grayFilter];
-                ClientSender.scanGateReq(cell.dataSource.key);
+                if (GameConfig.SINGLE_GAME)
+                    this.scanGateResponse(cell.dataSource.key);
+                else
+                    ClientSender.scanGateReq(cell.dataSource.key);
             }
             else if (e.target == cell.getChildByName("imgReward")) {
                 console.log("点击宝箱");
             }
             else {
-                ClientSender.gateSwitchHangReq(cell.dataSource.key);
+                if (GameConfig.SINGLE_GAME) {
+                    var gateKey = cell.dataSource.key;
+                    GameDataManager.ins.hangGateKey = gateKey;
+                    this.switchHangupGateResponse(gateKey);
+                }
+                else {
+                    ClientSender.gateSwitchHangReq(cell.dataSource.key);
+                }
             }
         }
     };

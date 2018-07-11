@@ -14,15 +14,14 @@ var __extends = (this && this.__extends) || (function () {
 var GameMediator = /** @class */ (function (_super) {
     __extends(GameMediator, _super);
     function GameMediator(assetsUrl, view) {
-        var _this = _super.call(this, assetsUrl, view) || this;
-        _this.curMediator = null;
-        _this.mapBattleMediator = null;
-        return _this;
+        return _super.call(this, assetsUrl, view) || this;
     }
     GameMediator.prototype.initView = function () {
-        ClientSender.getHeroInfoReq(1);
+        if (GameConfig.SINGLE_GAME)
+            GameDataManager.ins.initData();
+        else
+            ClientSender.getHeroInfoReq(1);
         ObjectPoolUtil.init();
-        // GameDataManager.ins.initData();
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.TOP_LAYER, false, false, true);
         _super.prototype.initView.call(this);
@@ -119,7 +118,14 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
-        ClientSender.gateGateInfoReq();
+        if (GameConfig.SINGLE_GAME) {
+            var jsonObj = JSON.parse(GameConfig.gatesInfos);
+            GameDataManager.ins.saveGateInfoVoInfo(jsonObj);
+            this.gateInfoHanlder();
+        }
+        else {
+            ClientSender.gateGateInfoReq();
+        }
     };
     GameMediator.prototype.gateInfoHanlder = function () {
         //显示地图界面
@@ -154,6 +160,9 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
+        if (this.mapBattleMediator) {
+            this.mapBattleMediator.clearReportView();
+        }
         var resAry = [
             { url: "res/atlas/lineup.atlas", type: Loader.ATLAS }
         ];
@@ -170,6 +179,9 @@ var GameMediator = /** @class */ (function (_super) {
             this.curMediator.dispose();
             this.curMediator = null;
         }
+        if (this.mapBattleMediator) {
+            this.mapBattleMediator.clearReportView();
+        }
         var resAry = [
             { url: "res/atlas/hero.atlas", type: Loader.ATLAS }
         ];
@@ -185,6 +197,9 @@ var GameMediator = /** @class */ (function (_super) {
         if (this.curMediator) {
             this.curMediator.dispose();
             this.curMediator = null;
+        }
+        if (this.mapBattleMediator) {
+            this.mapBattleMediator.clearReportView();
         }
         var resAry = [
             { url: "unpack/bag/itemjiatu.png", type: Loader.IMAGE },
@@ -211,6 +226,11 @@ var GameMediator = /** @class */ (function (_super) {
             this.mapBattleMediator = new MapBattleMediator();
             this.mapBattleMediator.enterMapBattle();
         }
+        else {
+            //更新英雄
+            // BattleEngine.ins.resetLoopBattle();
+        }
+        this.mapBattleMediator.allReportDataUpdate();
         GameDataManager.showModuleViewInd = GameButtomTabIndex.BATTLE;
         SoundsManager.ins.playerMusicByEnum(MusicBGType.SHAM_BATTLE, 1000);
     };

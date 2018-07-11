@@ -303,6 +303,44 @@ var ConfigManager = /** @class */ (function () {
      */
     ConfigManager.prototype.xmlToObjcet = function (str, DineClass, keyPro, dic) {
         var content = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
+        var datas = content.split("\r");
+        var element;
+        var tempAry;
+        var value;
+        var objs = [];
+        var obj;
+        for (var i = 0; i < datas.length; i++) {
+            if (datas[i].indexOf("<element") != -1) {
+                element = datas[i];
+                tempAry = element.split(" ");
+                obj = new DineClass();
+                for (var j = 0; j < tempAry.length; j++) {
+                    value = tempAry[j];
+                    if (value.indexOf("<element") == -1 && value.indexOf("/>") == -1) {
+                        var keyValueAry = value.split("=");
+                        if (isNaN(Number(keyValueAry[1]))) {
+                            obj[keyValueAry[0]] = keyValueAry[1].split("\'")[1];
+                        }
+                        else {
+                            obj[keyValueAry[0]] = Number(keyValueAry[1]);
+                        }
+                        // console.log(value,"=",obj[value]);
+                    }
+                }
+                dic.set(obj[keyPro], obj);
+                // console.log(obj.modelId,obj.key,obj.name);
+            }
+        }
+    };
+    /**
+     * xml转为对象
+     * @param str
+     * @param DineClass
+     * @param keyPro
+     * @param dic
+     */
+    ConfigManager.prototype.xmlToObjcet1 = function (str, DineClass, keyPro, dic) {
+        var content = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
         var datas = content.split("\r\n");
         var element;
         var tempAry;

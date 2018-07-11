@@ -369,7 +369,6 @@ class ConfigManager{
 
 
 
-
     /**
      * xml转为对象
      * @param str 
@@ -378,6 +377,49 @@ class ConfigManager{
      * @param dic 
      */
     private xmlToObjcet(str:string,DineClass?:any,keyPro?:any,dic?:Dictionary):void
+    {
+        var content:string = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
+        var datas:Array<string> = content.split("\r");
+        var element:string;
+        var tempAry;
+        var value:string;
+        var objs:Array<any> = [];
+        var obj:any;
+        for(var i = 0;i < datas.length;i++)
+        {
+            if(datas[i].indexOf("<element") != -1)
+            {
+                element = datas[i];
+                tempAry = element.split(" ");
+                obj = new DineClass();
+                for(var j = 0;j < tempAry.length;j++)
+                {
+                    value = tempAry[j];
+                    if(value.indexOf("<element") == -1 && value.indexOf("/>") == -1)
+                    {
+                        var keyValueAry:Array<string> = value.split("=");
+                        if(isNaN(Number(keyValueAry[1]))){
+                            obj[keyValueAry[0]] = keyValueAry[1].split("\'")[1];
+                        }
+                        else{
+                            obj[keyValueAry[0]] = Number(keyValueAry[1]);
+                        }
+                        // console.log(value,"=",obj[value]);
+                    }
+                }
+                dic.set(obj[keyPro],obj);
+                // console.log(obj.modelId,obj.key,obj.name);
+            }
+        }
+    }
+    /**
+     * xml转为对象
+     * @param str 
+     * @param DineClass 
+     * @param keyPro 
+     * @param dic 
+     */
+    private xmlToObjcet1(str:string,DineClass?:any,keyPro?:any,dic?:Dictionary):void
     {
         var content:string = str.split("<?xml version='1.0' encoding='utf-8'?>")[1];
         var datas:Array<string> = content.split("\r\n");
@@ -411,4 +453,5 @@ class ConfigManager{
             }
         }
     }
+
 }

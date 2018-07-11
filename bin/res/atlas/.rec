@@ -116,9 +116,15 @@ P 6EB14387 btn_map.png
 P 0B3047BB btn_open.png
 P 4A195B00 btn_smelt.png
 P 20196FC1 clip_shadow.png
+P FCF731CA img_att1.png
+P B8B2C2E9 img_att2.png
+P F143B664 img_att3.png
+P 852AAE8E img_att4.png
+P 9CE67772 img_att5.png
+P 4FE1E289 img_att6.png
 P FC271F6B img_battlereport.png
-P 8A5092D9 img_blood.png
-P 740D53ED img_bloodbg.png
+P 3A18198B img_blood.png
+P C17A6CAA img_bloodbg.png
 P 42A3FE33 laba.png
 P 3ED4975B skill_bg01.png
 D smelt

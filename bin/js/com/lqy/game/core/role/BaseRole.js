@@ -162,8 +162,11 @@ var BaseRole = /** @class */ (function (_super) {
         // this.roleBloodBar = ObjectPoolUtil.borrowObjcet(ObjectPoolUtil.ROLE_BLOOD_BAR);
         this.roleBloodBar = new RoleBloodBar();
         this.roleBloodBar.visible = true;
-        this.roleBloodBar.scaleX = 0.5;
-        this.roleBloodBar.x = -60;
+        // this.roleBloodBar.scaleX = 0.5;
+        if (this.baseRoleVo.isEnemy)
+            this.roleBloodBar.x = -30;
+        else
+            this.roleBloodBar.x = -60;
         this.roleBloodBar.y = -180;
         this.roleBloodBar.init();
         this.addChild(this.roleBloodBar);
