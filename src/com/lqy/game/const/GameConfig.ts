@@ -88,35 +88,44 @@ class HTTPReqType{
 
 /**协议 */
 class Protocol{
-    /**登录模块 */
-    public static USER_LOGIN:number = 1000;
-    /**登录 */
-    public static USER_LOGIN_CMD:number = 1;
+    // /**登录模块 */
+    // public static USER_LOGIN:number = 1000;
+    // /**登录 */
+    // public static USER_LOGIN_CMD:number = 1;
 
-    /**英雄模块 */
-    public static HERO:number = 1001;
-    /**获取英雄信息 */
-    public static HERO_GET_INFOS:number = 1;
-    /**更新阵型 */
-    public static HERO_UPDATE_FORMATION:number = 2;
+    // /**英雄模块 */
+    // public static HERO:number = 1001;
+    // /**获取英雄信息 */
+    // public static HERO_GET_INFOS:number = 1;
+    // /**更新阵型 */
+    // public static HERO_UPDATE_FORMATION:number = 2;
 
-    /**关卡模块 */
-    public static GATE:number = 1002;
-    /**获取玩家关卡信息 */
-    public static GATE_INFO:number = 1;
-    /**返回玩家关卡信息 */
-    public static GATE_HANDUP_STATE:number = 2;
-    /**切换挂机关卡 */
-    public static GATE_SWITCH_HANG_GATE:number = 3;
-    /**挑战关卡 */
-    public static GATE_BATTLE:number = 4;
-    /**扫荡关卡 */
-    public static GATE_SCAN:number = 5;
-
-
+    // /**关卡模块 */
+    // public static GATE:number = 1002;
+    // /**获取玩家关卡信息 */
+    // public static GATE_INFO:number = 1;
+    // /**返回玩家关卡信息 */
+    // public static GATE_HANDUP_STATE:number = 2;
+    // /**切换挂机关卡 */
+    // public static GATE_SWITCH_HANG_GATE:number = 3;
+    // /**挑战关卡 */
+    // public static GATE_BATTLE:number = 4;
+    // /**扫荡关卡 */
+    // public static GATE_SCAN:number = 5;
 
 
+    //新协议
+    public static USER_REGISTER_REQ:number = 202102;
+    /**登录请求 */
+    public static USER_LOGIN_REQ:number = 202103;
+    /**登录返回 */
+    public static USER_LOGIN_RESP:number = 202201;
 
+}
+/**登录服务器信息 */
+class LoginServerInfo{
+    public static IP:string = "192.168.2.104";
+    public static PORT:number = 1000;
 }
 /**http请求地址 */
 class HTTPRequestUrl{

@@ -28,7 +28,7 @@ class Game{
         DebugViewUtil.init();
         LG.parse(Laya.loader.getRes("res/config/language.txt"));
         SceneMananger.ins.enter(SceneMananger.LOGIN_SCENE);
-        Laya.stage.on(Laya.Event.CLICK,this,this.mouseClickStage)
+        Laya.stage.on(Laya.Event.CLICK,this,this.mouseClickStage);
         // var ani:FrameAnimation = new FrameAnimation(Laya.stage,GameConfig.STAGE_WIDTH/2,GameConfig.STAGE_HEIGHT/2,true);
         // ani.playAni("SK_0101",true);
     }
@@ -54,7 +54,7 @@ class Game{
 Laya.MiniAdpter.init();
 Config.isAntialias = true;//绘图抗锯齿
 Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT,Laya.WebGL);
-// Laya.Stat.show(0,0);
+Laya.Stat.show(0,0);
 Laya.stage.scaleMode = "showAll";//showall跟showAll不一样。。。。
 Laya.stage.alignH = "center";
 Laya.stage.alignV = "top";

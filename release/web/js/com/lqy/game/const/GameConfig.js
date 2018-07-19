@@ -83,29 +83,43 @@ var HTTPReqType = /** @class */ (function () {
 var Protocol = /** @class */ (function () {
     function Protocol() {
     }
-    /**登录模块 */
-    Protocol.USER_LOGIN = 1000;
-    /**登录 */
-    Protocol.USER_LOGIN_CMD = 1;
-    /**英雄模块 */
-    Protocol.HERO = 1001;
-    /**获取英雄信息 */
-    Protocol.HERO_GET_INFOS = 1;
-    /**更新阵型 */
-    Protocol.HERO_UPDATE_FORMATION = 2;
-    /**关卡模块 */
-    Protocol.GATE = 1002;
-    /**获取玩家关卡信息 */
-    Protocol.GATE_INFO = 1;
-    /**返回玩家关卡信息 */
-    Protocol.GATE_HANDUP_STATE = 2;
-    /**切换挂机关卡 */
-    Protocol.GATE_SWITCH_HANG_GATE = 3;
-    /**挑战关卡 */
-    Protocol.GATE_BATTLE = 4;
-    /**扫荡关卡 */
-    Protocol.GATE_SCAN = 5;
+    // /**登录模块 */
+    // public static USER_LOGIN:number = 1000;
+    // /**登录 */
+    // public static USER_LOGIN_CMD:number = 1;
+    // /**英雄模块 */
+    // public static HERO:number = 1001;
+    // /**获取英雄信息 */
+    // public static HERO_GET_INFOS:number = 1;
+    // /**更新阵型 */
+    // public static HERO_UPDATE_FORMATION:number = 2;
+    // /**关卡模块 */
+    // public static GATE:number = 1002;
+    // /**获取玩家关卡信息 */
+    // public static GATE_INFO:number = 1;
+    // /**返回玩家关卡信息 */
+    // public static GATE_HANDUP_STATE:number = 2;
+    // /**切换挂机关卡 */
+    // public static GATE_SWITCH_HANG_GATE:number = 3;
+    // /**挑战关卡 */
+    // public static GATE_BATTLE:number = 4;
+    // /**扫荡关卡 */
+    // public static GATE_SCAN:number = 5;
+    //新协议
+    Protocol.USER_REGISTER_REQ = 202102;
+    /**登录请求 */
+    Protocol.USER_LOGIN_REQ = 202103;
+    /**登录返回 */
+    Protocol.USER_LOGIN_RESP = 202201;
     return Protocol;
+}());
+/**登录服务器信息 */
+var LoginServerInfo = /** @class */ (function () {
+    function LoginServerInfo() {
+    }
+    LoginServerInfo.IP = "192.168.2.104";
+    LoginServerInfo.PORT = 1000;
+    return LoginServerInfo;
 }());
 /**http请求地址 */
 var HTTPRequestUrl = /** @class */ (function () {

@@ -23,7 +23,7 @@ class EnterGameMediator extends BaseMediator{
         this.view.btnChoice.on(Laya.Event.CLICK,this,this.onBtnChoice);
         this.view.btnSelect.on(Laya.Event.CLICK,this,this.onBtnChoice);
         this.view.btnRegster.on(Laya.Event.CLICK,this,this.onBtnRegster);
-        WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,new UserLoginHandler(this,this.onWebSocketLogined));
+        // WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,new UserLoginHandler(this,this.onWebSocketLogined));
         
     }
 
@@ -33,7 +33,7 @@ class EnterGameMediator extends BaseMediator{
         this.view.btnChoice.off(Laya.Event.CLICK,this,this.onBtnChoice);
         this.view.btnSelect.off(Laya.Event.CLICK,this,this.onBtnChoice);
         this.view.btnRegster.off(Laya.Event.CLICK,this,this.onBtnRegster);
-        WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,this);
         
     }
 
@@ -71,7 +71,7 @@ class EnterGameMediator extends BaseMediator{
         {
             //登录web服
             var curServerInfo:ServerInfoVo = GameDataManager.ins.curServerInfo;
-            ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder);
+            // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder);
         }
 
     }
@@ -91,7 +91,7 @@ class EnterGameMediator extends BaseMediator{
         {
             GameDataManager.ins.loginToken = jsonObj.token;
             EventManager.ins.addEvent(EventManager.SERVER_CONNECTED,this,this.onServerConnected);
-            WebSocketManager.ins.connect(GameDataManager.ins.curServerInfo.ip,GameDataManager.ins.curServerInfo.port);
+            // WebSocketManager.ins.connect(GameDataManager.ins.curServerInfo.ip,GameDataManager.ins.curServerInfo.port);
         }
         else
         {
@@ -102,7 +102,7 @@ class EnterGameMediator extends BaseMediator{
     private onServerConnected():void
     {
         EventManager.ins.removeEvent(EventManager.SERVER_CONNECTED,this.onServerConnected);
-        ClientSender.loginReq(GameDataManager.ins.selfPlayerData.name);
+        // ClientSender.loginReq(GameDataManager.ins.selfPlayerData.name);
     }
 
     private onBtnChoice():void{

@@ -52,7 +52,28 @@ var PreLoadScene = /** @class */ (function (_super) {
             { url: "res/config/HeroTypeSample.xml", type: Loader.TEXT },
             { url: "res/config/QualityScoreSample.xml", type: Loader.TEXT },
             { url: "res/config/MasterHeroSample.xml", type: Loader.TEXT },
-            { url: "res/config/ItemSample.xml", type: Loader.TEXT }
+            { url: "res/config/ItemSample.xml", type: Loader.TEXT },
+            //地图板块
+            { url: "unpack/worldmap/p1.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p2.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p3.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p4.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p5.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p6.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p7.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p8.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p9.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p10.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p11.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p12.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p13.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p14.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/bg1.jpg", type: Loader.IMAGE },
+            { url: "unpack/worldmap/bg2.jpg", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_gatebg.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_listbg.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_listgraybg.png", type: Loader.IMAGE },
+            { url: "res/atlas/worldmap.atlas", type: Loader.ATLAS }
         ];
         Laya.loader.load(resAry, Handler.create(this, this.onLoaded), Handler.create(this, this.loadGameResProgress, null, false));
         PreLoadingView.ins.setCallBack(this, this.loadedComplete);

@@ -23,13 +23,37 @@ var LoginMediator = /** @class */ (function (_super) {
         Laya.Tween.to(this.view.logoImg, { y: 110 }, 500, Laya.Ease.backOut);
         Laya.Tween.to(this.view.boxLogin, { y: 418 }, 500, Laya.Ease.backOut);
         SoundsManager.ins.playerMusicByEnum(MusicBGType.LOGIN_BG, 1000);
+        WebSocketManager.ins.connect(LoginServerInfo.IP, LoginServerInfo.PORT);
         // TankUtil.stageShake(this.view,10);
     };
     LoginMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
+        this.view.btnRegister.on(Laya.Event.CLICK, this, this.onBtnRegister);
+        WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN_RESP, new UserLoginHandler(this, this.onWebSocketLogined));
     };
     LoginMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
+        this.view.btnRegister.off(Laya.Event.CLICK, this, this.onBtnRegister);
+        WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN_RESP, this);
+    };
+    LoginMediator.prototype.onWebSocketLogined = function (data) {
+        console.log("登录成功。。。" + data);
+        // PreLoadingView.ins.show();
+        // SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        // this.dispose();  
+    };
+    LoginMediator.prototype.onBtnRegister = function (e) {
+        var account = this.view.inputAccount.text;
+        var pwd = this.view.inputPwd.text;
+        if (!account || account == "") {
+            console.log("用户名不能为空");
+            return;
+        }
+        if (!pwd || pwd == "") {
+            console.log("密码不能为空");
+            return;
+        }
+        ClientSender.registerReq(account, pwd);
     };
     LoginMediator.prototype.onBtnLogin = function (e) {
         if (GameConfig.SINGLE_GAME) {
@@ -56,7 +80,8 @@ var LoginMediator = /** @class */ (function (_super) {
                 console.log("密码不能为空");
                 return;
             }
-            ClientSender.httpLoginReq(account, pwd, this, this.loginSuccessHanlder);
+            // ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
+            ClientSender.loginReq(account, pwd);
         }
     };
     LoginMediator.prototype.loginSuccessHanlder = function (data) {

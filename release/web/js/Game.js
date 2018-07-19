@@ -47,7 +47,7 @@ var Game = /** @class */ (function () {
 Laya.MiniAdpter.init();
 Config.isAntialias = true; //绘图抗锯齿
 Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, Laya.WebGL);
-// Laya.Stat.show(0,0);
+Laya.Stat.show(0, 0);
 Laya.stage.scaleMode = "showAll"; //showall跟showAll不一样。。。。
 Laya.stage.alignH = "center";
 Laya.stage.alignV = "top";

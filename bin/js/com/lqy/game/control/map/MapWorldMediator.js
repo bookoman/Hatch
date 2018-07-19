@@ -18,18 +18,23 @@ var MapWorldMediator = /** @class */ (function (_super) {
         _this.lastMoveX = 0;
         _this.mouseDownX = 0;
         _this.mouseUpX = 0;
-        //颜色滤镜矩阵,灰色
-        _this.grayFilter = new Laya.ColorFilter([
+        _this.distanceX = 0;
+        return _this;
+    }
+    MapWorldMediator.prototype.initView = function () {
+        this.grayFilter = new Laya.ColorFilter([
             0.3086, 0.6094, 0.0820, 0, 0,
             0.3086, 0.6094, 0.0820, 0, 0,
             0.3086, 0.6094, 0.0820, 0, 0,
             0, 0, 0, 1, 0,
         ]);
-        //发光滤镜#0099FF
-        _this.glowFilter = new Laya.GlowFilter("#00FF00", 100, 0, 0);
-        return _this;
-    }
-    MapWorldMediator.prototype.initView = function () {
+        this.blackFilter = new Laya.ColorFilter([
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0,
+        ]);
+        // this.glowFilter = new Laya.GlowFilter("#000000", 100, 0, 0);
         this.view = new ui.map.MapWorldViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         var imgBlock;
@@ -39,6 +44,9 @@ var MapWorldMediator = /** @class */ (function (_super) {
             this.setBlockGray(imgBlock);
             this.view["imgBlock" + i].on(Laya.Event.CLICK, this, this.onBlockClick);
         }
+        this.imgBlockFloat = new LayaImage();
+        this.imgBlockFloat.visible = false;
+        this.view.panelBlock.addChild(this.imgBlockFloat);
         this.view.visible = true;
         _super.prototype.initView.call(this);
         this.worldmapEffect();
@@ -63,9 +71,14 @@ var MapWorldMediator = /** @class */ (function (_super) {
         Tween.to(this.view.yun3, { x: -2004, y: 116, alpha: 0 }, 3000, null, Laya.Handler.create(this, this.yunMoveComplete, [this.view.yun3]), 1000);
         Tween.to(this.view.yun4, { x: 2165, y: 1031, alpha: 0 }, 3000, null, Laya.Handler.create(this, this.yunMoveComplete, [this.view.yun4]), 1000);
         Tween.to(this.view.wumaiImage, { x: 1500, alpha: 0 }, 3500, null, Laya.Handler.create(this, this.yunMoveComplete, [this.view.wumaiImage]), 0);
-        Tween.to(this.view.panelBlock, { x: 0, y: 0, scaleX: 1.0, scaleY: 1.0 }, 1000, null, null, 1000);
+        Tween.to(this.view.panelBlock, { x: -240, y: 0, scaleX: 1.0, scaleY: 1.0 }, 1000, null, null, 1000);
         //选中当前打的地图板块
-        this.view.imgBlock0.filters = [this.glowFilter];
+        this.view.imgBlock0.filters = [this.blackFilter];
+        this.imgBlockFloat.skin = this.view.imgBlock0.skin;
+        this.imgBlockFloat.x = this.view.imgBlock0.x - 20;
+        this.imgBlockFloat.y = this.view.imgBlock0.y - 20;
+        this.imgBlockFloat.visible = true;
+        this.view.imgNoOpen.filters = [this.grayFilter];
     };
     MapWorldMediator.prototype.yunMoveComplete = function (disImg) {
         if (disImg) {
@@ -93,17 +106,30 @@ var MapWorldMediator = /** @class */ (function (_super) {
             TipsManager.ins.showFloatMsg("关卡未开启，请通关上一地图所有关卡", 30, "#ff0000", this.view, this.view.width / 2, this.view.height / 2, 1, 0, 100);
             return;
         }
+        this.imgBlockFloat.visible = false;
         var imgBlock;
-        for (var i = 0; i < 7; i++) {
+        for (var i = 0; i < GameConfig.GATE_MAP_KEYS.length; i++) {
             imgBlock = this.view["imgBlock" + i];
-            if (GameDataManager.ins.getGateMapIsOpen(imgBlock.name)) {
-                imgBlock.filters = null;
+            if (imgBlock) {
+                if (GameDataManager.ins.getGateMapIsOpen(imgBlock.name)) {
+                    imgBlock.filters = null;
+                }
+                else {
+                    imgBlock.filters = [this.grayFilter];
+                }
             }
         }
         imgBlock = e.target;
-        imgBlock.filters = [this.glowFilter];
+        imgBlock.filters = [this.blackFilter];
+        this.imgBlockFloat.skin = imgBlock.skin;
+        this.imgBlockFloat.x = imgBlock.x;
+        this.imgBlockFloat.y = imgBlock.y;
+        this.imgBlockFloat.visible = true;
+        Laya.Tween.to(this.imgBlockFloat, { x: imgBlock.x - 10, y: imgBlock.y - 10 }, 100, Laya.Ease.backOut, Laya.Handler.create(this, this.openGateListView, [imgBlock.name]));
+    };
+    MapWorldMediator.prototype.openGateListView = function (blockName) {
         this.gateListMediator = new GateListMediator();
-        this.gateListMediator.setData(imgBlock.name);
+        this.gateListMediator.setData(blockName);
     };
     MapWorldMediator.prototype.onViewMouseEvent = function (e) {
         if (e.type == Laya.Event.MOUSE_DOWN) {
@@ -116,6 +142,9 @@ var MapWorldMediator = /** @class */ (function (_super) {
         else if (e.type == Laya.Event.MOUSE_UP) {
             this.mouseUpX = this.view.panelBlock.mouseX;
             this.view.panelBlock.off(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+            if (Math.abs(this.mouseDownX - this.mouseUpX) < 10) {
+                return;
+            }
             //缓缓移动效果
             var tweenX = 0;
             if (this.distanceX > 0) {
@@ -148,6 +177,9 @@ var MapWorldMediator = /** @class */ (function (_super) {
         this.lastMoveX = this.view.panelBlock.mouseX;
     };
     MapWorldMediator.prototype.dispose = function () {
+        if (this.view) {
+            this.view.imgNoOpen.filters = null;
+        }
         RightFunctionButtons.ins.hide();
         if (this.gateListMediator) {
             this.gateListMediator.dispose();

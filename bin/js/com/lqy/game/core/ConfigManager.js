@@ -138,7 +138,7 @@ var ConfigManager = /** @class */ (function () {
             this.qualitySampleVoDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/QualitySample.xml");
-        this.xmlToObjcet(configStr, QualitySampleConfig, "key", this.qualitySampleVoDic);
+        this.xmlToObjcet2(configStr, QualitySampleConfig, "key", this.qualitySampleVoDic);
         Laya.loader.clearRes("res/config/QualitySample.xml");
     };
     /**宠物等级 */
@@ -147,7 +147,7 @@ var ConfigManager = /** @class */ (function () {
             this.heroLevelSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/HeroLevelSample.xml");
-        this.xmlToObjcet(configStr, HeroLevelSampleConfig, "key", this.heroLevelSampleDic);
+        this.xmlToObjcet2(configStr, HeroLevelSampleConfig, "key", this.heroLevelSampleDic);
         Laya.loader.clearRes("res/config/HeroLevelSample.xml");
     };
     /**宠物配置 */
@@ -156,7 +156,7 @@ var ConfigManager = /** @class */ (function () {
             this.heroSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/HeroSample.xml");
-        this.xmlToObjcet(configStr, HeroSampleConfig, "key", this.heroSampleDic);
+        this.xmlToObjcet2(configStr, HeroSampleConfig, "key", this.heroSampleDic);
         Laya.loader.clearRes("res/config/HeroSample.xml");
     };
     /**宠物品质 */
@@ -165,7 +165,7 @@ var ConfigManager = /** @class */ (function () {
             this.heroTypeSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/HeroTypeSample.xml");
-        this.xmlToObjcet(configStr, HeroTypeSampleConfig, "key", this.heroTypeSampleDic);
+        this.xmlToObjcet2(configStr, HeroTypeSampleConfig, "key", this.heroTypeSampleDic);
         Laya.loader.clearRes("res/config/HeroTypeSample.xml");
     };
     /**宠物品质 */
@@ -174,7 +174,7 @@ var ConfigManager = /** @class */ (function () {
             this.qualityScoreSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/QualityScoreSample.xml");
-        this.xmlToObjcet(configStr, QualityScoreSampleConfig, "key", this.qualityScoreSampleDic);
+        this.xmlToObjcet2(configStr, QualityScoreSampleConfig, "key", this.qualityScoreSampleDic);
         Laya.loader.clearRes("res/config/QualityScoreSample.xml");
     };
     /**地图配置 */
@@ -183,7 +183,7 @@ var ConfigManager = /** @class */ (function () {
             this.gateMapSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/GateMapSample.xml");
-        this.xmlToObjcet(configStr, GateMapSampleConfig, "key", this.gateMapSampleDic);
+        this.xmlToObjcet2(configStr, GateMapSampleConfig, "key", this.gateMapSampleDic);
         this.gateMapSampleDic.keys.forEach(function (key) {
             GameConfig.GATE_MAP_KEYS.push(key);
         });
@@ -195,7 +195,7 @@ var ConfigManager = /** @class */ (function () {
             this.gateSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/GateSample.xml");
-        this.xmlToObjcet(configStr, GateSampleConfig, "key", this.gateSampleDic);
+        this.xmlToObjcet2(configStr, GateSampleConfig, "key", this.gateSampleDic);
         Laya.loader.clearRes("res/config/GateSample.xml");
     };
     /**宠物技能 */
@@ -204,7 +204,7 @@ var ConfigManager = /** @class */ (function () {
             this.heroSkillSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/HeroSkillSample.xml");
-        this.xmlToObjcet(configStr, HeroSkillSampleConfig, "key", this.heroSkillSampleDic);
+        this.xmlToObjcet2(configStr, HeroSkillSampleConfig, "key", this.heroSkillSampleDic);
         Laya.loader.clearRes("res/config/HeroSkillSample.xml");
     };
     /**怪物配置 */
@@ -213,7 +213,7 @@ var ConfigManager = /** @class */ (function () {
             this.masterHeroSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/MasterHeroSample.xml");
-        this.xmlToObjcet(configStr, MasterHeroSampleConfig, "key", this.masterHeroSampleDic);
+        this.xmlToObjcet2(configStr, MasterHeroSampleConfig, "key", this.masterHeroSampleDic);
         Laya.loader.clearRes("res/config/MasterHeroSample.xml");
     };
     /**道具配置 */
@@ -222,7 +222,7 @@ var ConfigManager = /** @class */ (function () {
             this.itemSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/ItemSample.xml");
-        this.xmlToObjcet(configStr, ItemSampleConfig, "key", this.itemSampleDic);
+        this.xmlToObjcet2(configStr, ItemSampleConfig, "key", this.itemSampleDic);
         Laya.loader.clearRes("res/config/ItemSample.xml");
     };
     /**
@@ -329,6 +329,27 @@ var ConfigManager = /** @class */ (function () {
                 }
                 dic.set(obj[keyPro], obj);
                 // console.log(obj.modelId,obj.key,obj.name);
+            }
+        }
+    };
+    ConfigManager.prototype.xmlToObjcet2 = function (xml, DineClass, keyPro, dic) {
+        var node;
+        for (var j = 0; j < xml.all.length; j++) {
+            node = xml.all[j];
+            if (node.nodeName == "element") {
+                var nameNodeMap = node.attributes;
+                var attr;
+                var obj = new DineClass();
+                for (var i = 0; i < nameNodeMap.length; i++) {
+                    attr = nameNodeMap[i];
+                    if (isNaN(Number(attr.nodeValue))) {
+                        obj[attr.nodeName] = attr.nodeValue;
+                    }
+                    else {
+                        obj[attr.nodeName] = Number(attr.nodeValue);
+                    }
+                }
+                dic.set(obj[keyPro], obj);
             }
         }
     };

@@ -18,8 +18,8 @@ var UserLoginHandler = /** @class */ (function (_super) {
         return _super.call(this, caller, callback) || this;
     }
     UserLoginHandler.prototype.explain = function (data) {
-        var LoginResponse = WebSocketManager.ins.defineProtoClass("LoginResponse");
-        var message = LoginResponse.decode(data);
+        var ResUserCode = WebSocketManager.ins.defineProtoClass("ResUserCode");
+        var message = ResUserCode.decode(data);
         _super.prototype.explain.call(this, message);
     };
     /**处理数据 */

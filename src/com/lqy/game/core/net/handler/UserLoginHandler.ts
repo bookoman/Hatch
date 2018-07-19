@@ -7,8 +7,8 @@ class UserLoginHandler extends SocketHanlder{
     }
     public explain(data):void
     {
-        var LoginResponse:any = WebSocketManager.ins.defineProtoClass("LoginResponse");
-        var message:any = LoginResponse.decode(data);
+        var ResUserCode:any = WebSocketManager.ins.defineProtoClass("ResUserCode");
+        var message:any = ResUserCode.decode(data);
         super.explain(message);
     }
     /**处理数据 */

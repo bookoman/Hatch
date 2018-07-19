@@ -136,6 +136,7 @@ P 13AA413C shengwang.png
 P F4423653 skillbth.png
 P FB2FA1BB smelt.png
 P 9E5957AE smeltbth.png
+D template
 D unpack
 D worldmap
 P F287933A btn_chanllege.png
@@ -287,6 +288,10 @@ P C37820CA icon-007.png
 P BDF6A9E9 icon-008.png
 P 86DC8C1C icon-009.png
 P F30CC7E9 icon-010.png
+D template/ButtonTab
+P FC49EE94 btn_LargeTabButton_Left.png
+P AE499BA2 btn_LargeTabButton_Middle.png
+P 71BBA39E btn_LargeTabButton_Right.png
 D unpack/bag
 R 30A44D11 itemjiatu.png
 D unpack/battlefail
@@ -372,17 +377,26 @@ R A6207A31 boximg.png
 R CEC74E56 slidimg.png
 R A04D3FB1 smeltbg.png
 D unpack/worldmap
-R 8BC2DFBB bg.png
+S ACC1FCF0 bg1.jpg
+S 6D96E416 bg2.jpg
 R C79DB7B3 img_gatebg.png
 R 2FCB7124 img_listbg.png
 R 966903F6 img_listgraybg.png
-R 131A7BAD p1.png
-R FB05F29C p2.png
-R C4C2AB1F p3.png
-R 66060124 p4.png
-R B420CDF7 p5.png
-R A8B7EA2C p6.png
-R 09186987 p7.png
+S E19BC090 nopen.png
+R 06FB1C59 p1.png
+R A22E037F p10.png
+R 7B28E091 p11.png
+R 399E79AC p12.png
+R 58B7CEBB p13.png
+R 72FC9AA7 p14.png
+R C3BE7A73 p2.png
+R FC6233A3 p3.png
+R FDC479CB p4.png
+R 2C24946F p5.png
+R 3B5AA35C p6.png
+R 0D6A757B p7.png
+R 4FAAA9B0 p8.png
+R 96770DDF p9.png
 R 5831344A yun1.png
 R A8357BE4 yun2.png
 R 2964B51E yun3.png

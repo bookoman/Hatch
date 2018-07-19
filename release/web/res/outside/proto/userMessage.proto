@@ -1,0 +1,70 @@
+// 如果使用此注释，则使用proto3; 否则使用proto2
+syntax = "proto3";
+
+// 生成包名（服务器用）
+option java_package = "com.game.user.proto";
+// 生成类名（服务器用）
+option java_outer_classname = "UserProto";
+
+// -------------------------------------Bean-------------------------------------
+// Bean类 公告信息（网关公告）
+message G2CNoticeInfo{
+	string title = 1;//公告标题
+	string content = 2;//公告内容
+}
+
+//服务器信息（网关和客户端通信用）
+message Gate2ClientServerInfo{
+	int32 serverId = 1;//服务器id
+	string serverName = 2;//服务器名称
+	int32 port = 3;//端口
+	string ip = 4;//ip
+	int32 state = 5;//服务器状态 0维护 1爆满 2推荐
+}
+
+
+// -------------------------------------请求消息-------------------------------------
+//请求获取版本号 msgId=202101（暂时不用接，根据需求介入） 返回消息msgId=202202
+message ReqCheckVersion{
+	int32 checkId = 1;//客户端号自定义编号，用作是否进入正式服或者测试服 和 是否显示版号信息
+}
+
+//请求白包注册用户(平台包不包含此消息) msgId=202102 返回消息=无
+message ReqRegisterUser{
+	string userName = 1;//用户名
+	string userPass = 2;//密码
+}
+
+//白包用户登录(平台包不包含此消息) msgId=202103 返回登录消息msgId=202201，登录成功之后服务器主动返回msgId=202204(公告) msgId=202203（服务器列表）
+message ReqUserLogin{
+	string userName = 1;//用户名
+	string userPass = 2;//密码
+	int32 clientId = 3;//客户端Id
+}
+
+
+// -------------------------------------返回消息-------------------------------------
+//用户登陆验证返回  msgId=202201
+message ResUserCode{
+	int32 state = 1;//state 1:登陆成功 2失败：没有用户名 3找不到此用户并且注册此用户失败！ 4该账号已被封号，禁止登陆 5网关报错异常
+	string code = 4;//登陆成功时返回登陆code
+}
+
+//返回服务器当前版本号 msgId=202202（暂时不用接，根据需求介入）
+message ResCheckVersion{
+	int32 clientVersion = 1;//客户端版本号
+	int32 isServerType = 2;//连接服务器类型 0测试服 1正式服
+	int32 isVerInfo = 3;//是否显示版号信息 0不显示 1显示
+	int32 isServerList = 4;//是否请求服务器列表 0不能请求服务器列表（不能进入游戏，弹框显示args文字）1可以请求服务器列表
+	string args = 5;//扩展参数
+}
+
+//向客户端发送服务器列表 msgId=202203
+message ResServerList{
+	repeated Gate2ClientServerInfo serverInfoList = 1;//服务器列表
+}
+
+//发送公告到客户端（收到此消息才显示公告，否则不显示） msgId=202204
+message ResNotice2Client{
+	G2CNoticeInfo noticeInfo = 1;//公告bean
+}

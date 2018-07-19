@@ -1,0 +1,39 @@
+option java_package = "com.lqy.gameserver.protocs";
+option java_outer_classname = "HeroProtoc";
+
+
+enum HeroModuleProtocl {
+	M_Hero = 1001;       // 宠物模块号	
+}
+
+enum HeroCommandProtocl {
+	C_HeroInfos = 1;       //   获取所有的宠物指令号
+	C_UpdateFormation = 2;       //   更新阵型
+}
+
+//请求所有的宠物 [C_HeroInfos]
+message HeroInfoRequest {
+	optional int32 statusCode  = 1;				// 无意义
+}
+
+//返回所有的宠物 [C_HeroInfos]
+message HeroInfoResponse {
+	required int32 statusCode = 1; 				// 状态码：0：成功
+	optional string roleHeroInfo = 2;		    // 玩家英雄信息json格式
+}
+
+
+//请求设置宠物上下阵 [C_UpdateFormation]
+message UpdateFormationRequest {
+	optional int32 siteIdx  = 1;				// 位置所引
+	optional string heroId  = 2;				// 英雄ID
+	optional bool flag = 3;						// true上阵，false 下阵
+}
+
+//返回设置宠物上下阵结果 [C_UpdateFormation]
+message UpdateFormationResponse {
+	required int32 statusCode = 1; 				// 状态码：0：成功
+	optional int32 siteIdx  = 2;				// 位置所引
+	optional string heroId  = 3;				// 英雄ID
+	optional bool flag = 4;						// true上阵，false 下阵
+}

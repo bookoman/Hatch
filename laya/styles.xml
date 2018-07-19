@@ -52,4 +52,10 @@
    <item name="unpack/main/font_red1.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/main/font_red2.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
    <item name="unpack/main/font_red.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/worldmap/p1.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/worldmap/p10.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/worldmap/p12.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/worldmap/p14.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/worldmap/p2.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
+   <item name="unpack/worldmap/p7.png" type="Image" compress="0" pack="2" quality="80" props="" picType="0" scale="0"/>
 </res>

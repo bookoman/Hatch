@@ -145,6 +145,43 @@ module ui.comp {
     }
 }
 
+module ui.comp {
+    export class SkillIconUI extends View {
+		public imgBg:Laya.Image;
+		public imgIcon:Laya.Image;
+
+        public static  uiView:any ={"type":"View","props":{"width":0,"height":0},"child":[{"type":"Image","props":{"x":0,"width":100,"var":"imgBg","skin":"comp/blank.png","height":100}},{"type":"Image","props":{"y":0,"x":0,"width":100,"var":"imgIcon","skin":"comp/blank.png","height":100}},{"type":"Label","props":{"y":72,"x":26,"text":"龙啸九天","color":"#ffffff"}}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.comp.SkillIconUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
+    export class CreateRoleViewUI extends View {
+		public imgMan:Laya.Image;
+		public imgGirl:Laya.Image;
+		public btnRandom:Laya.Button;
+		public btnSure:Laya.Button;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"comp/blank.png","height":1334},"child":[{"type":"Rect","props":{"y":0,"x":0,"width":750,"lineWidth":1,"height":1334,"fillColor":"#ffffff"}},{"type":"Rect","props":{"y":200,"x":56,"width":300,"lineWidth":1,"height":600,"fillColor":"#d1cbcb"}},{"type":"Rect","props":{"y":200,"x":400,"width":300,"lineWidth":1,"height":600,"fillColor":"#d1cbcb"}}]},{"type":"Image","props":{"y":934,"x":227,"width":66,"var":"imgMan","skin":"comp/blank.png","height":65},"child":[{"type":"Text","props":{"y":17,"x":19,"width":30,"text":"男","height":30,"fontSize":30,"color":"#000000","bold":true}}]},{"type":"Image","props":{"y":934,"x":458,"width":66,"var":"imgGirl","skin":"comp/blank.png","height":65},"child":[{"type":"Text","props":{"y":17,"x":19,"width":30,"text":"女","height":30,"fontSize":30,"color":"#000000","bold":true}}]},{"type":"Image","props":{"y":1058,"x":250,"width":234,"skin":"comp/blank.png","height":40},"child":[{"type":"Label","props":{"y":3,"x":-5,"width":235,"valign":"middle","text":"label","height":35,"fontSize":30,"font":"SimHei","color":"#000000","align":"center"}}]},{"type":"Button","props":{"y":1061,"x":497,"width":46,"var":"btnRandom","skin":"comp/button.png","labelSize":30,"labelFont":"SimHei","label":"随","height":38}},{"type":"Button","props":{"y":1150,"x":288,"width":167,"var":"btnSure","skin":"comp/button.png","labelSize":30,"labelFont":"SimHei","label":"确定","height":38}}]};
+        constructor(){ super()}
+        createChildren():void {
+        			View.regComponent("Text",laya.display.Text);
+
+            super.createChildren();
+            this.createView(ui.CreateRoleViewUI.uiView);
+
+        }
+
+    }
+}
+
 module ui {
     export class DebugViewUI extends View {
 		public imgBg:Laya.Image;
@@ -210,21 +247,6 @@ module ui.equip {
         
             super.createChildren();
             this.createView(ui.equip.SmeltViewUI.uiView);
-
-        }
-
-    }
-}
-
-module ui {
-    export class EquipViewUI extends View {
-
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"unpack/main/龙与猎人-角色.png","height":1334}}]};
-        constructor(){ super()}
-        createChildren():void {
-        
-            super.createChildren();
-            this.createView(ui.EquipViewUI.uiView);
 
         }
 
@@ -315,21 +337,6 @@ module ui {
     }
 }
 
-module ui {
-    export class HomeViewUI extends View {
-
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/lineup/龙与猎人-上阵.png"}}]};
-        constructor(){ super()}
-        createChildren():void {
-        
-            super.createChildren();
-            this.createView(ui.HomeViewUI.uiView);
-
-        }
-
-    }
-}
-
 module ui.lineup {
     export class LineupGridViewUI extends View {
 		public clipShadow:Laya.Clip;
@@ -397,7 +404,7 @@ module ui {
 		public btnForgetPwd:Laya.Button;
 		public btnRegister:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/login/loginbg.png"}},{"type":"Image","props":{"y":-271,"x":28,"visible":false,"var":"logoImg","skin":"unpack/login/logo.png"}},{"type":"Box","props":{"y":1355,"x":105,"var":"boxLogin"},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/login/loginbox.png"}},{"type":"Image","props":{"y":155,"x":79,"skin":"login/img_fontbg.png"}},{"type":"Image","props":{"y":106,"x":104,"skin":"login/img_account.png"}},{"type":"Image","props":{"y":202,"x":104,"skin":"login/img_font4.png"}},{"type":"Button","props":{"y":277,"x":372,"var":"btnLogin","stateNum":1,"skin":"login/btn_login.png"}},{"type":"TextInput","props":{"y":104,"x":189,"width":284,"var":"inputAccount","text":"xielong7","height":42,"fontSize":28,"bold":true}},{"type":"TextInput","props":{"y":193,"x":192,"wordWrap":false,"width":281,"var":"inputPwd","type":"password","text":"123456","height":42,"fontSize":28,"bold":true}},{"type":"Button","props":{"y":321,"x":103,"var":"btnForgetPwd","stateNum":1,"skin":"login/btn_forgetpwd.png"}},{"type":"Button","props":{"y":387,"x":210,"var":"btnRegister","stateNum":1,"skin":"login/btn_register.png"}},{"type":"Button","props":{"y":443,"x":105,"stateNum":1,"skin":"login/btn_qq.png"}},{"type":"Button","props":{"y":443,"x":207,"stateNum":1,"skin":"login/btn_wx.png"}},{"type":"Button","props":{"y":443,"x":308,"stateNum":1,"skin":"login/btn_persion.png"}},{"type":"Button","props":{"y":443,"x":410,"stateNum":1,"skin":"login/btn_add.png"}}]}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/login/loginbg.png"}},{"type":"Image","props":{"y":-271,"x":28,"visible":false,"var":"logoImg","skin":"unpack/login/logo.png"}},{"type":"Box","props":{"y":1355,"x":105,"var":"boxLogin"},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/login/loginbox.png"}},{"type":"Image","props":{"y":155,"x":79,"skin":"login/img_fontbg.png"}},{"type":"Image","props":{"y":106,"x":104,"skin":"login/img_account.png"}},{"type":"Image","props":{"y":202,"x":104,"skin":"login/img_font4.png"}},{"type":"Button","props":{"y":277,"x":372,"var":"btnLogin","stateNum":1,"skin":"login/btn_login.png"}},{"type":"TextInput","props":{"y":104,"x":189,"width":284,"var":"inputAccount","text":"xielong","height":42,"fontSize":28,"bold":true}},{"type":"TextInput","props":{"y":193,"x":192,"wordWrap":false,"width":281,"var":"inputPwd","type":"password","text":"123456","height":42,"fontSize":28,"bold":true}},{"type":"Button","props":{"y":321,"x":103,"var":"btnForgetPwd","stateNum":1,"skin":"login/btn_forgetpwd.png"}},{"type":"Button","props":{"y":387,"x":210,"var":"btnRegister","stateNum":1,"skin":"login/btn_register.png"}},{"type":"Button","props":{"y":443,"x":105,"stateNum":1,"skin":"login/btn_qq.png"}},{"type":"Button","props":{"y":443,"x":207,"stateNum":1,"skin":"login/btn_wx.png"}},{"type":"Button","props":{"y":443,"x":308,"stateNum":1,"skin":"login/btn_persion.png"}},{"type":"Button","props":{"y":443,"x":410,"stateNum":1,"skin":"login/btn_add.png"}}]}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -478,7 +485,8 @@ module ui.map {
 
 module ui.map {
     export class MapWorldViewUI extends View {
-		public panelBlock:Laya.Panel;
+		public panelBlock:Laya.Box;
+		public imgNoOpen:Laya.Image;
 		public imgBlock3:Laya.Image;
 		public imgBlock6:Laya.Image;
 		public imgBlock4:Laya.Image;
@@ -486,13 +494,20 @@ module ui.map {
 		public imgBlock2:Laya.Image;
 		public imgBlock1:Laya.Image;
 		public imgBlock0:Laya.Image;
+		public imgBlock7:Laya.Image;
+		public imgBlock8:Laya.Image;
+		public imgBlock9:Laya.Image;
+		public imgBlock10:Laya.Image;
+		public imgBlock11:Laya.Image;
+		public imgBlock12:Laya.Image;
+		public imgBlock13:Laya.Image;
 		public wumaiImage:Laya.Image;
 		public yun1:Laya.Image;
 		public yun2:Laya.Image;
 		public yun3:Laya.Image;
 		public yun4:Laya.Image;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Panel","props":{"y":59,"x":-348,"width":1699,"var":"panelBlock","scaleY":0.9,"scaleX":0.8,"name":"panelBlock","height":1351},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/worldmap/bg.png"}},{"type":"Image","props":{"y":-13,"x":537,"var":"imgBlock3","skin":"unpack/worldmap/p7.png"},"child":[{"type":"Poly","props":{"y":13,"x":54,"renderType":"hit","points":"-13,479,-35,136,41,-5,344,20,396,223,754,227,689,503,265,767","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":194,"x":1222,"var":"imgBlock6","skin":"unpack/worldmap/p2.png"},"child":[{"type":"Poly","props":{"y":11,"x":-197,"renderType":"hit","points":"368,572,212,486,228,186,346,68,513,33,668,84,667,697","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":595,"x":683,"var":"imgBlock4","skin":"unpack/worldmap/p1.png"},"child":[{"type":"Poly","props":{"y":110,"x":164,"renderType":"hit","points":"6,328,-178,245,-110,121,178,-43,375,-87,555,179,277,362","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":891,"x":1210,"var":"imgBlock5","skin":"unpack/worldmap/p3.png"},"child":[{"type":"Poly","props":{"y":41,"x":79,"renderType":"hit","points":"7,382,-76,238,-18,11,184,-37,409,-24,399,265,326,384","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":102,"x":28,"var":"imgBlock2","skin":"unpack/worldmap/p5.png"},"child":[{"type":"Poly","props":{"y":61,"x":31,"renderType":"hit","points":"533,566,65,301,-39,58,106,-37,328,-35,450,51,566,447","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":531,"x":136,"var":"imgBlock1","skin":"unpack/worldmap/p4.png"},"child":[{"type":"Poly","props":{"y":37,"x":46,"renderType":"hit","points":"61,304,-41,204,-6.5,17,171.5,20.5,242,60.5,465,283,342,371","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":893,"x":67,"var":"imgBlock0","skin":"unpack/worldmap/p6.png"},"child":[{"type":"Poly","props":{"y":50,"x":73,"renderType":"hit","points":"-71,424,-28,289,-39,32,184,-37,385.5,-3.5,622,60,675,421","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]}]},{"type":"Image","props":{"y":446,"x":-775,"width":3078,"var":"wumaiImage","skin":"worldmap/wumai.png","name":"wumaiImage","height":1204,"anchorY":0.5,"anchorX":0.5}},{"type":"Image","props":{"y":-263,"x":-370,"width":1623,"var":"yun1","skin":"unpack/worldmap/yun1.png","height":959}},{"type":"Image","props":{"y":805,"x":-1009,"width":1597,"var":"yun2","skin":"unpack/worldmap/yun2.png","height":711}},{"type":"Image","props":{"y":180,"x":-1068,"width":1599,"var":"yun3","skin":"unpack/worldmap/yun3.png","height":1027}},{"type":"Image","props":{"y":711,"x":13,"width":1032,"var":"yun4","skin":"unpack/worldmap/yun4.png","height":824}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Panel","props":{"y":0,"x":0,"width":750,"height":1334},"child":[{"type":"Box","props":{"y":0,"x":0,"var":"panelBlock","name":"panelBlock"},"child":[{"type":"Image","props":{"y":0,"x":2326,"skin":"unpack/worldmap/bg2.jpg"}},{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/worldmap/bg1.jpg"}},{"type":"Image","props":{"y":23,"x":1810,"var":"imgNoOpen","skin":"unpack/worldmap/nopen.png"}},{"type":"Image","props":{"y":501,"x":510,"var":"imgBlock3","skin":"unpack/worldmap/p4.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"187,216.20930232558146,58.02325581395348,112.74418604651157,41,-5,344,20,519.2558139534883,60.20930232558135,581.9069767441861,157.23255813953483,500.62790697674427,286.720930232558,334.76744186046506,353.0465116279071","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":90,"x":981,"var":"imgBlock6","skin":"unpack/worldmap/p7.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"295.9069767441863,192.9302325581396,179.44186046511652,209.25581395348837,16.372093023255502,162.74418604651166,155.30232558139528,12.186046511627893,240.90697674418607,19.046511627906995,335.44186046511595,63.06976744186045,369.32558139534876,127.23255813953492","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":160,"x":237,"var":"imgBlock4","skin":"unpack/worldmap/p5.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"282.6184789440603,332.2740414833438,134.69641734758017,184.53488372093022,37.95725958516667,51.60967944688872,273.3488372093022,31.41860465116278,449.29289754871155,105.26901319924582,506.1627906976745,248.76744186046506,497.93023255813966,343.39534883720927","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":70,"x":558,"var":"imgBlock5","skin":"unpack/worldmap/p6.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"211.65116279069775,428.51162790697674,158.88372093023247,240.32558139534882,-4.04651162790708,94.72093023255815,123.53488372093022,30.441860465116292,578.7674418604652,231.81395348837205,561.7906976744187,434.7674418604651,477.1627906976744,488.6511627906977","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":624,"x":225,"var":"imgBlock2","skin":"unpack/worldmap/p3.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"372.5348837209302,241.84973166368513,148.7209302325582,254.48837209302326,12.162790697674382,111.48837209302326,177.19856887298744,109.15384615384608,325.6744186046511,14.821109123434667,432.69230769230774,79.84615384615381,696.232558139535,302.81395348837214","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":854,"x":329,"var":"imgBlock1","skin":"unpack/worldmap/p2.png"},"child":[{"type":"Poly","props":{"y":2,"x":7,"renderType":"hit","points":"97.85514673886769,97.78958565005087,81.34685490499442,73.36493738819343,86.84719334719335,21.20997920997911,159.78143886283414,8.067084078712014,206.20732002127346,24.422061596480262,188.931489629164,72.16380602427114,141.99758255572198,105.41715418459603","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":854,"x":416,"var":"imgBlock0","skin":"unpack/worldmap/p1.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"117.18353236957893,406.58956631049614,107.50500410965526,266.1213073538654,10.508050089445419,141.34704830053658,114.50089445438289,29.771019677996378,206.2066189624329,8.888193202146681,475.8932940095731,97.65652951699462,483.2241454334478,180.3023255813954","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":93,"x":864,"var":"imgBlock7","skin":"unpack/worldmap/p8.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"243.61359570661898,760.1762075134167,93.3130590339893,835.8023255813952,22.202146690518703,782.3631484794274,134.20930232558158,699.241502683363,287.2075134168156,229.04830053667257,512.5778175313059,100.92486583184248,583.6663685152057,132.1440071556351,610.3273703041143,383.0769230769231,526.5205724508048,661.474060822898,370.9856887298747,766.2119856887296","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":838,"x":932,"var":"imgBlock8","skin":"unpack/worldmap/p9.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"240.6279069767442,300.74418604651123,88.27906976744191,270.3953488372092,33.09302325581393,171.5348837209301,14.232558139534945,93.23255813953472,231.6345065996229,11.647705845380528,422,76.27906976744191,477.32558139534876,204.7209302325581","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":642,"x":1268,"var":"imgBlock9","skin":"unpack/worldmap/p10.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"105.74418604651163,279.8139534883719,13.860465116278988,205.27906976744168,188.90697674418584,120.37209302325584,104.93023255813944,56.02325581395348,166.8953488372092,1.15116279069764,345.2558139534883,104.18604651162798,368.0232558139537,246.5813953488372","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":40,"x":1298,"var":"imgBlock10","skin":"unpack/worldmap/p11.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"690.8837209302326,391.6162790697675,545.2790697674416,342.6046511627905,288.0276555625393,444.3739786297925,170.3023255813955,322.6976744186046,30.7001885606536,34.71590194846004,585.5,24.406976744186068,1189.4418604651162,683.2558139534885,1130.8139534883726,746.581395348837,888.5581395348836,647.4302325581394,714.1395348837211,512.5465116279069","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":450,"x":1407,"var":"imgBlock11","skin":"unpack/worldmap/p12.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"256.5116279069771,407.9651162790698,203.4186046511624,275.16279069767415,32.46511627907,172.72093023255798,12.162790697674382,106.41860465116281,79.34883720930259,9.511627906976685,215.73255813953483,47.66279069767438,254.5581395348836,162.32558139534888,400.5813953488371,253.5581395348837,415.34883720930225,333.82558139534876,432.2558139534883,456.45348837209303","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":555,"x":1810,"var":"imgBlock12","skin":"unpack/worldmap/p13.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"180.16279069767432,354.2325581395346,48.7441860465118,330.860465116279,12.162790697674382,148.2790697674418,137.48837209302326,107.18604651162786,178.52325581395348,19.755813953488314,528.9767441860461,197.20930232558146,681.9767441860461,318.6744186046511,525.5581395348836,368.6162790697674,381.04651162790697,372.9418604651163,274.0697674418607,289.2209302325581","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]},{"type":"Image","props":{"y":377,"x":1622,"var":"imgBlock13","skin":"unpack/worldmap/p14.png"},"child":[{"type":"Poly","props":{"y":0,"x":0,"renderType":"hit","points":"201.0930232558141,312.3720930232556,78.9767441860464,265.7441860465116,30.76744186046517,155.25581395348837,56.09302325581427,58.3488372093023,208.7558139534883,10.453488372093034,340.60465116279033,78.60465116279073,333.1395348837211,246.58139534883708","lineWidth":1,"lineColor":"#ff0000","fillColor":"#00ffff"}}]}]}]},{"type":"Image","props":{"y":446,"x":-775,"width":3078,"var":"wumaiImage","skin":"worldmap/wumai.png","name":"wumaiImage","height":1204,"anchorY":0.5,"anchorX":0.5}},{"type":"Image","props":{"y":-263,"x":-370,"width":1623,"var":"yun1","skin":"unpack/worldmap/yun1.png","height":959}},{"type":"Image","props":{"y":805,"x":-1009,"width":1597,"var":"yun2","skin":"unpack/worldmap/yun2.png","height":711}},{"type":"Image","props":{"y":180,"x":-1068,"width":1599,"var":"yun3","skin":"unpack/worldmap/yun3.png","height":1027}},{"type":"Image","props":{"y":711,"x":13,"width":1032,"var":"yun4","skin":"unpack/worldmap/yun4.png","height":824}}]};
         constructor(){ super()}
         createChildren():void {
         
@@ -504,34 +519,92 @@ module ui.map {
     }
 }
 
-module ui {
-    export class MapViewUI extends View {
+module ui.skill {
+    export class RoleSkillAdvanceViewUI extends View {
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"skin":"unpack/lineup/龙与猎人-上阵.png"}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"comp/blank.png","height":1334}},{"type":"Image","props":{"y":180,"x":15,"width":700,"height":954,"centerY":0,"centerX":0},"child":[{"type":"Rect","props":{"y":0,"x":0,"width":700,"lineWidth":1,"height":954,"fillColor":"#ffffff"}},{"type":"Label","props":{"y":43,"x":187,"text":"技能进阶效果旋转","fontSize":40,"font":"SimHei","color":"#000000","bold":true}}]},{"type":"Box","props":{"y":393,"x":37,"name":"render"},"child":[{"type":"Image","props":{"width":650,"height":130},"child":[{"type":"Rect","props":{"y":0,"x":0,"width":650,"lineWidth":1,"height":130,"fillColor":"#ffffff"}}]},{"type":"SkillIcon","props":{"y":3,"x":15,"runtime":"ui.comp.SkillIconUI"}},{"type":"Label","props":{"y":104,"x":25,"text":"等级：8","name":"lblLv","fontSize":24,"font":"SimHei"}},{"type":"Label","props":{"y":6,"x":136,"width":486,"text":"描述","name":"lblDesc","height":115,"fontSize":24,"font":"SimHei","color":"#000000"}}]},{"type":"Button","props":{"y":999,"x":294,"width":167,"skin":"comp/button.png","labelSize":30,"labelFont":"SimHei","label":"确定","height":43}},{"type":"List","props":{"y":594,"x":37,"spaceY":10,"repeatY":2},"child":[{"type":"Box","props":{"name":"render"},"child":[{"type":"Image","props":{"width":650,"height":130},"child":[{"type":"Rect","props":{"y":0,"x":0,"width":650,"lineWidth":1,"height":130,"fillColor":"#ffffff"}}]},{"type":"SkillIcon","props":{"y":3,"x":15,"runtime":"ui.comp.SkillIconUI"}},{"type":"Label","props":{"y":104,"x":25,"text":"等级：8","name":"lblLv","fontSize":24,"font":"SimHei"}},{"type":"Label","props":{"y":6,"x":136,"width":399,"text":"描述","name":"lblDesc","height":115,"fontSize":24,"font":"SimHei"}},{"type":"Button","props":{"y":51,"x":546,"width":89,"skin":"comp/button.png","labelSize":30,"labelFont":"SimHei","label":"学习","height":43}}]}]}]};
         constructor(){ super()}
         createChildren():void {
-        
+        			View.regComponent("ui.comp.SkillIconUI",ui.comp.SkillIconUI);
+
             super.createChildren();
-            this.createView(ui.MapViewUI.uiView);
+            this.createView(ui.skill.RoleSkillAdvanceViewUI.uiView);
 
         }
 
     }
 }
 
-module ui {
-    export class SignViewUI extends View {
-		public btnClose:Laya.Button;
-		public inputName:Laya.TextInput;
-		public btnRecharge:Laya.Button;
-		public btnRechargeExit:Laya.Button;
+module ui.skill {
+    export class RoleSkillSelectViewUI extends View {
+		public btnSure:Laya.Button;
 
-        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":504,"x":154,"width":441,"skin":"comp/bg.png","sizeGrid":"30,4,4,4","height":415}},{"type":"Button","props":{"y":508,"x":566,"var":"btnClose","skin":"comp/btn_close.png"}},{"type":"Label","props":{"y":505,"x":353,"text":"注册","strokeColor":"#000000","fontSize":22}},{"type":"TextInput","props":{"y":590,"x":330,"width":225,"var":"inputName","strokeColor":"#190101","stroke":0,"skin":"comp/textinput.png","height":43}},{"type":"TextInput","props":{"y":661,"x":330,"width":225,"strokeColor":"#190101","stroke":0,"skin":"comp/textinput.png","height":43}},{"type":"Button","props":{"y":830,"x":257,"width":100,"var":"btnRecharge","skin":"comp/button.png","labelSize":20,"label":"注册","height":32}},{"type":"Button","props":{"y":830,"x":414,"width":100,"var":"btnRechargeExit","skin":"comp/button.png","labelSize":20,"label":"取消","height":32}},{"type":"Label","props":{"y":595,"x":216,"text":"帐号","fontSize":32}},{"type":"Label","props":{"y":666,"x":216,"text":"密码","fontSize":32}},{"type":"TextInput","props":{"y":731,"x":330,"width":225,"strokeColor":"#190101","stroke":0,"skin":"comp/textinput.png","height":43}},{"type":"Label","props":{"y":736,"x":216,"text":"密码","fontSize":32}}]};
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"skin":"comp/blank.png","height":1334}},{"type":"Image","props":{"width":700,"height":954,"centerY":0,"centerX":0},"child":[{"type":"Rect","props":{"y":0,"x":0,"width":700,"lineWidth":1,"height":954,"fillColor":"#ffffff"}},{"type":"Label","props":{"y":42,"x":255,"text":"技能选择","fontSize":40,"font":"SimHei","color":"#000000","bold":true}}]},{"type":"List","props":{"y":314,"x":47,"spaceY":10,"repeatY":5},"child":[{"type":"Box","props":{"name":"render"},"child":[{"type":"Image","props":{"width":650,"height":130},"child":[{"type":"Rect","props":{"y":0,"x":0,"width":650,"lineWidth":1,"height":130,"fillColor":"#ffffff"}}]},{"type":"SkillIcon","props":{"y":3,"x":15,"runtime":"ui.comp.SkillIconUI"}},{"type":"Label","props":{"y":104,"x":25,"text":"等级：8","name":"lblLv","fontSize":24,"font":"SimHei"}},{"type":"Label","props":{"y":6,"x":136,"width":486,"text":"描述","name":"lblDesc","height":115,"fontSize":24,"font":"SimHei"}}]}]},{"type":"Button","props":{"y":1056,"x":280,"width":167,"var":"btnSure","skin":"comp/button.png","labelSize":30,"labelFont":"SimHei","label":"确定","height":43}}]};
         constructor(){ super()}
         createChildren():void {
-        
+        			View.regComponent("ui.comp.SkillIconUI",ui.comp.SkillIconUI);
+
             super.createChildren();
-            this.createView(ui.SignViewUI.uiView);
+            this.createView(ui.skill.RoleSkillSelectViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.skill {
+    export class RoleTalentSkillViewUI extends View {
+		public tabAttr:Laya.Tab;
+		public lblLastTalent:Laya.Label;
+		public btnReset:Laya.Button;
+		public btnSure:Laya.Button;
+		public btnUpSkill:Laya.Button;
+		public boxTips:Laya.Box;
+		public lblLv:Laya.Label;
+		public lblDesc:Laya.Label;
+		public btnAdvance:Laya.Button;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"width":750,"height":1334},"child":[{"type":"Rect","props":{"y":0,"x":0,"width":750,"lineWidth":1,"height":1334,"fillColor":"#ffffff"}},{"type":"Label","props":{"y":23,"x":285,"text":"本源天赋","fontSize":40,"font":"SimHei","color":"#000000","bold":true}}]},{"type":"Tab","props":{"y":88,"x":66,"width":285,"var":"tabAttr","skin":"comp/tab.png","selectedIndex":0,"labels":"火,地,风,水","labelSize":24,"height":26}},{"type":"Label","props":{"y":141,"x":282,"var":"lblLastTalent","text":"剩余天赋点数：8","fontSize":24,"font":"SimHei","color":"#000000\\"}},{"type":"Button","props":{"y":132,"x":484,"width":167,"var":"btnReset","skin":"comp/button.png","labelSize":30,"labelFont":"SimHei","label":"重置","height":43}},{"type":"SkillIcon","props":{"y":282,"x":124,"runtime":"ui.comp.SkillIconUI"}},{"type":"SkillIcon","props":{"y":282,"x":542,"runtime":"ui.comp.SkillIconUI"}},{"type":"SkillIcon","props":{"y":454,"x":542,"runtime":"ui.comp.SkillIconUI"}},{"type":"SkillIcon","props":{"y":627,"x":542,"runtime":"ui.comp.SkillIconUI"}},{"type":"SkillIcon","props":{"y":799,"x":542,"runtime":"ui.comp.SkillIconUI"}},{"type":"SkillIcon","props":{"y":454,"x":124,"runtime":"ui.comp.SkillIconUI"}},{"type":"SkillIcon","props":{"y":627,"x":124,"runtime":"ui.comp.SkillIconUI"}},{"type":"SkillIcon","props":{"y":799,"x":124,"runtime":"ui.comp.SkillIconUI"}},{"type":"SkillIcon","props":{"y":454,"x":332,"runtime":"ui.comp.SkillIconUI"}},{"type":"SkillIcon","props":{"y":627,"x":332,"runtime":"ui.comp.SkillIconUI"}},{"type":"Button","props":{"y":1215,"x":166,"width":167,"var":"btnSure","skin":"comp/button.png","labelSize":30,"labelFont":"SimHei","label":"确定","height":43}},{"type":"Button","props":{"y":1215,"x":428,"width":167,"var":"btnUpSkill","skin":"comp/button.png","labelSize":30,"labelFont":"SimHei","label":"出战技能","height":43}},{"type":"Box","props":{"y":994,"x":58,"var":"boxTips"},"child":[{"type":"SkillIcon","props":{"runtime":"ui.comp.SkillIconUI"}},{"type":"Label","props":{"y":120,"x":10,"var":"lblLv","text":"等级：8","fontSize":24,"font":"SimHei"}},{"type":"Label","props":{"y":2,"x":122,"width":365,"var":"lblDesc","text":"描述","height":135,"fontSize":24,"font":"SimHei"},"child":[{"type":"Rect","props":{"y":0,"x":0,"width":369,"lineWidth":1,"height":146,"fillColor":"#2574d9"}}]},{"type":"Button","props":{"y":47,"x":503,"width":167,"var":"btnAdvance","skin":"comp/button.png","labelSize":30,"labelFont":"SimHei","label":"进阶","height":43}}]}]};
+        constructor(){ super()}
+        createChildren():void {
+        			View.regComponent("ui.comp.SkillIconUI",ui.comp.SkillIconUI);
+
+            super.createChildren();
+            this.createView(ui.skill.RoleTalentSkillViewUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.skill {
+    export class RoleUpSkillItemUI extends View {
+
+        public static  uiView:any ={"type":"View","props":{"width":650,"height":120},"child":[{"type":"Image","props":{"y":0,"x":0,"width":650,"height":120},"child":[{"type":"Rect","props":{"y":0,"x":0,"width":650,"lineWidth":1,"height":120,"fillColor":"#ffffff"}}]},{"type":"Image","props":{"y":13,"x":13,"width":100,"skin":"comp/blank.png","height":100},"child":[{"type":"Text","props":{"y":35,"x":17,"text":"探险","fontSize":30,"font":"SimHei","color":"#ffffff"}}]},{"type":"List","props":{"y":11,"x":142,"width":470,"spaceX":25,"repeatX":4,"name":"render","height":100},"child":[{"type":"SkillIcon","props":{"name":"render","runtime":"ui.comp.SkillIconUI"}}]}]};
+        constructor(){ super()}
+        createChildren():void {
+        			View.regComponent("Text",laya.display.Text);
+			View.regComponent("ui.comp.SkillIconUI",ui.comp.SkillIconUI);
+
+            super.createChildren();
+            this.createView(ui.skill.RoleUpSkillItemUI.uiView);
+
+        }
+
+    }
+}
+
+module ui.skill {
+    export class RoleUpSkillViewUI extends View {
+		public imgMask:Laya.Image;
+
+        public static  uiView:any ={"type":"View","props":{"width":750,"height":1334},"child":[{"type":"Image","props":{"y":0,"x":0,"width":750,"var":"imgMask","skin":"comp/blank.png","height":1334}},{"type":"Image","props":{"y":125,"x":29,"width":700,"height":954},"child":[{"type":"Rect","props":{"y":0,"x":0,"width":700,"lineWidth":1,"height":954,"fillColor":"#ffffff"}},{"type":"Label","props":{"y":42,"x":255,"text":"出战技能","fontSize":40,"font":"SimHei","color":"#000000","bold":true}}]},{"type":"List","props":{"y":268,"x":56,"repeatY":6},"child":[{"type":"RoleUpSkillItem","props":{"name":"render","runtime":"ui.skill.RoleUpSkillItemUI"}}]}]};
+        constructor(){ super()}
+        createChildren():void {
+        			View.regComponent("ui.skill.RoleUpSkillItemUI",ui.skill.RoleUpSkillItemUI);
+
+            super.createChildren();
+            this.createView(ui.skill.RoleUpSkillViewUI.uiView);
 
         }
 

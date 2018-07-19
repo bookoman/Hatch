@@ -11,11 +11,11 @@ class GameMediator extends BaseMediator{
     }
     protected initView():void
     {
-        if(GameConfig.SINGLE_GAME)
+        if(GameConfig.SINGLE_GAME){
             GameDataManager.ins.initData();
-        else
-            ClientSender.getHeroInfoReq(1);
-
+        }else{
+            // ClientSender.getHeroInfoReq(1);
+        }
         ObjectPoolUtil.init();
 
 
@@ -48,9 +48,9 @@ class GameMediator extends BaseMediator{
 
         EventManager.ins.addEvent(EventManager.CHOICE_CHALLEGEN_GATE,this,this.choiceChanllegeGate);
 
-        WebSocketManager.ins.registerHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,new GetHeroInfosHanlder(this,this.getHeroInfosHandler));
-        WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_INFO,new GetGateInfoHandler(this,this.gateInfoHanlder));
-        WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_HANDUP_STATE,new GateHangupStateHandler(this,this.gateInfoHanlder));
+        // WebSocketManager.ins.registerHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,new GetHeroInfosHanlder(this,this.getHeroInfosHandler));
+        // WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_INFO,new GetGateInfoHandler(this,this.gateInfoHanlder));
+        // WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_HANDUP_STATE,new GateHangupStateHandler(this,this.gateInfoHanlder));
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = new Handler(this,this.onListAniScaleRender);
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = new Handler(this,this.onListMouseHandler);
         // EventManager.ins.addEvent(EventManager.TEST_LIST_SCRALE_RENDER,this,this.listScraleInit);
@@ -78,9 +78,9 @@ class GameMediator extends BaseMediator{
 
         EventManager.ins.removeEvent(EventManager.CHOICE_CHALLEGEN_GATE,this.choiceChanllegeGate);
 
-        WebSocketManager.ins.unregisterHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,this);
-        WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_INFO,this);
-        WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_HANDUP_STATE,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_INFO,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_HANDUP_STATE,this);
         
 
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = null;
@@ -150,27 +150,35 @@ class GameMediator extends BaseMediator{
         }
         else
         {
-            ClientSender.gateGateInfoReq();
+            // ClientSender.gateGateInfoReq();
         }
     }
     private gateInfoHanlder():void
     {
         //显示地图界面
-        var resAry:Array<Object> = [
-            {url:"unpack/worldmap/p1.png",type:Loader.IMAGE},
-            {url:"unpack/worldmap/p2.png",type:Loader.IMAGE},
-            {url:"unpack/worldmap/p3.png",type:Loader.IMAGE},
-            {url:"unpack/worldmap/p4.png",type:Loader.IMAGE},
-            {url:"unpack/worldmap/p5.png",type:Loader.IMAGE},
-            {url:"unpack/worldmap/p6.png",type:Loader.IMAGE},
-            {url:"unpack/worldmap/p7.png",type:Loader.IMAGE},
-            {url:"unpack/worldmap/bg.png",type:Loader.IMAGE},
-            {url:"unpack/worldmap/img_gatebg.png",type:Loader.IMAGE},
-            {url:"unpack/worldmap/img_listbg.png",type:Loader.IMAGE},
-            {url:"unpack/worldmap/img_listgraybg.png",type:Loader.IMAGE},
-            {url:"res/atlas/worldmap.atlas",type:Loader.ATLAS}
-        ];
-        this.curMediator = new MapWorldMediator(resAry);
+        // var resAry:Array<Object> = [
+        //     {url:"unpack/worldmap/p1.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p2.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p3.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p4.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p5.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p6.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p7.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p8.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p9.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p10.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p11.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p12.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p13.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p14.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/bg.jpg",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/img_gatebg.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/img_listbg.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/img_listgraybg.png",type:Loader.IMAGE},
+        //     {url:"res/atlas/worldmap.atlas",type:Loader.ATLAS}
+        // ];
+        // this.curMediator = new MapWorldMediator(resAry);
+        this.curMediator = new MapWorldMediator();
         GameDataManager.showModuleViewInd = GameButtomTabIndex.MAP_BATTLE;
 
         SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP,1000);

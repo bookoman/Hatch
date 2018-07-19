@@ -62036,8 +62036,9 @@ var WebSocketManager = /** @class */ (function () {
         this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
         //加载协议
-        var protoBufUrls = ["res/outside/proto/login.proto", "res/outside/proto/role.proto", "res/outside/proto/hero.proto",
-            "res/outside/proto/gate.proto"];
+        // var protoBufUrls = ["res/outside/proto/login.proto","res/outside/proto/role.proto","res/outside/proto/hero.proto",
+        // "res/outside/proto/gate.proto"];
+        var protoBufUrls = "res/outside/proto/userMessage.proto";
         Laya.Browser.window.protobuf.load(protoBufUrls, this.protoLoadComplete);
     };
     WebSocketManager.prototype.protoLoadComplete = function (error, root) {
@@ -62046,13 +62047,16 @@ var WebSocketManager = /** @class */ (function () {
     };
     WebSocketManager.prototype.webSocketOpen = function () {
         console.log("websocket open...");
+        WebSocketManager.codeCount = 1;
         EventManager.ins.dispatchEvent(EventManager.SERVER_CONNECTED);
     };
     WebSocketManager.prototype.webSocketMessage = function (data) {
         var packageIn = new PackageIn();
         packageIn.read(data);
-        console.log("websocket msg...", packageIn.module, packageIn.cmd);
-        var key = packageIn.module + "_" + packageIn.cmd;
+        // console.log("websocket msg...",packageIn.module,packageIn.cmd);
+        // var key:string = packageIn.module+"_"+ packageIn.cmd;
+        console.log("websocket msg...", packageIn.cmd);
+        var key = "" + packageIn.cmd;
         var handlers = this.socketHanlderDic.get(key);
         handlers.forEach(function (socketHanlder) {
             socketHanlder.explain(packageIn.body);
@@ -62069,9 +62073,10 @@ var WebSocketManager = /** @class */ (function () {
      * @param cmd
      * @param data
      */
-    WebSocketManager.prototype.sendMsg = function (module, cmd, data) {
+    WebSocketManager.prototype.sendMsg = function (cmd, data) {
         var packageOut = new PackageOut();
-        packageOut.pack(module, cmd, data);
+        // packageOut.pack(module,cmd,data);
+        packageOut.pack(cmd, data);
         this.webSocket.send(packageOut.buffer);
     };
     /**
@@ -62083,8 +62088,9 @@ var WebSocketManager = /** @class */ (function () {
         return this.protoRoot.lookup(classStr);
     };
     /**注册 */
-    WebSocketManager.prototype.registerHandler = function (protocol, cmd, handler) {
-        var key = protocol + "_" + cmd;
+    WebSocketManager.prototype.registerHandler = function (cmd, handler) {
+        // var key:string = protocol+"_"+cmd;
+        var key = "" + cmd;
         var handlers = this.socketHanlderDic.get(key);
         if (!handlers) {
             handlers = [];
@@ -62096,8 +62102,8 @@ var WebSocketManager = /** @class */ (function () {
         }
     };
     /**删除 */
-    WebSocketManager.prototype.unregisterHandler = function (protocol, cmd, caller) {
-        var key = protocol + "_" + cmd;
+    WebSocketManager.prototype.unregisterHandler = function (cmd, caller) {
+        var key = "" + cmd;
         var handlers = this.socketHanlderDic.get(key);
         if (handlers) {
             var handler;
@@ -62112,6 +62118,8 @@ var WebSocketManager = /** @class */ (function () {
             }
         }
     };
+    /**通信code次数 */
+    WebSocketManager.codeCount = 0;
     WebSocketManager._ins = null;
     return WebSocketManager;
 }());
@@ -62196,97 +62204,30 @@ var ClientSender = /** @class */ (function () {
     function ClientSender() {
     }
     /**********************************webSocket */
-    /**登录请求 */
-    ClientSender.loginReq = function (account) {
-        var LoginRequest = WebSocketManager.ins.defineProtoClass("LoginRequest");
+    /**
+     * 用户注册
+     */
+    ClientSender.registerReq = function (userName, userPass) {
+        var ReqRegisterUser = WebSocketManager.ins.defineProtoClass("ReqRegisterUser");
         var message = {};
-        message.name = account;
-        message.token = GameDataManager.ins.loginToken;
-        message.nickname = "xielong";
-        var buffer = LoginRequest.encode(message).finish();
-        WebSocketManager.ins.sendMsg(Protocol.USER_LOGIN, Protocol.USER_LOGIN_CMD, buffer);
+        message.userName = userName;
+        message.userPass = userPass;
+        var buffer = ReqRegisterUser.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.USER_REGISTER_REQ, buffer);
     };
-    /**获取英雄信息 */
-    ClientSender.getHeroInfoReq = function (statusCode) {
-        var HeroInfoRequest = WebSocketManager.ins.defineProtoClass("HeroInfoRequest");
+    /**
+     * 用户登录
+     * @param userName
+     * @param userPass
+     */
+    ClientSender.loginReq = function (userName, userPass) {
+        var ReqUserLogin = WebSocketManager.ins.defineProtoClass("ReqUserLogin");
         var message = {};
-        message.statusCode = statusCode;
-        var buffer = HeroInfoRequest.encode(message).finish();
-        WebSocketManager.ins.sendMsg(Protocol.HERO, Protocol.HERO_GET_INFOS, buffer);
-    };
-    /**英雄上、下、更新阵型 */
-    ClientSender.heroLinuepUpdateReq = function (lineupId, heroId, isUp) {
-        if (!isUp && GameDataManager.ins.selfPlayerData.heroLineupDic.values.length <= 1) {
-            TipsManager.ins.showFloatMsg("阵上英雄不得少于一个", 30, "#ff0000", LayerManager.ins.getLayer(LayerManager.TIP_LAYER), GameConfig.STAGE_WIDTH / 2, GameConfig.STAGE_HEIGHT / 2, 1, 0, 200);
-            return;
-        }
-        var UpdateFormationRequest = WebSocketManager.ins.defineProtoClass("UpdateFormationRequest");
-        var message = {};
-        message.siteIdx = lineupId;
-        message.heroId = heroId;
-        message.flag = isUp;
-        var buffer = UpdateFormationRequest.encode(message).finish();
-        WebSocketManager.ins.sendMsg(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, buffer);
-    };
-    /**请求关卡信息 */
-    ClientSender.gateGateInfoReq = function () {
-        var GateInfoRequest = WebSocketManager.ins.defineProtoClass("GateInfoRequest");
-        var message = {};
-        message.statusCode = 1;
-        var buffer = GateInfoRequest.encode(message).finish();
-        WebSocketManager.ins.sendMsg(Protocol.GATE, Protocol.GATE_INFO, buffer);
-    };
-    /**挑战关卡 */
-    ClientSender.ballteGateReq = function (gateKey) {
-        var BattleGateRequest = WebSocketManager.ins.defineProtoClass("BattleGateRequest");
-        var message = {};
-        message.gateKey = gateKey;
-        var buffer = BattleGateRequest.encode(message).finish();
-        WebSocketManager.ins.sendMsg(Protocol.GATE, Protocol.GATE_BATTLE, buffer);
-    };
-    /**请求扫荡关卡 */
-    ClientSender.scanGateReq = function (gateKey) {
-        var ScanGateRequest = WebSocketManager.ins.defineProtoClass("ScanGateRequest");
-        var message = {};
-        message.gateKey = gateKey;
-        var buffer = ScanGateRequest.encode(message).finish();
-        WebSocketManager.ins.sendMsg(Protocol.GATE, Protocol.GATE_SCAN, buffer);
-    };
-    /**请求关卡挂机奖励信息 */
-    ClientSender.gateHangupStateReq = function () {
-        var HangupStateRequest = WebSocketManager.ins.defineProtoClass("HangupStateRequest");
-        var message = {};
-        message.statusCode = 1;
-        var buffer = HangupStateRequest.encode(message).finish();
-        WebSocketManager.ins.sendMsg(Protocol.GATE, Protocol.GATE_HANDUP_STATE, buffer);
-        // WebSocketManager.ins.sendMsg(Protocol.GATE,Protocol.GATE_HANDUP_STATE);
-    };
-    /**请求关卡挂机信息 */
-    ClientSender.gateSwitchHangReq = function (gateKey) {
-        var SwitchHangGateRequest = WebSocketManager.ins.defineProtoClass("SwitchHangGateRequest");
-        var message = {};
-        message.gateKey = gateKey;
-        var buffer = SwitchHangGateRequest.encode(message).finish();
-        WebSocketManager.ins.sendMsg(Protocol.GATE, Protocol.GATE_SWITCH_HANG_GATE, buffer);
-        // WebSocketManager.ins.sendMsg(Protocol.GATE,Protocol.GATE_HANDUP_STATE);
-    };
-    /**********************************Http */
-    /**测试登录 */
-    ClientSender.httpLoginReq = function (account, pwd, caller, callBack) {
-        var params = {};
-        params.account = account;
-        params.password = pwd;
-        HttpManager.ins.send(HTTPRequestUrl.testLoginURL, HTTPReqType.GET, params, caller, callBack);
-    };
-    /**获取服务器列表 */
-    ClientSender.httpGameServerReq = function (caller, callBack) {
-        HttpManager.ins.send(HTTPRequestUrl.gameServerURL, HTTPReqType.GET, null, caller, callBack);
-    };
-    /**进入游戏 */
-    ClientSender.httpEnterGameReq = function (sid, caller, callBack) {
-        var params = {};
-        params.sid = sid;
-        HttpManager.ins.send(HTTPRequestUrl.enterGameURL, HTTPReqType.GET, params, caller, callBack);
+        message.userName = userName;
+        message.userPass = userPass;
+        message.clientId = 0;
+        var buffer = ReqUserLogin.encode(message).finish();
+        WebSocketManager.ins.sendMsg(Protocol.USER_LOGIN_REQ, buffer);
     };
     return ClientSender;
 }());
@@ -65617,29 +65558,43 @@ var HTTPReqType = /** @class */ (function () {
 var Protocol = /** @class */ (function () {
     function Protocol() {
     }
-    /**登录模块 */
-    Protocol.USER_LOGIN = 1000;
-    /**登录 */
-    Protocol.USER_LOGIN_CMD = 1;
-    /**英雄模块 */
-    Protocol.HERO = 1001;
-    /**获取英雄信息 */
-    Protocol.HERO_GET_INFOS = 1;
-    /**更新阵型 */
-    Protocol.HERO_UPDATE_FORMATION = 2;
-    /**关卡模块 */
-    Protocol.GATE = 1002;
-    /**获取玩家关卡信息 */
-    Protocol.GATE_INFO = 1;
-    /**返回玩家关卡信息 */
-    Protocol.GATE_HANDUP_STATE = 2;
-    /**切换挂机关卡 */
-    Protocol.GATE_SWITCH_HANG_GATE = 3;
-    /**挑战关卡 */
-    Protocol.GATE_BATTLE = 4;
-    /**扫荡关卡 */
-    Protocol.GATE_SCAN = 5;
+    // /**登录模块 */
+    // public static USER_LOGIN:number = 1000;
+    // /**登录 */
+    // public static USER_LOGIN_CMD:number = 1;
+    // /**英雄模块 */
+    // public static HERO:number = 1001;
+    // /**获取英雄信息 */
+    // public static HERO_GET_INFOS:number = 1;
+    // /**更新阵型 */
+    // public static HERO_UPDATE_FORMATION:number = 2;
+    // /**关卡模块 */
+    // public static GATE:number = 1002;
+    // /**获取玩家关卡信息 */
+    // public static GATE_INFO:number = 1;
+    // /**返回玩家关卡信息 */
+    // public static GATE_HANDUP_STATE:number = 2;
+    // /**切换挂机关卡 */
+    // public static GATE_SWITCH_HANG_GATE:number = 3;
+    // /**挑战关卡 */
+    // public static GATE_BATTLE:number = 4;
+    // /**扫荡关卡 */
+    // public static GATE_SCAN:number = 5;
+    //新协议
+    Protocol.USER_REGISTER_REQ = 202102;
+    /**登录请求 */
+    Protocol.USER_LOGIN_REQ = 202103;
+    /**登录返回 */
+    Protocol.USER_LOGIN_RESP = 202201;
     return Protocol;
+}());
+/**登录服务器信息 */
+var LoginServerInfo = /** @class */ (function () {
+    function LoginServerInfo() {
+    }
+    LoginServerInfo.IP = "192.168.2.104";
+    LoginServerInfo.PORT = 1000;
+    return LoginServerInfo;
 }());
 /**http请求地址 */
 var HTTPRequestUrl = /** @class */ (function () {
@@ -66429,6 +66384,40 @@ var ui;
     })(comp = ui.comp || (ui.comp = {}));
 })(ui || (ui = {}));
 (function (ui) {
+    var comp;
+    (function (comp) {
+        var SkillIconUI = /** @class */ (function (_super) {
+            __extends(SkillIconUI, _super);
+            function SkillIconUI() {
+                return _super.call(this) || this;
+            }
+            SkillIconUI.prototype.createChildren = function () {
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.comp.SkillIconUI.uiView);
+            };
+            SkillIconUI.uiView = { "type": "View", "props": { "width": 0, "height": 0 }, "child": [{ "type": "Image", "props": { "x": 0, "width": 100, "var": "imgBg", "skin": "comp/blank.png", "height": 100 } }, { "type": "Image", "props": { "y": 0, "x": 0, "width": 100, "var": "imgIcon", "skin": "comp/blank.png", "height": 100 } }, { "type": "Label", "props": { "y": 72, "x": 26, "text": "龙啸九天", "color": "#ffffff" } }] };
+            return SkillIconUI;
+        }(View));
+        comp.SkillIconUI = SkillIconUI;
+    })(comp = ui.comp || (ui.comp = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var CreateRoleViewUI = /** @class */ (function (_super) {
+        __extends(CreateRoleViewUI, _super);
+        function CreateRoleViewUI() {
+            return _super.call(this) || this;
+        }
+        CreateRoleViewUI.prototype.createChildren = function () {
+            View.regComponent("Text", laya.display.Text);
+            _super.prototype.createChildren.call(this);
+            this.createView(ui.CreateRoleViewUI.uiView);
+        };
+        CreateRoleViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "comp/blank.png", "height": 1334 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 750, "lineWidth": 1, "height": 1334, "fillColor": "#ffffff" } }, { "type": "Rect", "props": { "y": 200, "x": 56, "width": 300, "lineWidth": 1, "height": 600, "fillColor": "#d1cbcb" } }, { "type": "Rect", "props": { "y": 200, "x": 400, "width": 300, "lineWidth": 1, "height": 600, "fillColor": "#d1cbcb" } }] }, { "type": "Image", "props": { "y": 934, "x": 227, "width": 66, "var": "imgMan", "skin": "comp/blank.png", "height": 65 }, "child": [{ "type": "Text", "props": { "y": 17, "x": 19, "width": 30, "text": "男", "height": 30, "fontSize": 30, "color": "#000000", "bold": true } }] }, { "type": "Image", "props": { "y": 934, "x": 458, "width": 66, "var": "imgGirl", "skin": "comp/blank.png", "height": 65 }, "child": [{ "type": "Text", "props": { "y": 17, "x": 19, "width": 30, "text": "女", "height": 30, "fontSize": 30, "color": "#000000", "bold": true } }] }, { "type": "Image", "props": { "y": 1058, "x": 250, "width": 234, "skin": "comp/blank.png", "height": 40 }, "child": [{ "type": "Label", "props": { "y": 3, "x": -5, "width": 235, "valign": "middle", "text": "label", "height": 35, "fontSize": 30, "font": "SimHei", "color": "#000000", "align": "center" } }] }, { "type": "Button", "props": { "y": 1061, "x": 497, "width": 46, "var": "btnRandom", "skin": "comp/button.png", "labelSize": 30, "labelFont": "SimHei", "label": "随", "height": 38 } }, { "type": "Button", "props": { "y": 1150, "x": 288, "width": 167, "var": "btnSure", "skin": "comp/button.png", "labelSize": 30, "labelFont": "SimHei", "label": "确定", "height": 38 } }] };
+        return CreateRoleViewUI;
+    }(View));
+    ui.CreateRoleViewUI = CreateRoleViewUI;
+})(ui || (ui = {}));
+(function (ui) {
     var DebugViewUI = /** @class */ (function (_super) {
         __extends(DebugViewUI, _super);
         function DebugViewUI() {
@@ -66477,21 +66466,6 @@ var ui;
         }(View));
         equip.SmeltViewUI = SmeltViewUI;
     })(equip = ui.equip || (ui.equip = {}));
-})(ui || (ui = {}));
-(function (ui) {
-    var EquipViewUI = /** @class */ (function (_super) {
-        __extends(EquipViewUI, _super);
-        function EquipViewUI() {
-            return _super.call(this) || this;
-        }
-        EquipViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.EquipViewUI.uiView);
-        };
-        EquipViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "unpack/main/龙与猎人-角色.png", "height": 1334 } }] };
-        return EquipViewUI;
-    }(View));
-    ui.EquipViewUI = EquipViewUI;
 })(ui || (ui = {}));
 (function (ui) {
     var farm;
@@ -66561,21 +66535,6 @@ var ui;
     ui.HeroViewUI = HeroViewUI;
 })(ui || (ui = {}));
 (function (ui) {
-    var HomeViewUI = /** @class */ (function (_super) {
-        __extends(HomeViewUI, _super);
-        function HomeViewUI() {
-            return _super.call(this) || this;
-        }
-        HomeViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.HomeViewUI.uiView);
-        };
-        HomeViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/龙与猎人-上阵.png" } }] };
-        return HomeViewUI;
-    }(View));
-    ui.HomeViewUI = HomeViewUI;
-})(ui || (ui = {}));
-(function (ui) {
     var lineup;
     (function (lineup) {
         var LineupGridViewUI = /** @class */ (function (_super) {
@@ -66643,7 +66602,7 @@ var ui;
             _super.prototype.createChildren.call(this);
             this.createView(ui.LoginViewUI.uiView);
         };
-        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbg.png" } }, { "type": "Image", "props": { "y": -271, "x": 28, "visible": false, "var": "logoImg", "skin": "unpack/login/logo.png" } }, { "type": "Box", "props": { "y": 1355, "x": 105, "var": "boxLogin" }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbox.png" } }, { "type": "Image", "props": { "y": 155, "x": 79, "skin": "login/img_fontbg.png" } }, { "type": "Image", "props": { "y": 106, "x": 104, "skin": "login/img_account.png" } }, { "type": "Image", "props": { "y": 202, "x": 104, "skin": "login/img_font4.png" } }, { "type": "Button", "props": { "y": 277, "x": 372, "var": "btnLogin", "stateNum": 1, "skin": "login/btn_login.png" } }, { "type": "TextInput", "props": { "y": 104, "x": 189, "width": 284, "var": "inputAccount", "text": "xielong7", "height": 42, "fontSize": 28, "bold": true } }, { "type": "TextInput", "props": { "y": 193, "x": 192, "wordWrap": false, "width": 281, "var": "inputPwd", "type": "password", "text": "123456", "height": 42, "fontSize": 28, "bold": true } }, { "type": "Button", "props": { "y": 321, "x": 103, "var": "btnForgetPwd", "stateNum": 1, "skin": "login/btn_forgetpwd.png" } }, { "type": "Button", "props": { "y": 387, "x": 210, "var": "btnRegister", "stateNum": 1, "skin": "login/btn_register.png" } }, { "type": "Button", "props": { "y": 443, "x": 105, "stateNum": 1, "skin": "login/btn_qq.png" } }, { "type": "Button", "props": { "y": 443, "x": 207, "stateNum": 1, "skin": "login/btn_wx.png" } }, { "type": "Button", "props": { "y": 443, "x": 308, "stateNum": 1, "skin": "login/btn_persion.png" } }, { "type": "Button", "props": { "y": 443, "x": 410, "stateNum": 1, "skin": "login/btn_add.png" } }] }] };
+        LoginViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbg.png" } }, { "type": "Image", "props": { "y": -271, "x": 28, "visible": false, "var": "logoImg", "skin": "unpack/login/logo.png" } }, { "type": "Box", "props": { "y": 1355, "x": 105, "var": "boxLogin" }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/login/loginbox.png" } }, { "type": "Image", "props": { "y": 155, "x": 79, "skin": "login/img_fontbg.png" } }, { "type": "Image", "props": { "y": 106, "x": 104, "skin": "login/img_account.png" } }, { "type": "Image", "props": { "y": 202, "x": 104, "skin": "login/img_font4.png" } }, { "type": "Button", "props": { "y": 277, "x": 372, "var": "btnLogin", "stateNum": 1, "skin": "login/btn_login.png" } }, { "type": "TextInput", "props": { "y": 104, "x": 189, "width": 284, "var": "inputAccount", "text": "xielong", "height": 42, "fontSize": 28, "bold": true } }, { "type": "TextInput", "props": { "y": 193, "x": 192, "wordWrap": false, "width": 281, "var": "inputPwd", "type": "password", "text": "123456", "height": 42, "fontSize": 28, "bold": true } }, { "type": "Button", "props": { "y": 321, "x": 103, "var": "btnForgetPwd", "stateNum": 1, "skin": "login/btn_forgetpwd.png" } }, { "type": "Button", "props": { "y": 387, "x": 210, "var": "btnRegister", "stateNum": 1, "skin": "login/btn_register.png" } }, { "type": "Button", "props": { "y": 443, "x": 105, "stateNum": 1, "skin": "login/btn_qq.png" } }, { "type": "Button", "props": { "y": 443, "x": 207, "stateNum": 1, "skin": "login/btn_wx.png" } }, { "type": "Button", "props": { "y": 443, "x": 308, "stateNum": 1, "skin": "login/btn_persion.png" } }, { "type": "Button", "props": { "y": 443, "x": 410, "stateNum": 1, "skin": "login/btn_add.png" } }] }] };
         return LoginViewUI;
     }(View));
     ui.LoginViewUI = LoginViewUI;
@@ -66734,41 +66693,107 @@ var ui;
                 _super.prototype.createChildren.call(this);
                 this.createView(ui.map.MapWorldViewUI.uiView);
             };
-            MapWorldViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Panel", "props": { "y": 59, "x": -348, "width": 1699, "var": "panelBlock", "scaleY": 0.9, "scaleX": 0.8, "name": "panelBlock", "height": 1351 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/worldmap/bg.png" } }, { "type": "Image", "props": { "y": -13, "x": 537, "var": "imgBlock3", "skin": "unpack/worldmap/p7.png" }, "child": [{ "type": "Poly", "props": { "y": 13, "x": 54, "renderType": "hit", "points": "-13,479,-35,136,41,-5,344,20,396,223,754,227,689,503,265,767", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 194, "x": 1222, "var": "imgBlock6", "skin": "unpack/worldmap/p2.png" }, "child": [{ "type": "Poly", "props": { "y": 11, "x": -197, "renderType": "hit", "points": "368,572,212,486,228,186,346,68,513,33,668,84,667,697", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 595, "x": 683, "var": "imgBlock4", "skin": "unpack/worldmap/p1.png" }, "child": [{ "type": "Poly", "props": { "y": 110, "x": 164, "renderType": "hit", "points": "6,328,-178,245,-110,121,178,-43,375,-87,555,179,277,362", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 891, "x": 1210, "var": "imgBlock5", "skin": "unpack/worldmap/p3.png" }, "child": [{ "type": "Poly", "props": { "y": 41, "x": 79, "renderType": "hit", "points": "7,382,-76,238,-18,11,184,-37,409,-24,399,265,326,384", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 102, "x": 28, "var": "imgBlock2", "skin": "unpack/worldmap/p5.png" }, "child": [{ "type": "Poly", "props": { "y": 61, "x": 31, "renderType": "hit", "points": "533,566,65,301,-39,58,106,-37,328,-35,450,51,566,447", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 531, "x": 136, "var": "imgBlock1", "skin": "unpack/worldmap/p4.png" }, "child": [{ "type": "Poly", "props": { "y": 37, "x": 46, "renderType": "hit", "points": "61,304,-41,204,-6.5,17,171.5,20.5,242,60.5,465,283,342,371", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 893, "x": 67, "var": "imgBlock0", "skin": "unpack/worldmap/p6.png" }, "child": [{ "type": "Poly", "props": { "y": 50, "x": 73, "renderType": "hit", "points": "-71,424,-28,289,-39,32,184,-37,385.5,-3.5,622,60,675,421", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }] }, { "type": "Image", "props": { "y": 446, "x": -775, "width": 3078, "var": "wumaiImage", "skin": "worldmap/wumai.png", "name": "wumaiImage", "height": 1204, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": -263, "x": -370, "width": 1623, "var": "yun1", "skin": "unpack/worldmap/yun1.png", "height": 959 } }, { "type": "Image", "props": { "y": 805, "x": -1009, "width": 1597, "var": "yun2", "skin": "unpack/worldmap/yun2.png", "height": 711 } }, { "type": "Image", "props": { "y": 180, "x": -1068, "width": 1599, "var": "yun3", "skin": "unpack/worldmap/yun3.png", "height": 1027 } }, { "type": "Image", "props": { "y": 711, "x": 13, "width": 1032, "var": "yun4", "skin": "unpack/worldmap/yun4.png", "height": 824 } }] };
+            MapWorldViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Panel", "props": { "y": 0, "x": 0, "width": 750, "height": 1334 }, "child": [{ "type": "Box", "props": { "y": 0, "x": 0, "var": "panelBlock", "name": "panelBlock" }, "child": [{ "type": "Image", "props": { "y": 0, "x": 2326, "skin": "unpack/worldmap/bg2.jpg" } }, { "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/worldmap/bg1.jpg" } }, { "type": "Image", "props": { "y": 23, "x": 1810, "var": "imgNoOpen", "skin": "unpack/worldmap/nopen.png" } }, { "type": "Image", "props": { "y": 501, "x": 510, "var": "imgBlock3", "skin": "unpack/worldmap/p4.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "187,216.20930232558146,58.02325581395348,112.74418604651157,41,-5,344,20,519.2558139534883,60.20930232558135,581.9069767441861,157.23255813953483,500.62790697674427,286.720930232558,334.76744186046506,353.0465116279071", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 90, "x": 981, "var": "imgBlock6", "skin": "unpack/worldmap/p7.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "295.9069767441863,192.9302325581396,179.44186046511652,209.25581395348837,16.372093023255502,162.74418604651166,155.30232558139528,12.186046511627893,240.90697674418607,19.046511627906995,335.44186046511595,63.06976744186045,369.32558139534876,127.23255813953492", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 160, "x": 237, "var": "imgBlock4", "skin": "unpack/worldmap/p5.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "282.6184789440603,332.2740414833438,134.69641734758017,184.53488372093022,37.95725958516667,51.60967944688872,273.3488372093022,31.41860465116278,449.29289754871155,105.26901319924582,506.1627906976745,248.76744186046506,497.93023255813966,343.39534883720927", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 70, "x": 558, "var": "imgBlock5", "skin": "unpack/worldmap/p6.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "211.65116279069775,428.51162790697674,158.88372093023247,240.32558139534882,-4.04651162790708,94.72093023255815,123.53488372093022,30.441860465116292,578.7674418604652,231.81395348837205,561.7906976744187,434.7674418604651,477.1627906976744,488.6511627906977", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 624, "x": 225, "var": "imgBlock2", "skin": "unpack/worldmap/p3.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "372.5348837209302,241.84973166368513,148.7209302325582,254.48837209302326,12.162790697674382,111.48837209302326,177.19856887298744,109.15384615384608,325.6744186046511,14.821109123434667,432.69230769230774,79.84615384615381,696.232558139535,302.81395348837214", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 854, "x": 329, "var": "imgBlock1", "skin": "unpack/worldmap/p2.png" }, "child": [{ "type": "Poly", "props": { "y": 2, "x": 7, "renderType": "hit", "points": "97.85514673886769,97.78958565005087,81.34685490499442,73.36493738819343,86.84719334719335,21.20997920997911,159.78143886283414,8.067084078712014,206.20732002127346,24.422061596480262,188.931489629164,72.16380602427114,141.99758255572198,105.41715418459603", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 854, "x": 416, "var": "imgBlock0", "skin": "unpack/worldmap/p1.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "117.18353236957893,406.58956631049614,107.50500410965526,266.1213073538654,10.508050089445419,141.34704830053658,114.50089445438289,29.771019677996378,206.2066189624329,8.888193202146681,475.8932940095731,97.65652951699462,483.2241454334478,180.3023255813954", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 93, "x": 864, "var": "imgBlock7", "skin": "unpack/worldmap/p8.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "243.61359570661898,760.1762075134167,93.3130590339893,835.8023255813952,22.202146690518703,782.3631484794274,134.20930232558158,699.241502683363,287.2075134168156,229.04830053667257,512.5778175313059,100.92486583184248,583.6663685152057,132.1440071556351,610.3273703041143,383.0769230769231,526.5205724508048,661.474060822898,370.9856887298747,766.2119856887296", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 838, "x": 932, "var": "imgBlock8", "skin": "unpack/worldmap/p9.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "240.6279069767442,300.74418604651123,88.27906976744191,270.3953488372092,33.09302325581393,171.5348837209301,14.232558139534945,93.23255813953472,231.6345065996229,11.647705845380528,422,76.27906976744191,477.32558139534876,204.7209302325581", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 642, "x": 1268, "var": "imgBlock9", "skin": "unpack/worldmap/p10.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "105.74418604651163,279.8139534883719,13.860465116278988,205.27906976744168,188.90697674418584,120.37209302325584,104.93023255813944,56.02325581395348,166.8953488372092,1.15116279069764,345.2558139534883,104.18604651162798,368.0232558139537,246.5813953488372", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 40, "x": 1298, "var": "imgBlock10", "skin": "unpack/worldmap/p11.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "690.8837209302326,391.6162790697675,545.2790697674416,342.6046511627905,288.0276555625393,444.3739786297925,170.3023255813955,322.6976744186046,30.7001885606536,34.71590194846004,585.5,24.406976744186068,1189.4418604651162,683.2558139534885,1130.8139534883726,746.581395348837,888.5581395348836,647.4302325581394,714.1395348837211,512.5465116279069", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 450, "x": 1407, "var": "imgBlock11", "skin": "unpack/worldmap/p12.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "256.5116279069771,407.9651162790698,203.4186046511624,275.16279069767415,32.46511627907,172.72093023255798,12.162790697674382,106.41860465116281,79.34883720930259,9.511627906976685,215.73255813953483,47.66279069767438,254.5581395348836,162.32558139534888,400.5813953488371,253.5581395348837,415.34883720930225,333.82558139534876,432.2558139534883,456.45348837209303", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 555, "x": 1810, "var": "imgBlock12", "skin": "unpack/worldmap/p13.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "180.16279069767432,354.2325581395346,48.7441860465118,330.860465116279,12.162790697674382,148.2790697674418,137.48837209302326,107.18604651162786,178.52325581395348,19.755813953488314,528.9767441860461,197.20930232558146,681.9767441860461,318.6744186046511,525.5581395348836,368.6162790697674,381.04651162790697,372.9418604651163,274.0697674418607,289.2209302325581", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }, { "type": "Image", "props": { "y": 377, "x": 1622, "var": "imgBlock13", "skin": "unpack/worldmap/p14.png" }, "child": [{ "type": "Poly", "props": { "y": 0, "x": 0, "renderType": "hit", "points": "201.0930232558141,312.3720930232556,78.9767441860464,265.7441860465116,30.76744186046517,155.25581395348837,56.09302325581427,58.3488372093023,208.7558139534883,10.453488372093034,340.60465116279033,78.60465116279073,333.1395348837211,246.58139534883708", "lineWidth": 1, "lineColor": "#ff0000", "fillColor": "#00ffff" } }] }] }] }, { "type": "Image", "props": { "y": 446, "x": -775, "width": 3078, "var": "wumaiImage", "skin": "worldmap/wumai.png", "name": "wumaiImage", "height": 1204, "anchorY": 0.5, "anchorX": 0.5 } }, { "type": "Image", "props": { "y": -263, "x": -370, "width": 1623, "var": "yun1", "skin": "unpack/worldmap/yun1.png", "height": 959 } }, { "type": "Image", "props": { "y": 805, "x": -1009, "width": 1597, "var": "yun2", "skin": "unpack/worldmap/yun2.png", "height": 711 } }, { "type": "Image", "props": { "y": 180, "x": -1068, "width": 1599, "var": "yun3", "skin": "unpack/worldmap/yun3.png", "height": 1027 } }, { "type": "Image", "props": { "y": 711, "x": 13, "width": 1032, "var": "yun4", "skin": "unpack/worldmap/yun4.png", "height": 824 } }] };
             return MapWorldViewUI;
         }(View));
         map.MapWorldViewUI = MapWorldViewUI;
     })(map = ui.map || (ui.map = {}));
 })(ui || (ui = {}));
 (function (ui) {
-    var MapViewUI = /** @class */ (function (_super) {
-        __extends(MapViewUI, _super);
-        function MapViewUI() {
-            return _super.call(this) || this;
-        }
-        MapViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.MapViewUI.uiView);
-        };
-        MapViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "skin": "unpack/lineup/龙与猎人-上阵.png" } }] };
-        return MapViewUI;
-    }(View));
-    ui.MapViewUI = MapViewUI;
+    var skill;
+    (function (skill) {
+        var RoleSkillAdvanceViewUI = /** @class */ (function (_super) {
+            __extends(RoleSkillAdvanceViewUI, _super);
+            function RoleSkillAdvanceViewUI() {
+                return _super.call(this) || this;
+            }
+            RoleSkillAdvanceViewUI.prototype.createChildren = function () {
+                View.regComponent("ui.comp.SkillIconUI", ui.comp.SkillIconUI);
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.skill.RoleSkillAdvanceViewUI.uiView);
+            };
+            RoleSkillAdvanceViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "comp/blank.png", "height": 1334 } }, { "type": "Image", "props": { "y": 180, "x": 15, "width": 700, "height": 954, "centerY": 0, "centerX": 0 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 700, "lineWidth": 1, "height": 954, "fillColor": "#ffffff" } }, { "type": "Label", "props": { "y": 43, "x": 187, "text": "技能进阶效果旋转", "fontSize": 40, "font": "SimHei", "color": "#000000", "bold": true } }] }, { "type": "Box", "props": { "y": 393, "x": 37, "name": "render" }, "child": [{ "type": "Image", "props": { "width": 650, "height": 130 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 650, "lineWidth": 1, "height": 130, "fillColor": "#ffffff" } }] }, { "type": "SkillIcon", "props": { "y": 3, "x": 15, "runtime": "ui.comp.SkillIconUI" } }, { "type": "Label", "props": { "y": 104, "x": 25, "text": "等级：8", "name": "lblLv", "fontSize": 24, "font": "SimHei" } }, { "type": "Label", "props": { "y": 6, "x": 136, "width": 486, "text": "描述", "name": "lblDesc", "height": 115, "fontSize": 24, "font": "SimHei", "color": "#000000" } }] }, { "type": "Button", "props": { "y": 999, "x": 294, "width": 167, "skin": "comp/button.png", "labelSize": 30, "labelFont": "SimHei", "label": "确定", "height": 43 } }, { "type": "List", "props": { "y": 594, "x": 37, "spaceY": 10, "repeatY": 2 }, "child": [{ "type": "Box", "props": { "name": "render" }, "child": [{ "type": "Image", "props": { "width": 650, "height": 130 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 650, "lineWidth": 1, "height": 130, "fillColor": "#ffffff" } }] }, { "type": "SkillIcon", "props": { "y": 3, "x": 15, "runtime": "ui.comp.SkillIconUI" } }, { "type": "Label", "props": { "y": 104, "x": 25, "text": "等级：8", "name": "lblLv", "fontSize": 24, "font": "SimHei" } }, { "type": "Label", "props": { "y": 6, "x": 136, "width": 399, "text": "描述", "name": "lblDesc", "height": 115, "fontSize": 24, "font": "SimHei" } }, { "type": "Button", "props": { "y": 51, "x": 546, "width": 89, "skin": "comp/button.png", "labelSize": 30, "labelFont": "SimHei", "label": "学习", "height": 43 } }] }] }] };
+            return RoleSkillAdvanceViewUI;
+        }(View));
+        skill.RoleSkillAdvanceViewUI = RoleSkillAdvanceViewUI;
+    })(skill = ui.skill || (ui.skill = {}));
 })(ui || (ui = {}));
 (function (ui) {
-    var SignViewUI = /** @class */ (function (_super) {
-        __extends(SignViewUI, _super);
-        function SignViewUI() {
-            return _super.call(this) || this;
-        }
-        SignViewUI.prototype.createChildren = function () {
-            _super.prototype.createChildren.call(this);
-            this.createView(ui.SignViewUI.uiView);
-        };
-        SignViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 504, "x": 154, "width": 441, "skin": "comp/bg.png", "sizeGrid": "30,4,4,4", "height": 415 } }, { "type": "Button", "props": { "y": 508, "x": 566, "var": "btnClose", "skin": "comp/btn_close.png" } }, { "type": "Label", "props": { "y": 505, "x": 353, "text": "注册", "strokeColor": "#000000", "fontSize": 22 } }, { "type": "TextInput", "props": { "y": 590, "x": 330, "width": 225, "var": "inputName", "strokeColor": "#190101", "stroke": 0, "skin": "comp/textinput.png", "height": 43 } }, { "type": "TextInput", "props": { "y": 661, "x": 330, "width": 225, "strokeColor": "#190101", "stroke": 0, "skin": "comp/textinput.png", "height": 43 } }, { "type": "Button", "props": { "y": 830, "x": 257, "width": 100, "var": "btnRecharge", "skin": "comp/button.png", "labelSize": 20, "label": "注册", "height": 32 } }, { "type": "Button", "props": { "y": 830, "x": 414, "width": 100, "var": "btnRechargeExit", "skin": "comp/button.png", "labelSize": 20, "label": "取消", "height": 32 } }, { "type": "Label", "props": { "y": 595, "x": 216, "text": "帐号", "fontSize": 32 } }, { "type": "Label", "props": { "y": 666, "x": 216, "text": "密码", "fontSize": 32 } }, { "type": "TextInput", "props": { "y": 731, "x": 330, "width": 225, "strokeColor": "#190101", "stroke": 0, "skin": "comp/textinput.png", "height": 43 } }, { "type": "Label", "props": { "y": 736, "x": 216, "text": "密码", "fontSize": 32 } }] };
-        return SignViewUI;
-    }(View));
-    ui.SignViewUI = SignViewUI;
+    var skill;
+    (function (skill) {
+        var RoleSkillSelectViewUI = /** @class */ (function (_super) {
+            __extends(RoleSkillSelectViewUI, _super);
+            function RoleSkillSelectViewUI() {
+                return _super.call(this) || this;
+            }
+            RoleSkillSelectViewUI.prototype.createChildren = function () {
+                View.regComponent("ui.comp.SkillIconUI", ui.comp.SkillIconUI);
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.skill.RoleSkillSelectViewUI.uiView);
+            };
+            RoleSkillSelectViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "skin": "comp/blank.png", "height": 1334 } }, { "type": "Image", "props": { "width": 700, "height": 954, "centerY": 0, "centerX": 0 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 700, "lineWidth": 1, "height": 954, "fillColor": "#ffffff" } }, { "type": "Label", "props": { "y": 42, "x": 255, "text": "技能选择", "fontSize": 40, "font": "SimHei", "color": "#000000", "bold": true } }] }, { "type": "List", "props": { "y": 314, "x": 47, "spaceY": 10, "repeatY": 5 }, "child": [{ "type": "Box", "props": { "name": "render" }, "child": [{ "type": "Image", "props": { "width": 650, "height": 130 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 650, "lineWidth": 1, "height": 130, "fillColor": "#ffffff" } }] }, { "type": "SkillIcon", "props": { "y": 3, "x": 15, "runtime": "ui.comp.SkillIconUI" } }, { "type": "Label", "props": { "y": 104, "x": 25, "text": "等级：8", "name": "lblLv", "fontSize": 24, "font": "SimHei" } }, { "type": "Label", "props": { "y": 6, "x": 136, "width": 486, "text": "描述", "name": "lblDesc", "height": 115, "fontSize": 24, "font": "SimHei" } }] }] }, { "type": "Button", "props": { "y": 1056, "x": 280, "width": 167, "var": "btnSure", "skin": "comp/button.png", "labelSize": 30, "labelFont": "SimHei", "label": "确定", "height": 43 } }] };
+            return RoleSkillSelectViewUI;
+        }(View));
+        skill.RoleSkillSelectViewUI = RoleSkillSelectViewUI;
+    })(skill = ui.skill || (ui.skill = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var skill;
+    (function (skill) {
+        var RoleTalentSkillViewUI = /** @class */ (function (_super) {
+            __extends(RoleTalentSkillViewUI, _super);
+            function RoleTalentSkillViewUI() {
+                return _super.call(this) || this;
+            }
+            RoleTalentSkillViewUI.prototype.createChildren = function () {
+                View.regComponent("ui.comp.SkillIconUI", ui.comp.SkillIconUI);
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.skill.RoleTalentSkillViewUI.uiView);
+            };
+            RoleTalentSkillViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 750, "lineWidth": 1, "height": 1334, "fillColor": "#ffffff" } }, { "type": "Label", "props": { "y": 23, "x": 285, "text": "本源天赋", "fontSize": 40, "font": "SimHei", "color": "#000000", "bold": true } }] }, { "type": "Tab", "props": { "y": 88, "x": 66, "width": 285, "var": "tabAttr", "skin": "comp/tab.png", "selectedIndex": 0, "labels": "火,地,风,水", "labelSize": 24, "height": 26 } }, { "type": "Label", "props": { "y": 141, "x": 282, "var": "lblLastTalent", "text": "剩余天赋点数：8", "fontSize": 24, "font": "SimHei", "color": "#000000\\" } }, { "type": "Button", "props": { "y": 132, "x": 484, "width": 167, "var": "btnReset", "skin": "comp/button.png", "labelSize": 30, "labelFont": "SimHei", "label": "重置", "height": 43 } }, { "type": "SkillIcon", "props": { "y": 282, "x": 124, "runtime": "ui.comp.SkillIconUI" } }, { "type": "SkillIcon", "props": { "y": 282, "x": 542, "runtime": "ui.comp.SkillIconUI" } }, { "type": "SkillIcon", "props": { "y": 454, "x": 542, "runtime": "ui.comp.SkillIconUI" } }, { "type": "SkillIcon", "props": { "y": 627, "x": 542, "runtime": "ui.comp.SkillIconUI" } }, { "type": "SkillIcon", "props": { "y": 799, "x": 542, "runtime": "ui.comp.SkillIconUI" } }, { "type": "SkillIcon", "props": { "y": 454, "x": 124, "runtime": "ui.comp.SkillIconUI" } }, { "type": "SkillIcon", "props": { "y": 627, "x": 124, "runtime": "ui.comp.SkillIconUI" } }, { "type": "SkillIcon", "props": { "y": 799, "x": 124, "runtime": "ui.comp.SkillIconUI" } }, { "type": "SkillIcon", "props": { "y": 454, "x": 332, "runtime": "ui.comp.SkillIconUI" } }, { "type": "SkillIcon", "props": { "y": 627, "x": 332, "runtime": "ui.comp.SkillIconUI" } }, { "type": "Button", "props": { "y": 1215, "x": 166, "width": 167, "var": "btnSure", "skin": "comp/button.png", "labelSize": 30, "labelFont": "SimHei", "label": "确定", "height": 43 } }, { "type": "Button", "props": { "y": 1215, "x": 428, "width": 167, "var": "btnUpSkill", "skin": "comp/button.png", "labelSize": 30, "labelFont": "SimHei", "label": "出战技能", "height": 43 } }, { "type": "Box", "props": { "y": 994, "x": 58, "var": "boxTips" }, "child": [{ "type": "SkillIcon", "props": { "runtime": "ui.comp.SkillIconUI" } }, { "type": "Label", "props": { "y": 120, "x": 10, "var": "lblLv", "text": "等级：8", "fontSize": 24, "font": "SimHei" } }, { "type": "Label", "props": { "y": 2, "x": 122, "width": 365, "var": "lblDesc", "text": "描述", "height": 135, "fontSize": 24, "font": "SimHei" }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 369, "lineWidth": 1, "height": 146, "fillColor": "#2574d9" } }] }, { "type": "Button", "props": { "y": 47, "x": 503, "width": 167, "var": "btnAdvance", "skin": "comp/button.png", "labelSize": 30, "labelFont": "SimHei", "label": "进阶", "height": 43 } }] }] };
+            return RoleTalentSkillViewUI;
+        }(View));
+        skill.RoleTalentSkillViewUI = RoleTalentSkillViewUI;
+    })(skill = ui.skill || (ui.skill = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var skill;
+    (function (skill) {
+        var RoleUpSkillItemUI = /** @class */ (function (_super) {
+            __extends(RoleUpSkillItemUI, _super);
+            function RoleUpSkillItemUI() {
+                return _super.call(this) || this;
+            }
+            RoleUpSkillItemUI.prototype.createChildren = function () {
+                View.regComponent("Text", laya.display.Text);
+                View.regComponent("ui.comp.SkillIconUI", ui.comp.SkillIconUI);
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.skill.RoleUpSkillItemUI.uiView);
+            };
+            RoleUpSkillItemUI.uiView = { "type": "View", "props": { "width": 650, "height": 120 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 650, "height": 120 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 650, "lineWidth": 1, "height": 120, "fillColor": "#ffffff" } }] }, { "type": "Image", "props": { "y": 13, "x": 13, "width": 100, "skin": "comp/blank.png", "height": 100 }, "child": [{ "type": "Text", "props": { "y": 35, "x": 17, "text": "探险", "fontSize": 30, "font": "SimHei", "color": "#ffffff" } }] }, { "type": "List", "props": { "y": 11, "x": 142, "width": 470, "spaceX": 25, "repeatX": 4, "name": "render", "height": 100 }, "child": [{ "type": "SkillIcon", "props": { "name": "render", "runtime": "ui.comp.SkillIconUI" } }] }] };
+            return RoleUpSkillItemUI;
+        }(View));
+        skill.RoleUpSkillItemUI = RoleUpSkillItemUI;
+    })(skill = ui.skill || (ui.skill = {}));
+})(ui || (ui = {}));
+(function (ui) {
+    var skill;
+    (function (skill) {
+        var RoleUpSkillViewUI = /** @class */ (function (_super) {
+            __extends(RoleUpSkillViewUI, _super);
+            function RoleUpSkillViewUI() {
+                return _super.call(this) || this;
+            }
+            RoleUpSkillViewUI.prototype.createChildren = function () {
+                View.regComponent("ui.skill.RoleUpSkillItemUI", ui.skill.RoleUpSkillItemUI);
+                _super.prototype.createChildren.call(this);
+                this.createView(ui.skill.RoleUpSkillViewUI.uiView);
+            };
+            RoleUpSkillViewUI.uiView = { "type": "View", "props": { "width": 750, "height": 1334 }, "child": [{ "type": "Image", "props": { "y": 0, "x": 0, "width": 750, "var": "imgMask", "skin": "comp/blank.png", "height": 1334 } }, { "type": "Image", "props": { "y": 125, "x": 29, "width": 700, "height": 954 }, "child": [{ "type": "Rect", "props": { "y": 0, "x": 0, "width": 700, "lineWidth": 1, "height": 954, "fillColor": "#ffffff" } }, { "type": "Label", "props": { "y": 42, "x": 255, "text": "出战技能", "fontSize": 40, "font": "SimHei", "color": "#000000", "bold": true } }] }, { "type": "List", "props": { "y": 268, "x": 56, "repeatY": 6 }, "child": [{ "type": "RoleUpSkillItem", "props": { "name": "render", "runtime": "ui.skill.RoleUpSkillItemUI" } }] }] };
+            return RoleUpSkillViewUI;
+        }(View));
+        skill.RoleUpSkillViewUI = RoleUpSkillViewUI;
+    })(skill = ui.skill || (ui.skill = {}));
 })(ui || (ui = {}));
 (function (ui) {
     var test;
@@ -68289,14 +68314,14 @@ var EnterGameMediator = /** @class */ (function (_super) {
         this.view.btnChoice.on(Laya.Event.CLICK, this, this.onBtnChoice);
         this.view.btnSelect.on(Laya.Event.CLICK, this, this.onBtnChoice);
         this.view.btnRegster.on(Laya.Event.CLICK, this, this.onBtnRegster);
-        WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN, Protocol.USER_LOGIN_CMD, new UserLoginHandler(this, this.onWebSocketLogined));
+        // WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,new UserLoginHandler(this,this.onWebSocketLogined));
     };
     EnterGameMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnChoice.off(Laya.Event.CLICK, this, this.onBtnChoice);
         this.view.btnSelect.off(Laya.Event.CLICK, this, this.onBtnChoice);
         this.view.btnRegster.off(Laya.Event.CLICK, this, this.onBtnRegster);
-        WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN, Protocol.USER_LOGIN_CMD, this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN,Protocol.USER_LOGIN_CMD,this);
     };
     EnterGameMediator.prototype.onWebSocketLogined = function (data) {
         console.log("登录成功。。。" + data);
@@ -68323,7 +68348,7 @@ var EnterGameMediator = /** @class */ (function (_super) {
         else {
             //登录web服
             var curServerInfo = GameDataManager.ins.curServerInfo;
-            ClientSender.httpEnterGameReq(curServerInfo.guid, this, this.webEnterGameHanlder);
+            // ClientSender.httpEnterGameReq(curServerInfo.guid,this,this.webEnterGameHanlder);
         }
     };
     EnterGameMediator.prototype.onBtnRegster = function (e) {
@@ -68337,7 +68362,7 @@ var EnterGameMediator = /** @class */ (function (_super) {
         if (jsonObj.code == 200) {
             GameDataManager.ins.loginToken = jsonObj.token;
             EventManager.ins.addEvent(EventManager.SERVER_CONNECTED, this, this.onServerConnected);
-            WebSocketManager.ins.connect(GameDataManager.ins.curServerInfo.ip, GameDataManager.ins.curServerInfo.port);
+            // WebSocketManager.ins.connect(GameDataManager.ins.curServerInfo.ip,GameDataManager.ins.curServerInfo.port);
         }
         else {
             console.log("进入服务器异常！错误码：" + jsonObj.code);
@@ -68345,7 +68370,7 @@ var EnterGameMediator = /** @class */ (function (_super) {
     };
     EnterGameMediator.prototype.onServerConnected = function () {
         EventManager.ins.removeEvent(EventManager.SERVER_CONNECTED, this.onServerConnected);
-        ClientSender.loginReq(GameDataManager.ins.selfPlayerData.name);
+        // ClientSender.loginReq(GameDataManager.ins.selfPlayerData.name);
     };
     EnterGameMediator.prototype.onBtnChoice = function () {
         this.choiceServerMediator.show();
@@ -68622,10 +68647,12 @@ var GameMediator = /** @class */ (function (_super) {
         return _super.call(this, assetsUrl, view) || this;
     }
     GameMediator.prototype.initView = function () {
-        if (GameConfig.SINGLE_GAME)
+        if (GameConfig.SINGLE_GAME) {
             GameDataManager.ins.initData();
-        else
-            ClientSender.getHeroInfoReq(1);
+        }
+        else {
+            // ClientSender.getHeroInfoReq(1);
+        }
         ObjectPoolUtil.init();
         this.view = new ui.GameViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.TOP_LAYER, false, false, true);
@@ -68650,9 +68677,9 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnBag.on(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
         this.view.btnBag.on(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
         EventManager.ins.addEvent(EventManager.CHOICE_CHALLEGEN_GATE, this, this.choiceChanllegeGate);
-        WebSocketManager.ins.registerHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, new GetHeroInfosHanlder(this, this.getHeroInfosHandler));
-        WebSocketManager.ins.registerHandler(Protocol.GATE, Protocol.GATE_INFO, new GetGateInfoHandler(this, this.gateInfoHanlder));
-        WebSocketManager.ins.registerHandler(Protocol.GATE, Protocol.GATE_HANDUP_STATE, new GateHangupStateHandler(this, this.gateInfoHanlder));
+        // WebSocketManager.ins.registerHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,new GetHeroInfosHanlder(this,this.getHeroInfosHandler));
+        // WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_INFO,new GetGateInfoHandler(this,this.gateInfoHanlder));
+        // WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_HANDUP_STATE,new GateHangupStateHandler(this,this.gateInfoHanlder));
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = new Handler(this,this.onListAniScaleRender);
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = new Handler(this,this.onListMouseHandler);
         // EventManager.ins.addEvent(EventManager.TEST_LIST_SCRALE_RENDER,this,this.listScraleInit);
@@ -68675,9 +68702,9 @@ var GameMediator = /** @class */ (function (_super) {
         this.view.btnBag.off(LayaEvent.MOUSE_DOWN, this, this.onBtnDownUp);
         this.view.btnBag.off(LayaEvent.MOUSE_UP, this, this.onBtnDownUp);
         EventManager.ins.removeEvent(EventManager.CHOICE_CHALLEGEN_GATE, this.choiceChanllegeGate);
-        WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_GET_INFOS, this);
-        WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_INFO, this);
-        WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_HANDUP_STATE, this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.HERO,Protocol.HERO_GET_INFOS,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_INFO,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_HANDUP_STATE,this);
         // (this.view.viewAniScale.listAniScale as Laya.List).renderHandler = null;
         // (this.view.viewAniScale.listAniScale as Laya.List).mouseHandler = null;
     };
@@ -68729,26 +68756,34 @@ var GameMediator = /** @class */ (function (_super) {
             this.gateInfoHanlder();
         }
         else {
-            ClientSender.gateGateInfoReq();
+            // ClientSender.gateGateInfoReq();
         }
     };
     GameMediator.prototype.gateInfoHanlder = function () {
         //显示地图界面
-        var resAry = [
-            { url: "unpack/worldmap/p1.png", type: Loader.IMAGE },
-            { url: "unpack/worldmap/p2.png", type: Loader.IMAGE },
-            { url: "unpack/worldmap/p3.png", type: Loader.IMAGE },
-            { url: "unpack/worldmap/p4.png", type: Loader.IMAGE },
-            { url: "unpack/worldmap/p5.png", type: Loader.IMAGE },
-            { url: "unpack/worldmap/p6.png", type: Loader.IMAGE },
-            { url: "unpack/worldmap/p7.png", type: Loader.IMAGE },
-            { url: "unpack/worldmap/bg.png", type: Loader.IMAGE },
-            { url: "unpack/worldmap/img_gatebg.png", type: Loader.IMAGE },
-            { url: "unpack/worldmap/img_listbg.png", type: Loader.IMAGE },
-            { url: "unpack/worldmap/img_listgraybg.png", type: Loader.IMAGE },
-            { url: "res/atlas/worldmap.atlas", type: Loader.ATLAS }
-        ];
-        this.curMediator = new MapWorldMediator(resAry);
+        // var resAry:Array<Object> = [
+        //     {url:"unpack/worldmap/p1.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p2.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p3.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p4.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p5.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p6.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p7.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p8.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p9.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p10.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p11.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p12.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p13.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/p14.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/bg.jpg",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/img_gatebg.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/img_listbg.png",type:Loader.IMAGE},
+        //     {url:"unpack/worldmap/img_listgraybg.png",type:Loader.IMAGE},
+        //     {url:"res/atlas/worldmap.atlas",type:Loader.ATLAS}
+        // ];
+        // this.curMediator = new MapWorldMediator(resAry);
+        this.curMediator = new MapWorldMediator();
         GameDataManager.showModuleViewInd = GameButtomTabIndex.MAP_BATTLE;
         SoundsManager.ins.playerMusicByEnum(MusicBGType.WORLD_MAP, 1000);
     };
@@ -68949,38 +68984,6 @@ var HeroMediator = /** @class */ (function (_super) {
     return HeroMediator;
 }(BaseMediator));
 //# sourceMappingURL=HeroMediator.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-/*
-* 阵型
-*/
-var HomeMediator = /** @class */ (function (_super) {
-    __extends(HomeMediator, _super);
-    function HomeMediator(assetsUrl, view) {
-        return _super.call(this, assetsUrl, view) || this;
-    }
-    HomeMediator.prototype.initView = function () {
-        this.view = new ui.HomeViewUI();
-        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
-    };
-    HomeMediator.prototype.addEvents = function () {
-    };
-    HomeMediator.prototype.removeEvents = function () {
-    };
-    HomeMediator.prototype.dispose = function () {
-        _super.prototype.dispose.call(this);
-    };
-    return HomeMediator;
-}(BaseMediator));
-//# sourceMappingURL=HomeMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -69550,13 +69553,37 @@ var LoginMediator = /** @class */ (function (_super) {
         Laya.Tween.to(this.view.logoImg, { y: 110 }, 500, Laya.Ease.backOut);
         Laya.Tween.to(this.view.boxLogin, { y: 418 }, 500, Laya.Ease.backOut);
         SoundsManager.ins.playerMusicByEnum(MusicBGType.LOGIN_BG, 1000);
+        WebSocketManager.ins.connect(LoginServerInfo.IP, LoginServerInfo.PORT);
         // TankUtil.stageShake(this.view,10);
     };
     LoginMediator.prototype.addEvents = function () {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
+        this.view.btnRegister.on(Laya.Event.CLICK, this, this.onBtnRegister);
+        WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN_RESP, new UserLoginHandler(this, this.onWebSocketLogined));
     };
     LoginMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
+        this.view.btnRegister.off(Laya.Event.CLICK, this, this.onBtnRegister);
+        WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN_RESP, this);
+    };
+    LoginMediator.prototype.onWebSocketLogined = function (data) {
+        console.log("登录成功。。。" + data);
+        // PreLoadingView.ins.show();
+        // SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        // this.dispose();  
+    };
+    LoginMediator.prototype.onBtnRegister = function (e) {
+        var account = this.view.inputAccount.text;
+        var pwd = this.view.inputPwd.text;
+        if (!account || account == "") {
+            console.log("用户名不能为空");
+            return;
+        }
+        if (!pwd || pwd == "") {
+            console.log("密码不能为空");
+            return;
+        }
+        ClientSender.registerReq(account, pwd);
     };
     LoginMediator.prototype.onBtnLogin = function (e) {
         if (GameConfig.SINGLE_GAME) {
@@ -69583,7 +69610,8 @@ var LoginMediator = /** @class */ (function (_super) {
                 console.log("密码不能为空");
                 return;
             }
-            ClientSender.httpLoginReq(account, pwd, this, this.loginSuccessHanlder);
+            // ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
+            ClientSender.loginReq(account, pwd);
         }
     };
     LoginMediator.prototype.loginSuccessHanlder = function (data) {
@@ -69810,18 +69838,23 @@ var MapWorldMediator = /** @class */ (function (_super) {
         _this.lastMoveX = 0;
         _this.mouseDownX = 0;
         _this.mouseUpX = 0;
-        //颜色滤镜矩阵,灰色
-        _this.grayFilter = new Laya.ColorFilter([
+        _this.distanceX = 0;
+        return _this;
+    }
+    MapWorldMediator.prototype.initView = function () {
+        this.grayFilter = new Laya.ColorFilter([
             0.3086, 0.6094, 0.0820, 0, 0,
             0.3086, 0.6094, 0.0820, 0, 0,
             0.3086, 0.6094, 0.0820, 0, 0,
             0, 0, 0, 1, 0,
         ]);
-        //发光滤镜#0099FF
-        _this.glowFilter = new Laya.GlowFilter("#00FF00", 100, 0, 0);
-        return _this;
-    }
-    MapWorldMediator.prototype.initView = function () {
+        this.blackFilter = new Laya.ColorFilter([
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 1, 0,
+        ]);
+        // this.glowFilter = new Laya.GlowFilter("#000000", 100, 0, 0);
         this.view = new ui.map.MapWorldViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
         var imgBlock;
@@ -69831,6 +69864,9 @@ var MapWorldMediator = /** @class */ (function (_super) {
             this.setBlockGray(imgBlock);
             this.view["imgBlock" + i].on(Laya.Event.CLICK, this, this.onBlockClick);
         }
+        this.imgBlockFloat = new LayaImage();
+        this.imgBlockFloat.visible = false;
+        this.view.panelBlock.addChild(this.imgBlockFloat);
         this.view.visible = true;
         _super.prototype.initView.call(this);
         this.worldmapEffect();
@@ -69855,9 +69891,14 @@ var MapWorldMediator = /** @class */ (function (_super) {
         Tween.to(this.view.yun3, { x: -2004, y: 116, alpha: 0 }, 3000, null, Laya.Handler.create(this, this.yunMoveComplete, [this.view.yun3]), 1000);
         Tween.to(this.view.yun4, { x: 2165, y: 1031, alpha: 0 }, 3000, null, Laya.Handler.create(this, this.yunMoveComplete, [this.view.yun4]), 1000);
         Tween.to(this.view.wumaiImage, { x: 1500, alpha: 0 }, 3500, null, Laya.Handler.create(this, this.yunMoveComplete, [this.view.wumaiImage]), 0);
-        Tween.to(this.view.panelBlock, { x: 0, y: 0, scaleX: 1.0, scaleY: 1.0 }, 1000, null, null, 1000);
+        Tween.to(this.view.panelBlock, { x: -240, y: 0, scaleX: 1.0, scaleY: 1.0 }, 1000, null, null, 1000);
         //选中当前打的地图板块
-        this.view.imgBlock0.filters = [this.glowFilter];
+        this.view.imgBlock0.filters = [this.blackFilter];
+        this.imgBlockFloat.skin = this.view.imgBlock0.skin;
+        this.imgBlockFloat.x = this.view.imgBlock0.x - 20;
+        this.imgBlockFloat.y = this.view.imgBlock0.y - 20;
+        this.imgBlockFloat.visible = true;
+        this.view.imgNoOpen.filters = [this.grayFilter];
     };
     MapWorldMediator.prototype.yunMoveComplete = function (disImg) {
         if (disImg) {
@@ -69885,17 +69926,30 @@ var MapWorldMediator = /** @class */ (function (_super) {
             TipsManager.ins.showFloatMsg("关卡未开启，请通关上一地图所有关卡", 30, "#ff0000", this.view, this.view.width / 2, this.view.height / 2, 1, 0, 100);
             return;
         }
+        this.imgBlockFloat.visible = false;
         var imgBlock;
-        for (var i = 0; i < 7; i++) {
+        for (var i = 0; i < GameConfig.GATE_MAP_KEYS.length; i++) {
             imgBlock = this.view["imgBlock" + i];
-            if (GameDataManager.ins.getGateMapIsOpen(imgBlock.name)) {
-                imgBlock.filters = null;
+            if (imgBlock) {
+                if (GameDataManager.ins.getGateMapIsOpen(imgBlock.name)) {
+                    imgBlock.filters = null;
+                }
+                else {
+                    imgBlock.filters = [this.grayFilter];
+                }
             }
         }
         imgBlock = e.target;
-        imgBlock.filters = [this.glowFilter];
+        imgBlock.filters = [this.blackFilter];
+        this.imgBlockFloat.skin = imgBlock.skin;
+        this.imgBlockFloat.x = imgBlock.x;
+        this.imgBlockFloat.y = imgBlock.y;
+        this.imgBlockFloat.visible = true;
+        Laya.Tween.to(this.imgBlockFloat, { x: imgBlock.x - 10, y: imgBlock.y - 10 }, 100, Laya.Ease.backOut, Laya.Handler.create(this, this.openGateListView, [imgBlock.name]));
+    };
+    MapWorldMediator.prototype.openGateListView = function (blockName) {
         this.gateListMediator = new GateListMediator();
-        this.gateListMediator.setData(imgBlock.name);
+        this.gateListMediator.setData(blockName);
     };
     MapWorldMediator.prototype.onViewMouseEvent = function (e) {
         if (e.type == Laya.Event.MOUSE_DOWN) {
@@ -69908,6 +69962,9 @@ var MapWorldMediator = /** @class */ (function (_super) {
         else if (e.type == Laya.Event.MOUSE_UP) {
             this.mouseUpX = this.view.panelBlock.mouseX;
             this.view.panelBlock.off(Laya.Event.MOUSE_MOVE, this, this.onMouseMove);
+            if (Math.abs(this.mouseDownX - this.mouseUpX) < 10) {
+                return;
+            }
             //缓缓移动效果
             var tweenX = 0;
             if (this.distanceX > 0) {
@@ -69940,6 +69997,9 @@ var MapWorldMediator = /** @class */ (function (_super) {
         this.lastMoveX = this.view.panelBlock.mouseX;
     };
     MapWorldMediator.prototype.dispose = function () {
+        if (this.view) {
+            this.view.imgNoOpen.filters = null;
+        }
         RightFunctionButtons.ins.hide();
         if (this.gateListMediator) {
             this.gateListMediator.dispose();
@@ -69950,51 +70010,6 @@ var MapWorldMediator = /** @class */ (function (_super) {
     return MapWorldMediator;
 }(BaseMediator));
 //# sourceMappingURL=MapWorldMediator.js.map
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-/*
-* name;
-*/
-var SignMediator = /** @class */ (function (_super) {
-    __extends(SignMediator, _super);
-    function SignMediator(assetsUrl, view) {
-        return _super.call(this, assetsUrl, view) || this;
-    }
-    SignMediator.prototype.initView = function () {
-        this.view = new ui.SignViewUI();
-        LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, true, false);
-        _super.prototype.initView.call(this);
-    };
-    SignMediator.prototype.addEvents = function () {
-        this.view.btnClose.on(Laya.Event.CLICK, this, this.onBtnClose);
-        this.view.btnRecharge.on(Laya.Event.CLICK, this, this.onBtnRecharge);
-        this.view.btnRechargeExit.on(Laya.Event.CLICK, this, this.onBtnRechargeExit);
-    };
-    SignMediator.prototype.removeEvents = function () {
-        this.view.btnOpen.off(Laya.Event.CLICK, this, this.onBtnClose);
-        this.view.btnRecharge.off(Laya.Event.CLICK, this, this.onBtnRecharge);
-        this.view.btnRechargeExit.off(Laya.Event.CLICK, this, this.onBtnRechargeExit);
-    };
-    SignMediator.prototype.onBtnClose = function (e) {
-        LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, false);
-    };
-    SignMediator.prototype.onBtnRecharge = function (e) {
-        console.log("功能暂时关闭" + this.view.inputName.text);
-    };
-    SignMediator.prototype.onBtnRechargeExit = function (e) {
-        LayerManager.ins.removeToLayer(this.view, LayerManager.UI_LAYER, true, false);
-    };
-    return SignMediator;
-}(BaseMediator));
-//# sourceMappingURL=SignMediator.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -71303,8 +71318,8 @@ var UserLoginHandler = /** @class */ (function (_super) {
         return _super.call(this, caller, callback) || this;
     }
     UserLoginHandler.prototype.explain = function (data) {
-        var LoginResponse = WebSocketManager.ins.defineProtoClass("LoginResponse");
-        var message = LoginResponse.decode(data);
+        var ResUserCode = WebSocketManager.ins.defineProtoClass("ResUserCode");
+        var message = ResUserCode.decode(data);
         _super.prototype.explain.call(this, message);
     };
     /**处理数据 */
@@ -71332,20 +71347,33 @@ var PackageIn = /** @class */ (function (_super) {
     function PackageIn() {
         return _super.call(this) || this;
     }
+    // public read(msg:Object = null):void
+    // {
+    //     this.endian = Laya.Byte.BIG_ENDIAN;//设置endian；
+    //     this.clear();
+    //     this.writeArrayBuffer(msg);
+    //     this.pos = 0;
+    //     //标记和长度
+    //     var mark = this.getInt16();
+    //     var len = this.getInt32();
+    //     //包头
+    //     this.module = this.getInt32();
+    //     this.cmd = this.getInt32();
+    //     var type = this.getByte();
+    //     var format = this.getByte();
+    //     //数据
+    //     var tempByte = this.buffer.slice(this.pos);
+    //     this.body = new Uint8Array(tempByte);
+    // }
+    //新通信
     PackageIn.prototype.read = function (msg) {
         if (msg === void 0) { msg = null; }
         this.endian = Laya.Byte.BIG_ENDIAN; //设置endian；
         this.clear();
         this.writeArrayBuffer(msg);
         this.pos = 0;
-        //标记和长度
-        var mark = this.getInt16();
         var len = this.getInt32();
-        //包头
-        this.module = this.getInt32();
         this.cmd = this.getInt32();
-        var type = this.getByte();
-        var format = this.getByte();
         //数据
         var tempByte = this.buffer.slice(this.pos);
         this.body = new Uint8Array(tempByte);
@@ -71369,28 +71397,39 @@ var __extends = (this && this.__extends) || (function () {
 var PackageOut = /** @class */ (function (_super) {
     __extends(PackageOut, _super);
     function PackageOut() {
-        var _this = _super.call(this) || this;
-        _this.PACKET_MARK = 0x0;
-        _this.module = 0;
-        _this.type = 0;
-        _this.formart = 0;
-        return _this;
+        return _super.call(this) || this;
     }
-    PackageOut.prototype.pack = function (module, cmd, data) {
+    // public pack(module,cmd,data?:any):void
+    // {
+    //     this.endian = Laya.Byte.BIG_ENDIAN;//设置endian；
+    //     this.module = module;
+    //     this.cmd = cmd;
+    //     this.writeInt16(this.PACKET_MARK);
+    //     this.writeInt32(data.byteLength + 10);
+    //     //包头
+    //     this.writeInt32(this.module);
+    //     this.writeInt32(this.cmd);
+    //     this.writeByte(this.type);
+    //     this.writeByte(this.formart);
+    //     //消息体
+    //     if(data)
+    //     {
+    //         this.writeArrayBuffer(data);
+    //     }
+    // }
+    /**新通信 */
+    PackageOut.prototype.pack = function (cmd, data) {
         this.endian = Laya.Byte.BIG_ENDIAN; //设置endian；
-        this.module = module;
+        var len = data.byteLength + 12;
         this.cmd = cmd;
-        this.writeInt16(this.PACKET_MARK);
-        this.writeInt32(data.byteLength + 10);
-        //包头
-        this.writeInt32(this.module);
+        var code = WebSocketManager.codeCount ^ len ^ 512;
+        this.writeInt32(len);
+        this.writeInt32(code);
         this.writeInt32(this.cmd);
-        this.writeByte(this.type);
-        this.writeByte(this.formart);
-        //消息体
         if (data) {
             this.writeArrayBuffer(data);
         }
+        WebSocketManager.codeCount++;
     };
     return PackageOut;
 }(Laya.Byte));
@@ -71856,7 +71895,28 @@ var PreLoadScene = /** @class */ (function (_super) {
             { url: "res/config/HeroTypeSample.xml", type: Loader.TEXT },
             { url: "res/config/QualityScoreSample.xml", type: Loader.TEXT },
             { url: "res/config/MasterHeroSample.xml", type: Loader.TEXT },
-            { url: "res/config/ItemSample.xml", type: Loader.TEXT }
+            { url: "res/config/ItemSample.xml", type: Loader.TEXT },
+            //地图板块
+            { url: "unpack/worldmap/p1.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p2.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p3.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p4.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p5.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p6.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p7.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p8.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p9.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p10.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p11.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p12.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p13.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/p14.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/bg1.jpg", type: Loader.IMAGE },
+            { url: "unpack/worldmap/bg2.jpg", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_gatebg.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_listbg.png", type: Loader.IMAGE },
+            { url: "unpack/worldmap/img_listgraybg.png", type: Loader.IMAGE },
+            { url: "res/atlas/worldmap.atlas", type: Loader.ATLAS }
         ];
         Laya.loader.load(resAry, Handler.create(this, this.onLoaded), Handler.create(this, this.loadGameResProgress, null, false));
         PreLoadingView.ins.setCallBack(this, this.loadedComplete);
@@ -71934,7 +71994,7 @@ var Game = /** @class */ (function () {
 Laya.MiniAdpter.init();
 Config.isAntialias = true; //绘图抗锯齿
 Laya.init(GameConfig.STAGE_WIDTH, GameConfig.STAGE_HEIGHT, Laya.WebGL);
-// Laya.Stat.show(0,0);
+Laya.Stat.show(0, 0);
 Laya.stage.scaleMode = "showAll"; //showall跟showAll不一样。。。。
 Laya.stage.alignH = "center";
 Laya.stage.alignV = "top";

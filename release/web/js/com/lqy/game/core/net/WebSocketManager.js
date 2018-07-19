@@ -24,8 +24,9 @@ var WebSocketManager = /** @class */ (function () {
         this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
         //加载协议
-        var protoBufUrls = ["res/outside/proto/login.proto", "res/outside/proto/role.proto", "res/outside/proto/hero.proto",
-            "res/outside/proto/gate.proto"];
+        // var protoBufUrls = ["res/outside/proto/login.proto","res/outside/proto/role.proto","res/outside/proto/hero.proto",
+        // "res/outside/proto/gate.proto"];
+        var protoBufUrls = "res/outside/proto/userMessage.proto";
         Laya.Browser.window.protobuf.load(protoBufUrls, this.protoLoadComplete);
     };
     WebSocketManager.prototype.protoLoadComplete = function (error, root) {
@@ -34,13 +35,16 @@ var WebSocketManager = /** @class */ (function () {
     };
     WebSocketManager.prototype.webSocketOpen = function () {
         console.log("websocket open...");
+        WebSocketManager.codeCount = 1;
         EventManager.ins.dispatchEvent(EventManager.SERVER_CONNECTED);
     };
     WebSocketManager.prototype.webSocketMessage = function (data) {
         var packageIn = new PackageIn();
         packageIn.read(data);
-        console.log("websocket msg...", packageIn.module, packageIn.cmd);
-        var key = packageIn.module + "_" + packageIn.cmd;
+        // console.log("websocket msg...",packageIn.module,packageIn.cmd);
+        // var key:string = packageIn.module+"_"+ packageIn.cmd;
+        console.log("websocket msg...", packageIn.cmd);
+        var key = "" + packageIn.cmd;
         var handlers = this.socketHanlderDic.get(key);
         handlers.forEach(function (socketHanlder) {
             socketHanlder.explain(packageIn.body);
@@ -57,9 +61,10 @@ var WebSocketManager = /** @class */ (function () {
      * @param cmd
      * @param data
      */
-    WebSocketManager.prototype.sendMsg = function (module, cmd, data) {
+    WebSocketManager.prototype.sendMsg = function (cmd, data) {
         var packageOut = new PackageOut();
-        packageOut.pack(module, cmd, data);
+        // packageOut.pack(module,cmd,data);
+        packageOut.pack(cmd, data);
         this.webSocket.send(packageOut.buffer);
     };
     /**
@@ -71,8 +76,9 @@ var WebSocketManager = /** @class */ (function () {
         return this.protoRoot.lookup(classStr);
     };
     /**注册 */
-    WebSocketManager.prototype.registerHandler = function (protocol, cmd, handler) {
-        var key = protocol + "_" + cmd;
+    WebSocketManager.prototype.registerHandler = function (cmd, handler) {
+        // var key:string = protocol+"_"+cmd;
+        var key = "" + cmd;
         var handlers = this.socketHanlderDic.get(key);
         if (!handlers) {
             handlers = [];
@@ -84,8 +90,8 @@ var WebSocketManager = /** @class */ (function () {
         }
     };
     /**删除 */
-    WebSocketManager.prototype.unregisterHandler = function (protocol, cmd, caller) {
-        var key = protocol + "_" + cmd;
+    WebSocketManager.prototype.unregisterHandler = function (cmd, caller) {
+        var key = "" + cmd;
         var handlers = this.socketHanlderDic.get(key);
         if (handlers) {
             var handler;
@@ -100,6 +106,8 @@ var WebSocketManager = /** @class */ (function () {
             }
         }
     };
+    /**通信code次数 */
+    WebSocketManager.codeCount = 0;
     WebSocketManager._ins = null;
     return WebSocketManager;
 }());

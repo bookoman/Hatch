@@ -18,18 +18,49 @@ class LoginMediator extends BaseMediator{
 
         SoundsManager.ins.playerMusicByEnum(MusicBGType.LOGIN_BG,1000);
 
+        WebSocketManager.ins.connect(LoginServerInfo.IP,LoginServerInfo.PORT);
+
         // TankUtil.stageShake(this.view,10);
     }
     protected addEvents():void
     {
         this.view.btnLogin.on(Laya.Event.CLICK,this,this.onBtnLogin);
+        this.view.btnRegister.on(Laya.Event.CLICK,this,this.onBtnRegister);
+
+        WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN_RESP,new UserLoginHandler(this,this.onWebSocketLogined));
     }
 
     protected removeEvents():void
     {
         this.view.btnLogin.off(Laya.Event.CLICK,this,this.onBtnLogin);
+        this.view.btnRegister.off(Laya.Event.CLICK,this,this.onBtnRegister);
+
+        WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN_RESP,this);
+    }
+    private onWebSocketLogined(data):void
+    {
+        console.log("登录成功。。。"+data);  
+        // PreLoadingView.ins.show();
+        // SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
+        // this.dispose();  
     }
 
+    private onBtnRegister(e):void
+    {
+        var account:string = this.view.inputAccount.text;
+        var pwd:string = this.view.inputPwd.text;
+        if(!account || account == "")
+        {
+            console.log("用户名不能为空");
+            return;
+        }
+        if(!pwd || pwd == "")
+        {
+            console.log("密码不能为空");
+            return;
+        }
+        ClientSender.registerReq(account,pwd);
+    }
     private onBtnLogin(e):void
     {
         if(GameConfig.SINGLE_GAME)
@@ -61,7 +92,10 @@ class LoginMediator extends BaseMediator{
                 console.log("密码不能为空");
                 return;
             }
-            ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
+            // ClientSender.httpLoginReq(account,pwd,this,this.loginSuccessHanlder);
+            ClientSender.loginReq(account,pwd);
+           
+            
         }
 
     }
