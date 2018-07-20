@@ -28,7 +28,7 @@ class LoginMediator extends BaseMediator{
         this.view.btnRegister.on(Laya.Event.CLICK,this,this.onBtnRegister);
 
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN_RESP,new UserLoginHandler(this,this.onWebSocketLogined));
-        WebSocketManager.ins.registerHandler(Protocol.SERVER_LIST_RESP,new UserLoginHandler(this,this.onServerListRes));
+        WebSocketManager.ins.registerHandler(Protocol.SERVER_LIST_RESP,new ServerListInfoHandler(this,this.onServerListRes));
     }
 
     protected removeEvents():void
@@ -48,7 +48,12 @@ class LoginMediator extends BaseMediator{
     }
     private onServerListRes(data):void
     {
+        var resAry:Array<Object> = [
+            {url:"unpack/login/logo.png",type:Loader.IMAGE}
+        ];
+        var enterGameMediator:EnterGameMediator = new EnterGameMediator(resAry);
 
+        this.dispose();
     }
 
     private onBtnRegister(e):void

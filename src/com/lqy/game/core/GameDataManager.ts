@@ -95,6 +95,7 @@ class GameDataManager{
     {
         return this.gateInfoDic.get(gateKey);
     }
+    
     /**保存服务器信息 */
     public saveServerInfoList(data:any,lastServer:any):void
     {

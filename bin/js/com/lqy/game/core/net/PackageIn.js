@@ -35,11 +35,23 @@ var PackageIn = /** @class */ (function (_super) {
     //     this.body = new Uint8Array(tempByte);
     // }
     //新通信
-    PackageIn.prototype.read = function (msg) {
-        if (msg === void 0) { msg = null; }
+    // public read(msg:Object = null):void
+    // {
+    //     this.endian = Laya.Byte.BIG_ENDIAN;//设置endian；
+    //     this.clear();
+    //     this.writeArrayBuffer(msg);
+    //     this.pos = 0;
+    //     var len = this.getInt32();
+    //     this.cmd = this.getInt32();
+    //     //数据
+    //     var tempByte = this.buffer.slice(this.pos);
+    //     this.body = new Uint8Array(tempByte);
+    // }
+    //新通信 粘包处理
+    PackageIn.prototype.read = function (buffData) {
         this.endian = Laya.Byte.BIG_ENDIAN; //设置endian；
         this.clear();
-        this.writeArrayBuffer(msg);
+        this.writeArrayBuffer(buffData);
         this.pos = 0;
         var len = this.getInt32();
         this.cmd = this.getInt32();

@@ -53,7 +53,7 @@ class GameConfig{
     public static HERO_DEFAULT_ANI_MODELID:string = "baolong001";
 
     /**单机游戏 */
-    public static SINGLE_GAME:boolean = true;
+    public static SINGLE_GAME:boolean = false;
     /**挂机关卡地图key数据 */
     public static GATE_MAP_KEYS:Array<string> = [];
     

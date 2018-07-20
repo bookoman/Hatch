@@ -332,6 +332,27 @@ var ConfigManager = /** @class */ (function () {
             }
         }
     };
+    ConfigManager.prototype.xmlToObjcet2 = function (xml, DineClass, keyPro, dic) {
+        var node;
+        for (var j = 0; j < xml.all.length; j++) {
+            node = xml.all[j];
+            if (node.nodeName == "element") {
+                var nameNodeMap = node.attributes;
+                var attr;
+                var obj = new DineClass();
+                for (var i = 0; i < nameNodeMap.length; i++) {
+                    attr = nameNodeMap[i];
+                    if (isNaN(Number(attr.nodeValue))) {
+                        obj[attr.nodeName] = attr.nodeValue;
+                    }
+                    else {
+                        obj[attr.nodeName] = Number(attr.nodeValue);
+                    }
+                }
+                dic.set(obj[keyPro], obj);
+            }
+        }
+    };
     /**
      * xml转为对象
      * @param str

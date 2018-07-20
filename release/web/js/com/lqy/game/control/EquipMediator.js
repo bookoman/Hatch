@@ -17,7 +17,7 @@ var EquipMediator = /** @class */ (function (_super) {
         return _super.call(this, assetsUrl, view) || this;
     }
     EquipMediator.prototype.initView = function () {
-        this.view = new ui.EquipViewUI();
+        // this.view = new ui.EquipViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
     };
     EquipMediator.prototype.addEvents = function () {

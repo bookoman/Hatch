@@ -34,13 +34,13 @@ var LineupMediator = /** @class */ (function (_super) {
         this.view.listIcon.selectEnable = true;
         this.view.listIcon.selectHandler = new Handler(this, this.listIconSelect);
         this.view.listIcon.mouseHandler = new Handler(this, this.onMouseHandler);
-        WebSocketManager.ins.registerHandler(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, new HeroUpdateLineupHanlder(this, this.heroUpdateLineupHandler));
+        // WebSocketManager.ins.registerHandler(Protocol.HERO,Protocol.HERO_UPDATE_FORMATION,new HeroUpdateLineupHanlder(this,this.heroUpdateLineupHandler));
     };
     LineupMediator.prototype.removeEvents = function () {
         this.view.listIcon.renderHandler = null;
         this.view.listIcon.selectHandler = null;
         this.view.listIcon.mouseHandler = null;
-        WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.HERO,Protocol.HERO_UPDATE_FORMATION,this);
     };
     /**更新阵型服务器返回 */
     LineupMediator.prototype.heroUpdateLineupHandler = function (isUp) {
@@ -89,8 +89,9 @@ var LineupMediator = /** @class */ (function (_super) {
                     }
                     if (GameConfig.SINGLE_GAME) //单机测试
                         this.singleGameUpdateLineup(isUp, this.selectIconView.heroId, lineupId);
-                    else
-                        ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
+                    else {
+                        // ClientSender.heroLinuepUpdateReq(lineupId,this.selectIconView.heroId,isUp); 
+                    }
                 }
                 else {
                     if (this.selectIconView.selectTick) {
@@ -98,8 +99,9 @@ var LineupMediator = /** @class */ (function (_super) {
                         isUp = false;
                         if (GameConfig.SINGLE_GAME) //单机测试
                             this.singleGameUpdateLineup(isUp, this.selectIconView.heroId, lineupId);
-                        else
-                            ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
+                        else {
+                            // ClientSender.heroLinuepUpdateReq(lineupId,this.selectIconView.heroId,isUp);   
+                        }
                     }
                 }
             }

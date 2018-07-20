@@ -47,7 +47,7 @@ var EnterGameMediator = /** @class */ (function (_super) {
     };
     EnterGameMediator.prototype.updateServerInfo = function () {
         if (GameDataManager.ins.curServerInfo) {
-            this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
+            this.view.lblServName.text = GameDataManager.ins.curServerInfo.serverName;
             var sevState = GameDataManager.ins.curServerInfo.state;
             if (sevState > 2)
                 sevState = 2;

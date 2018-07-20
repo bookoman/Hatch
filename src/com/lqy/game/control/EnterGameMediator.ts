@@ -50,7 +50,7 @@ class EnterGameMediator extends BaseMediator{
     {
         if(GameDataManager.ins.curServerInfo)
         {
-            this.view.lblServName.text = GameDataManager.ins.curServerInfo.name;
+            this.view.lblServName.text = GameDataManager.ins.curServerInfo.serverName;
             var sevState:number = GameDataManager.ins.curServerInfo.state;
             if(sevState > 2)
                 sevState = 2;

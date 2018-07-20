@@ -62036,9 +62036,8 @@ var WebSocketManager = /** @class */ (function () {
         this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
         //加载协议
-        // var protoBufUrls = ["res/outside/proto/login.proto","res/outside/proto/role.proto","res/outside/proto/hero.proto",
-        // "res/outside/proto/gate.proto"];
-        var protoBufUrls = "res/outside/proto/userMessage.proto";
+        var protoBufUrls = ["res/outside/proto/userMessage.proto", "res/outside/proto/loginMessage.proto",
+            "res/outside/proto/playerMessage.proto", "res/outside/proto/skillMessage.proto"];
         Laya.Browser.window.protobuf.load(protoBufUrls, this.protoLoadComplete);
     };
     WebSocketManager.prototype.protoLoadComplete = function (error, root) {
@@ -64087,6 +64086,27 @@ var ConfigManager = /** @class */ (function () {
             }
         }
     };
+    ConfigManager.prototype.xmlToObjcet2 = function (xml, DineClass, keyPro, dic) {
+        var node;
+        for (var j = 0; j < xml.all.length; j++) {
+            node = xml.all[j];
+            if (node.nodeName == "element") {
+                var nameNodeMap = node.attributes;
+                var attr;
+                var obj = new DineClass();
+                for (var i = 0; i < nameNodeMap.length; i++) {
+                    attr = nameNodeMap[i];
+                    if (isNaN(Number(attr.nodeValue))) {
+                        obj[attr.nodeName] = attr.nodeValue;
+                    }
+                    else {
+                        obj[attr.nodeName] = Number(attr.nodeValue);
+                    }
+                }
+                dic.set(obj[keyPro], obj);
+            }
+        }
+    };
     /**
      * xml转为对象
      * @param str
@@ -65586,6 +65606,8 @@ var Protocol = /** @class */ (function () {
     Protocol.USER_LOGIN_REQ = 202103;
     /**登录返回 */
     Protocol.USER_LOGIN_RESP = 202201;
+    /**服务器列表 */
+    Protocol.SERVER_LIST_RESP = 202203;
     return Protocol;
 }());
 /**登录服务器信息 */
@@ -68520,7 +68542,7 @@ var EquipMediator = /** @class */ (function (_super) {
         return _super.call(this, assetsUrl, view) || this;
     }
     EquipMediator.prototype.initView = function () {
-        this.view = new ui.EquipViewUI();
+        // this.view = new ui.EquipViewUI();
         LayerManager.ins.addToLayer(this.view, LayerManager.UI_LAYER, false, false, true);
     };
     EquipMediator.prototype.addEvents = function () {
@@ -69233,13 +69255,13 @@ var LineupMediator = /** @class */ (function (_super) {
         this.view.listIcon.selectEnable = true;
         this.view.listIcon.selectHandler = new Handler(this, this.listIconSelect);
         this.view.listIcon.mouseHandler = new Handler(this, this.onMouseHandler);
-        WebSocketManager.ins.registerHandler(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, new HeroUpdateLineupHanlder(this, this.heroUpdateLineupHandler));
+        // WebSocketManager.ins.registerHandler(Protocol.HERO,Protocol.HERO_UPDATE_FORMATION,new HeroUpdateLineupHanlder(this,this.heroUpdateLineupHandler));
     };
     LineupMediator.prototype.removeEvents = function () {
         this.view.listIcon.renderHandler = null;
         this.view.listIcon.selectHandler = null;
         this.view.listIcon.mouseHandler = null;
-        WebSocketManager.ins.unregisterHandler(Protocol.HERO, Protocol.HERO_UPDATE_FORMATION, this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.HERO,Protocol.HERO_UPDATE_FORMATION,this);
     };
     /**更新阵型服务器返回 */
     LineupMediator.prototype.heroUpdateLineupHandler = function (isUp) {
@@ -69288,8 +69310,9 @@ var LineupMediator = /** @class */ (function (_super) {
                     }
                     if (GameConfig.SINGLE_GAME) //单机测试
                         this.singleGameUpdateLineup(isUp, this.selectIconView.heroId, lineupId);
-                    else
-                        ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
+                    else {
+                        // ClientSender.heroLinuepUpdateReq(lineupId,this.selectIconView.heroId,isUp); 
+                    }
                 }
                 else {
                     if (this.selectIconView.selectTick) {
@@ -69297,8 +69320,9 @@ var LineupMediator = /** @class */ (function (_super) {
                         isUp = false;
                         if (GameConfig.SINGLE_GAME) //单机测试
                             this.singleGameUpdateLineup(isUp, this.selectIconView.heroId, lineupId);
-                        else
-                            ClientSender.heroLinuepUpdateReq(lineupId, this.selectIconView.heroId, isUp);
+                        else {
+                            // ClientSender.heroLinuepUpdateReq(lineupId,this.selectIconView.heroId,isUp);   
+                        }
                     }
                 }
             }
@@ -69560,17 +69584,21 @@ var LoginMediator = /** @class */ (function (_super) {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnRegister.on(Laya.Event.CLICK, this, this.onBtnRegister);
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN_RESP, new UserLoginHandler(this, this.onWebSocketLogined));
+        WebSocketManager.ins.registerHandler(Protocol.SERVER_LIST_RESP, new UserLoginHandler(this, this.onServerListRes));
     };
     LoginMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnRegister.off(Laya.Event.CLICK, this, this.onBtnRegister);
         WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN_RESP, this);
+        WebSocketManager.ins.unregisterHandler(Protocol.SERVER_LIST_RESP, this);
     };
     LoginMediator.prototype.onWebSocketLogined = function (data) {
         console.log("登录成功。。。" + data);
         // PreLoadingView.ins.show();
         // SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
         // this.dispose();  
+    };
+    LoginMediator.prototype.onServerListRes = function (data) {
     };
     LoginMediator.prototype.onBtnRegister = function (e) {
         var account = this.view.inputAccount.text;
@@ -69618,7 +69646,7 @@ var LoginMediator = /** @class */ (function (_super) {
         var jsonObj = JSON.parse(data);
         if (jsonObj.code == 200) {
             GameDataManager.ins.saveSelfPlayerData(jsonObj);
-            ClientSender.httpGameServerReq(this, this.onGameServersList);
+            // ClientSender.httpGameServerReq(this,this.onGameServersList);
         }
         else {
             console.log("登录异常！错误码:" + jsonObj.code);
@@ -69681,9 +69709,9 @@ var GateListMediator = /** @class */ (function (_super) {
         if (layer) {
             layer.maskSprite.on("click", this, this.onMaskSpriteClick);
         }
-        WebSocketManager.ins.registerHandler(Protocol.GATE, Protocol.GATE_BATTLE, new BattleGateHandler(this, this.battleGateResponse));
-        WebSocketManager.ins.registerHandler(Protocol.GATE, Protocol.GATE_SCAN, new ScanGateHandler(this, this.scanGateResponse));
-        WebSocketManager.ins.registerHandler(Protocol.GATE, Protocol.GATE_SWITCH_HANG_GATE, new GateSwitchHangupHandler(this, this.switchHangupGateResponse));
+        // WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_BATTLE,new BattleGateHandler(this,this.battleGateResponse));
+        // WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_SCAN,new ScanGateHandler(this,this.scanGateResponse));
+        // WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_SWITCH_HANG_GATE,new GateSwitchHangupHandler(this,this.switchHangupGateResponse));
     };
     GateListMediator.prototype.removeEvents = function () {
         this.view.listGate.renderHandler = null;
@@ -69692,9 +69720,9 @@ var GateListMediator = /** @class */ (function (_super) {
         if (layer) {
             layer.maskSprite.off("click", this, this.onMaskSpriteClick);
         }
-        WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_BATTLE, this);
-        WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_SCAN, this);
-        WebSocketManager.ins.unregisterHandler(Protocol.GATE, Protocol.GATE_SWITCH_HANG_GATE, this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_BATTLE,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_SCAN,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_SWITCH_HANG_GATE,this);
     };
     GateListMediator.prototype.listMouseHandler = function (e, index) {
         if (e.type == Laya.Event.CLICK) {
@@ -69706,7 +69734,7 @@ var GateListMediator = /** @class */ (function (_super) {
                     this.battleGateResponse(gateKey);
                 }
                 else {
-                    ClientSender.ballteGateReq(cell.dataSource.key);
+                    // ClientSender.ballteGateReq((cell.dataSource as GateSampleConfig).key);
                 }
             }
             else if (e.target == cell.getChildByName("btnSweep")) {
@@ -69719,8 +69747,9 @@ var GateListMediator = /** @class */ (function (_super) {
                 btnSp.filters = [this.grayFilter];
                 if (GameConfig.SINGLE_GAME)
                     this.scanGateResponse(cell.dataSource.key);
-                else
-                    ClientSender.scanGateReq(cell.dataSource.key);
+                else {
+                    // ClientSender.scanGateReq((cell.dataSource as GateSampleConfig).key);
+                }
             }
             else if (e.target == cell.getChildByName("imgReward")) {
                 console.log("点击宝箱");
@@ -69732,7 +69761,7 @@ var GateListMediator = /** @class */ (function (_super) {
                     this.switchHangupGateResponse(gateKey);
                 }
                 else {
-                    ClientSender.gateSwitchHangReq(cell.dataSource.key);
+                    // ClientSender.gateSwitchHangReq((cell.dataSource as GateSampleConfig).key);
                 }
             }
         }
@@ -71298,6 +71327,28 @@ var ScanGateHandler = /** @class */ (function (_super) {
     return ScanGateHandler;
 }(SocketHanlder));
 //# sourceMappingURL=ScanGateHandler.js.map
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+/*
+* name;
+*/
+var ServerListInfoHandler = /** @class */ (function (_super) {
+    __extends(ServerListInfoHandler, _super);
+    function ServerListInfoHandler(caller, callback) {
+        if (callback === void 0) { callback = null; }
+        return _super.call(this, caller, callback) || this;
+    }
+    return ServerListInfoHandler;
+}(SocketHanlder));
+//# sourceMappingURL=ServerListInfoHandler.js.map
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||

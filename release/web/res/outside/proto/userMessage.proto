@@ -35,7 +35,7 @@ message ReqRegisterUser{
 	string userPass = 2;//密码
 }
 
-//白包用户登录(平台包不包含此消息) msgId=202103 返回登录消息msgId=202201，登录成功之后服务器主动返回msgId=202204(公告) msgId=202203（服务器列表）
+//白包用户登录(平台包不包含此消息) msgId=202103 返回登录消息msgdI=202201，登录成功之后服务器主动返回msgId=202204(公告) msgId=202203（服务器列表）
 message ReqUserLogin{
 	string userName = 1;//用户名
 	string userPass = 2;//密码

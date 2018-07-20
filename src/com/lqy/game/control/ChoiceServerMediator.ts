@@ -18,7 +18,7 @@ class ChoiceServerMediator extends BaseMediator{
         (this.view.listServer as Laya.List).scrollBar.visible = false;
         if(GameDataManager.ins.curServerInfo)
         {
-            this.view.boxPreServ0.getChildByName("lblServName").text = GameDataManager.ins.curServerInfo.name;
+            this.view.boxPreServ0.getChildByName("lblServName").text = GameDataManager.ins.curServerInfo.serverName;
         }
     }
 
@@ -46,7 +46,7 @@ class ChoiceServerMediator extends BaseMediator{
         var tempLbl:Label = cell.getChildByName("lblServName") as Label;
         if(tempLbl)
         {
-            tempLbl.text = (cell.dataSource as ServerInfoVo).name;
+            tempLbl.text = (cell.dataSource as ServerInfoVo).serverName;
         }
         var imgState:Laya.Image = cell.getChildByName("imgServState") as Laya.Image;
         if(imgState)

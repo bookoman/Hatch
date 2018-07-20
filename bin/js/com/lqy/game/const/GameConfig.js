@@ -49,7 +49,7 @@ var GameConfig = /** @class */ (function () {
     /**没有资源时，英雄默认资源模型ID */
     GameConfig.HERO_DEFAULT_ANI_MODELID = "baolong001";
     /**单机游戏 */
-    GameConfig.SINGLE_GAME = true;
+    GameConfig.SINGLE_GAME = false;
     /**挂机关卡地图key数据 */
     GameConfig.GATE_MAP_KEYS = [];
     /**雨出现时间间隔 s */
@@ -111,6 +111,8 @@ var Protocol = /** @class */ (function () {
     Protocol.USER_LOGIN_REQ = 202103;
     /**登录返回 */
     Protocol.USER_LOGIN_RESP = 202201;
+    /**服务器列表 */
+    Protocol.SERVER_LIST_RESP = 202203;
     return Protocol;
 }());
 /**登录服务器信息 */

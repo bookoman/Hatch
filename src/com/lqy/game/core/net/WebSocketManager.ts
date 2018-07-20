@@ -32,11 +32,25 @@ class WebSocketManager{
         this.webSocket.on(Laya.Event.CLOSE,this,this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR,this,this.webSocketError);
         //加载协议
-        var protoBufUrls = ["res/outside/proto/userMessage.proto","res/outside/proto/loginMessage.proto",
-        "res/outside/proto/playerMessage.proto","res/outside/proto/skillMessage.proto"];
-        Laya.Browser.window.protobuf.load(protoBufUrls,this.protoLoadComplete);
+        if(!this.protoRoot){
+            var protoBufUrls = ["res/outside/proto/userMessage.proto","res/outside/proto/loginMessage.proto",
+            "res/outside/proto/playerMessage.proto","res/outside/proto/skillMessage.proto"];
+            Laya.Browser.window.protobuf.load(protoBufUrls,this.protoLoadComplete);
+        }
     }
-    
+    /**关闭websocket */
+    public closeSocket():void
+    {
+        if(this.webSocket)
+        {
+            this.webSocket.off(Laya.Event.OPEN,this,this.webSocketOpen);
+            this.webSocket.off(Laya.Event.MESSAGE,this,this.webSocketMessage);
+            this.webSocket.off(Laya.Event.CLOSE,this,this.webSocketClose);
+            this.webSocket.off(Laya.Event.ERROR,this,this.webSocketError);
+            this.webSocket.close();
+            this.webSocket = null;
+        }
+    }
    
     private protoLoadComplete(error,root):void
     {
@@ -46,22 +60,94 @@ class WebSocketManager{
     private webSocketOpen():void
     {
         console.log("websocket open...");
+        this.byteBuffData = new Laya.Byte();
+        this.byteBuffData.endian = Laya.Byte.BIG_ENDIAN;//设置endian;
+        this.byteDataPos = 0;
+        this.byteLent = new Laya.Byte();
+        this.byteLent.endian = Laya.Byte.BIG_ENDIAN;
+
         WebSocketManager.codeCount = 1;
         EventManager.ins.dispatchEvent(EventManager.SERVER_CONNECTED);
     }
-    
-    private webSocketMessage(data):void
+    //缓冲字节数组
+    private byteBuffData:Laya.Byte;
+    //长度字节数组
+    private byteLent:Laya.Byte;
+    //当前读取位置
+    private byteDataPos:number;
+    private parsePackageData(packLen:number):void
     {
         var packageIn:PackageIn = new PackageIn();
-        packageIn.read(data);
-        // console.log("websocket msg...",packageIn.module,packageIn.cmd);
-        // var key:string = packageIn.module+"_"+ packageIn.cmd;
+        var buff = this.byteBuffData.buffer.slice(this.byteDataPos,packLen);
+        packageIn.read(buff);
+
         console.log("websocket msg...",packageIn.cmd);
         var key:string = ""+ packageIn.cmd;
         var handlers = this.socketHanlderDic.get(key);
-        handlers.forEach(socketHanlder => {
-            socketHanlder.explain(packageIn.body);
-        });
+        if(handlers)
+        {
+            handlers.forEach(socketHanlder => {
+                socketHanlder.explain(packageIn.body);
+            });
+        }
+        this.byteDataPos = packLen;
+        //递归检测是否有完整包
+        if(this.byteBuffData.length > 4)
+        {
+            this.byteLent.clear();
+            this.byteLent.writeArrayBuffer(this.byteBuffData.buffer,this.byteDataPos,4);
+            this.byteLent.pos = 0;
+            packLen = this.byteDataPos + this.byteLent.getInt32() + 4;
+            if(this.byteBuffData.length >= packLen)
+            {
+                this.parsePackageData(packLen);
+            }
+            else
+            {
+                //断包处理
+                this.byteBuffData = new Laya.Byte(this.byteBuffData.getUint8Array(this.byteDataPos,this.byteBuffData.length));
+                this.byteBuffData.endian = Laya.Byte.BIG_ENDIAN;//设置endian;
+                this.byteDataPos = 0;
+            }
+        }
+        
+    }
+    private webSocketMessage(data):void
+    {
+        this.byteBuffData.writeArrayBuffer(data);
+
+        if(this.byteBuffData.length > 4)
+        {
+            this.byteLent.clear();
+            this.byteLent.writeArrayBuffer(this.byteBuffData.buffer,this.byteDataPos,4);
+            this.byteLent.pos = 0;
+            var packLen:number = this.byteDataPos + this.byteLent.getInt32() + 4;
+            if(this.byteBuffData.length >= packLen)
+            {
+                this.parsePackageData(packLen);
+            }
+            else
+            {
+                //断包处理
+                this.byteBuffData = new Laya.Byte(this.byteBuffData.getUint8Array(this.byteDataPos,this.byteBuffData.length));
+                this.byteBuffData.endian = Laya.Byte.BIG_ENDIAN;//设置endian;
+                this.byteDataPos = 0;
+            }
+        }
+
+
+
+
+
+        // var packageIn:PackageIn = new PackageIn();
+        // packageIn.read(data);
+
+        // console.log("websocket msg...",packageIn.cmd);
+        // var key:string = ""+ packageIn.cmd;
+        // var handlers = this.socketHanlderDic.get(key);
+        // handlers.forEach(socketHanlder => {
+        //     socketHanlder.explain(packageIn.body);
+        // });
         
     }
     private webSocketClose():void

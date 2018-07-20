@@ -111,6 +111,8 @@ var Protocol = /** @class */ (function () {
     Protocol.USER_LOGIN_REQ = 202103;
     /**登录返回 */
     Protocol.USER_LOGIN_RESP = 202201;
+    /**服务器列表 */
+    Protocol.SERVER_LIST_RESP = 202203;
     return Protocol;
 }());
 /**登录服务器信息 */

@@ -30,17 +30,26 @@ var LoginMediator = /** @class */ (function (_super) {
         this.view.btnLogin.on(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnRegister.on(Laya.Event.CLICK, this, this.onBtnRegister);
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN_RESP, new UserLoginHandler(this, this.onWebSocketLogined));
+        WebSocketManager.ins.registerHandler(Protocol.SERVER_LIST_RESP, new ServerListInfoHandler(this, this.onServerListRes));
     };
     LoginMediator.prototype.removeEvents = function () {
         this.view.btnLogin.off(Laya.Event.CLICK, this, this.onBtnLogin);
         this.view.btnRegister.off(Laya.Event.CLICK, this, this.onBtnRegister);
         WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN_RESP, this);
+        WebSocketManager.ins.unregisterHandler(Protocol.SERVER_LIST_RESP, this);
     };
     LoginMediator.prototype.onWebSocketLogined = function (data) {
         console.log("登录成功。。。" + data);
         // PreLoadingView.ins.show();
         // SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
         // this.dispose();  
+    };
+    LoginMediator.prototype.onServerListRes = function (data) {
+        var resAry = [
+            { url: "unpack/login/logo.png", type: Loader.IMAGE }
+        ];
+        var enterGameMediator = new EnterGameMediator(resAry);
+        this.dispose();
     };
     LoginMediator.prototype.onBtnRegister = function (e) {
         var account = this.view.inputAccount.text;

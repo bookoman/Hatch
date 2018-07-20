@@ -1,0 +1,14 @@
+loginMessage		101	--登录消息
+playerMessage		102	--玩家消息
+payMessage			103	--充值消息
+packMessage			104	--背包消息
+dragonMessage		105 --恐龙消息
+fightMessage		106 --战斗消息
+skillMessage		107 --技能消息
+
+gmMessage			199	--gm消息
+
+gateMessage		201	--网关to服务器消息
+userMessage			202	--网关to客户端消息
+publicServerMessage	203	--服务器to公共服消息
+toolsMessage	204	--GM工具to游戏服务器

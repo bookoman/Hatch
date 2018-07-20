@@ -28,7 +28,7 @@ var ChoiceServerMediator = /** @class */ (function (_super) {
         this.view.listServer.array = GameDataManager.ins.serverList;
         this.view.listServer.scrollBar.visible = false;
         if (GameDataManager.ins.curServerInfo) {
-            this.view.boxPreServ0.getChildByName("lblServName").text = GameDataManager.ins.curServerInfo.name;
+            this.view.boxPreServ0.getChildByName("lblServName").text = GameDataManager.ins.curServerInfo.serverName;
         }
     };
     ChoiceServerMediator.prototype.addEvents = function () {
@@ -50,7 +50,7 @@ var ChoiceServerMediator = /** @class */ (function (_super) {
     ChoiceServerMediator.prototype.updateItem = function (cell, index) {
         var tempLbl = cell.getChildByName("lblServName");
         if (tempLbl) {
-            tempLbl.text = cell.dataSource.name;
+            tempLbl.text = cell.dataSource.serverName;
         }
         var imgState = cell.getChildByName("imgServState");
         if (imgState) {

@@ -24,9 +24,8 @@ var WebSocketManager = /** @class */ (function () {
         this.webSocket.on(Laya.Event.CLOSE, this, this.webSocketClose);
         this.webSocket.on(Laya.Event.ERROR, this, this.webSocketError);
         //加载协议
-        // var protoBufUrls = ["res/outside/proto/login.proto","res/outside/proto/role.proto","res/outside/proto/hero.proto",
-        // "res/outside/proto/gate.proto"];
-        var protoBufUrls = "res/outside/proto/userMessage.proto";
+        var protoBufUrls = ["res/outside/proto/userMessage.proto", "res/outside/proto/loginMessage.proto",
+            "res/outside/proto/playerMessage.proto", "res/outside/proto/skillMessage.proto"];
         Laya.Browser.window.protobuf.load(protoBufUrls, this.protoLoadComplete);
     };
     WebSocketManager.prototype.protoLoadComplete = function (error, root) {

@@ -3,7 +3,7 @@
 */
 var ServerInfoVo = /** @class */ (function () {
     function ServerInfoVo() {
-        this.name = "";
+        this.serverName = "";
     }
     return ServerInfoVo;
 }());
