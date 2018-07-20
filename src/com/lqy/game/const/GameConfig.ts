@@ -120,6 +120,8 @@ class Protocol{
     public static USER_LOGIN_REQ:number = 202103;
     /**登录返回 */
     public static USER_LOGIN_RESP:number = 202201;
+    /**服务器列表 */
+    public static SERVER_LIST_RESP:number = 202203;
 
 }
 /**登录服务器信息 */

@@ -28,6 +28,7 @@ class LoginMediator extends BaseMediator{
         this.view.btnRegister.on(Laya.Event.CLICK,this,this.onBtnRegister);
 
         WebSocketManager.ins.registerHandler(Protocol.USER_LOGIN_RESP,new UserLoginHandler(this,this.onWebSocketLogined));
+        WebSocketManager.ins.registerHandler(Protocol.SERVER_LIST_RESP,new UserLoginHandler(this,this.onServerListRes));
     }
 
     protected removeEvents():void
@@ -36,6 +37,7 @@ class LoginMediator extends BaseMediator{
         this.view.btnRegister.off(Laya.Event.CLICK,this,this.onBtnRegister);
 
         WebSocketManager.ins.unregisterHandler(Protocol.USER_LOGIN_RESP,this);
+        WebSocketManager.ins.unregisterHandler(Protocol.SERVER_LIST_RESP,this);
     }
     private onWebSocketLogined(data):void
     {
@@ -43,6 +45,10 @@ class LoginMediator extends BaseMediator{
         // PreLoadingView.ins.show();
         // SceneMananger.ins.enter(SceneMananger.PRE_LOAD_SCENE);
         // this.dispose();  
+    }
+    private onServerListRes(data):void
+    {
+
     }
 
     private onBtnRegister(e):void
