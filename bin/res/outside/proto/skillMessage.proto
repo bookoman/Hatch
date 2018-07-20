@@ -1,0 +1,82 @@
+// 如果使用此注释，则使用proto3; 否则使用proto2
+syntax = "proto3";
+
+// 生成包名（服务器用）
+option java_package = "com.game.skill.proto";
+// 生成类名（服务器用）
+option java_outer_classname = "SkillProto";
+
+// -------------------------------------Bean-------------------------------------
+
+//  上阵技能格子Bean
+message GridInfo{
+	fixed64 gridId = 1;// 格子唯一id
+	fixed32 skillId = 2;// 格子上阵技能id（0表示没有上阵技能）
+}
+
+// 升级技能Bean
+message SkillUpInfo{
+	fixed32 skillId = 1;// 需要升级的技能配置id(新技能id=0)
+	fixed32 toSkillId = 2;// 升级后的技能id
+}
+
+// -------------------------------------请求消息-------------------------------------
+
+// 请求所有技能信息 msgId=107101		-----返回消息msgId=107201
+message ReqAllSkillInfo{
+	
+}
+
+// 请求出战技能信息 msgId=107102		-----返回消息msgId=107202
+message ReqFightSkillList{
+	
+}
+
+// 请求升级技能 msgId=107103		-----返回消息msgId=107203
+message ReqUpSkill{
+	repeated SkillUpInfo skillList = 1;// 需要升级的技能信息
+}
+
+// 请求重置技能 msgId=107104		-----返回消息msgId=107204
+message ReqResetSkill{
+	
+}
+
+// 请求改变格子技能 msgId=107105		-----返回消息msgId=107205
+message ReqAlterGridSkill{
+	int32 type = 1;//格子类型 1=pve格子 2=pvp格子 
+	GridInfo grid = 2;// 格子改变信息
+}
+
+// -------------------------------------返回消息-------------------------------------
+
+// 返回所有技能信息  msgId=107201
+message ResAllSkillInfo{
+	int32 skillCount = 1;// 技能天赋点
+	repeated fixed32 skillId = 2;// 已经学会的技能配置id
+}
+
+// 返回出战技能信息  msgId=107202
+message ResFightSkillList{
+	repeated GridInfo pveGridList = 1;// pve格子列表（只包含已开启的格子）
+	repeated GridInfo pvpGridList = 2;// pvp格子列表（只包含已开启的格子）
+}
+
+// 返回升级技能  msgId=107203
+message ResUpSkill{
+	int32 skillCount = 1;// 当前技能天赋点
+	repeated SkillUpInfo skillList = 2;// 升级的技能信息
+}
+
+// 返回重置技能成功，客户端收到此消息，本地移除全部技能  msgId=107204
+message ResResetSkill{
+	int32 skillCount = 1;// 当前技能天赋点
+}
+
+// 返回改变格子技能  msgId=107205
+message ResAlterGridSkill{
+	int32 type = 1;//格子类型 1=pve格子 2=pvp格子 
+	GridInfo grid = 2;// 格子改变后的信息
+}
+
+

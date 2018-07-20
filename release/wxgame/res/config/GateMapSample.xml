@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+	<element key='GM_1000' mapName='边陲之地' nextMapKey='GM_1001' mapId='M_1001' gateKey='G_1-1' />
+	<element key='GM_1001' mapName='玩家村落' nextMapKey='GM_1002' mapId='M_1002' gateKey='' />
+	<element key='GM_1002' mapName='龙语森林' nextMapKey='GM_1003' mapId='M_1003' gateKey='' />
+	<element key='GM_1003' mapName='西部林地' nextMapKey='GM_1004' mapId='M_1004' gateKey='' />
+	<element key='GM_1004' mapName='灰石丘陵' nextMapKey='GM_1005' mapId='M_1005' gateKey='' />
+	<element key='GM_1005' mapName='猎手平原' nextMapKey='GM_1006' mapId='M_1006' gateKey='' />
+	<element key='GM_1006' mapName='疾风小径' nextMapKey='GM_1007' mapId='M_1007' gateKey='' />
+	<element key='GM_1007' mapName='回音峡谷' nextMapKey='GM_1008' mapId='M_1008' gateKey='' />
+	<element key='GM_1008' mapName='守望之地' nextMapKey='GM_1009' mapId='M_1009' gateKey='' />
+	<element key='GM_1009' mapName='龙翼哨岗' nextMapKey='GM_1010' mapId='M_1010' gateKey='' />
+	<element key='GM_10010' mapName='荒芜之地' nextMapKey='GM_1011' mapId='M_1011' gateKey='' />
+	<element key='GM_10011' mapName='无尽沙漠' nextMapKey='GM_1012' mapId='M_1012' gateKey='' />
+	<element key='GM_10012' mapName='埋骨之地' nextMapKey='GM_1013' mapId='M_1013' gateKey='' />
+	<element key='GM_10013' mapName='星陨坑' nextMapKey='GM_1014' mapId='M_1014' gateKey='' />
+</root>                 

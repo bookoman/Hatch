@@ -1,0 +1,53 @@
+// 如果使用此注释，则使用proto3; 否则使用proto2
+syntax = "proto3";
+
+// 生成包名（服务器用）
+option java_package = "com.game.player.proto";
+// 生成类名（服务器用）
+option java_outer_classname = "PlayerProto";
+
+// -------------------------------------Bean-------------------------------------
+// 角色信息Bean
+message PlayerInfo{
+	fixed64 userId = 1;//用户id
+	fixed64 playerId = 2;//角色id
+	string playerName = 3;//角色名
+	repeated int32 payList = 4;// 首冲列表（只包含已充值的档位）
+	fixed32 createTime = 5;// 角色创建时间（秒）
+}
+
+// 角色的属性Bean 
+message PlayerAttribute{
+	int32 attType = 1;//人物属性类型
+	int64 attValue = 2;//人物属性值
+}
+
+// -------------------------------------请求消息-------------------------------------
+
+
+// -------------------------------------返回消息-------------------------------------
+// 登陆返回角色基本信息  msgId=102201
+message ResPlayerInfo{
+	PlayerInfo playerInfo = 1;//角色信息
+	repeated PlayerAttribute playerAttributeList = 2;//角色属性（直接赋值）
+}
+
+// 返回操作成功  msgId=102202
+message ResSucceed{
+	int32 code = 1;//code值见功能标示表
+}
+
+// 返回操作失败  msgId=102203
+message ResFailure{
+	int32 code = 1;//code值见功能标示表
+}
+
+// 返回角色发生变化后的属性信息(列表)  msgId=102204
+message ResAttribute{
+	repeated PlayerAttribute playerAttributeList = 1;//角色属性（直接赋值）
+}
+
+// 返回角色发生变化的属性信息(列表)  msgId=102205
+message ResAttributeUp{
+	repeated PlayerAttribute playerAttributeList = 1;//角色属性（变化值，做加减法）
+}

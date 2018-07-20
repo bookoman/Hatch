@@ -88,7 +88,7 @@ var LoginMediator = /** @class */ (function (_super) {
         var jsonObj = JSON.parse(data);
         if (jsonObj.code == 200) {
             GameDataManager.ins.saveSelfPlayerData(jsonObj);
-            ClientSender.httpGameServerReq(this, this.onGameServersList);
+            // ClientSender.httpGameServerReq(this,this.onGameServersList);
         }
         else {
             console.log("登录异常！错误码:" + jsonObj.code);

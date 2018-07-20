@@ -154,7 +154,7 @@ class ConfigManager{
             this.qualitySampleVoDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/QualitySample.xml");
-        this.xmlToObjcet2(configStr,QualitySampleConfig,"key",this.qualitySampleVoDic);
+        this.xmlToObjcet(configStr,QualitySampleConfig,"key",this.qualitySampleVoDic);
 
         Laya.loader.clearRes("res/config/QualitySample.xml");
     }
@@ -166,7 +166,7 @@ class ConfigManager{
             this.heroLevelSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/HeroLevelSample.xml");
-        this.xmlToObjcet2(configStr,HeroLevelSampleConfig,"key",this.heroLevelSampleDic);
+        this.xmlToObjcet(configStr,HeroLevelSampleConfig,"key",this.heroLevelSampleDic);
 
         Laya.loader.clearRes("res/config/HeroLevelSample.xml");
     }
@@ -178,7 +178,7 @@ class ConfigManager{
             this.heroSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/HeroSample.xml");
-        this.xmlToObjcet2(configStr,HeroSampleConfig,"key",this.heroSampleDic);
+        this.xmlToObjcet(configStr,HeroSampleConfig,"key",this.heroSampleDic);
 
         Laya.loader.clearRes("res/config/HeroSample.xml");
     }
@@ -190,7 +190,7 @@ class ConfigManager{
             this.heroTypeSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/HeroTypeSample.xml");
-        this.xmlToObjcet2(configStr,HeroTypeSampleConfig,"key",this.heroTypeSampleDic);
+        this.xmlToObjcet(configStr,HeroTypeSampleConfig,"key",this.heroTypeSampleDic);
 
         Laya.loader.clearRes("res/config/HeroTypeSample.xml");
     }
@@ -202,7 +202,7 @@ class ConfigManager{
             this.qualityScoreSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/QualityScoreSample.xml");
-        this.xmlToObjcet2(configStr,QualityScoreSampleConfig,"key",this.qualityScoreSampleDic);
+        this.xmlToObjcet(configStr,QualityScoreSampleConfig,"key",this.qualityScoreSampleDic);
 
         Laya.loader.clearRes("res/config/QualityScoreSample.xml");
     }
@@ -214,7 +214,7 @@ class ConfigManager{
             this.gateMapSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/GateMapSample.xml");
-        this.xmlToObjcet2(configStr,GateMapSampleConfig,"key",this.gateMapSampleDic);
+        this.xmlToObjcet(configStr,GateMapSampleConfig,"key",this.gateMapSampleDic);
 
         
         this.gateMapSampleDic.keys.forEach(key => {
@@ -231,7 +231,7 @@ class ConfigManager{
             this.gateSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/GateSample.xml");
-        this.xmlToObjcet2(configStr,GateSampleConfig,"key",this.gateSampleDic);
+        this.xmlToObjcet(configStr,GateSampleConfig,"key",this.gateSampleDic);
 
         Laya.loader.clearRes("res/config/GateSample.xml");
     }
@@ -243,7 +243,7 @@ class ConfigManager{
             this.heroSkillSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/HeroSkillSample.xml");
-        this.xmlToObjcet2(configStr,HeroSkillSampleConfig,"key",this.heroSkillSampleDic);
+        this.xmlToObjcet(configStr,HeroSkillSampleConfig,"key",this.heroSkillSampleDic);
 
         Laya.loader.clearRes("res/config/HeroSkillSample.xml");
     }
@@ -255,7 +255,7 @@ class ConfigManager{
             this.masterHeroSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/MasterHeroSample.xml");
-        this.xmlToObjcet2(configStr,MasterHeroSampleConfig,"key",this.masterHeroSampleDic);
+        this.xmlToObjcet(configStr,MasterHeroSampleConfig,"key",this.masterHeroSampleDic);
 
         Laya.loader.clearRes("res/config/MasterHeroSample.xml");
     }
@@ -267,7 +267,7 @@ class ConfigManager{
             this.itemSampleDic = new Dictionary();
         }
         var configStr = Laya.loader.getRes("res/config/ItemSample.xml");
-        this.xmlToObjcet2(configStr,ItemSampleConfig,"key",this.itemSampleDic);
+        this.xmlToObjcet(configStr,ItemSampleConfig,"key",this.itemSampleDic);
 
         Laya.loader.clearRes("res/config/ItemSample.xml");
     }

@@ -1,0 +1,44 @@
+// 如果使用此注释，则使用proto3; 否则使用proto2
+syntax = "proto3";
+
+// 生成包名（服务器用）
+option java_package = "com.game.login.proto";
+// 生成类名（服务器用）
+option java_outer_classname = "LoginProto";
+
+// -------------------------------------请求消息-------------------------------------
+// 请求登陆 msgId=101101		-----如果已在线返回消息msgId=101203 如果没有角色返回msgId=101202类型5 如果正常登陆返回 msgId=102201
+message ReqLogin{
+	string code = 1;//用户登录code验证
+	int32 serverId = 2;//登陆服务器id
+	int32 agentId = 3;//平台id
+	int32 clientId = 4;//客户端Id
+}
+
+// 请求心跳(每10发送一次心跳消息) msgId=101102		-----返回消息msgId=101201
+message ReqHeart{
+	
+}
+
+// 请求创建角色 msgId=101103		-----创建后正常登陆返回 msgId=102201
+message ReqCreatePlayer{
+	int32 gender = 1;//性别 0女 1男
+	string playerName = 2;//角色名称
+}
+
+
+// -------------------------------------返回消息-------------------------------------
+// 返回心跳请求 msgId=101201
+message ResHeart{
+	fixed32 time = 1;//当前时间（秒）
+}
+
+// 返回登录错误消息 msgId=101202
+message ResError{
+	int32 code = 1;//失败原因 1登录玩家数量达到上限 2加载角色失败 3新建角色存储数据库错误 4角色名称重复 5没有角色信息
+}
+
+// 返回被顶下线 msgId=101203
+message ResSubstitute{
+
+}

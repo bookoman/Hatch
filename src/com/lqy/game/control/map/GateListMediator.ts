@@ -29,9 +29,9 @@ class GateListMediator extends BaseMediator{
             layer.maskSprite.on("click",this,this.onMaskSpriteClick);
         }
 
-        WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_BATTLE,new BattleGateHandler(this,this.battleGateResponse));
-        WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_SCAN,new ScanGateHandler(this,this.scanGateResponse));
-        WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_SWITCH_HANG_GATE,new GateSwitchHangupHandler(this,this.switchHangupGateResponse));
+        // WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_BATTLE,new BattleGateHandler(this,this.battleGateResponse));
+        // WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_SCAN,new ScanGateHandler(this,this.scanGateResponse));
+        // WebSocketManager.ins.registerHandler(Protocol.GATE,Protocol.GATE_SWITCH_HANG_GATE,new GateSwitchHangupHandler(this,this.switchHangupGateResponse));
     }
     protected removeEvents():void
     {
@@ -42,9 +42,9 @@ class GateListMediator extends BaseMediator{
         {
             layer.maskSprite.off("click",this,this.onMaskSpriteClick);
         }
-        WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_BATTLE,this);
-        WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_SCAN,this);
-        WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_SWITCH_HANG_GATE,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_BATTLE,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_SCAN,this);
+        // WebSocketManager.ins.unregisterHandler(Protocol.GATE,Protocol.GATE_SWITCH_HANG_GATE,this);
     }
     
     private listMouseHandler(e:Laya.Event,index:number):void
@@ -62,7 +62,7 @@ class GateListMediator extends BaseMediator{
                 }
                 else
                 {
-                    ClientSender.ballteGateReq((cell.dataSource as GateSampleConfig).key);
+                    // ClientSender.ballteGateReq((cell.dataSource as GateSampleConfig).key);
                 }
             }
             else if(e.target == cell.getChildByName("btnSweep"))
@@ -77,8 +77,9 @@ class GateListMediator extends BaseMediator{
                 btnSp.filters = [this.grayFilter];
                 if(GameConfig.SINGLE_GAME)
                     this.scanGateResponse((cell.dataSource as GateSampleConfig).key);
-                else
-                    ClientSender.scanGateReq((cell.dataSource as GateSampleConfig).key);
+                else{
+                    // ClientSender.scanGateReq((cell.dataSource as GateSampleConfig).key);
+                }
             }
             else if(e.target == cell.getChildByName("imgReward"))
             {
@@ -94,7 +95,7 @@ class GateListMediator extends BaseMediator{
                 }
                 else
                 {
-                    ClientSender.gateSwitchHangReq((cell.dataSource as GateSampleConfig).key);
+                    // ClientSender.gateSwitchHangReq((cell.dataSource as GateSampleConfig).key);
                 }
             }
         }

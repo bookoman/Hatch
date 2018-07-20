@@ -107,7 +107,7 @@ class LoginMediator extends BaseMediator{
         if(jsonObj.code == 200)
         {
             GameDataManager.ins.saveSelfPlayerData(jsonObj)
-            ClientSender.httpGameServerReq(this,this.onGameServersList);
+            // ClientSender.httpGameServerReq(this,this.onGameServersList);
         }
         else
         {
